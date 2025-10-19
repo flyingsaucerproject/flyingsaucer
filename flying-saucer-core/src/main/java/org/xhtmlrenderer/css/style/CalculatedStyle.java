@@ -389,13 +389,13 @@ public class CalculatedStyle {
             _font.families = valueByName(CSSName.FONT_FAMILY).asStringArray();
 
             FSDerivedValue fontSize = valueByName(CSSName.FONT_SIZE);
-            if (fontSize instanceof IdentValue) {
+            if (fontSize instanceof IdentValue identFontSize) {
                 PropertyValue replacement;
                 IdentValue resolved = resolveAbsoluteFontSize();
                 if (resolved != null) {
                     replacement = FontSizeHelper.resolveAbsoluteFontSize(resolved, _font.families);
                 } else {
-                    replacement = FontSizeHelper.getDefaultRelativeFontSize((IdentValue) fontSize);
+                    replacement = FontSizeHelper.getDefaultRelativeFontSize(identFontSize);
                 }
                 _font.size = LengthValue.calcFloatProportionalValue(
                     this, CSSName.FONT_SIZE, replacement.getCssText(),

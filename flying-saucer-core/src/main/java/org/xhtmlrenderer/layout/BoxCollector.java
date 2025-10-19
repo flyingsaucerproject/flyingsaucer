@@ -61,8 +61,7 @@ public class BoxCollector {
             if (b.intersects(c, clip)) {
                 if (b instanceof InlineLayoutBox) {
                     inlineContent.add(b);
-                } else {
-                    BlockBox bb = (BlockBox) b;
+                } else if (b instanceof BlockBox bb) {
                     if (bb.isInline()) {
                         if (intersectsAny(c, clip, b)) {
                             inlineContent.add(bb);
@@ -70,6 +69,8 @@ public class BoxCollector {
                     } else {
                         collect(c, clip, layer, bb, blockContent, inlineContent, rangeLists);
                     }
+                } else {
+                    throw new IllegalStateException("Unexpected element type: " + b.getClass().getName());
                 }
             }
         }
@@ -108,11 +109,11 @@ public class BoxCollector {
             inlineRangeStart = rangeLists.getInline().size();
         }
 
-        if (container instanceof LineBox) {
+        if (container instanceof LineBox lineBox) {
             if (intersectsAggregateBounds(clip, container) ||
                     (container.getPaintingInfo() == null && container.intersects(c, clip))) {
                 inlineContent.add(container);
-                ((LineBox)container).addAllChildren(inlineContent, layer);
+                lineBox.addAllChildren(inlineContent, layer);
             }
         } else {
             boolean intersectsAggregateBounds = intersectsAggregateBounds(clip, container);
@@ -120,11 +121,11 @@ public class BoxCollector {
                 if (intersectsAggregateBounds ||
                         (container.getPaintingInfo() == null && container.intersects(c, clip))) {
                     blockContent.add(container);
-                    if (container.getStyle().isTable() && c instanceof RenderingContext) {  // HACK
+                    if (container.getStyle().isTable() && c instanceof RenderingContext renderingContext) {  // HACK
                         assert container instanceof TableBox;
                         TableBox table = (TableBox)container;
                         if (table.hasContentLimitContainer()) {
-                            table.updateHeaderFooterPosition((RenderingContext)c);
+                            table.updateHeaderFooterPosition(renderingContext);
                         }
                     }
                 }
@@ -150,9 +151,9 @@ public class BoxCollector {
             CssContext c, Box container, List<Box> blockContent, List<Box> inlineContent,
             BoxRangeLists rangeLists, boolean isBlock, int blockStart, int inlineStart,
             int blockRangeStart, int inlineRangeStart) {
-        if (isBlock && c instanceof RenderingContext) {
+        if (isBlock && c instanceof RenderingContext renderingContext) {
             BlockBox blockBox = (BlockBox)container;
-            if (blockBox.isNeedsClipOnPaint((RenderingContext)c)) {
+            if (blockBox.isNeedsClipOnPaint(renderingContext)) {
                 int blockEnd = blockContent.size();
                 if (blockStart != blockEnd) {
                     BoxRange range = new BoxRange(blockStart, blockEnd);

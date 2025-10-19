@@ -101,8 +101,8 @@ public final class DOMInspector extends JPanel {
      * Gets the frame attribute of the DOMInspector object
      */
     public JFrame getFrame(Component comp) {
-        if (comp instanceof JFrame) {
-            return (JFrame) comp;
+        if (comp instanceof JFrame frame) {
+            return frame;
         }
         return getFrame(comp.getParent());
     }

@@ -23,19 +23,9 @@ import org.xhtmlrenderer.render.FSFont;
 
 import java.awt.*;
 
-public class AWTFSFont implements FSFont {
-    private final Font _font;
-
-    public AWTFSFont(Font font) {
-        _font = font;
-    }
-
+public record AWTFSFont(Font font) implements FSFont {
     @Override
     public float getSize2D() {
-        return _font.getSize2D();
-    }
-
-    public Font getAWTFont() {
-        return _font;
+        return font.getSize2D();
     }
 }

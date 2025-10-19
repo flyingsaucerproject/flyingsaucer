@@ -162,8 +162,8 @@ public class NaiveUserAgent implements UserAgentCallback, DocumentListener {
     protected URLConnection openConnection(String uri) throws IOException {
         URLConnection connection = new URL(uri).openConnection();
         connection.setRequestProperty("Accept", "*/*");
-        if (connection instanceof HttpURLConnection) {
-            connection = onHttpConnection((HttpURLConnection) connection);
+        if (connection instanceof HttpURLConnection httpURLConnection) {
+            connection = onHttpConnection(httpURLConnection);
         }
         return connection;
     }

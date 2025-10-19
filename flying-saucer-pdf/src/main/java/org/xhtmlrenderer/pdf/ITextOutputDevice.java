@@ -102,9 +102,9 @@ import static org.openpdf.text.pdf.PdfObject.TEXT_UNICODE;
  * projects/itext/</a> for license information.
  */
 public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
-    private static final int FILL = 1;
-    private static final int STROKE = 2;
-    private static final int CLIP = 3;
+    private enum DrawType {
+        FILL, STROKE, CLIP
+    }
 
     private static final AffineTransform IDENTITY = new AffineTransform();
 
@@ -136,7 +136,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
     @Nullable
     private Stroke _oldStroke;
 
-    private float _opacity = 1f;
+    private float _opacity = 1.0f;
 
     @Nullable
     private Area _clip;
@@ -442,7 +442,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
 
     @Override
     public void draw(Shape s) {
-        followPath(s, STROKE);
+        followPath(s, DrawType.STROKE);
     }
 
     @Override
@@ -464,7 +464,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
 
     @Override
     public void fill(Shape s) {
-        followPath(s, FILL);
+        followPath(s, DrawType.FILL);
     }
 
     @Override
@@ -639,30 +639,25 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
         return _currentPage;
     }
 
-    private void followPath(Shape s, int drawType) {
+    private void followPath(Shape s, DrawType drawType) {
         PdfContentByte cb = _currentPage;
 
-        if (drawType == STROKE) {
+        if (drawType == DrawType.STROKE) {
             if (!(_stroke instanceof BasicStroke)) {
                 s = _stroke.createStrokedShape(s);
-                followPath(s, FILL);
+                followPath(s, DrawType.FILL);
                 return;
             }
         }
-        if (drawType == STROKE) {
+        if (drawType == DrawType.STROKE) {
             setStrokeDiff(_stroke, _oldStroke);
             _oldStroke = _stroke;
             ensureStrokeColor();
-        } else if (drawType == FILL) {
+        } else if (drawType == DrawType.FILL) {
             ensureFillColor();
         }
 
-        PathIterator points;
-        if (drawType == CLIP) {
-            points = s.getPathIterator(IDENTITY);
-        } else {
-            points = s.getPathIterator(_transform);
-        }
+        PathIterator points = drawType == DrawType.CLIP ? s.getPathIterator(IDENTITY) : s.getPathIterator(_transform);
         float[] coords = new float[6];
         int traces = 0;
         while (!points.isDone()) {
@@ -824,7 +819,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
                 _clip = new Area(s);
             else
                 _clip.intersect(new Area(s));
-            followPath(s, CLIP);
+            followPath(s, DrawType.CLIP);
         } else {
             throw new XRRuntimeException("Shape is null, unexpected");
         }
@@ -851,7 +846,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
             _clip = null;
         } else {
             _clip = new Area(s);
-            followPath(s, CLIP);
+            followPath(s, DrawType.CLIP);
         }
         _fillColor = null;
         _strokeColor = null;

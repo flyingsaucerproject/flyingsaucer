@@ -175,9 +175,9 @@ public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage> {
     @Override
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
         ReplacedElement replaced = box.getReplacedElement();
-        if (replaced instanceof SwingReplacedElement) {
+        if (replaced instanceof SwingReplacedElement swingReplacedElement) {
             Rectangle contentBounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
-            JComponent component = ((SwingReplacedElement)box.getReplacedElement()).getJComponent();
+            JComponent component = swingReplacedElement.getJComponent();
             RootPanel canvas = (RootPanel)c.getCanvas();
             CellRendererPane pane = canvas.getCellRendererPane();
             pane.paintComponent(_graphics, component, canvas, contentBounds.x,  contentBounds.y, contentBounds.width, contentBounds.height,true);
@@ -272,7 +272,7 @@ public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage> {
 
     @Override
     public void setFont(FSFont font) {
-        _graphics.setFont(((AWTFSFont)font).getAWTFont());
+        _graphics.setFont(((AWTFSFont)font).font());
     }
 
     @Override

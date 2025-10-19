@@ -61,7 +61,7 @@ import java.util.logging.Level;
 /**
  * @author Patrick Wright
  */
-public class XMLResource extends AbstractResource {
+public final class XMLResource extends AbstractResource {
     private static final XMLResourceBuilder XML_RESOURCE_BUILDER = new XMLResourceBuilder();
     private static final AtomicBoolean useConfiguredParser = new AtomicBoolean(true);
 
@@ -361,8 +361,8 @@ public class XMLResource extends AbstractResource {
         @Nullable
         public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
             EntityResolver resolver = getEntityResolver();
-            if (resolver instanceof EntityResolver2) {
-                return ((EntityResolver2) resolver).getExternalSubset(name, baseURI);
+            if (resolver instanceof EntityResolver2 entityResolver) {
+                return entityResolver.getExternalSubset(name, baseURI);
             }
             return null;
         }
@@ -373,15 +373,14 @@ public class XMLResource extends AbstractResource {
                                          String baseURI,
                                          String systemId) throws SAXException, IOException {
             EntityResolver resolver = getEntityResolver();
-            if (resolver instanceof EntityResolver2) {
-                return ((EntityResolver2) resolver)
-                        .resolveEntity(name, publicId, baseURI, systemId);
+            if (resolver instanceof EntityResolver2 entityResolver) {
+                return entityResolver.resolveEntity(name, publicId, baseURI, systemId);
             }
             return resolveEntity(publicId, systemId);
         }
     }
 
-    private static class IdentityTransformerPool extends ObjectPool<Transformer> {
+    private static final class IdentityTransformerPool extends ObjectPool<Transformer> {
         private final TransformerFactory transformerFactory;
         private IdentityTransformerPool(int capacity) {
             super(capacity);

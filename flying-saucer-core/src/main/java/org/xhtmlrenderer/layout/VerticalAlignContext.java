@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineChild;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 
 import java.util.ArrayList;
@@ -212,9 +213,9 @@ public class VerticalAlignContext {
                 box.setY(box.getY() + ty);
                 if (box instanceof InlineLayoutBox iB) {
                     for (int i = 0; i < iB.getInlineChildCount(); i++) {
-                        Object child = iB.getInlineChild(i);
-                        if (child instanceof Box) {
-                            moveInlineContents((Box)child, ty);
+                        InlineChild child = iB.getInlineChild(i);
+                        if (child instanceof Box chilBox) {
+                            moveInlineContents(chilBox, ty);
                         }
                     }
                 }

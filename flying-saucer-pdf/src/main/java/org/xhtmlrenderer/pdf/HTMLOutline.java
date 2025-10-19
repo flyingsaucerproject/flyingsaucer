@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -217,10 +218,11 @@ class HTMLOutline {
     private static class NestedSectioningFilter implements NodeFilter {
         private static final NestedSectioningFilter INSTANCE = new NestedSectioningFilter();
 
+        @Nullable
         private static NodeIterator iterator(Element root) {
             Document ownerDocument = root.getOwnerDocument();
-            return (ownerDocument instanceof DocumentTraversal)
-                ? ((DocumentTraversal) ownerDocument).createNodeIterator(root, SHOW_ELEMENT, INSTANCE, true)
+            return (ownerDocument instanceof DocumentTraversal documentTraversal)
+                ? documentTraversal.createNodeIterator(root, SHOW_ELEMENT, INSTANCE, true)
                 : null;
         }
 

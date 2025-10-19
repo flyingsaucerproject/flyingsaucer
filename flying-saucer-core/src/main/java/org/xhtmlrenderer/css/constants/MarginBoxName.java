@@ -89,11 +89,11 @@ public class MarginBoxName {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof MarginBoxName)) {
+        if (!(o instanceof MarginBoxName marginBoxName)) {
             return false;
         }
 
-        return FS_ID == ((MarginBoxName)o).FS_ID;
+        return FS_ID == marginBoxName.FS_ID;
     }
 
     public IdentValue getInitialTextAlign() {

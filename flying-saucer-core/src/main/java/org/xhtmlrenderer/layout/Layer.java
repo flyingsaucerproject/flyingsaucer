@@ -255,8 +255,8 @@ public final class Layer {
             Box box = blocks.get(i);
             box.paintBackground(c);
             box.paintBorder(c);
-            if (c.debugDrawBoxes() && box instanceof BlockBox) {
-                ((BlockBox) box).paintDebugOutline(c);
+            if (c.debugDrawBoxes() && box instanceof BlockBox blockBox) {
+                blockBox.paintDebugOutline(c);
             }
 
             if (collapsedTableBorders != null && box instanceof TableCellBox cell) {
@@ -290,8 +290,8 @@ public final class Layer {
     private void paintSelection(RenderingContext c, List<Box> lines) {
         if (c.getOutputDevice().isSupportsSelection()) {
             for (Box paintable : lines) {
-                if (paintable instanceof InlineLayoutBox) {
-                    ((InlineLayoutBox) paintable).paintSelection(c);
+                if (paintable instanceof InlineLayoutBox inlineLayoutBox) {
+                    inlineLayoutBox.paintSelection(c);
                 }
             }
         }
@@ -788,8 +788,8 @@ public final class Layer {
         // HACK We only create pages during layout, but the OutputDevice
         // queries page positions and since pages are created lazily, changing
         // this method to use LayoutContext is tricky
-        if (c instanceof LayoutContext) {
-            pageName = ((LayoutContext)c).getPageName();
+        if (c instanceof LayoutContext layoutContext) {
+            pageName = layoutContext.getPageName();
         }
 
         PageInfo pageInfo = c.getCss().getPageStyle(pageName, pseudoPage);

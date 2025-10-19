@@ -143,8 +143,8 @@ public class Breaker {
     private static String getLanguage(LayoutContext c, @Nullable Text textNode) {
         if (textNode != null) {
             Node parentNode = textNode.getParentNode();
-            if (parentNode instanceof Element) {
-                return getLanguage(c, (Element) parentNode);
+            if (parentNode instanceof Element element) {
+                return getLanguage(c, element);
             }
         }
         return DEFAULT_LANGUAGE;

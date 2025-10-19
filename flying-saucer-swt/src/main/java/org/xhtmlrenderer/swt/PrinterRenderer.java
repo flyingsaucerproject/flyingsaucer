@@ -82,8 +82,8 @@ public class PrinterRenderer implements UserInterface {
             .clean();
         // dispose images when using NaiveUserAgent
         UserAgentCallback uac = _sharedContext.getUac();
-        if (uac instanceof NaiveUserAgent) {
-            ((NaiveUserAgent) uac).disposeCache();
+        if (uac instanceof NaiveUserAgent userAgent) {
+            userAgent.disposeCache();
         }
     }
 

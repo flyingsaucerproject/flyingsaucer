@@ -126,6 +126,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     @Nullable
     private Image _offscreen;
 
+    @Nullable
     private SpecialRedraw _specialRedraw;
 
     private static int checkStyle(int style) {
@@ -165,13 +166,13 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
             _sharedContext.flushFonts();
             // clean ReplacedElementFactory
             ReplacedElementFactory ref = _sharedContext.getReplacedElementFactory();
-            if (ref instanceof SWTReplacedElementFactory) {
-                ((SWTReplacedElementFactory) ref).clean();
+            if (ref instanceof SWTReplacedElementFactory swtFactory) {
+                swtFactory.clean();
             }
             // dispose images when using NaiveUserAgent
             UserAgentCallback uac1 = _sharedContext.getUac();
-            if (uac1 instanceof NaiveUserAgent) {
-                ((NaiveUserAgent) uac1).disposeCache();
+            if (uac1 instanceof NaiveUserAgent userAgent) {
+                userAgent.disposeCache();
             }
             // dispose offscreen image
             if (_offscreen != null) {
@@ -539,15 +540,15 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
                 c.getOutputDevice().setClip(new java.awt.Rectangle(0, 0, size.x, size.y));
                 doRender(c);
                 gc.dispose();
-            } else if (_specialRedraw instanceof RedrawTarget) { // targeted
-                Rectangle target = ((RedrawTarget) _specialRedraw)._target;
+            } else if (_specialRedraw instanceof RedrawTarget redrawTarget) { // targeted
+                Rectangle target = redrawTarget._target;
                 GC gc = new GC(_offscreen);
                 RenderingContext c = newRenderingContext(gc);
                 c.getOutputDevice().setClip(convertRectangle(target));
                 doRender(c);
                 gc.dispose();
-            } else if (_specialRedraw instanceof RedrawNewOrigin) { // scroll
-                Point previousOrigin = ((RedrawNewOrigin) _specialRedraw)._previousOrigin;
+            } else if (_specialRedraw instanceof RedrawNewOrigin redrawNewOrigin) { // scroll
+                Point previousOrigin = redrawNewOrigin._previousOrigin;
                 Image img = new Image(getDisplay(), size.x, size.y);
                 GC gc = new GC(img);
                 gc.drawImage(_offscreen, previousOrigin.x - _origin.x, previousOrigin.y
@@ -573,9 +574,9 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
                 gc.dispose();
                 _offscreen.dispose();
                 _offscreen = img;
-            } else if (_specialRedraw instanceof RedrawNewSize) { // adjust
+            } else if (_specialRedraw instanceof RedrawNewSize redrawNewSize) { // adjust
                 // size
-                Point previousSize = ((RedrawNewSize) _specialRedraw)._previousSize;
+                Point previousSize = redrawNewSize._previousSize;
                 Image img = new Image(getDisplay(), size.x, size.y);
                 GC gc = new GC(img);
                 gc.drawImage(_offscreen, 0, 0);

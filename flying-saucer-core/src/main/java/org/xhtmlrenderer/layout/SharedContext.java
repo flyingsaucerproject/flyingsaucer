@@ -518,8 +518,10 @@ public final class SharedContext {
             CalculatedStyle parentCalculatedStyle;
             if (parent instanceof Document) {
                 parentCalculatedStyle = new EmptyStyle();
+            } else if (parent instanceof Element element) {
+                parentCalculatedStyle = getStyle(element, false);
             } else {
-                parentCalculatedStyle = getStyle((Element)parent, false);
+                throw new IllegalStateException("Unexpected parent: " + parent.getClass().getName());
             }
 
             result = parentCalculatedStyle.deriveStyle(getCss().getCascadedStyle(e, restyle));
