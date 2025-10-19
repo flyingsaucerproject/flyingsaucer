@@ -35,7 +35,7 @@ import org.xhtmlrenderer.render.TextDecoration;
 
 import java.awt.*;
 
-public interface OutputDevice<T extends FSImage> {
+public interface OutputDevice<T extends FSImage, FontType extends FSFont> {
     void drawText(RenderingContext c, InlineText inlineText);
     void drawSelection(RenderingContext c, InlineText inlineText);
 
@@ -59,7 +59,7 @@ public interface OutputDevice<T extends FSImage> {
 
     void drawDebugOutline(RenderingContext c, Box box, FSColor color);
 
-    void setFont(FSFont font);
+    void setFont(FontType font);
 
     void setColor(FSColor color);
     void setOpacity(float opacity);

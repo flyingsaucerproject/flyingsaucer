@@ -38,7 +38,6 @@ import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.swt.simple.SWTFormControl;
@@ -55,7 +54,7 @@ import java.awt.geom.PathIterator;
  *
  */
 @NullUnmarked
-public class SWTOutputDevice extends AbstractOutputDevice<SWTFSImage> {
+public class SWTOutputDevice extends AbstractOutputDevice<SWTFSImage, SWTFSFont> {
 
     private final GC _gc;
     private Path _clippingPath = null;
@@ -246,7 +245,7 @@ public class SWTOutputDevice extends AbstractOutputDevice<SWTFSImage> {
     	// TODO: implement opacity settings
     }
 
-    public void setColor(java.awt.Color color) {
+    private void setColor(java.awt.Color color) {
         if (color.equals(_awt_color)) {
             return;
         }
@@ -264,16 +263,16 @@ public class SWTOutputDevice extends AbstractOutputDevice<SWTFSImage> {
     }
 
     @Override
-    public void setFont(FSFont font) {
-        _gc.setFont(((SWTFSFont) font).getSWTFont());
+    public void setFont(SWTFSFont font) {
+        _gc.setFont(font.getSWTFont());
     }
 
     @Override
     public void setColor(FSColor color) {
-        if (color instanceof FSRGBColor rgb) {
-            setColor(new java.awt.Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
-        } else {
-            throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
+        switch (color) {
+            case FSRGBColor rgb -> setColor(new java.awt.Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
+            default ->
+                throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
     }
 

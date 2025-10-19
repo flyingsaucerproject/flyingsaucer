@@ -60,7 +60,6 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
-import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.JustificationInfo;
@@ -101,7 +100,7 @@ import static org.openpdf.text.pdf.PdfObject.TEXT_UNICODE;
  * See <a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/
  * projects/itext/</a> for license information.
  */
-public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
+public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont> {
     private enum DrawType {
         FILL, STROKE, CLIP
     }
@@ -431,12 +430,13 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
 
     @Override
     public void setColor(FSColor color) {
-        if (color instanceof FSRGBColor rgb) {
-            _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), (int) (rgb.getAlpha()*255));
-        } else if (color instanceof FSCMYKColor cmyk) {
-            _color = new CMYKColor(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getBlack());
-        } else {
-            throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
+        switch (color) {
+            case FSRGBColor rgb ->
+                _color = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), (int) (rgb.getAlpha() * 255));
+            case FSCMYKColor cmyk ->
+                _color = new CMYKColor(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getBlack());
+            default ->
+                throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
     }
 
@@ -498,8 +498,8 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage> {
     }
 
     @Override
-    public void setFont(FSFont font) {
-        _font = ((ITextFSFont) font);
+    public void setFont(ITextFSFont font) {
+        _font = font;
     }
 
     private AffineTransform normalizeMatrix(AffineTransform current) {
