@@ -49,7 +49,7 @@ public class ImageReplacedElement implements ReplacedElement {
      * @param targetWidth The width we'd like the image to have, in pixels.
      * @param targetHeight The height we'd like the image to have, in pixels.
      */
-    public ImageReplacedElement(Image image, int targetWidth, int targetHeight) {
+    public ImageReplacedElement(final Image image, final int targetWidth, final int targetHeight) {
         if (targetWidth > 0 || targetHeight > 0) {
             int w = image.getWidth(null);
             int h = image.getHeight(null);
@@ -58,28 +58,29 @@ public class ImageReplacedElement implements ReplacedElement {
             int newH = targetHeight;
 
             if (newW == -1) {
-                newW = (int)(w * ((double)newH / h));
+                newW = (int) (w * ((double) newH / h));
             }
 
             if (newH == -1) {
-                newH = (int)(h * ((double)newW / w));
+                newH = (int) (h * ((double) newW / w));
             }
 
             if (w != newW || h != newH) {
                 if (image instanceof BufferedImage) {
-                    image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
+                    _image = ImageUtil.getScaledInstance((BufferedImage) image, newW, newH);
                 } else {
-                   String scalingType = Configuration.valueFor("xr.image.scale", "HIGH").trim() ;
+                    String scalingType = Configuration.valueFor("xr.image.scale", "HIGH").trim();
 
-                   if(scalingType.equalsIgnoreCase("HIGH") || scalingType.equalsIgnoreCase("MID") ){
-                       image = image.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
-                   } else{
-                    image = image.getScaledInstance(newW, newH, Image.SCALE_FAST);
+                    if (scalingType.equalsIgnoreCase("HIGH") || scalingType.equalsIgnoreCase("MID")) {
+                        _image = image.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+                    } else {
+                        _image = image.getScaledInstance(newW, newH, Image.SCALE_FAST);
+                    }
                 }
             }
+        } else {
+            _image = image;
         }
-        }
-        _image = image;
     }
 
     @Override
