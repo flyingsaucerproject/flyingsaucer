@@ -165,8 +165,8 @@ public class CalculatedStyle {
 
     private boolean checkPaddingAllowed(IdentValue display) {
         return display != IdentValue.TABLE_HEADER_GROUP && display != IdentValue.TABLE_ROW_GROUP &&
-                display != IdentValue.TABLE_FOOTER_GROUP && display != IdentValue.TABLE_ROW &&
-                (!isTable(display) || !isCollapseBorders());
+            display != IdentValue.TABLE_FOOTER_GROUP && display != IdentValue.TABLE_ROW &&
+            (!isTable(display) || !isCollapseBorders());
     }
 
     private static boolean isTable(IdentValue display) {
@@ -237,8 +237,8 @@ public class CalculatedStyle {
             isAbs = valueByName(cssName).hasAbsoluteUnit();
         } catch (Exception e) {
             XRLog.layout(Level.WARNING, "Property " + cssName + " has an assignment we don't understand, " +
-                    "and can't tell if it's an absolute unit or not. Assuming it is not. Exception was: " +
-                    e.getMessage());
+                "and can't tell if it's an absolute unit or not. Assuming it is not. Exception was: " +
+                e.getMessage());
             isAbs = false;
         }
         return isAbs;
@@ -266,13 +266,13 @@ public class CalculatedStyle {
      * @return The opacity value
      */
     public float getOpacity() {
-    	float opacity = asFloat(CSSName.OPACITY);
+        float opacity = asFloat(CSSName.OPACITY);
 
         for (CalculatedStyle parentStyle = getParent(); parentStyle != null; parentStyle = parentStyle.getParent()) {
-    		opacity = opacity * parentStyle.asFloat(CSSName.OPACITY);
-    	}
+            opacity = opacity * parentStyle.asFloat(CSSName.OPACITY);
+        }
 
-    	return opacity;
+        return opacity;
     }
 
     public IdentValue getDisplay() {
@@ -325,7 +325,7 @@ public class CalculatedStyle {
                 return new BackgroundSize(true, false, false);
             }
         } else {
-            ListValue valueList = (ListValue)value;
+            ListValue valueList = (ListValue) value;
             List<PropertyValue> values = valueList.getValues();
             boolean firstAuto = values.get(0).getIdentValue() == IdentValue.AUTO;
             boolean secondAuto = values.get(1).getIdentValue() == IdentValue.AUTO;
@@ -370,7 +370,7 @@ public class CalculatedStyle {
     }
 
     public BorderPropertySet getBorder(@Nullable CssContext ctx) {
-        if (! _bordersAllowed) {
+        if (!_bordersAllowed) {
             return BorderPropertySet.EMPTY_BORDER;
         } else {
             return getBorderProperty(this, ctx);
@@ -398,8 +398,8 @@ public class CalculatedStyle {
                     replacement = FontSizeHelper.getDefaultRelativeFontSize((IdentValue) fontSize);
                 }
                 _font.size = LengthValue.calcFloatProportionalValue(
-                        this, CSSName.FONT_SIZE, replacement.getCssText(),
-                        replacement.getFloatValue(), replacement.getPrimitiveType(), 0, ctx);
+                    this, CSSName.FONT_SIZE, replacement.getCssText(),
+                    replacement.getFloatValue(), replacement.getPrimitiveType(), 0, ctx);
             } else {
                 _font.size = getFloatPropertyProportionalTo(CSSName.FONT_SIZE, 0, ctx);
             }
@@ -414,7 +414,7 @@ public class CalculatedStyle {
 
     @Nullable
     public FontSpecification getFontSpecification() {
-    return _font;
+        return _font;
     }
 
     @Nullable
@@ -456,13 +456,13 @@ public class CalculatedStyle {
     }
 
     public float getLineHeight(CssContext ctx) {
-        if (! _lineHeightResolved) {
+        if (!_lineHeightResolved) {
             if (isIdent(CSSName.LINE_HEIGHT, IdentValue.NORMAL)) {
                 float lineHeight1 = getFont(ctx).size * 1.1f;
                 // Make sure rasterized characters will (probably) fit inside
                 // the line box
                 FSFontMetrics metrics = getFSFontMetrics(ctx);
-                float lineHeight2 = (float)Math.ceil(metrics.getDescent() + metrics.getAscent());
+                float lineHeight2 = (float) Math.ceil(metrics.getDescent() + metrics.getAscent());
                 _lineHeight = Math.max(lineHeight1, lineHeight2);
             } else if (isLength(CSSName.LINE_HEIGHT)) {
                 //could be more elegant, I suppose
@@ -488,11 +488,11 @@ public class CalculatedStyle {
     }
 
     public RectPropertySet getMarginRect(float cbWidth, CssContext ctx, boolean useCache) {
-        if (! _marginsAllowed) {
+        if (!_marginsAllowed) {
             return RectPropertySet.ALL_ZEROS;
         } else {
             return getMarginProperty(
-                    this, cbWidth, ctx, useCache);
+                this, cbWidth, ctx, useCache);
         }
     }
 
@@ -504,7 +504,7 @@ public class CalculatedStyle {
      * @return The paddingWidth value
      */
     public RectPropertySet getPaddingRect(float cbWidth, CssContext ctx) {
-        if (! _paddingAllowed) {
+        if (!_paddingAllowed) {
             return RectPropertySet.ALL_ZEROS;
         } else {
             return getPaddingProperty(this, cbWidth, ctx);
@@ -541,16 +541,16 @@ public class CalculatedStyle {
             // if it is inheritable (like color) and we are not root, ask our parent
             // for the value
             if (!needInitialValue && CSSName.propertyInherits(cssName)
-                    && _parent != null
-                    //
-                    && (val = _parent.valueByName(cssName)) != null) {
+                && _parent != null
+                //
+                && (val = _parent.valueByName(cssName)) != null) {
                 // Do nothing, val is already set
             } else {
                 // otherwise, use the initial value (defined by the CSS2 Spec)
                 String initialValue = CSSName.initialValue(cssName);
                 if (initialValue == null) {
                     throw new XRRuntimeException("Property '" + cssName + "' has no initial values assigned. " +
-                            "Check CSSName declarations.");
+                        "Check CSSName declarations.");
                 }
                 if (initialValue.charAt(0) == '=') {
                     CSSName ref = cssProperty(initialValue.substring(1));
@@ -621,7 +621,7 @@ public class CalculatedStyle {
                                                       CssContext ctx) {
         if (style._padding == null) {
             style._padding = newRectInstance(style, PADDING_SIDE_PROPERTIES, cbWidth, ctx)
-                    .resetNegativeValues();
+                .resetNegativeValues();
         }
 
         return style._padding;
@@ -631,7 +631,7 @@ public class CalculatedStyle {
                                                      float cbWidth,
                                                      CssContext ctx,
                                                      boolean useCache) {
-        if (! useCache) {
+        if (!useCache) {
             return newRectInstance(style, CSSName.MARGIN_SIDE_PROPERTIES, cbWidth, ctx);
         } else {
             if (style._margin == null) {
@@ -727,9 +727,11 @@ public class CalculatedStyle {
     public IdentValue getWordWrap() {
         return getIdent(CSSName.WORD_WRAP);
     }
-public IdentValue getWordBreak() {
+
+    public IdentValue getWordBreak() {
         return getIdent(CSSName.WORD_BREAK);
     }
+
     public IdentValue getHyphens() {
         return getIdent(CSSName.HYPHENS);
     }
@@ -745,7 +747,7 @@ public IdentValue getWordBreak() {
     }
 
     public boolean isCleared() {
-        return ! isIdent(CSSName.CLEAR, IdentValue.NONE);
+        return !isIdent(CSSName.CLEAR, IdentValue.NONE);
     }
 
     public IdentValue getBackgroundRepeat() {
@@ -762,7 +764,7 @@ public IdentValue getWordBreak() {
 
     public boolean isInline() {
         return isIdent(CSSName.DISPLAY, IdentValue.INLINE) &&
-                ! (isFloated() || isAbsolute() || isFixed() || isRunning());
+            !(isFloated() || isAbsolute() || isFixed() || isRunning());
     }
 
     public boolean isInlineBlock() {
@@ -830,7 +832,7 @@ public IdentValue getWordBreak() {
     }
 
     public boolean isNeedAutoMarginResolution() {
-        return ! (isAbsolute() || isFixed() || isFloated() || isInlineBlock());
+        return !(isAbsolute() || isFixed() || isFloated() || isInlineBlock());
     }
 
     public boolean isAbsolute() {
@@ -900,12 +902,12 @@ public IdentValue getWordBreak() {
             return false;
         } else {
             IdentValue display = getDisplay();
-            IdentValue position = (IdentValue)value;
+            IdentValue position = (IdentValue) value;
 
             return isFloated() ||
-                    position == IdentValue.ABSOLUTE || position == IdentValue.FIXED ||
-                    display == IdentValue.INLINE_BLOCK || display == IdentValue.TABLE_CELL ||
-                    ! isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
+                position == IdentValue.ABSOLUTE || position == IdentValue.FIXED ||
+                display == IdentValue.INLINE_BLOCK || display == IdentValue.TABLE_CELL ||
+                !isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE);
         }
     }
 
@@ -918,13 +920,13 @@ public IdentValue getWordBreak() {
             IdentValue position = getIdent(CSSName.POSITION);
 
             if (position == IdentValue.ABSOLUTE ||
-                    position == IdentValue.RELATIVE || position == IdentValue.FIXED) {
+                position == IdentValue.RELATIVE || position == IdentValue.FIXED) {
                 return true;
             }
 
             IdentValue overflow = getIdent(CSSName.OVERFLOW);
             return (overflow == IdentValue.SCROLL || overflow == IdentValue.AUTO) &&
-                    isOverflowApplies();
+                isOverflowApplies();
         }
     }
 
@@ -936,19 +938,18 @@ public IdentValue getWordBreak() {
     public boolean isLinearGradient() {
         FSDerivedValue value = valueByName(CSSName.BACKGROUND_IMAGE);
         return value instanceof FunctionValue function &&
-        		GeneralUtil.ciEquals(function.getFunction().getName(), "linear-gradient");
+            GeneralUtil.ciEquals(function.getFunction().getName(), "linear-gradient");
     }
 
-    public FSLinearGradient getLinearGradient(final CssContext cssContext, final int w, final int h)
-    {
-        assert(isLinearGradient());
+    public FSLinearGradient getLinearGradient(final CssContext cssContext, final int w, final int h) {
+        assert (isLinearGradient());
 
         final FunctionValue value = (FunctionValue) valueByName(CSSName.BACKGROUND_IMAGE);
         return new FSLinearGradient(value.getFunction(), this, w, h, cssContext);
     }
 
     public String getRunningName() {
-        FunctionValue value = (FunctionValue)valueByName(CSSName.POSITION);
+        FunctionValue value = (FunctionValue) valueByName(CSSName.POSITION);
         FSFunction function = value.getFunction();
         PropertyValue param = function.getParameters().get(0);
         return param.getStringValue();
@@ -991,13 +992,13 @@ public IdentValue getWordBreak() {
     public boolean isForcePageBreakBefore() {
         IdentValue val = getIdent(CSSName.PAGE_BREAK_BEFORE);
         return val == IdentValue.ALWAYS || val == IdentValue.LEFT
-                || val == IdentValue.RIGHT;
+            || val == IdentValue.RIGHT;
     }
 
     public boolean isForcePageBreakAfter() {
         IdentValue val = getIdent(CSSName.PAGE_BREAK_AFTER);
         return val == IdentValue.ALWAYS || val == IdentValue.LEFT
-                || val == IdentValue.RIGHT;
+            || val == IdentValue.RIGHT;
     }
 
     public boolean isAvoidPageBreakInside() {
@@ -1022,7 +1023,7 @@ public IdentValue getWordBreak() {
 
     public boolean isMayCollapseMarginsWithChildren() {
         return isIdent(CSSName.OVERFLOW, IdentValue.VISIBLE) &&
-                ! (isFloated() || isAbsolute() || isFixed() || isInlineBlock());
+            !(isFloated() || isAbsolute() || isFixed() || isInlineBlock());
     }
 
     public boolean isAbsFixedOrInlineBlockEquiv() {
@@ -1097,8 +1098,8 @@ public IdentValue getWordBreak() {
     }
 
     public boolean isHasBackground() {
-        return ! (isIdent(CSSName.BACKGROUND_COLOR, IdentValue.TRANSPARENT) &&
-                isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE));
+        return !(isIdent(CSSName.BACKGROUND_COLOR, IdentValue.TRANSPARENT) &&
+            isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE));
     }
 
     @Nullable
@@ -1111,7 +1112,7 @@ public IdentValue getWordBreak() {
             List<FSDerivedValue> result = new ArrayList<>(idents.size());
             for (PropertyValue ident : idents) {
                 result.add(DerivedValueFactory.newDerivedValue(
-                        this, CSSName.TEXT_DECORATION, ident));
+                    this, CSSName.TEXT_DECORATION, ident));
             }
             return result;
         }
@@ -1168,8 +1169,8 @@ public IdentValue getWordBreak() {
 
     public boolean isTextJustify() {
         return isIdent(CSSName.TEXT_ALIGN, IdentValue.JUSTIFY) &&
-                ! (isIdent(CSSName.WHITE_SPACE, IdentValue.PRE) ||
-                        isIdent(CSSName.WHITE_SPACE, IdentValue.PRE_LINE));
+            !(isIdent(CSSName.WHITE_SPACE, IdentValue.PRE) ||
+                isIdent(CSSName.WHITE_SPACE, IdentValue.PRE_LINE));
     }
 
     public boolean isListMarkerInside() {
@@ -1185,7 +1186,7 @@ public IdentValue getWordBreak() {
     }
 
     public boolean isDynamicAutoWidthApplicable() {
-        return isDynamicAutoWidth() && isAutoWidth() && ! isCanBeShrunkToFit();
+        return isDynamicAutoWidth() && isAutoWidth() && !isCanBeShrunkToFit();
     }
 
     public boolean isCanBeShrunkToFit() {
