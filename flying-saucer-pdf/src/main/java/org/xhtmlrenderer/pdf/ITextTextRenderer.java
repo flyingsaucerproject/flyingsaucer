@@ -24,13 +24,12 @@ import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 
 import java.awt.*;
 
-public class ITextTextRenderer implements TextRenderer {
+public class ITextTextRenderer implements TextRenderer<ITextFSFont> {
     private static final float TEXT_MEASURING_DELTA = 0.01f;
 
     @Override
@@ -49,8 +48,8 @@ public class ITextTextRenderer implements TextRenderer {
     }
 
     @Override
-    public FSFontMetrics getFSFontMetrics(FontContext context, FSFont font, String string) {
-        FontDescription description = ((ITextFSFont)font).getFontDescription();
+    public FSFontMetrics getFSFontMetrics(FontContext context, ITextFSFont font, String string) {
+        FontDescription description = font.getFontDescription();
         BaseFont bf = description.getFont();
         float size = font.getSize2D();
         float strikethroughThickness = description.getYStrikeoutSize() != 0 ?
@@ -68,8 +67,8 @@ public class ITextTextRenderer implements TextRenderer {
     }
 
     @Override
-    public int getWidth(FontContext context, FSFont font, String string) {
-        BaseFont bf = ((ITextFSFont)font).getFontDescription().getFont();
+    public int getWidth(FontContext context, ITextFSFont font, String string) {
+        BaseFont bf = font.getFontDescription().getFont();
         float result = bf.getWidthPoint(string, font.getSize2D());
         if (result - Math.floor(result) < TEXT_MEASURING_DELTA) {
             return (int)result;
@@ -92,17 +91,17 @@ public class ITextTextRenderer implements TextRenderer {
     }
 
     @Override
-    public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
+    public Rectangle getGlyphBounds(OutputDevice outputDevice, ITextFSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
     @Override
-    public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector) {
+    public float[] getGlyphPositions(OutputDevice outputDevice, ITextFSFont font, FSGlyphVector fsGlyphVector) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
     @Override
-    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
+    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, ITextFSFont font, String string) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }
 
