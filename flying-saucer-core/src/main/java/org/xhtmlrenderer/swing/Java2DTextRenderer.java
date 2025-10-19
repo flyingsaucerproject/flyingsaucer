@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
@@ -43,7 +42,7 @@ import java.util.Map;
  * @author   Joshua Marinacci
  * @author   Torbjoern Gannholm
  */
-public class Java2DTextRenderer implements TextRenderer<AWTFSFont> {
+public class Java2DTextRenderer implements TextRenderer<Java2DOutputDevice, AWTFSFont> {
     private static final Logger log = LoggerFactory.getLogger(Java2DTextRenderer.class);
     private float scale;
     private float threshold;
@@ -87,9 +86,9 @@ public class Java2DTextRenderer implements TextRenderer<AWTFSFont> {
     }
 
     @Override
-    public void drawString(OutputDevice outputDevice, String string, float x, float y ) {
+    public void drawString(Java2DOutputDevice outputDevice, String string, float x, float y ) {
         Object aaHint = null;
-        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Graphics2D graphics = outputDevice.getGraphics();
         if ( graphics.getFont().getSize() > threshold ) {
             aaHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
@@ -105,9 +104,9 @@ public class Java2DTextRenderer implements TextRenderer<AWTFSFont> {
 
     @Override
     public void drawString(
-            OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
+        Java2DOutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
         Object aaHint = null;
-        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Graphics2D graphics = outputDevice.getGraphics();
         if ( graphics.getFont().getSize() > threshold ) {
             aaHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
             graphics.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, antiAliasRenderingHint );
@@ -147,9 +146,9 @@ public class Java2DTextRenderer implements TextRenderer<AWTFSFont> {
     }
 
     @Override
-    public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector fsGlyphVector, float x, float y ) {
+    public void drawGlyphVector(Java2DOutputDevice outputDevice, FSGlyphVector fsGlyphVector, float x, float y ) {
         Object aaHint = null;
-        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Graphics2D graphics = outputDevice.getGraphics();
 
         if ( graphics.getFont().getSize() > threshold ) {
             aaHint = graphics.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
@@ -236,9 +235,9 @@ public class Java2DTextRenderer implements TextRenderer<AWTFSFont> {
         this.antiAliasRenderingHint = renderingHints;
     }
 
-    public float[] getGlyphPositions(OutputDevice outputDevice, AWTFSFont font, String text) {
+    public float[] getGlyphPositions(Java2DOutputDevice outputDevice, AWTFSFont font, String text) {
         Object aaHint = null;
-        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Graphics2D graphics = outputDevice.getGraphics();
         Font awtFont = font.font();
 
         if (awtFont.getSize() > threshold ) {
@@ -262,9 +261,9 @@ public class Java2DTextRenderer implements TextRenderer<AWTFSFont> {
     }
 
     @Override
-    public Rectangle getGlyphBounds(OutputDevice outputDevice, AWTFSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
+    public Rectangle getGlyphBounds(Java2DOutputDevice outputDevice, AWTFSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
         Object aaHint = null;
-        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Graphics2D graphics = outputDevice.getGraphics();
         Font awtFont = font.font();
 
         if (awtFont.getSize() > threshold ) {
@@ -287,9 +286,9 @@ public class Java2DTextRenderer implements TextRenderer<AWTFSFont> {
     }
 
     @Override
-    public float[] getGlyphPositions(OutputDevice outputDevice, AWTFSFont font, FSGlyphVector fsGlyphVector) {
+    public float[] getGlyphPositions(Java2DOutputDevice outputDevice, AWTFSFont font, FSGlyphVector fsGlyphVector) {
         Object aaHint = null;
-        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Graphics2D graphics = outputDevice.getGraphics();
         Font awtFont = font.font();
 
         if (awtFont.getSize() > threshold ) {
@@ -312,9 +311,9 @@ public class Java2DTextRenderer implements TextRenderer<AWTFSFont> {
     }
 
     @Override
-    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, AWTFSFont font, String text) {
+    public FSGlyphVector getGlyphVector(Java2DOutputDevice outputDevice, AWTFSFont font, String text) {
         Object aaHint = null;
-        Graphics2D graphics = ((Java2DOutputDevice)outputDevice).getGraphics();
+        Graphics2D graphics = outputDevice.getGraphics();
         Font awtFont = font.font();
 
         if (awtFont.getSize() > threshold ) {
