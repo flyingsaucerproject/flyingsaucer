@@ -22,14 +22,13 @@ package org.xhtmlrenderer.pdf;
 import org.openpdf.text.pdf.BaseFont;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 
 import java.awt.*;
 
-public class ITextTextRenderer implements TextRenderer<ITextFSFont> {
+public class ITextTextRenderer implements TextRenderer<ITextOutputDevice, ITextFSFont> {
     private static final float TEXT_MEASURING_DELTA = 0.01f;
 
     @Override
@@ -37,14 +36,13 @@ public class ITextTextRenderer implements TextRenderer<ITextFSFont> {
     }
 
     @Override
-    public void drawString(OutputDevice outputDevice, String string, float x, float y) {
-        ((ITextOutputDevice)outputDevice).drawString(string, x, y, null);
+    public void drawString(ITextOutputDevice outputDevice, String string, float x, float y) {
+        outputDevice.drawString(string, x, y, null);
     }
 
     @Override
-    public void drawString(
-            OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
-        ((ITextOutputDevice)outputDevice).drawString(string, x, y, info);
+    public void drawString(ITextOutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
+        outputDevice.drawString(string, x, y, info);
     }
 
     @Override
@@ -53,16 +51,16 @@ public class ITextTextRenderer implements TextRenderer<ITextFSFont> {
         BaseFont bf = description.getFont();
         float size = font.getSize2D();
         float strikethroughThickness = description.getYStrikeoutSize() != 0 ?
-                description.getYStrikeoutSize() / 1000f * size :
+                description.getYStrikeoutSize() / 1000.0f * size :
                 size / 12.0f;
 
         return new ITextFSFontMetrics(
                 bf.getFontDescriptor(BaseFont.BBOXURY, size),
                 -bf.getFontDescriptor(BaseFont.BBOXLLY, size),
-                -description.getYStrikeoutPosition() / 1000f * size,
+                -description.getYStrikeoutPosition() / 1000.0f * size,
                 strikethroughThickness,
-                -description.getUnderlinePosition() / 1000f * size,
-                description.getUnderlineThickness() / 1000f * size
+                -description.getUnderlinePosition() / 1000.0f * size,
+                description.getUnderlineThickness() / 1000.0f * size
         );
     }
 
@@ -91,22 +89,22 @@ public class ITextTextRenderer implements TextRenderer<ITextFSFont> {
     }
 
     @Override
-    public Rectangle getGlyphBounds(OutputDevice outputDevice, ITextFSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
+    public Rectangle getGlyphBounds(ITextOutputDevice outputDevice, ITextFSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
     @Override
-    public float[] getGlyphPositions(OutputDevice outputDevice, ITextFSFont font, FSGlyphVector fsGlyphVector) {
+    public float[] getGlyphPositions(ITextOutputDevice outputDevice, ITextFSFont font, FSGlyphVector fsGlyphVector) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
     @Override
-    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, ITextFSFont font, String string) {
+    public FSGlyphVector getGlyphVector(ITextOutputDevice outputDevice, ITextFSFont font, String string) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }
 
     @Override
-    public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
+    public void drawGlyphVector(ITextOutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: drawGlyphVector");
     }
 }

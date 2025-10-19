@@ -26,7 +26,6 @@ import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.extend.FontContext;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
@@ -39,10 +38,10 @@ import java.awt.*;
  *
  * @author Vianney le Clément
  */
-public class SWTTextRenderer implements TextRenderer<SWTFSFont> {
+public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTFSFont> {
 
     private float _scale;
-    private boolean _antialiasing;
+    private boolean _antialiasing = false;
 
     public SWTTextRenderer() {
         _scale = Configuration.valueAsFloat("xr.text.scale", 1.0f);
@@ -57,9 +56,9 @@ public class SWTTextRenderer implements TextRenderer<SWTFSFont> {
     }
 
     @Override
-    public void drawString(OutputDevice outputDevice, String string, float x,
+    public void drawString(SWTOutputDevice outputDevice, String string, float x,
             float y) {
-        GC gc = ((SWTOutputDevice) outputDevice).getGC();
+        GC gc = outputDevice.getGC();
         FontMetrics metrics = gc.getFontMetrics();
         y -= (metrics.getAscent() + metrics.getLeading());
         gc.drawText(string, (int) x, (int) y, SWT.DRAW_TRANSPARENT);
@@ -98,31 +97,31 @@ public class SWTTextRenderer implements TextRenderer<SWTFSFont> {
     }
 
     @Override
-    public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
+    public void drawGlyphVector(SWTOutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: drawGlyphVector");
     }
 
     @Override
-    public void drawString(OutputDevice outputDevice, String string, float x, float y,
+    public void drawString(SWTOutputDevice outputDevice, String string, float x, float y,
             JustificationInfo info) {
         // TODO handle justification
         drawString(outputDevice, string, x, y);
     }
 
     @Override
-    public Rectangle getGlyphBounds(OutputDevice outputDevice, SWTFSFont font,
+    public Rectangle getGlyphBounds(SWTOutputDevice outputDevice, SWTFSFont font,
             FSGlyphVector fsGlyphVector, int index, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
     @Override
-    public float[] getGlyphPositions(OutputDevice outputDevice, SWTFSFont font,
+    public float[] getGlyphPositions(SWTOutputDevice outputDevice, SWTFSFont font,
             FSGlyphVector fsGlyphVector) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
     @Override
-    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, SWTFSFont font, String string) {
+    public FSGlyphVector getGlyphVector(SWTOutputDevice outputDevice, SWTFSFont font, String string) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }
 

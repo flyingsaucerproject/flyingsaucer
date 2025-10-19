@@ -26,19 +26,18 @@ import org.xhtmlrenderer.render.JustificationInfo;
 
 import java.awt.*;
 
-public interface TextRenderer<FontType extends FSFont> {
+public interface TextRenderer<OutputDeviceType extends OutputDevice, FontType extends FSFont> {
     void setup(FontContext context);
 
-    void drawString(OutputDevice outputDevice, String string, float x, float y);
-    void drawString(
-            OutputDevice outputDevice, String string, float x, float y, JustificationInfo info);
+    void drawString(OutputDeviceType outputDevice, String string, float x, float y);
+    void drawString(OutputDeviceType outputDevice, String string, float x, float y, JustificationInfo info);
 
-    void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y);
+    void drawGlyphVector(OutputDeviceType outputDevice, FSGlyphVector vector, float x, float y);
 
-    FSGlyphVector getGlyphVector(OutputDevice outputDevice, FontType font, String string);
+    FSGlyphVector getGlyphVector(OutputDeviceType outputDevice, FontType font, String string);
 
-    float[] getGlyphPositions(OutputDevice outputDevice, FontType font, FSGlyphVector fsGlyphVector);
-    Rectangle getGlyphBounds(OutputDevice outputDevice, FontType font, FSGlyphVector fsGlyphVector, int index, float x, float y);
+    float[] getGlyphPositions(OutputDeviceType outputDevice, FontType font, FSGlyphVector fsGlyphVector);
+    Rectangle getGlyphBounds(OutputDeviceType outputDevice, FontType font, FSGlyphVector fsGlyphVector, int index, float x, float y);
 
     FSFontMetrics getFSFontMetrics(FontContext context, FontType font, String string);
 
