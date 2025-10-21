@@ -34,23 +34,4 @@ class ITextRendererTest {
                 """.trim());
     }
 
-    @Test
-    void createSimplePdfForManualInspection() throws Exception {
-        String html = """
-        <html><body><h1>Hello world PDF</h1><p>This is a test of Flying Saucer with OpenPDF.</p></body></html>
-        """;
-        var out = new java.io.File("target/flying-saucer-test.pdf");
-        out.getParentFile().mkdirs();
-
-        var renderer = new ITextRenderer();
-        renderer.setDocumentFromString(html);
-        renderer.layout();
-        try (var fos = new java.io.FileOutputStream(out)) {
-            renderer.createPDF(fos);
-        }
-        renderer.finishPDF();
-
-        System.out.println("PDF created at: " + out.getAbsolutePath());
-    }
-
 }
