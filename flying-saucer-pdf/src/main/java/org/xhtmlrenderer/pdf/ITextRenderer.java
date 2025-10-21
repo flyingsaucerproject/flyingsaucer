@@ -77,6 +77,7 @@ public class ITextRenderer {
     public static final float DEFAULT_DOTS_PER_POINT = 20f * 4f / 3f;
     public static final int DEFAULT_DOTS_PER_PIXEL = 20;
 
+    // TODO: Ideally the PDF producer version should be automatically updated.
     private String pdfProducer = "Flying Saucer 10 with OpenPDF 3.";
     private String pdfCreator = "Flying Saucer 10 with OpenPDF 3.";
     private int compression = 9;
