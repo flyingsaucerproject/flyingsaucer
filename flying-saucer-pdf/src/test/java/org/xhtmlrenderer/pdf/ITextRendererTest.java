@@ -33,5 +33,4 @@ class ITextRendererTest {
                 Invalid PDF version character: "0.1"; use one of constants in [1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 2.0].
                 """.trim());
     }
-
 }
