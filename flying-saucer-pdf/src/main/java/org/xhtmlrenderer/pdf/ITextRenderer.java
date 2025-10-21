@@ -23,6 +23,8 @@ import org.openpdf.text.DocumentException;
 import org.openpdf.text.pdf.PdfName;
 import org.openpdf.text.pdf.PdfPageEvent;
 import org.openpdf.text.pdf.PdfWriter;
+import org.openpdf.text.pdf.PdfDictionary;
+import org.openpdf.text.pdf.PdfString;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -74,6 +76,12 @@ public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to the inch
     public static final float DEFAULT_DOTS_PER_POINT = 20f * 4f / 3f;
     public static final int DEFAULT_DOTS_PER_PIXEL = 20;
+
+    // TODO: Ideally the PDF producer version should be automatically updated.
+    private String pdfProducer = "Flying Saucer 10 with OpenPDF 3.";
+    private String pdfCreator = "Flying Saucer 10 with OpenPDF 3.";
+    private int compression = 9;
+    private boolean compressionEnabled = true;
 
     private final SharedContext _sharedContext;
     private final ITextOutputDevice _outputDevice;
@@ -385,6 +393,15 @@ public class ITextRenderer {
             writer.setPdfVersion(_pdfVersion);
         }
 
+        PdfDictionary info = writer.getInfo();
+        if (pdfProducer != null) info.put(PdfName.PRODUCER, new PdfString(pdfProducer));
+        if (pdfCreator  != null) info.put(PdfName.CREATOR,  new PdfString(pdfCreator));
+
+        if (compressionEnabled) {
+            writer.setFullCompression();
+            writer.setCompressionLevel(compression);
+        }
+
         if (_pdfXConformance != null) {
             writer.setPDFXConformance(_pdfXConformance);
         }
@@ -660,5 +677,21 @@ public class ITextRenderer {
 
     public boolean isScaleToFit() {
         return scaleToFit;
+    }
+
+    public void setPDFProducer(String s){
+        this.pdfProducer = s;
+    }
+
+    public void setPDFCreator(String s){
+        this.pdfCreator = s;
+    }
+
+    public void setCompression(int compression){
+        this.compression = compression;
+    }
+
+    public void setCompressionEnabled(boolean enabled){
+        this.compressionEnabled = enabled;
     }
 }
