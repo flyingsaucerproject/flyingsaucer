@@ -19,13 +19,13 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import org.jspecify.annotations.Nullable;
 import org.openpdf.text.DocumentException;
+import org.openpdf.text.pdf.PdfDictionary;
 import org.openpdf.text.pdf.PdfName;
 import org.openpdf.text.pdf.PdfPageEvent;
-import org.openpdf.text.pdf.PdfWriter;
-import org.openpdf.text.pdf.PdfDictionary;
 import org.openpdf.text.pdf.PdfString;
-import org.jspecify.annotations.Nullable;
+import org.openpdf.text.pdf.PdfWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -70,16 +70,16 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_PRINT;
 
 public class ITextRenderer {
     // These two defaults combine to produce an effective resolution of 96 px to the inch
-    public static final float DEFAULT_DOTS_PER_POINT = 20f * 4f / 3f;
+    public static final float DEFAULT_DOTS_PER_POINT = 20.0f * 4.0f / 3.0f;
     public static final int DEFAULT_DOTS_PER_PIXEL = 20;
 
-    // TODO: Ideally the PDF producer version should be automatically updated.
-    private String pdfProducer = "Flying Saucer 10 with OpenPDF 3.";
-    private String pdfCreator = "Flying Saucer 10 with OpenPDF 3.";
+    private String pdfProducer = defaultPdfProducer();
+    private String pdfCreator = pdfProducer;
     private int compression = 9;
     private boolean compressionEnabled = true;
 
@@ -177,7 +177,7 @@ public class ITextRenderer {
 
     public ITextRenderer(float dotsPerPoint, int dotsPerPixel, ITextOutputDevice outputDevice, ITextUserAgent userAgent,
             FontResolver fontResolver, ReplacedElementFactory replacedElementFactory,
-            TextRenderer textRenderer) {
+            TextRenderer<?, ?, ?> textRenderer) {
         _dotsPerPoint = dotsPerPoint;
         _outputDevice = outputDevice;
         _sharedContext = new SharedContext(userAgent, fontResolver, replacedElementFactory, textRenderer,
@@ -209,7 +209,7 @@ public class ITextRenderer {
         setDocument(doc, null);
     }
 
-    public void setDocument(Document doc, @Nullable String url) {
+    public final void setDocument(Document doc, @Nullable String url) {
         setDocument(doc, url, new XhtmlNamespaceHandler());
     }
 
@@ -237,7 +237,7 @@ public class ITextRenderer {
         }
     }
 
-    public void setDocument(Document doc, @Nullable String url, NamespaceHandler nsh) {
+    public final void setDocument(Document doc, @Nullable String url, NamespaceHandler nsh) {
         _doc = doc;
 
         getFontResolver().flushFontFaceFonts();
@@ -394,8 +394,8 @@ public class ITextRenderer {
         }
 
         PdfDictionary info = writer.getInfo();
-        if (pdfProducer != null) info.put(PdfName.PRODUCER, new PdfString(pdfProducer));
-        if (pdfCreator  != null) info.put(PdfName.CREATOR,  new PdfString(pdfCreator));
+        info.put(PdfName.PRODUCER, new PdfString(pdfProducer));
+        info.put(PdfName.CREATOR, new PdfString(pdfCreator));
 
         if (compressionEnabled) {
             writer.setFullCompression();
@@ -679,12 +679,12 @@ public class ITextRenderer {
         return scaleToFit;
     }
 
-    public void setPDFProducer(String s){
-        this.pdfProducer = s;
+    public void setPDFProducer(String pdfProducer){
+        this.pdfProducer = requireNonNull(pdfProducer);
     }
 
-    public void setPDFCreator(String s){
-        this.pdfCreator = s;
+    public void setPDFCreator(String pdfCreator){
+        this.pdfCreator = requireNonNull(pdfCreator);
     }
 
     public void setCompression(int compression){
@@ -693,5 +693,11 @@ public class ITextRenderer {
 
     public void setCompressionEnabled(boolean enabled){
         this.compressionEnabled = enabled;
+    }
+
+    private String defaultPdfProducer() {
+        return "Flying Saucer %s with %s".formatted(
+            getClass().getPackage().getImplementationVersion(), org.openpdf.text.Document.getVersion()
+        );
     }
 }

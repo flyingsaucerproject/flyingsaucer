@@ -253,6 +253,17 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.4.2</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Implementation-Title>${project.groupId}.${project.artifactId}</Implementation-Title>
+              <Implementation-Version>${project.version}</Implementation-Version>
+              <Implementation-Vendor>https://github.com/flyingsaucerproject</Implementation-Vendor>
+              <X-OpenPDF-Version>${openpdf.version}</X-OpenPDF-Version>
+              <X-Build-Time>${maven.build.timestamp}</X-Build-Time>
+            </manifestEntries>
+          </archive>
+        </configuration>
       </plugin>
 
       <plugin>
