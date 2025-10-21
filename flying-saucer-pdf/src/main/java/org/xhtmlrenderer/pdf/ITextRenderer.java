@@ -40,6 +40,7 @@ import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.pdf.util.VersionUtil;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
@@ -77,9 +78,9 @@ public class ITextRenderer {
     public static final float DEFAULT_DOTS_PER_POINT = 20f * 4f / 3f;
     public static final int DEFAULT_DOTS_PER_PIXEL = 20;
 
-    // TODO: Ideally the PDF producer version should be automatically updated.
-    private String pdfProducer = "Flying Saucer 10 with OpenPDF 3.";
-    private String pdfCreator = "Flying Saucer 10 with OpenPDF 3.";
+    // TODO: Ideally the Flying Saucer version should be automatically updated.
+    private String pdfProducer = "Flying Saucer 10 with OpenPDF " + VersionUtil.getOpenPDFVersionNumber();
+    private String pdfCreator = "Flying Saucer 10 with OpenPDF " + VersionUtil.getOpenPDFVersionNumber();
     private int compression = 9;
     private boolean compressionEnabled = true;
 
