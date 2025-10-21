@@ -81,6 +81,7 @@ public class ITextRenderer {
     private String pdfProducer = "Flying Saucer 10 with OpenPDF 3.";
     private String pdfCreator = "Flying Saucer 10 with OpenPDF 3.";
     private int compression = 9;
+    private boolean compressionEnabled = true;
 
     private final SharedContext _sharedContext;
     private final ITextOutputDevice _outputDevice;
@@ -396,9 +397,10 @@ public class ITextRenderer {
         if (pdfProducer != null) info.put(PdfName.PRODUCER, new PdfString(pdfProducer));
         if (pdfCreator  != null) info.put(PdfName.CREATOR,  new PdfString(pdfCreator));
 
-        // Enable compression
-        writer.setFullCompression();
-        writer.setCompressionLevel(compression);
+        if (compressionEnabled) {
+            writer.setFullCompression();
+            writer.setCompressionLevel(compression);
+        }
 
         if (_pdfXConformance != null) {
             writer.setPDFXConformance(_pdfXConformance);
@@ -687,5 +689,9 @@ public class ITextRenderer {
 
     public void setCompression(int compression){
         this.compression = compression;
+    }
+
+    public void setCompressionEnabled(boolean enabled){
+        this.compressionEnabled = enabled;
     }
 }
