@@ -20,7 +20,11 @@
 package org.xhtmlrenderer.pdf;
 
 import org.openpdf.text.DocumentException;
-import org.openpdf.text.pdf.*;
+import org.openpdf.text.pdf.PdfName;
+import org.openpdf.text.pdf.PdfPageEvent;
+import org.openpdf.text.pdf.PdfWriter;
+import org.openpdf.text.pdf.PdfDictionary;
+import org.openpdf.text.pdf.PdfString;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
