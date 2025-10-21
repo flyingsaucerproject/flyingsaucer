@@ -1,5 +1,10 @@
 # Changelog
 
+## 10.0.3 (21.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/41?closed=1
+
+* Enable PDF compression and specify PDF creator and producer / by Andreas Røsdal (#586)
+* dynamically generate "pdf producer" containing actual FlyingSaucer and OpenPdf versions / by Andrei Solntsev (#588)
+
 ## 10.0.2 (19.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/40?closed=1
 
 * #477 Fix location of unordered list item marker for multiline items / by Harald Amon (#584)
