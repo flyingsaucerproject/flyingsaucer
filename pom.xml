@@ -308,7 +308,7 @@
     <openpdf.version>3.0.0</openpdf.version>
     <batik.version>1.19</batik.version>
     <commons-io.version>2.20.0</commons-io.version>
-    <junit.version>6.0.0</junit.version>
+    <junit.version>6.0.1</junit.version>
     <slf4j.version>2.0.17</slf4j.version>
     <assertj.version>3.27.6</assertj.version>
     <pdftest.version>2.1.0</pdftest.version>
