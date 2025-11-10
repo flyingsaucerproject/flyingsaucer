@@ -1892,281 +1892,225 @@ class Lexer {
             zzMarkedPos = zzMarkedPosL;
 
             switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
-                case 47: {
+                case 47:
                     return Token.TK_PAGE_SYM;
-                }
                 case 55:
                     break;
-                case 52: {
+                case 52:
                     return Token.TK_IMPORTANT_SYM;
-                }
                 case 56:
                     break;
-                case 15: {
+                case 15:
                     return Token.TK_COMMA;
-                }
                 case 57:
                     break;
-                case 22: {
+                case 22:
                     return Token.TK_FUNCTION;
-                }
                 case 58:
                     break;
-                case 54: {
+                case 54:
                     return Token.TK_NAMESPACE_SYM;
-                }
                 case 59:
                     break;
-                case 40: {
+                case 40:
                     return Token.TK_PC;
-                }
                 case 60:
                     break;
-                case 32: {
+                case 32:
                     return Token.TK_HASH;
-                }
                 case 61:
                     break;
-                case 19: {
+                case 19:
                     return Token.TK_COLON;
-                }
                 case 62:
                     break;
-                case 39: {
+                case 39:
                     return Token.TK_MM;
-                }
                 case 63:
                     break;
-                case 30: {
+                case 30:
                     return Token.TK_PREFIXMATCH;
-                }
                 case 64:
                     break;
-                case 50: {
+                case 50:
                     return Token.TK_IMPORT_SYM;
-                }
                 case 65:
                     break;
-                case 42: {
+                case 42:
                     return Token.TK_PX;
-                }
                 case 66:
                     break;
-                case 35: {
+                case 35:
                     return Token.TK_EMS;
-                }
                 case 67:
                     break;
-                case 38: {
+                case 38:
                     return Token.TK_IN;
-                }
                 case 68:
                     break;
-                case 10: {
+                case 10:
                     return Token.TK_GREATER;
-                }
                 case 69:
                     break;
-                case 21: {
+                case 21:
                     return Token.TK_RBRACKET;
-                }
                 case 70:
                     break;
-                case 53: {
+                case 53:
                     return Token.TK_FONT_FACE_SYM;
-                }
                 case 71:
                     break;
-                case 34: {
+                case 34:
                     return Token.TK_CM;
-                }
                 case 72:
                     break;
-                case 31: {
+                case 31:
                     return Token.TK_SUFFIXMATCH;
-                }
                 case 73:
                     break;
-                case 37: {
+                case 37:
                     return Token.TK_FREQ;
-                }
                 case 74:
                     break;
-                case 26: {
+                case 26:
                     return Token.TK_STRING;
-                }
                 case 75:
                     break;
-                case 16: {
+                case 16:
                     return Token.TK_RPAREN;
-                }
                 case 76:
                     break;
-                case 7: {
+                case 7:
                     return Token.TK_VIRGULE;
-                }
                 case 77:
                     break;
-                case 4: {
+                case 4:
                     return Token.TK_S;
-                }
                 case 78:
                     break;
-                case 49: {
+                case 49:
                     return Token.TK_MEDIA_SYM;
-                }
                 case 79:
                     break;
-                case 3: {
+                case 3:
                     return Token.createOtherToken(yyText());
-                }
                 case 80:
                     break;
-                case 33: {
+                case 33:
                     return Token.TK_AT_RULE;
-                }
                 case 81:
                     break;
-                case 5: {
+                case 5:
                     return Token.TK_MINUS;
-                }
                 case 82:
                     break;
-                case 12: {
+                case 12:
                     return Token.TK_VERTICAL_BAR;
-                }
                 case 83:
                     break;
-                case 45: { /* ignore comments */
-                }
+                case 45:  /* ignore comments */
                 case 84:
                     break;
-                case 9: {
+                case 9:
                     return Token.TK_PERIOD;
-                }
                 case 85:
                     break;
-                case 48: {
+                case 48:
                     return Token.TK_URI;
-                }
                 case 86:
                     break;
-                case 41: {
+                case 41:
                     return Token.TK_PT;
-                }
                 case 87:
                     break;
-                case 1: {
+                case 1:
                     return Token.TK_IDENT;
-                }
                 case 88:
                     break;
-                case 28: {
+                case 28:
                     return Token.TK_INCLUDES;
-                }
                 case 89:
                     break;
-                case 44: {
+                case 44:
                     return Token.TK_ANGLE;
-                }
                 case 90:
                     break;
-                case 51: {
+                case 51:
                     return Token.TK_CHARSET_SYM;
-                }
                 case 91:
                     break;
-                case 14: {
+                case 14:
                     return Token.TK_PLUS;
-                }
                 case 92:
                     break;
-                case 23: {
+                case 23:
                     return Token.TK_DIMENSION;
-                }
                 case 93:
                     break;
-                case 13: {
+                case 13:
                     return Token.TK_LBRACE;
-                }
                 case 94:
                     break;
-                case 17: {
+                case 17:
                     return Token.TK_RBRACE;
-                }
                 case 95:
                     break;
-                case 43: {
+                case 43:
                     return Token.TK_CDC;
-                }
                 case 96:
                     break;
-                case 25: {
+                case 25:
                     return Token.TK_PERCENTAGE;
-                }
                 case 97:
                     break;
-                case 18: {
+                case 18:
                     return Token.TK_SEMICOLON;
-                }
                 case 98:
                     break;
-                case 20: {
+                case 20:
                     return Token.TK_LBRACKET;
-                }
                 case 99:
                     break;
-                case 46: {
+                case 46:
                     return Token.TK_CDO;
-                }
                 case 100:
                     break;
-                case 27: {
+                case 27:
                     return Token.TK_SUBSTRINGMATCH;
-                }
                 case 101:
                     break;
-                case 2: {
+                case 2:
                     return Token.TK_NUMBER;
-                }
                 case 102:
                     break;
-                case 24: {
+                case 24:
                     return Token.TK_TIME;
-                }
                 case 103:
                     break;
-                case 8: {
+                case 8:
                     return Token.TK_ASTERISK;
-                }
                 case 104:
                     break;
-                case 6: {
+                case 6:
                     return Token.TK_INVALID; /* unclosed string */
-                }
                 case 105:
                     break;
-                case 11: {
+                case 11:
                     return Token.TK_EQUALS;
-                }
                 case 106:
                     break;
-                case 36: {
+                case 36:
                     return Token.TK_EXS;
-                }
                 case 107:
                     break;
-                case 29: {
+                case 29:
                     return Token.TK_DASHMATCH;
-                }
                 case 108:
                     break;
                 default:
                     if (zzInput == EOF && zzStartRead == zzCurrentPos) {
                         zzAtEOF = true;
-                        {
-                            return Token.TK_EOF;
-                        }
+                        return Token.TK_EOF;
                     } else {
                         zzScanError(ZZ_NO_MATCH);
                     }
