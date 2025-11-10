@@ -1890,7 +1890,7 @@ public class CSSParser {
         _saved = null;
         _namespaces.clear();
         _lexer.yyreset(r);
-        _lexer.setyyline(0);
+        _lexer.setYyLine(0);
     }
 
     private String getRawTokenValue() {
@@ -1988,7 +1988,7 @@ public class CSSParser {
     }
 
     private int getCurrentLine() {
-        return _lexer.yyline();
+        return _lexer.yyLine();
     }
 
     private static boolean isHexChar(char c) {

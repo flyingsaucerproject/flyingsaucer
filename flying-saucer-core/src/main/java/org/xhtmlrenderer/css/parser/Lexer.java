@@ -1783,11 +1783,11 @@ class Lexer {
   private boolean zzEOFDone;
 
   /* user code: */
-    public int yyline() {
+    public int yyLine() {
     	return this.yyline;
     }
-    
-    public void setyyline(int i) {
+
+    public void setYyLine(int i) {
     	this.yyline = i;
 	}
 
