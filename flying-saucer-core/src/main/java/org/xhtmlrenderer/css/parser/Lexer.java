@@ -1846,43 +1846,42 @@ class Lexer {
             // the current state of the DFA
             int zzState = zzLexicalState;
 
-             zzForAction: {
-                while (true) {
+            zzForAction:
+            while (true) {
 
-                    if (zzCurrentPosL < zzEndReadL)
-                        zzInput = zzBufferL[zzCurrentPosL++];
-                    else if (zzAtEOF) {
+                if (zzCurrentPosL < zzEndReadL)
+                    zzInput = zzBufferL[zzCurrentPosL++];
+                else if (zzAtEOF) {
+                    zzInput = EOF;
+                    break zzForAction;
+                } else {
+                    // store back cached positions
+                    zzCurrentPos = zzCurrentPosL;
+                    zzMarkedPos = zzMarkedPosL;
+                    boolean eof = zzRefill();
+                    // get translated positions and possibly new buffer
+                    zzCurrentPosL = zzCurrentPos;
+                    zzMarkedPosL = zzMarkedPos;
+                    zzBufferL = zzBuffer;
+                    zzEndReadL = zzEndRead;
+                    if (eof) {
                         zzInput = EOF;
                         break zzForAction;
                     } else {
-                        // store back cached positions
-                        zzCurrentPos = zzCurrentPosL;
-                        zzMarkedPos = zzMarkedPosL;
-                        boolean eof = zzRefill();
-                        // get translated positions and possibly new buffer
-                        zzCurrentPosL = zzCurrentPos;
-                        zzMarkedPosL = zzMarkedPos;
-                        zzBufferL = zzBuffer;
-                        zzEndReadL = zzEndRead;
-                        if (eof) {
-                            zzInput = EOF;
-                            break zzForAction;
-                        } else {
-                            zzInput = zzBufferL[zzCurrentPosL++];
-                        }
+                        zzInput = zzBufferL[zzCurrentPosL++];
                     }
-                    int zzNext = ZZ_TRANS[ROW_MAP[zzState] + CHARACTER_MAP[zzInput]];
-                    if (zzNext == -1) break zzForAction;
-                    zzState = zzNext;
-
-                    int zzAttributes = ZZ_ATTRIBUTE[zzState];
-                    if ((zzAttributes & 1) == 1) {
-                        zzAction = zzState;
-                        zzMarkedPosL = zzCurrentPosL;
-                        if ((zzAttributes & 8) == 8) break zzForAction;
-                    }
-
                 }
+                int zzNext = ZZ_TRANS[ROW_MAP[zzState] + CHARACTER_MAP[zzInput]];
+                if (zzNext == -1) break zzForAction;
+                zzState = zzNext;
+
+                int zzAttributes = ZZ_ATTRIBUTE[zzState];
+                if ((zzAttributes & 1) == 1) {
+                    zzAction = zzState;
+                    zzMarkedPosL = zzCurrentPosL;
+                    if ((zzAttributes & 8) == 8) break zzForAction;
+                }
+
             }
 
             // store back cached position
