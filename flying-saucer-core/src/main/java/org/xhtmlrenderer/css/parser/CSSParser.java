@@ -1821,7 +1821,7 @@ public class CSSParser {
             _saved = null;
             return result;
         } else {
-            return _lexer.yylex();
+            return _lexer.yyLex();
         }
     }
 
@@ -1889,12 +1889,12 @@ public class CSSParser {
     public void reset(Reader r) {
         _saved = null;
         _namespaces.clear();
-        _lexer.yyreset(r);
-        _lexer.setyyline(0);
+        _lexer.yyReset(r);
+        _lexer.setYyLine(0);
     }
 
     private String getRawTokenValue() {
-        return _lexer.yytext();
+        return _lexer.yyText();
     }
 
     private String getTokenValue(Token t) {
@@ -1904,11 +1904,11 @@ public class CSSParser {
     private String getTokenValue(Token t, boolean literal) {
         return switch (t.getType()) {
             case STRING ->
-                    processEscapes(_lexer.yytext().toCharArray(), 1, _lexer.yylength() - 1);
+                    processEscapes(_lexer.yyText().toCharArray(), 1, _lexer.yyLength() - 1);
             case HASH ->
-                    processEscapes(_lexer.yytext().toCharArray(), 1, _lexer.yylength());
+                    processEscapes(_lexer.yyText().toCharArray(), 1, _lexer.yyLength());
             case URI -> {
-                char[] ch = _lexer.yytext().toCharArray();
+                char[] ch = _lexer.yyText().toCharArray();
                 int start = 4;
                 while (ch[start] == '\t' || ch[start] == '\r' ||
                         ch[start] == '\n' || ch[start] == '\f') {
@@ -1941,17 +1941,17 @@ public class CSSParser {
                  IDENT,
                  FUNCTION -> {
                 int start = 0;
-                int count = _lexer.yylength();
+                int count = _lexer.yyLength();
                 if (t.getType() == AT_RULE) {
                     start++;
                 }
-                String result = processEscapes(_lexer.yytext().toCharArray(), start, count);
+                String result = processEscapes(_lexer.yyText().toCharArray(), start, count);
                 if (!literal) {
                     result = result.toLowerCase(ROOT);
                 }
                 yield result;
             }
-            default -> _lexer.yytext();
+            default -> _lexer.yyText();
         };
     }
 
@@ -1988,7 +1988,7 @@ public class CSSParser {
     }
 
     private int getCurrentLine() {
-        return _lexer.yyline();
+        return _lexer.yyLine();
     }
 
     private static boolean isHexChar(char c) {

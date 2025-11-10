@@ -22,6 +22,10 @@
 package org.xhtmlrenderer.css.parser;
 
 
+import org.jspecify.annotations.Nullable;
+
+import java.io.Reader;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -36,22 +40,22 @@ class Lexer {
     /**
      * This character denotes the end of file
      */
-    public static final int YYEOF = -1;
+    private static final int EOF = -1;
 
     /**
      * initial size of the lookahead buffer
      */
-    private static final int ZZ_BUFFERSIZE = 16384;
+    private static final int BUFFER_SIZE = 16384;
 
     /**
      * lexical states
      */
-    public static final int YYINITIAL = 0;
+    private static final int INITIAL = 0;
 
     /**
      * Translates characters to character classes
      */
-    private static final String ZZ_CMAP_PACKED =
+    private static final String CHARACTER_MAP_PACKED =
         "\11\2\1\6\1\5\1\2\1\7\1\4\22\2\1\70\1\53\1\12" +
             "\1\65\1\61\1\71\1\17\1\13\1\74\1\75\1\15\1\63\1\64" +
             "\1\11\1\16\1\14\1\21\1\23\1\1\1\26\1\22\1\31\1\24" +
@@ -67,7 +71,7 @@ class Lexer {
     /**
      * Translates characters to character classes
      */
-    private static final char[] ZZ_CMAP = zzUnpackCMap();
+    private static final char[] CHARACTER_MAP = zzUnpackCMap();
 
     /**
      * Translates DFA states to action switch labels.
@@ -128,9 +132,9 @@ class Lexer {
     /**
      * Translates a state to a row index in the transition table
      */
-    private static final int[] ZZ_ROWMAP = zzUnpackRowMap();
+    private static final int[] ROW_MAP = zzUnpackRowMap();
 
-    private static final String ZZ_ROWMAP_PACKED_0 =
+    private static final String ROW_MAP_PACKED_0 =
         "\0\0\0\103\0\206\0\311\0\u010c\0\u014f\0\u0192\0\u01d5" +
             "\0\u0218\0\u025b\0\u029e\0\u02e1\0\u0324\0\u0367\0\311\0\u03aa" +
             "\0\311\0\u03ed\0\u0430\0\u0473\0\311\0\311\0\311\0\u04b6" +
@@ -206,10 +210,10 @@ class Lexer {
     private static void zzUnpackRowMap(int[] result) {
         int i = 0;  /* index in packed string  */
         int j = 0;  /* index in unpacked array */
-        int l = Lexer.ZZ_ROWMAP_PACKED_0.length();
+        int l = Lexer.ROW_MAP_PACKED_0.length();
         while (i < l) {
-            int high = Lexer.ZZ_ROWMAP_PACKED_0.charAt(i++) << 16;
-            result[j++] = high | Lexer.ZZ_ROWMAP_PACKED_0.charAt(i++);
+            int high = Lexer.ROW_MAP_PACKED_0.charAt(i++) << 16;
+            result[j++] = high | Lexer.ROW_MAP_PACKED_0.charAt(i++);
         }
     }
 
@@ -1505,18 +1509,19 @@ class Lexer {
     /**
      * the input device
      */
-    private java.io.Reader zzReader;
+    @Nullable
+    private Reader zzReader;
 
     /**
      * the current lexical state
      */
-    private int zzLexicalState = YYINITIAL;
+    private int zzLexicalState = INITIAL;
 
     /**
      * this buffer contains the current text to be matched and is
      * the source of the yytext() string
      */
-    private char[] zzBuffer = new char[ZZ_BUFFERSIZE];
+    private char[] zzBuffer = new char[BUFFER_SIZE];
 
     /**
      * the text position at the last accepting state
@@ -1547,7 +1552,7 @@ class Lexer {
     /**
      * number of newlines encountered up to the start of the matched text
      */
-    private int yyline;
+    private int yyLine;
 
     /**
      * zzAtEOF == true <=> the scanner is at the EOF
@@ -1555,12 +1560,12 @@ class Lexer {
     private boolean zzAtEOF;
 
     /* user code: */
-    public int yyline() {
-        return this.yyline;
+    public int yyLine() {
+        return this.yyLine;
     }
 
-    public void setyyline(int i) {
-        this.yyline = i;
+    public void setYyLine(int i) {
+        this.yyLine = i;
     }
 
 
@@ -1570,7 +1575,7 @@ class Lexer {
      *
      * @param in the java.io.Reader to read input from.
      */
-    Lexer(java.io.Reader in) {
+    Lexer(Reader in) {
         this.zzReader = in;
     }
 
@@ -1594,8 +1599,8 @@ class Lexer {
         int i = 0;  /* index in packed string  */
         int j = 0;  /* index in unpacked array */
         while (i < 204) {
-            int count = Lexer.ZZ_CMAP_PACKED.charAt(i++);
-            char value = Lexer.ZZ_CMAP_PACKED.charAt(i++);
+            int count = Lexer.CHARACTER_MAP_PACKED.charAt(i++);
+            char value = Lexer.CHARACTER_MAP_PACKED.charAt(i++);
             do map[j++] = value; while (--count > 0);
         }
         return map;
@@ -1648,7 +1653,7 @@ class Lexer {
     /**
      * Closes the input stream.
      */
-    public final void yyclose() throws java.io.IOException {
+    public final void yyClose() throws java.io.IOException {
         zzAtEOF = true;            /* indicate end of file */
         zzEndRead = zzStartRead;  /* invalidate buffer    */
 
@@ -1667,19 +1672,19 @@ class Lexer {
      *
      * @param reader the new input stream
      */
-    public final void yyreset(java.io.Reader reader) {
+    public final void yyReset(Reader reader) {
         zzReader = reader;
         zzAtEOF = false;
         zzEndRead = zzStartRead = 0;
         zzCurrentPos = zzMarkedPos = zzPushbackPos = 0;
-        yyline = 0;
-        zzLexicalState = YYINITIAL;
+        yyLine = 0;
+        zzLexicalState = INITIAL;
     }
 
     /**
      * Returns the current lexical state.
      */
-    public final int yystate() {
+    public final int yyState() {
         return zzLexicalState;
     }
 
@@ -1689,7 +1694,7 @@ class Lexer {
      *
      * @param newState the new lexical state
      */
-    public final void yybegin(int newState) {
+    public final void yyBegin(int newState) {
         zzLexicalState = newState;
     }
 
@@ -1697,7 +1702,7 @@ class Lexer {
     /**
      * Returns the text matched by the current regular expression.
      */
-    public final String yytext() {
+    public final String yyText() {
         return new String(zzBuffer, zzStartRead, zzMarkedPos - zzStartRead);
     }
 
@@ -1706,13 +1711,13 @@ class Lexer {
      * Returns the character at position <tt>pos</tt> from the
      * matched text.
      * <p>
-     * It is equivalent to yytext().charAt(pos), but faster
+     * It is equivalent to yyText().charAt(pos), but faster
      *
      * @param pos the position of the character to fetch.
-     *            A value from 0 to yylength()-1.
+     *            A value from 0 to yyLength()-1.
      * @return the character at position pos
      */
-    public final char yycharat(int pos) {
+    public final char yyCharAt(int pos) {
         return zzBuffer[zzStartRead + pos];
     }
 
@@ -1720,7 +1725,7 @@ class Lexer {
     /**
      * Returns the length of the matched text region.
      */
-    public final int yylength() {
+    public final int yyLength() {
         return zzMarkedPos - zzStartRead;
     }
 
@@ -1729,7 +1734,7 @@ class Lexer {
      * Reports an error that occurred while scanning.
      * <p>
      * In a well-formed scanner (no or only correct usage of
-     * yypushback(int) and a match-all fallback rule) this method
+     * yyPushback(int) and a match-all fallback rule) this method
      * will only be called with things that "Can't Possibly Happen".
      * If this method is called, something is seriously wrong
      * (e.g. a JFlex bug producing a faulty scanner etc.).
@@ -1743,7 +1748,7 @@ class Lexer {
         String message;
         try {
             message = ZZ_ERROR_MSG[errorCode];
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException ignore) {
             message = ZZ_ERROR_MSG[ZZ_UNKNOWN_ERROR];
         }
 
@@ -1757,10 +1762,10 @@ class Lexer {
      * They will be read again by then next call of the scanning method
      *
      * @param number the number of characters to be read again.
-     *               This number must not be greater than yylength()!
+     *               This number must not be greater than yyLength()!
      */
-    public void yypushback(int number) {
-        if (number > yylength())
+    public void yyPushback(int number) {
+        if (number > yyLength())
             zzScanError(ZZ_PUSHBACK_2BIG);
 
         zzMarkedPos -= number;
@@ -1774,7 +1779,7 @@ class Lexer {
      * @return the next token
      * @throws java.io.IOException if any I/O-Error occurs
      */
-    public Token yylex() throws java.io.IOException {
+    public Token yyLex() throws java.io.IOException {
         int zzInput;
         int zzAction;
 
@@ -1796,18 +1801,18 @@ class Lexer {
                     case '\u0085':
                     case '\u2028':
                     case '\u2029':
-                        yyline++;
+                        yyLine++;
                         zzR = false;
                         break;
                     case '\r':
-                        yyline++;
+                        yyLine++;
                         zzR = true;
                         break;
                     case '\n':
                         if (zzR)
                             zzR = false;
                         else {
-                            yyline++;
+                            yyLine++;
                         }
                         break;
                     default:
@@ -1832,7 +1837,7 @@ class Lexer {
                     else
                         zzPeek = zzBufferL[zzMarkedPosL] == '\n';
                 }
-                if (zzPeek) yyline--;
+                if (zzPeek) yyLine--;
             }
             zzAction = -1;
 
@@ -1841,14 +1846,13 @@ class Lexer {
             // the current state of the DFA
             int zzState = zzLexicalState;
 
-            zzForAction:
-            {
+             zzForAction: {
                 while (true) {
 
                     if (zzCurrentPosL < zzEndReadL)
                         zzInput = zzBufferL[zzCurrentPosL++];
                     else if (zzAtEOF) {
-                        zzInput = YYEOF;
+                        zzInput = EOF;
                         break zzForAction;
                     } else {
                         // store back cached positions
@@ -1861,13 +1865,13 @@ class Lexer {
                         zzBufferL = zzBuffer;
                         zzEndReadL = zzEndRead;
                         if (eof) {
-                            zzInput = YYEOF;
+                            zzInput = EOF;
                             break zzForAction;
                         } else {
                             zzInput = zzBufferL[zzCurrentPosL++];
                         }
                     }
-                    int zzNext = ZZ_TRANS[ZZ_ROWMAP[zzState] + ZZ_CMAP[zzInput]];
+                    int zzNext = ZZ_TRANS[ROW_MAP[zzState] + CHARACTER_MAP[zzInput]];
                     if (zzNext == -1) break zzForAction;
                     zzState = zzNext;
 
@@ -2011,7 +2015,7 @@ class Lexer {
                 case 79:
                     break;
                 case 3: {
-                    return Token.createOtherToken(yytext());
+                    return Token.createOtherToken(yyText());
                 }
                 case 80:
                     break;
@@ -2155,7 +2159,7 @@ class Lexer {
                 case 108:
                     break;
                 default:
-                    if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
+                    if (zzInput == EOF && zzStartRead == zzCurrentPos) {
                         zzAtEOF = true;
                         {
                             return Token.TK_EOF;
@@ -2166,6 +2170,4 @@ class Lexer {
             }
         }
     }
-
-
 }
