@@ -206,7 +206,7 @@
           <compilerArgs>
             <arg>-XDcompilePolicy=simple</arg>
             <arg>--should-stop=ifError=FLOW</arg>
-            <arg>-Xplugin:ErrorProne -Xep:MissingSummary:OFF -Xep:JdkObsolete:OFF -Xep:ReferenceEquality:OFF -Xep:OperatorPrecedence:OFF</arg>
+            <arg>-Xplugin:ErrorProne -Xep:MissingSummary:OFF -Xep:JdkObsolete:OFF -Xep:ReferenceEquality:OFF -Xep:OperatorPrecedence:OFF -XepExcludedPaths:.*/org/xhtmlrenderer/css/parser/Lexer.java$</arg>
           </compilerArgs>
           <annotationProcessorPaths>
             <path>
