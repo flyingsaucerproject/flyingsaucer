@@ -40,6 +40,32 @@
     </resources>
     <plugins>
       <plugin>
+        <groupId>de.jflex</groupId>
+        <artifactId>jflex-maven-plugin</artifactId>
+        <version>1.9.1</version>
+        <executions>
+          <execution>
+            <id>generate-parser</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>src/main/java</outputDirectory>
+              <lexDefinitions>
+                <lexDefinition>src/main/java/org/xhtmlrenderer/css/parser/Lexer.flex</lexDefinition>
+              </lexDefinitions>
+              <jlex>true</jlex>
+              <minimize>false</minimize>
+              <encodingName>UTF-8</encodingName>
+              <verbose>true</verbose>
+              <backup>false</backup>
+              <dump>true</dump>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
