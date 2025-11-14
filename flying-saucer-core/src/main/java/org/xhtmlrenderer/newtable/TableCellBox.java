@@ -329,11 +329,12 @@ public class TableCellBox extends BlockBox {
                 c, getCollapsedPaintingBorder(), getCollapsedBorderBounds(c), side);
     }
 
+    @Nullable
     private Rectangle getContentLimitedBorderEdge(RenderingContext c) {
         Rectangle result = getPaintingBorderEdge(c);
 
         TableSectionBox section = getSection();
-        if (section.isHeader() || section.isFooter()) {
+        if (section != null && (section.isHeader() || section.isFooter())) {
             return result;
         }
 
