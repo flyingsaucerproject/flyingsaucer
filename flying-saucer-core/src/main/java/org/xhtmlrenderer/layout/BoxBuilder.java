@@ -357,8 +357,7 @@ public class BoxBuilder {
 
     private static boolean matchesTableLevel(IdentValue target, IdentValue value) {
         if (target == IdentValue.TABLE_ROW_GROUP) {
-            return value == IdentValue.TABLE_ROW_GROUP || value == IdentValue.TABLE_HEADER_GROUP
-                    || value == IdentValue.TABLE_FOOTER_GROUP || value == IdentValue.TABLE_CAPTION;
+            return isTableGroupOrCaption(value);
         } else {
             return target == value;
         }
@@ -465,10 +464,7 @@ public class BoxBuilder {
     private static boolean containsOrphanedTableContent(List<Styleable> children) {
         for (Styleable child : children) {
             IdentValue display = child.getStyle().getIdent(CSSName.DISPLAY);
-            if (display == IdentValue.TABLE_HEADER_GROUP ||
-                    display == IdentValue.TABLE_ROW_GROUP ||
-                    display == IdentValue.TABLE_FOOTER_GROUP ||
-                    display == IdentValue.TABLE_ROW) {
+            if (isTableGroup(display) || display == IdentValue.TABLE_ROW) {
                 return true;
             }
         }
@@ -604,9 +600,7 @@ public class BoxBuilder {
     private static IdentValue getNextTableNestingLevel(IdentValue display) {
         if (display == IdentValue.TABLE || display == IdentValue.INLINE_TABLE) {
             return IdentValue.TABLE_ROW_GROUP;
-        } else if (display == IdentValue.TABLE_HEADER_GROUP
-                || display == IdentValue.TABLE_ROW_GROUP
-                || display == IdentValue.TABLE_FOOTER_GROUP) {
+        } else if (isTableGroup(display)) {
             return IdentValue.TABLE_ROW;
         } else if (display == IdentValue.TABLE_ROW) {
             return IdentValue.TABLE_CELL;
@@ -621,9 +615,7 @@ public class BoxBuilder {
             return IdentValue.TABLE_ROW;
         } else if (display == IdentValue.TABLE_ROW) {
             return IdentValue.TABLE_ROW_GROUP;
-        } else if (display == IdentValue.TABLE_HEADER_GROUP
-                || display == IdentValue.TABLE_ROW_GROUP
-                || display == IdentValue.TABLE_FOOTER_GROUP) {
+        } else if (isTableGroup(display)) {
             return IdentValue.TABLE;
         } else {
             return null;
@@ -631,25 +623,25 @@ public class BoxBuilder {
     }
 
     private static boolean isProperTableNesting(IdentValue parent, IdentValue child) {
-        return (parent == IdentValue.TABLE && (child == IdentValue.TABLE_HEADER_GROUP ||
-                child == IdentValue.TABLE_ROW_GROUP ||
-                child == IdentValue.TABLE_FOOTER_GROUP ||
-                child == IdentValue.TABLE_CAPTION))
-                || ((parent == IdentValue.TABLE_HEADER_GROUP ||
-                parent == IdentValue.TABLE_ROW_GROUP ||
-                parent == IdentValue.TABLE_FOOTER_GROUP) &&
-                child == IdentValue.TABLE_ROW)
-                || (parent == IdentValue.TABLE_ROW && child == IdentValue.TABLE_CELL)
-                || (parent == IdentValue.INLINE_TABLE && (child == IdentValue.TABLE_HEADER_GROUP ||
-                child == IdentValue.TABLE_ROW_GROUP ||
-                child == IdentValue.TABLE_FOOTER_GROUP));
+        return parent == IdentValue.TABLE && isTableGroupOrCaption(child)
+            || isTableGroup(parent) && child == IdentValue.TABLE_ROW
+            || parent == IdentValue.TABLE_ROW && child == IdentValue.TABLE_CELL
+            || parent == IdentValue.INLINE_TABLE && isTableGroup(child);
+    }
 
+    private static boolean isTableGroup(IdentValue ident) {
+        return ident == IdentValue.TABLE_HEADER_GROUP ||
+            ident == IdentValue.TABLE_ROW_GROUP ||
+            ident == IdentValue.TABLE_FOOTER_GROUP;
+    }
+
+    private static boolean isTableGroupOrCaption(IdentValue child) {
+        return isTableGroup(child) || child == IdentValue.TABLE_CAPTION;
     }
 
     private static boolean isNestingTableContent(IdentValue display) {
-        return display == IdentValue.TABLE || display == IdentValue.INLINE_TABLE ||
-                display == IdentValue.TABLE_HEADER_GROUP || display == IdentValue.TABLE_ROW_GROUP ||
-                display == IdentValue.TABLE_FOOTER_GROUP || display == IdentValue.TABLE_ROW;
+        return display == IdentValue.TABLE || display == IdentValue.INLINE_TABLE || display == IdentValue.TABLE_ROW
+            || isTableGroup(display);
     }
 
     private static boolean isAttrFunction(FSFunction function) {
