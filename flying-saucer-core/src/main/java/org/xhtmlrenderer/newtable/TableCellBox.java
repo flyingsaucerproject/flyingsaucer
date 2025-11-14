@@ -773,16 +773,16 @@ public class TableCellBox extends BlockBox {
     @CheckReturnValue
     private Rectangle getCollapsedBorderBounds(CssContext c) {
         BorderPropertySet border = getCollapsedPaintingBorder();
-        Rectangle bounds;
+        final Rectangle bounds;
 
         // Use content-limited border edge for paginated tables to prevent borders
         // from extending beyond table boundaries when spanning multiple pages
         if (
-            c instanceof RenderingContext && ((RenderingContext) c).isPrint() &&
+            c instanceof RenderingContext renderingContext && renderingContext.isPrint() &&
             getTable() != null && getTable().getStyle() != null &&
             getTable().getStyle().isPaginateTable()
         ) {
-            bounds = getContentLimitedBorderEdge((RenderingContext) c);
+            bounds = getContentLimitedBorderEdge(renderingContext);
         } else {
             bounds = getPaintingBorderEdge(c);
         }
