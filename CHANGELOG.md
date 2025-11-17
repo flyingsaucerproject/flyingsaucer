@@ -1,5 +1,10 @@
 # Changelog
 
+## 10.0.4 (17.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/42?closed=1
+* #596 Fix issue "The cell borders are rendered outside the table border" / by Chanhyuk Lee (#603)
+* Minor refactoring of tables (#604)
+* refactoring: Generate Lexer.java on every build (#601)
+
 ## 10.0.3 (21.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/41?closed=1
 
 * Enable PDF compression and specify PDF creator and producer / by Andreas Røsdal (#586)
