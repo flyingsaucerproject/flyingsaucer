@@ -262,14 +262,59 @@ public class TableCellBox extends BlockBox {
             Rectangle bounds;
             if (c.isPrint() && getTable().getStyle().isPaginateTable()) {
                 bounds = getContentLimitedBorderEdge(c);
+                bounds = adjustBoundsToAvoidTheadOverlap(c, bounds);
             } else {
                 bounds = getPaintingBorderEdge(c);
             }
 
-            if (bounds != null) {
+            if (bounds != null && bounds.height > 0) {
                 paintBackgroundStack(c, bounds);
             }
         }
+    }
+
+    /**
+     * Adjusts the bounds of a rowspan cell on continuation pages to avoid overlapping with thead.
+     * For rowspan cells that span multiple pages, this ensures the cell's rendering starts
+     * after the thead section on subsequent pages.
+     *
+     * @return adjusted bounds that don't overlap with thead, or the original bounds if no adjustment needed
+     */
+    @Nullable
+    private Rectangle adjustBoundsToAvoidTheadOverlap(RenderingContext c, @Nullable Rectangle bounds) {
+        // Only adjust for rowspan cells on subsequent pages
+        if (bounds == null || getStyle().getRowSpan() <= 1) {
+            return bounds;
+        }
+
+        ContentLimitContainer contentLimitContainer = ((TableRowBox)getParent()).getContentLimitContainer();
+        if (contentLimitContainer == null || c.getPageNo() <= contentLimitContainer.getInitialPageNo()) {
+            return bounds;
+        }
+
+        // This is a continuation page - check for thead overlap
+        TableBox table = getTable();
+        if (table == null) {
+            return bounds;
+        }
+
+        for (int i = 0; i < table.getChildCount(); i++) {
+            Box child = table.getChild(i);
+            if (child instanceof TableSectionBox tableSection && tableSection.isHeader()) {
+                // Found thead - get its bottom position
+                int theadBottom = tableSection.getAbsY() + tableSection.getHeight();
+                if (bounds.y < theadBottom) {
+                    // Adjust bounds to start after thead
+                    int overlap = theadBottom - bounds.y;
+                    bounds = new Rectangle(bounds); // Create a copy to avoid modifying original
+                    bounds.y = theadBottom;
+                    bounds.height = Math.max(0, bounds.height - overlap);
+                }
+                break;
+            }
+        }
+
+        return bounds;
     }
 
     private void paintBackgroundStack(RenderingContext c, Rectangle bounds) {
@@ -315,7 +360,8 @@ public class TableCellBox extends BlockBox {
             // Collapsed table borders are painted separately
             if (c.isPrint() && getTable().getStyle().isPaginateTable() && getStyle().isVisible()) {
                 Rectangle bounds = getContentLimitedBorderEdge(c);
-                if (bounds != null) {
+                bounds = adjustBoundsToAvoidTheadOverlap(c, bounds);
+                if (bounds != null && bounds.height > 0) {
                     c.getOutputDevice().paintBorder(c, getStyle(), bounds, getBorderSides());
                 }
             } else {
@@ -360,7 +406,29 @@ public class TableCellBox extends BlockBox {
             if (c.getPageNo() == contentLimitContainer.getLastPageNo()) {
                 bottom = result.y + result.height;
             } else {
-                bottom = limit.getBottom() + ((TableRowBox)getParent()).getExtraSpaceBottom();
+                // For rowspan cells, find the maximum bottom among all rows covered
+                int maxBottom = limit.getBottom() != ContentLimit.UNDEFINED ?
+                    limit.getBottom() + ((TableRowBox)getParent()).getExtraSpaceBottom() :
+                    result.y + result.height;
+
+                // Check all rows covered by rowspan by traversing siblings
+                int rowSpan = getStyle().getRowSpan();
+                Box currentBox = getParent();
+                for (int i = 1; i < rowSpan && currentBox != null; i++) {
+                    currentBox = currentBox.getNextSibling();
+                    if (currentBox instanceof TableRowBox spannedRow) {
+                        ContentLimitContainer spannedContainer = spannedRow.getContentLimitContainer();
+                        if (spannedContainer != null) {
+                            ContentLimit spannedLimit = spannedContainer.getContentLimit(c.getPageNo());
+                            if (spannedLimit != null && spannedLimit.getBottom() != ContentLimit.UNDEFINED) {
+                                int spannedBottom = spannedLimit.getBottom() + spannedRow.getExtraSpaceBottom();
+                                maxBottom = Math.max(maxBottom, spannedBottom);
+                            }
+                        }
+                    }
+                }
+
+                bottom = Math.min(result.y + result.height, maxBottom);
             }
 
             result.y = top;
@@ -773,7 +841,7 @@ public class TableCellBox extends BlockBox {
     @CheckReturnValue
     private Rectangle getCollapsedBorderBounds(CssContext c) {
         BorderPropertySet border = getCollapsedPaintingBorder();
-        final Rectangle bounds;
+        Rectangle bounds;
 
         // Use content-limited border edge for paginated tables to prevent borders
         // from extending beyond table boundaries when spanning multiple pages
@@ -783,8 +851,13 @@ public class TableCellBox extends BlockBox {
             getTable().getStyle().isPaginateTable()
         ) {
             bounds = getContentLimitedBorderEdge(renderingContext);
+            bounds = adjustBoundsToAvoidTheadOverlap(renderingContext, bounds);
         } else {
             bounds = getPaintingBorderEdge(c);
+        }
+
+        if (bounds == null) {
+            return null;
         }
 
         bounds.x -= (int) border.left() / 2;
