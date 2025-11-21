@@ -311,43 +311,73 @@ public final class Layer {
             getMaster().paintRootElementBackground(c);
         }
 
-        if (! isInline() && ((BlockBox)getMaster()).isReplaced()) {
-            paintLayerBackgroundAndBorder(c);
-            paintReplacedElement(c, (BlockBox)getMaster());
-        } else {
-            BoxRangeLists rangeLists = new BoxRangeLists();
-
-            List<Box> blocks = new ArrayList<>();
-            List<Box> lines = new ArrayList<>();
-
-            BoxCollector collector = new BoxCollector();
-            collector.collect(c, c.getOutputDevice().getClip(), this, blocks, lines, rangeLists);
-
-            if (! isInline()) {
-                paintLayerBackgroundAndBorder(c);
-                if (c.debugDrawBoxes()) {
-                    ((BlockBox)getMaster()).paintDebugOutline(c);
+        // Apply clip from parent TableCellBox if this layer is inside a paginated table cell
+        Shape originalClip = null;
+        boolean needsClipRestore = false;
+        if (c.isPrint() && !isRootLayer()) {
+            Box master = getMaster();
+            Box parent = master.getParent();
+            // Find the containing TableCellBox if any
+            while (parent != null && !(parent instanceof TableCellBox)) {
+                parent = parent.getParent();
+            }
+            if (parent instanceof TableCellBox) {
+                TableCellBox cell = (TableCellBox) parent;
+                if (cell.getTable().getStyle().isPaginateTable() && cell.isNeedsClipOnPaint(c)) {
+                    Rectangle clipEdge = cell.getChildrenClipEdge(c);
+                    if (clipEdge != null) {
+                        originalClip = c.getOutputDevice().getClip();
+                        c.getOutputDevice().clip(clipEdge);
+                        needsClipRestore = true;
+                    }
                 }
             }
+        }
 
-            if (isRootLayer() || isStackingContext()) {
-                paintLayers(c, getSortedLayers(NEGATIVE));
+        try {
+            if (! isInline() && ((BlockBox)getMaster()).isReplaced()) {
+                paintLayerBackgroundAndBorder(c);
+                paintReplacedElement(c, (BlockBox)getMaster());
+            } else {
+                BoxRangeLists rangeLists = new BoxRangeLists();
+
+                List<Box> blocks = new ArrayList<>();
+                List<Box> lines = new ArrayList<>();
+
+                BoxCollector collector = new BoxCollector();
+                collector.collect(c, c.getOutputDevice().getClip(), this, blocks, lines, rangeLists);
+
+                if (! isInline()) {
+                    paintLayerBackgroundAndBorder(c);
+                    if (c.debugDrawBoxes()) {
+                        ((BlockBox)getMaster()).paintDebugOutline(c);
+                    }
+                }
+
+                if (isRootLayer() || isStackingContext()) {
+                    paintLayers(c, getSortedLayers(NEGATIVE));
+                }
+
+                Map<TableCellBox, List<CollapsedBorderSide>> collapsedTableBorders = collectCollapsedTableBorders(blocks);
+
+                paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
+                paintFloats(c);
+                paintListMarkers(c, blocks, rangeLists);
+                paintInlineContent(c, lines, rangeLists);
+                paintReplacedElements(c, blocks, rangeLists);
+                paintSelection(c, lines); // XXX do only when there is a selection
+
+                if (isRootLayer() || isStackingContext()) {
+                    paintLayers(c, collectLayers(AUTO));
+                    // TODO z-index: 0 layers should be painted atomically
+                    paintLayers(c, getSortedLayers(ZERO));
+                    paintLayers(c, getSortedLayers(POSITIVE));
+                }
             }
-
-            Map<TableCellBox, List<CollapsedBorderSide>> collapsedTableBorders = collectCollapsedTableBorders(blocks);
-
-            paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
-            paintFloats(c);
-            paintListMarkers(c, blocks, rangeLists);
-            paintInlineContent(c, lines, rangeLists);
-            paintReplacedElements(c, blocks, rangeLists);
-            paintSelection(c, lines); // XXX do only when there is a selection
-
-            if (isRootLayer() || isStackingContext()) {
-                paintLayers(c, collectLayers(AUTO));
-                // TODO z-index: 0 layers should be painted atomically
-                paintLayers(c, getSortedLayers(ZERO));
-                paintLayers(c, getSortedLayers(POSITIVE));
+        } finally {
+            // Restore original clip if we applied table cell clipping
+            if (needsClipRestore && originalClip != null) {
+                c.getOutputDevice().setClip(originalClip);
             }
         }
     }
