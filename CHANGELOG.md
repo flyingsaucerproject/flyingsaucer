@@ -1,5 +1,10 @@
 # Changelog
 
+## 10.0.5 (24.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/43?closed=1
+* #606 fix "Apply parent cell clipping to layers inside paginated tables" (#610)
+* #596 fix "Incorrect background color area in table cells" (#608)
+* #611 fix NPE when rendering tables (#608)
+
 ## 10.0.4 (17.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/42?closed=1
 * #596 Fix issue "The cell borders are rendered outside the table border" / by Chanhyuk Lee (#603)
 * Minor refactoring of tables (#604)

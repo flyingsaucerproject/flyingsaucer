@@ -838,6 +838,7 @@ public class TableCellBox extends BlockBox {
         return result;
     }
 
+    @Nullable
     @CheckReturnValue
     private Rectangle getCollapsedBorderBounds(CssContext c) {
         BorderPropertySet border = getCollapsedPaintingBorder();
