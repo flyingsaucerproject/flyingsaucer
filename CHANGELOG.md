@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.0.6 (24.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/44?closed=1
+* TBD
+
 ## 10.0.5 (24.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/43?closed=1
 * #606 fix "Apply parent cell clipping to layers inside paginated tables" (#610)
 * #596 fix "Incorrect background color area in table cells" (#608)
