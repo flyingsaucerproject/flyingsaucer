@@ -852,6 +852,9 @@ public class TableCellBox extends BlockBox {
             getTable().getStyle().isPaginateTable()
         ) {
             bounds = getContentLimitedBorderEdge(renderingContext);
+            if (bounds == null) {
+                bounds = getPaintingBorderEdge(c);
+            }
             bounds = adjustBoundsToAvoidTheadOverlap(renderingContext, bounds);
         } else {
             bounds = getPaintingBorderEdge(c);
