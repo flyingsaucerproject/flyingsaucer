@@ -57,7 +57,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
             } else if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                 PageSize pageSize = PageSize.getPageSize(value.getStringValue());
                 if (pageSize != null) {
-                    addPageSize(result, pageSize.getPageWidth(), pageSize.getPageHeight(), origin, important);
+                    addPageSize(result, pageSize.width(), pageSize.height(), origin, important);
                     return result;
                 }
 
@@ -101,7 +101,7 @@ public class SizePropertyBuilder extends AbstractPropertyBuilder {
                     throw new CSSParseException("Value " + value2 + " is not a valid page size", -1);
                 }
 
-                addPageSize(result, value1, pageSize.getPageWidth(), pageSize.getPageHeight(), origin, important);
+                addPageSize(result, value1, pageSize.width(), pageSize.height(), origin, important);
                 return result;
             } else {
                 throw new CSSParseException("Invalid value for size property", -1);

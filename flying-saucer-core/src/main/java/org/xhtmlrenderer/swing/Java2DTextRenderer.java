@@ -183,7 +183,7 @@ public class Java2DTextRenderer implements TextRenderer<Java2DOutputDevice, Java
     @CheckReturnValue
     @Override
     public FSFontMetrics getFSFontMetrics(Java2DFontContext fc, AWTFSFont font, String string ) {
-        Graphics2D graphics = fc.getGraphics();
+        Graphics2D graphics = fc.graphics();
         Object fracHint = graphics.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fractionalFontMetricsHint);
         LineMetricsAdapter adapter = new LineMetricsAdapter(font.font().getLineMetrics(string, graphics.getFontRenderContext()));
@@ -193,7 +193,7 @@ public class Java2DTextRenderer implements TextRenderer<Java2DOutputDevice, Java
 
     @Override
     public int getWidth(Java2DFontContext fc, AWTFSFont font, String string) {
-        Graphics2D graphics = fc.getGraphics();
+        Graphics2D graphics = fc.graphics();
         Object fracHint = graphics.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, fractionalFontMetricsHint);
         Font awtFont = font.font();
