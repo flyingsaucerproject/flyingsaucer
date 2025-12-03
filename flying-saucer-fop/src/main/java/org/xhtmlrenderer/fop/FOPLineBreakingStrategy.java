@@ -31,7 +31,7 @@ import org.xhtmlrenderer.layout.breaker.ListBreakPointsProvider;
 import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 
 import java.text.BreakIterator;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -81,7 +81,7 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
 
     @Override
     public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
-        return new ListBreakPointsProvider(Arrays.asList(getPoints(text, lang, style).toArray(new BreakPoint[0])));
+        return new ListBreakPointsProvider(List.of(getPoints(text, lang, style).toArray(new BreakPoint[0])));
     }
 
     private void addHyphen(BreakPoint p) {

@@ -18,6 +18,8 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,7 +58,8 @@ public class NonBreakPointsEnhancer {
         this.loader = loader;
     }
 
-    public String enhance(String input, String lang) {
+    @Nullable
+    public String enhance(@Nullable String input, @Nullable String lang) {
         if (input == null) return null;
         if (input.isEmpty()) return "";
         if (lang == null || lang.isEmpty()) return input;

@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.USER;
@@ -84,7 +83,7 @@ public class CascadedStyle {
      * @see #createLayoutPropertyDeclaration(CSSName, IdentValue)
      */
     public static CascadedStyle createLayoutStyle(PropertyDeclaration... declarations) {
-        return new CascadedStyle(asList(declarations));
+        return new CascadedStyle(List.of(declarations));
     }
 
     public static CascadedStyle createLayoutStyle(List<PropertyDeclaration> declarations) {
@@ -101,7 +100,7 @@ public class CascadedStyle {
      */
     public static CascadedStyle createLayoutStyle(
             CascadedStyle startingPoint, PropertyDeclaration[] decls) {
-        return new CascadedStyle(startingPoint.cascadedProperties, asList(decls).iterator());
+        return new CascadedStyle(startingPoint.cascadedProperties, List.of(decls).iterator());
     }
 
     /**

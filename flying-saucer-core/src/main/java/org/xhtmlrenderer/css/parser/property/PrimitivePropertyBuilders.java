@@ -35,7 +35,6 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.w3c.dom.css.CSSValue.CSS_INHERIT;
 import static org.xhtmlrenderer.css.constants.IdentValue.ABSOLUTE;
@@ -1778,7 +1777,7 @@ public class PrimitivePropertyBuilders {
 
         return singletonList(
             new PropertyDeclaration(cssName,
-                new PropertyValue(asList(value1, value2)), important, origin)
+                new PropertyValue(List.of(value1, value2)), important, origin)
         );
     }
 }

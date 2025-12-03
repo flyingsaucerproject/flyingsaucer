@@ -28,8 +28,6 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
-
 public class BorderSpacingPropertyBuilder extends AbstractPropertyBuilder {
     private static final CSSName[] ALL = {
         CSSName.FS_BORDER_SPACING_HORIZONTAL, CSSName.FS_BORDER_SPACING_VERTICAL };
@@ -75,6 +73,6 @@ public class BorderSpacingPropertyBuilder extends AbstractPropertyBuilder {
                     CSSName.FS_BORDER_SPACING_VERTICAL, vertical, important, origin);
         }
 
-        return asList(horizontalSpacing, verticalSpacing);
+        return List.of(horizontalSpacing, verticalSpacing);
     }
 }

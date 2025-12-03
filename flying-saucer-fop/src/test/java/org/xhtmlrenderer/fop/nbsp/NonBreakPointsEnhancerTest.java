@@ -20,7 +20,7 @@ package org.xhtmlrenderer.fop.nbsp;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -122,7 +122,7 @@ public class NonBreakPointsEnhancerTest {
     }
 
     private void testRulesInternal(String text, String expected, final String ... rules) {
-        NonBreakPointsLoader dummyLoader = lang -> Arrays.asList(rules);
+        NonBreakPointsLoader dummyLoader = lang -> List.of(rules);
         assertThat(new NonBreakPointsEnhancer(dummyLoader).enhance(text, "en")).isEqualTo(expected);
     }
 
