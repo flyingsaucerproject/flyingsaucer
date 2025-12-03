@@ -31,7 +31,6 @@ import java.net.URL;
 
 import static java.lang.System.lineSeparator;
 import static java.util.Locale.ROOT;
-import static java.util.Locale.US;
 
 /**
  * @author Patrick Wright
@@ -42,7 +41,7 @@ public class GeneralUtil {
     @CheckReturnValue
     public static boolean ciEquals(final @Nullable String a, final @Nullable String b) {
         return a == null && b == null ||
-            a != null && b != null && a.toLowerCase(US).equals(b.toLowerCase(US));
+            a != null && b != null && a.toLowerCase(ROOT).equals(b.toLowerCase(ROOT));
     }
 
     @Nullable

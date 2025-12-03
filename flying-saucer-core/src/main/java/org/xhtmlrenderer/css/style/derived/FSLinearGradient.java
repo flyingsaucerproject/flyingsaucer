@@ -17,9 +17,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
+
+import static java.util.Locale.ROOT;
 
 public class FSLinearGradient {
     private int x1, y1, x2, y2;
@@ -244,13 +245,13 @@ public class FSLinearGradient {
 
             if (i == 2)
             {
-                positions = Collections.singletonList(params.get(1).getStringValue().toLowerCase(Locale.US));
+                positions = Collections.singletonList(params.get(1).getStringValue().toLowerCase(ROOT));
             }
             else if (i == 3)
             {
                 positions = Arrays.asList(
-                        params.get(1).getStringValue().toLowerCase(Locale.US),
-                        params.get(2).getStringValue().toLowerCase(Locale.US));
+                        params.get(1).getStringValue().toLowerCase(ROOT),
+                        params.get(2).getStringValue().toLowerCase(ROOT));
             }
 
             if (positions.contains("top") && positions.contains("left"))
