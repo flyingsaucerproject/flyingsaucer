@@ -141,13 +141,13 @@ public class BorderPainter {
 
 
         path.transform(AffineTransform.getTranslateInstance(
-                (!props.isDimensionsSwapped() ? -bounds.width/2f : -bounds.height/2f) + (scaledOffset+1)*props.getLeft(),
-                (props.isDimensionsSwapped() ? -bounds.width/2f : -bounds.height/2f) + (scaledOffset+1)*props.getTop()));
+            (!props.isDimensionsSwapped() ? -bounds.width / 2.0f : -bounds.height / 2.0f) + (scaledOffset + 1) * props.getLeft(),
+            (props.isDimensionsSwapped() ? -bounds.width / 2.0f : -bounds.height / 2.0f) + (scaledOffset + 1) * props.getTop()));
         path.transform(AffineTransform.getRotateInstance(
                 props.getRotation()));
         // empirical: add 0.5 to better play with rasterization rules
         path.transform(AffineTransform.getTranslateInstance(
-                bounds.width/2f+bounds.x, bounds.height/2f+bounds.y));
+            bounds.width / 2.0f + bounds.x, bounds.height / 2.0f + bounds.y));
 
         return path;
     }
@@ -306,7 +306,7 @@ public class BorderPainter {
            paintBorderSideShape(
                    outputDevice, bounds, borderB,
                    borderA,
-                   1, .5f, currentSide);
+                   1, 0.5f, currentSide);
         } else if (borderSideStyle == IdentValue.OUTSET) {
             paintBorderSideShape(outputDevice, bounds,
                     border,
@@ -318,7 +318,7 @@ public class BorderPainter {
                     border,
                     0, 1, currentSide);
         } else if (borderSideStyle == IdentValue.SOLID) {
-            outputDevice.setStroke(new BasicStroke(1f));
+            outputDevice.setStroke(new BasicStroke(1.0f));
             if(currentSide == TOP) {
                 outputDevice.setColor(border.topColor());
                 outputDevice.fill(generateBorderShape(bounds, TOP, border, true, 0, 1, true));
@@ -362,10 +362,10 @@ public class BorderPainter {
             OutputDevice outputDevice, BorderPropertySet border,
             Rectangle bounds, int currentSide) {
         // draw outer border
-        paintSolid(outputDevice, bounds, border, 0, 1/3f, currentSide);
+        paintSolid(outputDevice, bounds, border, 0, 1 / 3.0f, currentSide);
         // draw inner border
         //paintSolid(outputDevice, bounds, border, 1, 1/3f, sides, currentSide, bevel);
-        paintSolid(outputDevice, bounds, border, 2, 1/3f, currentSide);
+        paintSolid(outputDevice, bounds, border, 2, 1 / 3.0f, currentSide);
     }
 
     /**
@@ -377,7 +377,7 @@ public class BorderPainter {
                                            final int currentSide, int xOffset) {
         Stroke old_stroke = outputDevice.getStroke();
 
-        Path2D path = generateBorderShape(bounds, currentSide, border, false, .5f, 1, true);
+        Path2D path = generateBorderShape(bounds, currentSide, border, false, 0.5f, 1, true);
         Area clip = new Area(generateBorderShape(bounds, currentSide, border, true, 0, 1, false));
         Shape old_clip = outputDevice.getClip();
         if (old_clip != null) {

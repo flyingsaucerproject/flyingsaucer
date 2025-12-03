@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
+import static org.xhtmlrenderer.css.util.ConversionUtil.rgbToColor;
 
 public final class DOMInspector extends JPanel {
     private StyleReference styleReference;
@@ -191,7 +192,7 @@ final class ElementPropertiesPanel extends JPanel {
                 Map.Entry<String, CSSPrimitiveValue> me = model._properties.get(row);
                 CSSPrimitiveValue cpv = me.getValue();
                 if (cpv.getCssText().startsWith("rgb")) {
-                    label.setBackground(org.xhtmlrenderer.css.util.ConversionUtil.rgbToColor(cpv.getRGBColorValue()));
+                    label.setBackground(rgbToColor(cpv.getRGBColorValue()));
                 }
             }
             return (TableCellRenderer) label;

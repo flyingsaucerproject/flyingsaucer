@@ -136,7 +136,7 @@ public class FSRGBColor implements FSColor {
         final float cmax = max(r, g, b);
         final float cmin = min(r, g, b);
         final float brightness = cmax / 255.0f;
-        final float saturation = cmax == 0f ? 0f : (cmax - cmin) / cmax;
+        final float saturation = cmax == 0.0f ? 0.0f : (cmax - cmin) / cmax;
         final float hue = saturation == 0 ? 0 : calculateHue(r, g, b, cmax, cmin);
         return new HSBColor(hue, saturation, brightness);
     }

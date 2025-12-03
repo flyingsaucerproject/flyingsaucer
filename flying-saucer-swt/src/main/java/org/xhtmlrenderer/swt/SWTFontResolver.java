@@ -60,7 +60,7 @@ public class SWTFontResolver implements FontResolver {
 
     public SWTFontResolver(Device device) {
         _device = device;
-        _pointsPerPixel = 72f / device.getDPI().y;
+        _pointsPerPixel = 72.0f / device.getDPI().y;
 
         // system fonts
         String system_font_family = _device.getSystemFont().getFontData()[0].getName();
