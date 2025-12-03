@@ -21,7 +21,6 @@
 package org.xhtmlrenderer.render;
 
 import com.google.errorprone.annotations.CheckReturnValue;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -1082,7 +1081,6 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
         }
     }
 
-    @NonNull
     @CheckReturnValue
     public ContentType getChildrenContentType() {
         return _childrenContentType;

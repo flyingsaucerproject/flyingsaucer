@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.util;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.ArgumentConverter;
@@ -24,7 +25,7 @@ public abstract class ConstantConverter<T> implements ArgumentConverter {
     }
 
     @Override
-    public Object convert(Object source, ParameterContext context) throws ArgumentConversionException {
+    public Object convert(@Nullable Object source, ParameterContext context) throws ArgumentConversionException {
         if (!(source instanceof String input)) {
             throw new IllegalArgumentException("The argument should be a string: '%s'".formatted(source));
         }

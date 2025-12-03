@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.demo.browser;
 
 import com.google.errorprone.annotations.CheckReturnValue;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.DelegatingUserAgent;
@@ -106,7 +105,6 @@ public class PanelManager extends DelegatingUserAgent {
             return ref.toExternalForm();
     }
 
-    @NonNull
     @Override
     public XMLResource getXMLResource(String uri) {
         uri = resolveURI(uri);

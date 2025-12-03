@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.context;
 
 import com.google.errorprone.annotations.CheckReturnValue;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -172,7 +171,6 @@ public class StyleReference {
         return _matcher.getCascadedStyle(e, restyle);
     }
 
-    @NonNull
     @CheckReturnValue
     public PageInfo getPageStyle(@Nullable String pageName, String pseudoPage) {
         return _matcher.getPageCascadedStyle(pageName, pseudoPage);

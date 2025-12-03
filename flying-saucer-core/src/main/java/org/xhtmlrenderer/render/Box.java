@@ -21,7 +21,6 @@
 package org.xhtmlrenderer.render;
 
 import com.google.errorprone.annotations.CheckReturnValue;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -747,7 +746,6 @@ public abstract class Box implements Styleable {
         ensureWorkingMargin(cssContext).setRight(marginRight);
     }
 
-    @NonNull
     @CheckReturnValue
     private RectPropertySet ensureWorkingMargin(CssContext cssContext) {
         if (_workingMargin == null) {

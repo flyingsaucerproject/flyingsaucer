@@ -1,11 +1,9 @@
 package org.xhtmlrenderer.extend;
 
 import com.google.errorprone.annotations.CheckReturnValue;
-import org.jspecify.annotations.NonNull;
 
 public record Size(int width, int height) {
 
-    @NonNull
     @CheckReturnValue
     public Size scale(int width, int height) {
         if (width > 0 || height > 0) {
