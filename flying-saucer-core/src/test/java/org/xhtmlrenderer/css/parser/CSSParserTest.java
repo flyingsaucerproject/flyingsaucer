@@ -46,7 +46,7 @@ class CSSParserTest {
         assertThat(ruleset.getPropertyDeclarations()).usingRecursiveComparison().isEqualTo(List.of(
             css(COLOR, new FSRGBColor(255, 165, 11)),
             css(BACKGROUND_COLOR, new FSRGBColor(233, 99, 71, 0.5f)),
-            css(BORDER_TOP_COLOR, new FSRGBColor(0, 255, 255, 1f))
+            css(BORDER_TOP_COLOR, new FSRGBColor(0, 255, 255, 1.0f))
         ));
     }
 

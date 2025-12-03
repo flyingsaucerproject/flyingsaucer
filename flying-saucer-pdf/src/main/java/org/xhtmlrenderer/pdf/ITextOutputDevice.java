@@ -550,7 +550,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
                 ensureStrokeColor();
             }
             if ((fontSpec.fontStyle == IdentValue.ITALIC) && (desc.getStyle() != IdentValue.ITALIC) && (desc.getStyle() != IdentValue.OBLIQUE)) {
-                b = 0f;
+                b = 0.0f;
                 c = 0.21256f;
             }
         }

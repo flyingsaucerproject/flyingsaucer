@@ -34,7 +34,7 @@ import java.util.logging.Level;
 public class LengthValue extends DerivedValue {
     private final static int MM__PER__CM = 10;
     private final static float CM__PER__IN = 2.54F;
-    private final static float PT__PER__IN = 1f / 72f;
+    private final static float PT__PER__IN = 1.0f / 72.0f;
     private final static float PC__PER__PT = 12;
 
     /**
@@ -169,7 +169,7 @@ public class LengthValue extends DerivedValue {
                     FontSpecification font = style.getFont(ctx);
                     baseValue = ctx.getFontSize2D(font);
                 }
-                absVal = (relVal / 100F) * baseValue;
+                absVal = (relVal / 100.0F) * baseValue;
 
                 break;
             case CSSPrimitiveValue.CSS_NUMBER:

@@ -11,6 +11,6 @@ public record ScaleFactor(double factor, String zoomLabel) {
     }
 
     public boolean isNotZoomed() {
-        return factor() == 1d;
+        return factor() == 1.0d;
     }
 }

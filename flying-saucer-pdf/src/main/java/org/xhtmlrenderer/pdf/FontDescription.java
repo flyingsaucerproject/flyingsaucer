@@ -70,7 +70,7 @@ public class FontDescription {
 
         int[] box = font.getCharBBox('x');
         if (box != null) {
-            float yStrikeoutPosition = box[3] / 2f + 50;
+            float yStrikeoutPosition = box[3] / 2.0f + 50;
             float yStrikeoutSize = 100;
             return new Decorations(weight, yStrikeoutSize, yStrikeoutPosition, underlinePosition, underlineThickness);
         } else {

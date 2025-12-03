@@ -195,8 +195,8 @@ public class FSLinearGradient {
 		stopPoints.add(new StopValue(new FSRGBColor(0, 0, 0, 0)));
 		stopPoints.add(new StopValue(new FSRGBColor(0, 0, 0, 0.0001f)));
 
-		stopPoints.get(0).dotsValue = 0f;
-		stopPoints.get(1).dotsValue = 1f;
+		stopPoints.get(0).dotsValue = 0.0f;
+		stopPoints.get(1).dotsValue = 1.0f;
     }
 
     public static boolean looksLikeALength(String val) {
@@ -387,19 +387,19 @@ public class FSLinearGradient {
             else if (m == 0)
             {
                 // First value is zero.
-                pt.dotsValue = 0f;
+                pt.dotsValue = 0.0f;
             }
             else if (m == stopPoints.size() - 1)
             {
                 // Last value is 100%.
                 pt.dotsValue =
-                        LengthValue.calcFloatProportionalValue(style, CSSName.BACKGROUND_IMAGE, "100%", 100f, PropertyValue.CSS_PERCENTAGE, width, ctx);
+                        LengthValue.calcFloatProportionalValue(style, CSSName.BACKGROUND_IMAGE, "100%", 100.0f, PropertyValue.CSS_PERCENTAGE, width, ctx);
             }
         }
 
-        float lastValue = 0f;
-        float nextValue = 100f;
-        float increment = 0f;
+        float lastValue = 0.0f;
+        float nextValue = 100.0f;
+        float increment = 0.0f;
 
         // TODO: Confirm below is correct, no divide by zero and
         // no endless loop.
@@ -409,7 +409,7 @@ public class FSLinearGradient {
         {
             if (j + 1 < stopPoints.size() &&
                     stopPoints.get(j).dotsValue == null &&
-                    increment == 0f)
+                    increment == 0.0f)
             {
                 int k = j + 1;
 
