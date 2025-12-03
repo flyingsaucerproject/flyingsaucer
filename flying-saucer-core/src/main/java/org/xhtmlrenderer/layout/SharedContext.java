@@ -49,13 +49,14 @@ import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.HeadlessException;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -64,8 +65,7 @@ import static java.util.Objects.requireNonNull;
  * @author empty
  */
 public final class SharedContext {
-    private static final Set<String> PAGED_MEDIA_TYPES =
-            new HashSet<>(asList("print", "projection", "embossed", "handheld", "tv"));
+    private static final Set<String> PAGED_MEDIA_TYPES = Set.of("print", "projection", "embossed", "handheld", "tv");
 
     private TextRenderer textRenderer;
     private String media;

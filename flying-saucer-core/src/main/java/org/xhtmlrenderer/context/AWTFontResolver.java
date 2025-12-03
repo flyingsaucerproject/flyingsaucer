@@ -28,13 +28,14 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.swing.AWTFSFont;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
 
 public class AWTFontResolver implements FontResolver {
     private final Map<String, Font> fontsCache = new HashMap<>();
@@ -51,7 +52,7 @@ public class AWTFontResolver implements FontResolver {
 
         GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
         availableFontNames.clear();
-        availableFontNames.addAll(asList(gfx.getAvailableFontFamilyNames()));
+        availableFontNames.addAll(List.of(gfx.getAvailableFontFamilyNames()));
 
         // preload sans, serif, and monospace
         availableFonts.clear();

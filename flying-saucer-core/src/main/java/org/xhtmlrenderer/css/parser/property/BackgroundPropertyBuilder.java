@@ -31,8 +31,6 @@ import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-
 public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
     // [<'background-color'> || <'background-image'> || <'background-repeat'> ||
     // <'background-attachment'> || <'background-position'>] | inherit
@@ -195,6 +193,6 @@ public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
                     CSSName.BACKGROUND_POSITION, new PropertyValue(v), important, origin);
         }
 
-        return asList(backgroundColor, backgroundImage, backgroundRepeat, backgroundAttachment, backgroundPosition);
+        return List.of(backgroundColor, backgroundImage, backgroundRepeat, backgroundAttachment, backgroundPosition);
     }
 }
