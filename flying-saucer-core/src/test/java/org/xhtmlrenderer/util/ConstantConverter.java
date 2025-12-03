@@ -8,16 +8,14 @@ import org.junit.jupiter.params.converter.ArgumentConverter;
 import java.lang.reflect.Field;
 
 import static java.util.Objects.requireNonNull;
+import static org.xhtmlrenderer.util.Reified.classOf;
 
 public abstract class ConstantConverter<T> implements ArgumentConverter {
     private final Class<T> klass;
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     protected ConstantConverter(T... reified) {
-        if (reified.length > 0) {
-            throw new IllegalArgumentException("Please don't pass any values here. Java will detect page object class automagically.");
-        }
-        this.klass = (Class<T>) reified.getClass().componentType();
+        this(classOf(reified));
     }
 
     protected ConstantConverter(Class<T> klass) {
