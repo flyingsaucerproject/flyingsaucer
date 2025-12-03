@@ -33,7 +33,7 @@ public class BoxRangeHelper {
     private final OutputDevice _outputDevice;
     private final List<BoxRangeData> _rangeList;
 
-    private int _rangeIndex;
+    private int _rangeIndex = 0;
     @Nullable
     private BoxRangeData _current;
 
@@ -42,7 +42,7 @@ public class BoxRangeHelper {
         _rangeList = rangeList;
 
         if (!rangeList.isEmpty()) {
-            _current = rangeList.get(0);
+            _current = rangeList.getFirst();
         }
     }
 

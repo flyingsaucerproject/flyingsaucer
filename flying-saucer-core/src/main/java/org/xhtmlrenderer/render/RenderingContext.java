@@ -45,10 +45,8 @@ public class RenderingContext implements CssContext {
     protected final SharedContext sharedContext;
     private final OutputDevice outputDevice;
     private final FontContext fontContext;
-
-    private int pageCount;
-
-    private int pageNo;
+    private int pageCount = 0;
+    private int pageNo = 0;
 
     @Nullable
     private PageBox page;

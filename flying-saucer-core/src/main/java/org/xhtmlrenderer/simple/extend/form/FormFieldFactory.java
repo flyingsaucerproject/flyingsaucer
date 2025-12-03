@@ -27,7 +27,7 @@ import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 import static java.util.Objects.requireNonNull;
 
-public class FormFieldFactory {
+public final class FormFieldFactory {
     private FormFieldFactory() {
     }
 
