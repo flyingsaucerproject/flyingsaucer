@@ -200,6 +200,6 @@ public class AWTFontResolver implements FontResolver {
     @CheckReturnValue
     @Override
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
-        return resolveFont(renderingContext, spec.families, spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
+        return resolveFont(renderingContext, spec.families(), spec.size(), spec.fontWeight(), spec.fontStyle(), spec.variant());
     }
 }

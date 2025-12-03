@@ -19,8 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import org.openpdf.text.pdf.PdfTemplate;
 import org.jspecify.annotations.Nullable;
+import org.openpdf.text.pdf.PdfTemplate;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -29,7 +29,7 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.util.Util;
 
-import java.awt.*;
+import java.awt.Point;
 
 public abstract class AbstractFormField implements ITextReplacedElement {
     protected static final String DEFAULT_CHECKED_STATE = "Yes";
@@ -156,7 +156,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
             if (cssHeight != -1) {
                 setWidth(cssHeight);
             } else {
-                setWidth((int) (box.getStyle().getFont(c).size * FONT_SIZE_ADJUSTMENT));
+                setWidth((int) (box.getStyle().getFont(c).size() * FONT_SIZE_ADJUSTMENT));
             }
         }
 
@@ -166,7 +166,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
             if (cssWidth != -1) {
                 setHeight(cssWidth);
             } else {
-                setHeight((int) (box.getStyle().getFont(c).size * FONT_SIZE_ADJUSTMENT));
+                setHeight((int) (box.getStyle().getFont(c).size() * FONT_SIZE_ADJUSTMENT));
             }
         }
     }

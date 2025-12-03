@@ -19,9 +19,9 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import org.jspecify.annotations.Nullable;
 import org.openpdf.text.DocumentException;
 import org.openpdf.text.pdf.BaseFont;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -111,7 +111,7 @@ public class ITextFontResolver implements FontResolver {
     @Nullable
     @Override
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
-        return resolveFont(spec.families, spec.size, spec.fontWeight, spec.fontStyle);
+        return resolveFont(spec.families(), spec.size(), spec.fontWeight(), spec.fontStyle());
     }
 
     @Override

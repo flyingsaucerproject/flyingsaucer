@@ -69,7 +69,12 @@ import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -539,7 +544,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
         float c = (float) mx[2];
         FontSpecification fontSpec = getFontSpecification();
         if (fontSpec != null) {
-            int need = ITextFontResolver.convertWeightToInt(fontSpec.fontWeight);
+            int need = ITextFontResolver.convertWeightToInt(fontSpec.fontWeight());
             int have = desc.getWeight();
 
             if (need > have) {
@@ -549,7 +554,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
                 resetMode = true;
                 ensureStrokeColor();
             }
-            if ((fontSpec.fontStyle == IdentValue.ITALIC) && (desc.getStyle() != IdentValue.ITALIC) && (desc.getStyle() != IdentValue.OBLIQUE)) {
+            if ((fontSpec.fontStyle() == IdentValue.ITALIC) && (desc.getStyle() != IdentValue.ITALIC) && (desc.getStyle() != IdentValue.OBLIQUE)) {
                 b = 0.0f;
                 c = 0.21256f;
             }

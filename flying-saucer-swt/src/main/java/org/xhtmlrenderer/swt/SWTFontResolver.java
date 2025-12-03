@@ -101,10 +101,10 @@ public class SWTFontResolver implements FontResolver {
     @CheckReturnValue
     @Override
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
-        if (spec.families != null) {
-            for (int i = 0; i < spec.families.length; i++) {
-                FSFont font = resolveFont(renderingContext, spec.families[i], spec.size,
-                        spec.fontWeight, spec.fontStyle, spec.variant);
+        if (spec.families() != null) {
+            for (int i = 0; i < spec.families().length; i++) {
+                FSFont font = resolveFont(renderingContext, spec.families()[i], spec.size(),
+                        spec.fontWeight(), spec.fontStyle(), spec.variant());
                 if (font != null) {
                     return font;
                 }
@@ -112,8 +112,8 @@ public class SWTFontResolver implements FontResolver {
         }
 
         // no font found, fall back to standard sans
-        FSFont font = resolveFont(renderingContext, "sans-serif", spec.size, spec.fontWeight,
-                spec.fontStyle, spec.variant);
+        FSFont font = resolveFont(renderingContext, "sans-serif", spec.size(), spec.fontWeight(),
+                spec.fontStyle(), spec.variant());
         if (font != null) {
             return font;
         }
