@@ -29,10 +29,6 @@ public class ContentLimit {
         return _top;
     }
 
-    public void setTop(int top) {
-        _top = top;
-    }
-
     public void updateTop(int top) {
         if (_top == UNDEFINED || top < _top) {
             _top = top;
@@ -41,10 +37,6 @@ public class ContentLimit {
 
     public int getBottom() {
         return _bottom;
-    }
-
-    public void setBottom(int bottom) {
-        _bottom = bottom;
     }
 
     public void updateBottom(int bottom) {
