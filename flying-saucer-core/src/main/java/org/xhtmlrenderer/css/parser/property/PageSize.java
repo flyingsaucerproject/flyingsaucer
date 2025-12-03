@@ -26,7 +26,10 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PageSize {
+public record PageSize(
+    CSSPrimitiveValue width,
+    CSSPrimitiveValue height
+) {
     /**
      * ISO A5 media: 148mm wide and 210 mm high
      */
@@ -102,22 +105,6 @@ public class PageSize {
         SIZE_MAP.put("letter", LETTER);
         SIZE_MAP.put("legal", LEGAL);
         SIZE_MAP.put("ledger", LEDGER);
-    }
-
-    private final CSSPrimitiveValue _pageWidth;
-    private final CSSPrimitiveValue _pageHeight;
-
-    private PageSize(CSSPrimitiveValue width, CSSPrimitiveValue height) {
-        _pageWidth = width;
-        _pageHeight = height;
-    }
-
-    public CSSPrimitiveValue getPageHeight() {
-        return _pageHeight;
-    }
-
-    public CSSPrimitiveValue getPageWidth() {
-        return _pageWidth;
     }
 
     @Nullable

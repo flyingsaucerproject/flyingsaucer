@@ -23,14 +23,5 @@ import org.xhtmlrenderer.extend.FontContext;
 
 import java.awt.*;
 
-public class Java2DFontContext implements FontContext {
-    private final Graphics2D _graphics;
-
-    public Java2DFontContext(Graphics2D graphics) {
-        _graphics = graphics;
-    }
-
-    public Graphics2D getGraphics() {
-        return _graphics;
-    }
+public record Java2DFontContext(Graphics2D graphics) implements FontContext {
 }
