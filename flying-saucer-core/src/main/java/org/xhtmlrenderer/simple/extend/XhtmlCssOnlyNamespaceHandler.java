@@ -19,7 +19,6 @@
 package org.xhtmlrenderer.simple.extend;
 
 import com.google.errorprone.annotations.CheckReturnValue;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
@@ -211,7 +210,6 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
         return new StylesheetInfo(AUTHOR, uri, mediaTypes(media), css);
     }
 
-    @NonNull
     @CheckReturnValue
     private static String extractContent(Element style) {
         StringBuilder buf = new StringBuilder();

@@ -22,7 +22,6 @@
 package org.xhtmlrenderer.simple;
 
 import com.google.errorprone.annotations.CheckReturnValue;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -226,7 +225,6 @@ public class NoNamespaceHandler implements NamespaceHandler {
         return null;
     }
 
-    @NonNull
     @CheckReturnValue
     private String detectMediaTypes(String pi) {
         Matcher m = _mediaPattern.matcher(pi);

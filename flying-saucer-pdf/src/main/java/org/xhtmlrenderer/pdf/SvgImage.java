@@ -6,7 +6,6 @@ import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.jspecify.annotations.NonNull;
 import org.openpdf.text.Image;
 import org.xhtmlrenderer.extend.Size;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -38,7 +37,6 @@ public class SvgImage extends ITextFSImage {
         return size.height();
     }
 
-    @NonNull
     @CheckReturnValue
     @Override
     public SvgImage scale(int width, int height) {

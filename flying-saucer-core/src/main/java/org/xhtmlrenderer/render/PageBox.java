@@ -20,7 +20,6 @@
 package org.xhtmlrenderer.render;
 
 import com.google.errorprone.annotations.CheckReturnValue;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -88,9 +87,8 @@ public class PageBox {
     private final int _outerPageWidth;
 
     @Nullable
-    private PageDimensions _pageDimensions;
+    private volatile PageDimensions _pageDimensions;
 
-    @NonNull
     private final PageInfo _pageInfo;
 
     @Nullable
@@ -108,7 +106,7 @@ public class PageBox {
         _pageNo = pageNo;
     }
 
-    public int getWidth(CssContext cssCtx) {
+    public final int getWidth(CssContext cssCtx) {
         return getPageDimensions(cssCtx).width();
     }
 
@@ -117,7 +115,7 @@ public class PageBox {
     }
 
     @CheckReturnValue
-    private PageDimensions getPageDimensions(CssContext cssCtx) {
+    private synchronized PageDimensions getPageDimensions(CssContext cssCtx) {
         if (_pageDimensions == null) {
             _pageDimensions = resolvePageDimensions(cssCtx);
         }
@@ -197,7 +195,7 @@ public class PageBox {
         }
     }
 
-    public int getContentHeight(CssContext cssCtx) {
+    public final int getContentHeight(CssContext cssCtx) {
         int height = getHeight(cssCtx) - getMarginBorderPadding(cssCtx, TOP) - getMarginBorderPadding(cssCtx, BOTTOM);
         if (height <= 0) {
             throw new IllegalArgumentException(

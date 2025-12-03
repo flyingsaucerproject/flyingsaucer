@@ -19,7 +19,6 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import org.jspecify.annotations.NonNull;
 import org.openpdf.text.Image;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.Size;
@@ -41,7 +40,6 @@ public class ITextFSImage implements FSImage, Cloneable {
         return (int) image.getPlainHeight();
     }
 
-    @NonNull
     @Override
     public ITextFSImage scale(int width, int height) {
         Size current = new Size(getWidth(), getHeight());
