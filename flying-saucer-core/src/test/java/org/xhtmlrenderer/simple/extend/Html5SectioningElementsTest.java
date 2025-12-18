@@ -93,7 +93,7 @@ class Html5SectioningElementsTest {
         CalculatedStyle style = styleFor(tagName);
         assertEquals(IdentValue.INLINE_BLOCK, style.getDisplay(),
                 "Expected <" + tagName + "> to be inline-block by default");
-    }
+    } 
 
     @Test
     void unknown_elements_remain_inline_by_default() {

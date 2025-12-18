@@ -47,7 +47,7 @@ public class PDFHyphenationTest {
                     			body {
                     				background: gray;
                     				margin:0;
-                    				word-wrap: break-word;
+                    				word-wrap: break-word;\s
                     				text-align: justify;
                     				font-size: 7.5pt;
                     				line-height: 1;
@@ -56,10 +56,10 @@ public class PDFHyphenationTest {
 
                     			@page {
                     				size: 43mm 25mm;
-                    				margin-top:0cm;
-                    			    margin-left:0cm;
-                    			    margin-right:0cm;
-                    			    margin-bottom:0cm;
+                    				margin-top:0cm;\s
+                    			    margin-left:0cm;\s
+                    			    margin-right:0cm;\s
+                    			    margin-bottom:0cm;\s
                     			}
                     		</style>
                     	</head>
