@@ -1,6 +1,10 @@
 html, address,
 blockquote,
 body, dd, div,
+section, article, header, footer,
+nav, aside, main,
+figure, figcaption,
+details, summary,
 dl, dt, fieldset, form,
 frame, frameset,
 h1, h2, h3, h4,
@@ -199,3 +203,17 @@ hr[size="1"] {
 form{
  margin: 0 0 1em 0;
 }
+
+/* HTML5 text-level semantics */
+mark            { background: yellow; color: black }
+
+/* HTML5 time element: keep inline default but allow styling */
+time            { }
+
+/* HTML5 embedded / interactive content */
+canvas, audio,
+video           { display: inline-block }
+
+/* HTML5 form-related widgets */
+progress, meter,
+output          { display: inline-block }
