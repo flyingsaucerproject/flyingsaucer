@@ -274,6 +274,22 @@ public class TableCellBox extends BlockBox {
     }
 
     /**
+     * Gets the bottom Y position of the thead section in the table.
+     *
+     * @param table The table containing the thead
+     * @return the absolute Y position of thead's bottom, or -1 if no thead found
+     */
+    private int getTheadBottom(TableBox table) {
+        for (int i = 0; i < table.getChildCount(); i++) {
+            Box child = table.getChild(i);
+            if (child instanceof TableSectionBox tableSection && tableSection.isHeader()) {
+                return tableSection.getAbsY() + tableSection.getHeight();
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Adjusts the bounds of a rowspan cell on continuation pages to avoid overlapping with thead.
      * For rowspan cells that span multiple pages, this ensures the cell's rendering starts
      * after the thead section on subsequent pages.
@@ -399,7 +415,23 @@ public class TableCellBox extends BlockBox {
             if (c.getPageNo() == contentLimitContainer.getInitialPageNo()) {
                 top = result.y;
             } else {
-                top = limit.getTop() - ((TableRowBox)getParent()).getExtraSpaceTop() ;
+                // For rowspan cells on continuation pages, start from thead bottom
+                int rowSpan = getStyle().getRowSpan();
+                if (rowSpan > 1) {
+                    TableBox table = getTable();
+                    if (table != null) {
+                        int theadBottom = getTheadBottom(table);
+                        if (theadBottom > 0) {
+                            top = theadBottom;
+                        } else {
+                            top = limit.getTop() - ((TableRowBox)getParent()).getExtraSpaceTop();
+                        }
+                    } else {
+                        top = limit.getTop() - ((TableRowBox)getParent()).getExtraSpaceTop();
+                    }
+                } else {
+                    top = limit.getTop() - ((TableRowBox)getParent()).getExtraSpaceTop();
+                }
             }
 
             int bottom;
