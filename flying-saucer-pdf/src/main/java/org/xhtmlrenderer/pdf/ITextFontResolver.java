@@ -24,11 +24,15 @@ import org.openpdf.text.DocumentException;
 import org.openpdf.text.pdf.BaseFont;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.parser.FSFunction;
+import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.FontFaceRule;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
+import org.xhtmlrenderer.css.style.derived.ListValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -42,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,6 +76,7 @@ public class ITextFontResolver implements FontResolver {
     private static final String TTC = ".ttc";
     private static final String TTC_COMMA = ".ttc,";
 
+    private final Map<String, String> _embedFontFaces = new HashMap<>();
     private final Map<String, FontFamily> _fontFamilies = new HashMap<>();
     private final Map<String, FontDescription> _fontCache = new ConcurrentHashMap<>();
 
@@ -134,6 +140,14 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
+    public void addEmbedFontFace(String fontFamily, String encoding) {
+        _embedFontFaces.put(fontFamily, encoding);
+    }
+
+    public void resetEmbedFontFace() {
+        _embedFontFaces.clear();
+    }
+
     public void importFontFaces(List<FontFaceRule> fontFaces, UserAgentCallback userAgentCallback) {
         for (FontFaceRule rule : fontFaces) {
             importFontFace(rule, userAgentCallback);
@@ -148,39 +162,128 @@ public class ITextFontResolver implements FontResolver {
             return;
         }
 
-        byte[] font1 = userAgentCallback.getBinaryResource(src.asString());
-        if (font1 == null) {
-            XRLog.exception("Could not load font " + src.asString());
+        List<FontSrc> fontSources = parseFontSources(src);
+        if (fontSources.isEmpty()) {
+            XRLog.exception("No valid font sources found in src property");
             return;
         }
 
-        byte[] font2 = null;
-        FSDerivedValue metricsSrc = style.valueByName(CSSName.FS_FONT_METRIC_SRC);
-        if (metricsSrc != IdentValue.NONE) {
-            font2 = userAgentCallback.getBinaryResource(metricsSrc.asString());
-            if (font2 == null) {
-                XRLog.exception("Could not load font metric data " + src.asString());
+        // Try each font source in order until one works
+        for (FontSrc fontSrc : fontSources) {
+            String uri = fontSrc.uri;
+            String format = fontSrc.format;
+
+            // Check if format is supported
+            if (!fontSupported(uri, format)) {
+                continue;
+            }
+            byte[] font1 = userAgentCallback.getBinaryResource(uri);
+            if (font1 == null) {
+                XRLog.exception("Could not load font " + uri);
+                continue;
+            }
+
+            byte[] font2 = null;
+            FSDerivedValue metricsSrc = style.valueByName(CSSName.FS_FONT_METRIC_SRC);
+            if (metricsSrc != IdentValue.NONE) {
+                font2 = userAgentCallback.getBinaryResource(metricsSrc.asString());
+                if (font2 == null) {
+                    XRLog.exception("Could not load font metric data " + uri);
+                    continue;
+                }
+            }
+
+            if (font2 != null) {
+                byte[] t = font1;
+                font1 = font2;
+                font2 = t;
+            }
+
+            boolean embedded = style.isIdent(CSSName.FS_PDF_FONT_EMBED, IdentValue.EMBED);
+            String encoding = style.getStringProperty(CSSName.FS_PDF_FONT_ENCODING);
+            String fontFamily = rule.hasFontFamily() ? style.valueByName(CSSName.FONT_FAMILY).asString() : null;
+            if (_embedFontFaces.containsKey(fontFamily)) {
+                embedded = true;
+                encoding = _embedFontFaces.get(fontFamily);
+            }
+            IdentValue fontWeight = rule.hasFontWeight() ? style.getIdent(CSSName.FONT_WEIGHT) : null;
+            IdentValue fontStyle = rule.hasFontStyle() ? style.getIdent(CSSName.FONT_STYLE) : null;
+
+            try {
+                addFontFaceFont(fontFamily, fontWeight, fontStyle, uri, format, encoding, embedded, font1, font2);
+                // Successfully added font, no need to try other sources
                 return;
+            } catch (DocumentException | IOException e) {
+                XRLog.exception("Could not load font " + uri, e);
+                // Continue to try next font source
             }
         }
 
-        if (font2 != null) {
-            byte[] t = font1;
-            font1 = font2;
-            font2 = t;
+        XRLog.exception("Failed to load any font from src property");
+    }
+
+    /**
+     * Represents a font source with URI and optional format.
+     */
+    private static class FontSrc {
+        final String uri;
+        @Nullable final String format;
+
+        FontSrc(String uri, @Nullable String format) {
+            this.uri = uri;
+            this.format = format;
+        }
+    }
+
+    /**
+     * Parse font sources from the src property value.
+     * Handles both single values and comma-separated lists of url()/format() pairs.
+     */
+    private List<FontSrc> parseFontSources(FSDerivedValue src) {
+        List<FontSrc> result = new ArrayList<>();
+
+        // Check if it's a list value (multiple sources)
+        if (src instanceof ListValue) {
+            ListValue listValue = (ListValue) src;
+            List<Object> values = listValue.getValues();
+            if (values != null) {
+                String currentUri = null;
+                String currentFormat = null;
+
+                for (Object value : values) {
+                    if (value instanceof PropertyValue) {
+                        PropertyValue propValue = (PropertyValue) value;
+
+                        if (propValue.getPrimitiveType() == CSSPrimitiveValue.CSS_URI) {
+                            // If we have a pending URI, add it before starting a new one
+                            if (currentUri != null) {
+                                result.add(new FontSrc(currentUri, currentFormat));
+                                currentFormat = null;
+                            }
+                            currentUri = propValue.getStringValue();
+                        } else if (propValue.getPropertyValueType() == PropertyValue.Type.VALUE_TYPE_FUNCTION) {
+                            FSFunction function = propValue.getFunction();
+                            if (function != null && "format".equals(function.getName())) {
+                                List<PropertyValue> params = function.getParameters();
+                                if (!params.isEmpty() && params.get(0).getStringValue() != null) {
+                                    currentFormat = params.get(0).getStringValue();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Add the last URI if present
+                if (currentUri != null) {
+                    result.add(new FontSrc(currentUri, currentFormat));
+                }
+            }
+        } else {
+            // Single value (just a URI)
+            result.add(new FontSrc(src.asString(), null));
         }
 
-        boolean embedded = style.isIdent(CSSName.FS_PDF_FONT_EMBED, IdentValue.EMBED);
-        String encoding = style.getStringProperty(CSSName.FS_PDF_FONT_ENCODING);
-        String fontFamily = rule.hasFontFamily() ? style.valueByName(CSSName.FONT_FAMILY).asString() : null;
-        IdentValue fontWeight = rule.hasFontWeight() ? style.getIdent(CSSName.FONT_WEIGHT) : null;
-        IdentValue fontStyle = rule.hasFontStyle() ? style.getIdent(CSSName.FONT_STYLE) : null;
-
-        try {
-            addFontFaceFont(fontFamily, fontWeight, fontStyle, src.asString(), encoding, embedded, font1, font2);
-        } catch (DocumentException | IOException e) {
-            XRLog.exception("Could not load font " + src.asString(), e);
-        }
+        return result;
     }
 
     /**
@@ -278,54 +381,55 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
-    private boolean fontSupported(String uri) {
+    private boolean fontSupported(String uri, @Nullable String format) {
+        if (format != null) {
+            return format.equals("opentype") || format.equals("truetype");
+        }
         String lower = uri.toLowerCase(ROOT);
         if (isEmbeddedBase64Font(uri)) {
             return SupportedEmbeddedFontTypes.isSupported(uri);
         } else {
-            return lower.endsWith(OTF) || lower.endsWith(TTF) || lower.contains(TTC_COMMA);
+            return lower.endsWith(OTF) || lower.endsWith(TTF);
         }
+    }
+
+    private String getFontName(String uri, @Nullable String format, @Nullable String fontFamilyName) {
+        if (fontFamilyName != null) {
+            if (isEmbeddedBase64Font(uri)) {
+                return fontFamilyName + getExtension(uri);
+            } else if (format != null) {
+                String lower = uri.toLowerCase();
+                if (!lower.endsWith(OTF) && !lower.endsWith(TTF)) {
+                    String ext = "";
+                    if (format.equals("opentype")) {
+                        ext = OTF;
+                    } else if (format.equals("truetype")) {
+                        ext = TTF;
+                    }
+                    return fontFamilyName + ext;
+                }
+            }
+        }
+        return uri;
     }
 
     /**
      * @param ttfAfm the font as a byte array, possibly null
      */
     private void addFontFaceFont(@Nullable String fontFamilyNameOverride, @Nullable IdentValue fontWeightOverride,
-                                 @Nullable IdentValue fontStyleOverride, String uri, String encoding, boolean embedded,
-                                 byte[] ttfAfm, byte @Nullable [] pfb)
+                                 @Nullable IdentValue fontStyleOverride, String uri, @Nullable String format,
+                                 String encoding, boolean embedded, byte[] ttfAfm, byte @Nullable [] pfb)
             throws DocumentException, IOException {
-        String lower = uri.toLowerCase(ROOT);
-        if (fontSupported(lower)) {
-            String fontName = isEmbeddedBase64Font(uri) ? fontFamilyNameOverride + getExtension(uri) : uri;
-            BaseFont font = BaseFont.createFont(fontName, encoding, embedded, false, ttfAfm, pfb);
+        String fontName = getFontName(uri, format, fontFamilyNameOverride);
+        BaseFont font = BaseFont.createFont(fontName, encoding, embedded, false, ttfAfm, pfb);
 
-            Collection<String> fontFamilyNames = getFontFamilyNames(font, fontFamilyNameOverride);
+        Collection<String> fontFamilyNames = getFontFamilyNames(font, fontFamilyNameOverride);
 
-            for (String fontFamilyName : fontFamilyNames) {
-                FontFamily fontFamily = getFontFamily(fontFamilyName);
-                fontFamily.addFontDescription(
-                        fontDescription(fontWeightOverride, fontStyleOverride, uri, ttfAfm, font)
-                );
-            }
-        } else if (lower.endsWith(AFM) || lower.endsWith(PFM) || lower.endsWith(PFB) || lower.endsWith(PFA)) {
-            if (embedded && pfb == null) {
-                throw new IOException("When embedding a font, path to PFB/PFA file must be specified (uri: %s)".formatted(uri));
-            }
-
-            String name = uri.substring(0, uri.length() - 4) + AFM;
-            BaseFont font = BaseFont.createFont(
-                    name, encoding, embedded, false, ttfAfm, pfb);
-
-            String fontFamilyName = font.getFamilyFontName()[0][3];
+        for (String fontFamilyName : fontFamilyNames) {
             FontFamily fontFamily = getFontFamily(fontFamilyName);
-
-            FontDescription description = new FontDescription(font, true);
-            // XXX Need to set weight, underline position, etc.  This information
-            // is contained in the AFM file (and even parsed by Type1Font), but
-            // unfortunately it isn't exposed to the caller.
-            fontFamily.addFontDescription(description);
-        } else {
-            throw new IOException("Unsupported font type: %s".formatted(uri));
+            fontFamily.addFontDescription(
+                    fontDescription(fontWeightOverride, fontStyleOverride, uri, ttfAfm, font)
+            );
         }
     }
 
