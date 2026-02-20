@@ -1,0 +1,4 @@
+@font-face {
+    font-family: "Jacquard 24";
+    src: url("classpath:fonts/Jacquard24-Regular.ttf") format("bad"), url("classpath:fonts/Jacquard24-Regular.bin") format("truetype");
+}

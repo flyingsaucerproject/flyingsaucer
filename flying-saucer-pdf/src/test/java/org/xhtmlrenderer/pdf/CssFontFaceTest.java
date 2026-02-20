@@ -1,5 +1,7 @@
 package org.xhtmlrenderer.pdf;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -7,6 +9,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.junit.jupiter.api.Test;
+import org.openpdf.text.pdf.BaseFont;
+import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,6 +19,7 @@ import java.util.List;
 import static com.codeborne.pdftest.assertj.Assertions.assertThat;
 import static java.util.Objects.requireNonNull;
 import static org.xhtmlrenderer.pdf.TestUtils.getFontNames;
+import org.xhtmlrenderer.resource.FSEntityResolver;
 
 public class CssFontFaceTest {
 
@@ -29,6 +34,40 @@ public class CssFontFaceTest {
     public void autoInstallationOfCssDeclaredFonts() throws IOException {
         URL htmlUrl = requireNonNull(getClass().getResource("fonts/CssFontFace.html"), "test resource not found: fonts/CssFontFace.html");
         byte[] pdfBytes = Html2Pdf.fromUrl(htmlUrl);
+        try (RandomAccessRead buffer = new RandomAccessReadBuffer(pdfBytes);
+             PDDocument document = new PDFParser(buffer).parse()) {
+            assertThat(document.getNumberOfPages()).isGreaterThanOrEqualTo(1);
+            for (int i = 0; i < document.getNumberOfPages(); ++i) {
+                PDPage page = document.getPage(i);
+                PDResources res = page.getResources();
+                List<String> fontNames = getFontNames(res);
+                assertThat(fontNames)
+                        .as("Should contain Jacquard24 font")
+                        .anyMatch(name -> name.contains("Jacquard24"));
+            }
+        }
+    }
+
+    /**
+     * Verifies that imported font-face declarations with embedFontFaces
+     * actually results in the font being embedded in the pdf
+     * Also verifies that opaque urls with the font-face format property
+     * are correctly supported
+     */
+    @Test
+    public void importedFontFaceWithEmbedOverride() throws Exception {
+        URL htmlUrl = requireNonNull(getClass().getResource("fonts/CssImportFontFace.html"), "test resource not found: fonts/CssImportFontFace.html");
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getFontResolver().addEmbedFontFace("Jacquard 24", BaseFont.IDENTITY_H);
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.getSharedContext().setInteractive(false);
+        renderer.getSharedContext().getTextRenderer().setSmoothingThreshold(0);
+
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        builder.setEntityResolver(FSEntityResolver.instance());
+
+        Document doc = builder.parse(htmlUrl.toString());
+        byte[] pdfBytes = renderer.createPDF(doc);
         try (RandomAccessRead buffer = new RandomAccessReadBuffer(pdfBytes);
              PDDocument document = new PDFParser(buffer).parse()) {
             assertThat(document.getNumberOfPages()).isGreaterThanOrEqualTo(1);
