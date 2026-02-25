@@ -243,17 +243,14 @@ public class ITextFontResolver implements FontResolver {
         List<FontSrc> result = new ArrayList<>();
 
         // Check if it's a list value (multiple sources)
-        if (src instanceof ListValue) {
-            ListValue listValue = (ListValue) src;
+        if (src instanceof ListValue listValue) {
             List<Object> values = listValue.getValues();
             if (values != null) {
                 String currentUri = null;
                 String currentFormat = null;
 
                 for (Object value : values) {
-                    if (value instanceof PropertyValue) {
-                        PropertyValue propValue = (PropertyValue) value;
-
+                    if (value instanceof PropertyValue propValue) {
                         if (propValue.getPrimitiveType() == CSSPrimitiveValue.CSS_URI) {
                             // If we have a pending URI, add it before starting a new one
                             if (currentUri != null) {
@@ -263,7 +260,7 @@ public class ITextFontResolver implements FontResolver {
                             currentUri = propValue.getStringValue();
                         } else if (propValue.getPropertyValueType() == PropertyValue.Type.VALUE_TYPE_FUNCTION) {
                             FSFunction function = propValue.getFunction();
-                            if (function != null && "format".equals(function.getName())) {
+                            if (function != null && function.is("format")) {
                                 List<PropertyValue> params = function.getParameters();
                                 if (!params.isEmpty() && params.get(0).getStringValue() != null) {
                                     currentFormat = params.get(0).getStringValue();
@@ -400,12 +397,11 @@ public class ITextFontResolver implements FontResolver {
             } else if (format != null) {
                 String lower = uri.toLowerCase();
                 if (!lower.endsWith(OTF) && !lower.endsWith(TTF)) {
-                    String ext = "";
-                    if (format.equals("opentype")) {
-                        ext = OTF;
-                    } else if (format.equals("truetype")) {
-                        ext = TTF;
-                    }
+                    String ext = switch (format) {
+                      case "opentype" -> OTF;
+                      case "truetype" -> TTF;
+                      default -> "";
+                    };
                     return fontFamilyName + ext;
                 }
             }
