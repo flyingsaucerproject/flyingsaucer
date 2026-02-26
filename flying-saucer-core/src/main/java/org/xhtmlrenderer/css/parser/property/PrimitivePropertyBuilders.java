@@ -157,6 +157,7 @@ import static org.xhtmlrenderer.css.constants.IdentValue.THICK;
 import static org.xhtmlrenderer.css.constants.IdentValue.THIN;
 import static org.xhtmlrenderer.css.constants.IdentValue.TOP;
 import static org.xhtmlrenderer.css.constants.IdentValue.TRANSPARENT;
+import static org.xhtmlrenderer.css.constants.IdentValue.UNDER;
 import static org.xhtmlrenderer.css.constants.IdentValue.UNDERLINE;
 import static org.xhtmlrenderer.css.constants.IdentValue.UPPERCASE;
 import static org.xhtmlrenderer.css.constants.IdentValue.UPPER_ALPHA;
@@ -1672,6 +1673,20 @@ public class PrimitivePropertyBuilders {
     }
 
     public static class TextIndent extends LengthLike {
+    }
+
+    public static class TextUnderlinePosition extends SingleIdent {
+        // auto | under
+        private static final BitSet ALLOWED = setFor(AUTO, UNDER);
+
+        @Override
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+    }
+
+    public static class TextUnderlineOffset extends LengthLikeWithAuto {
+        // auto | <length> | <percentage>
     }
 
     public static class TextTransform extends SingleIdent {

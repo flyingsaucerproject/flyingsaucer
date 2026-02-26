@@ -1115,6 +1115,14 @@ public class CalculatedStyle {
         }
     }
 
+    public IdentValue getTextUnderlinePosition() {
+        return getIdent(CSSName.TEXT_UNDERLINE_POSITION);
+    }
+
+    public FSDerivedValue getTextUnderlineOffset() {
+        return valueByName(CSSName.TEXT_UNDERLINE_OFFSET);
+    }
+
     @Nullable
     public Cursor getCursor() {
         FSDerivedValue value = valueByName(CSSName.CURSOR);
