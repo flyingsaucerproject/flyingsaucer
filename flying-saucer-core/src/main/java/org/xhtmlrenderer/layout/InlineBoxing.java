@@ -653,30 +653,22 @@ public class InlineBoxing {
             // Place underline below descender as base position
             basePosition = Math.round(baseline + fm.getDescent() + 1);
         } else {
-            // AUTO: Use font metrics as base position
-            if (fm.getUnderlineOffset() == 0) {
-                basePosition = Math.round(baseline + fm.getUnderlineThickness());
-            } else {
-                basePosition = Math.round(baseline + fm.getUnderlineOffset());
-            }
+            basePosition = baseline;
         }
 
-        // Step 2: Apply offset from base position (text-underline-offset)
+        // Calculate offset based on text-underline-offset
         int offset;
         if (offsetValue.isIdent() && offsetValue.asIdentValue() == IdentValue.AUTO) {
-            // AUTO: No additional offset from base position
             offset = basePosition;
         } else {
             // User-specified offset: move from base position
             float offsetFloat = style.getFloatPropertyProportionalTo(CSSName.TEXT_UNDERLINE_OFFSET, 0, c);
             offset = basePosition + Math.round(offsetFloat);
         }
-
-        // Step 3: JDK bug compensation (only for AUTO position and AUTO offset)
-        // JDK on Linux returns some goofy values for LineMetrics.getUnderlineOffset().
-        // Compensate by making sure underline fits inside the descender.
-        if (position == IdentValue.AUTO &&
-            offsetValue.isIdent() && offsetValue.asIdentValue() == IdentValue.AUTO) {
+        if (position == IdentValue.AUTO && offsetValue.isIdent() && offsetValue.asIdentValue() == IdentValue.AUTO) {
+            // JDK on Linux returns some goofy values for
+            // LineMetrics.getUnderlineOffset(). Compensate by always
+            // making sure underline fits inside the descender
             if (fm.getUnderlineOffset() == 0) {  // HACK, are we running under the JDK
                 int maxOffset =
                     baseline + (int) fm.getDescent() - decoration.getThickness();
