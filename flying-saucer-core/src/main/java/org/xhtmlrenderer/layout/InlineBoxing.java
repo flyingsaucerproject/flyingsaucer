@@ -650,8 +650,14 @@ public class InlineBoxing {
         // Step 1: Determine base position (text-underline-position)
         int basePosition;
         if (position == IdentValue.UNDER) {
-            // Place underline below descender as base position
-            basePosition = Math.round(baseline + fm.getDescent() + 1);
+            // Place underline at the bottom of the em box, consistent with
+            // Blink's BottomOfEmHeight. getDescent() is based on the font's
+            // bounding box and can be excessively large for CJK fonts (e.g.
+            // NotoSansJP). getUnderlineOffset() is derived from the font
+            // descriptor's typographic descent, which accurately reflects
+            // the em box bottom edge.
+            float effectiveDescent = Math.min(fm.getDescent(), fm.getUnderlineOffset());
+            basePosition = Math.round(baseline + effectiveDescent + 1);
         } else {
             basePosition = baseline;
         }
