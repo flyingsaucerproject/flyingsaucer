@@ -757,7 +757,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
 
     public void calculateTextDecoration(LayoutContext c) {
         List<TextDecoration> decorations =
-            InlineBoxing.calculateTextDecorations(this, getBaseline(), getStyle().getFSFontMetrics(c));
+            InlineBoxing.calculateTextDecorations(c, this, getBaseline(), getStyle().getFSFontMetrics(c));
         setTextDecorations(decorations);
     }
 
