@@ -1,7 +1,9 @@
 # Changelog
 
-## 10.0.7 (TBD) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/45?closed=1
-* TBD
+## 10.0.7 (27.02.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/45?closed=1
+* #567 Add several improvements to @font-face handling / by Alex Dupre (#639)
+* #636 Fix : Incorrect border rendering when paginated tables span multiple pages / by dogbokchif (#637)
+* Support Underline CSS (text-underline-position, text-underline-offset) / by Chanhyuk Lee (#642)
 
 ## 10.0.6 (24.10.2025) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/44?closed=1
 * #611 fix NPE when table doesn't have "content limited border" (#615)
