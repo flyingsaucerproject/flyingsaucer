@@ -306,7 +306,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <openpdf.version>3.0.1</openpdf.version>
+    <openpdf.version>3.0.2</openpdf.version>
     <batik.version>1.19</batik.version>
     <commons-io.version>2.21.0</commons-io.version>
     <junit.version>6.0.3</junit.version>
