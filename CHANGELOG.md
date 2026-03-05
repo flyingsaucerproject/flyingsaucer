@@ -1,7 +1,7 @@
 # Changelog
 
-## 10.1.0 (TBD) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/46?closed=1
-* TBD
+## 10.1.0 (05.03.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/46?closed=1
+* Bump com.github.librepdf:openpdf from 3.0.1 to 3.0.2 (#644)
 
 ## 10.0.7 (27.02.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/45?closed=1
 * #567 Add several improvements to @font-face handling / by Alex Dupre (#639)
