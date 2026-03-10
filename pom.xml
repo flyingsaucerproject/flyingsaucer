@@ -317,7 +317,7 @@
     <bouncycastle.version>1.77</bouncycastle.version>
     <java.version>21</java.version>
     <error_prone.version>2.48.0</error_prone.version>
-    <swt.version>3.132.0</swt.version>
+    <swt.version>3.133.0</swt.version>
   </properties>
 
 </project>
