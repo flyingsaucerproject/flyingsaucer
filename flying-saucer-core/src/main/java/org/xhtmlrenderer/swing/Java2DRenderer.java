@@ -20,6 +20,8 @@
 package org.xhtmlrenderer.swing;
 
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.NamespaceHandler;
@@ -74,6 +76,7 @@ import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
  * <p>Not thread-safe.</p>
  */
 public class Java2DRenderer {
+    private static final Logger log = LoggerFactory.getLogger(Java2DRenderer.class);
     private static final int DEFAULT_HEIGHT = 1000;
     private static final int DEFAULT_DOTS_PER_POINT = 1;
     private static final int DEFAULT_DOTS_PER_PIXEL = 1;
@@ -295,6 +298,7 @@ public class Java2DRenderer {
         BlockBox root = BoxBuilder.createRootBox(c, doc);
         root.setContainingBlock(new ViewportBox(rect));
         root.layout(c);
+        c.getSharedContext().logUnsupportedTags(log);
         this.root = root;
     }
 

@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Collections.emptyList;
@@ -88,6 +89,17 @@ import static org.xhtmlrenderer.layout.BoxBuilder.MarginDirection.VERTICAL;
  */
 public class BoxBuilder {
     private static final Logger log = LoggerFactory.getLogger(BoxBuilder.class);
+
+    /**
+     * HTML5 semantic/structural elements not supported by FlyingSaucer (HTML4/CSS2 only).
+     * Encountering these in input HTML may produce incorrect or unexpected rendering.
+     */
+    private static final Set<String> HTML5_TAGS = Set.of(
+        "article", "aside", "audio", "canvas", "datalist", "details", "dialog",
+        "figcaption", "figure", "footer", "header", "main", "mark", "meter",
+        "nav", "output", "picture", "progress", "section", "summary",
+        "template", "time", "track", "video", "wbr"
+    );
 
     public enum MarginDirection {
         VERTICAL,
@@ -1041,8 +1053,9 @@ public class BoxBuilder {
                 short nodeType = working.getNodeType();
                 if (nodeType == Node.ELEMENT_NODE) {
                     Element element = (Element) working;
-                    CalculatedStyle style = sharedContext.getStyle(element);
+                    checkForUnsupportedTags(element, sharedContext);
 
+                    CalculatedStyle style = sharedContext.getStyle(element);
                     if (style.isDisplayNone()) {
                         continue;
                     }
@@ -1171,6 +1184,13 @@ public class BoxBuilder {
             children.add(iB);
         }
         insertGeneratedContent(c, parent, parentStyle, "after", children, info);
+    }
+
+    private static void checkForUnsupportedTags(Element element, SharedContext sharedContext) {
+        String tagName = element.getLocalName() != null ? element.getLocalName() : element.getTagName();
+        if (tagName != null && HTML5_TAGS.contains(tagName.toLowerCase())) {
+            sharedContext.addUnsupportedTag(tagName);
+        }
     }
 
     @Nullable

@@ -21,6 +21,7 @@ package org.xhtmlrenderer.layout;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -55,8 +56,10 @@ import java.awt.HeadlessException;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -97,6 +100,8 @@ public final class SharedContext {
     @Nullable
     private Rectangle temporaryCanvas;
     private LineBreakingStrategy lineBreakingStrategy = new DefaultLineBreakingStrategy();
+
+    private final Set<String> unsupportedTags = new LinkedHashSet<>();
 
     public SharedContext() {
         this(new NaiveUserAgent());
@@ -546,6 +551,7 @@ public final class SharedContext {
         styleMap = null;
         idMap.clear();
         replacedElementFactory.reset();
+        unsupportedTags.clear();
     }
 
     public ReplacedElementFactory getReplacedElementFactory() {
@@ -567,5 +573,20 @@ public final class SharedContext {
 
     public void setLineBreakingStrategy(LineBreakingStrategy lineBreakingStrategy) {
         this.lineBreakingStrategy = lineBreakingStrategy;
+    }
+
+    public void addUnsupportedTag(String tagName) {
+        unsupportedTags.add(tagName);
+    }
+
+    public Set<String> getUnsupportedTags() {
+        return unsupportedTags;
+    }
+
+    public void logUnsupportedTags(Logger log) {
+        if (!unsupportedTags.isEmpty()) {
+            log.warn("Encountered HTML5 elements which are not supported by FlyingSaucer: {}. Rendering may be incorrect.",
+                unsupportedTags.stream().map(tag -> String.format("<%s>", tag)).collect(Collectors.joining(", ")));
+        }
     }
 }

@@ -25,6 +25,8 @@ import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.Shell;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
@@ -57,6 +59,7 @@ import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_PRINT;
  * @author Vianney le Clément
  */
 public class PrinterRenderer implements UserInterface {
+    private static final Logger log = LoggerFactory.getLogger(PrinterRenderer.class);
 
     private final Printer _printer;
     private final SharedContext _sharedContext;
@@ -136,6 +139,7 @@ public class PrinterRenderer implements UserInterface {
 
                 long end = System.currentTimeMillis();
                 XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
+                _sharedContext.logUnsupportedTags(log);
             } catch (Throwable e) {
                 XRLog.exception(e.getMessage(), e);
                 return;
