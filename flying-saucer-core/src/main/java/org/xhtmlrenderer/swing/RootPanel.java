@@ -21,6 +21,7 @@ package org.xhtmlrenderer.swing;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -297,6 +298,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             long end = System.currentTimeMillis();
 
             XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
+            c.getSharedContext().logUnsupportedTags(LoggerFactory.getLogger(getClass()));
 
             // if there is a fixed child then we need to set opaque to false
             // so that the entire viewport will be repainted. this is slower

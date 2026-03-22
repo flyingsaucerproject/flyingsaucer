@@ -627,6 +627,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
             long end = System.currentTimeMillis();
             XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
+            _sharedContext.logUnsupportedTags(log);
         } catch (Throwable e) {
             exception(e.getMessage(), e);
             log.error(e.toString(), e);

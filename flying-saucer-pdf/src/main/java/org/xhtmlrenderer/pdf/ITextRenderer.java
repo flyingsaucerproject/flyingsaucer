@@ -26,6 +26,8 @@ import org.openpdf.text.pdf.PdfName;
 import org.openpdf.text.pdf.PdfPageEvent;
 import org.openpdf.text.pdf.PdfString;
 import org.openpdf.text.pdf.PdfWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -75,6 +77,8 @@ import static java.util.Objects.requireNonNull;
 import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_PRINT;
 
 public class ITextRenderer {
+    private static final Logger log = LoggerFactory.getLogger(ITextRenderer.class);
+
     // These two defaults combine to produce an effective resolution of 96 px to the inch
     public static final float DEFAULT_DOTS_PER_POINT = 20.0f * 4.0f / 3.0f;
     public static final int DEFAULT_DOTS_PER_PIXEL = 20;
@@ -287,6 +291,7 @@ public class ITextRenderer {
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
+        c.getSharedContext().logUnsupportedTags(log);
         _dim = root.getLayer().getPaintingDimension(c);
         root.getLayer().trimEmptyPages(_dim.height);
         root.getLayer().layoutPages(c);
