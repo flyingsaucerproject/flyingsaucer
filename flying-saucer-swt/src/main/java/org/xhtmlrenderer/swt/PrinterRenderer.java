@@ -40,10 +40,11 @@ import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.resource.XMLResource;
-import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -105,13 +106,6 @@ public class PrinterRenderer implements UserInterface {
 
     public void print(Document doc, String url, NamespaceHandler nsh,
             String jobName, int startPage, int endPage) {
-        // have to do this first ?
-        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
-            _sharedContext.getCss().flushStyleSheets();
-        } else {
-            _sharedContext.getCss().flushAllStyleSheets();
-        }
-
         _sharedContext.reset();
 
         _sharedContext.setBaseURL(url);

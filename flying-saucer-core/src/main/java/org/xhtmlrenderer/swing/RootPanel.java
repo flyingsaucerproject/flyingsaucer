@@ -45,11 +45,17 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
-import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
@@ -109,13 +115,6 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         resetScrollPosition();
         setRootBox(null);
         this.doc = doc;
-
-        //have to do this first
-        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
-            getSharedContext().getCss().flushStyleSheets();
-        } else {
-            getSharedContext().getCss().flushAllStyleSheets();
-        }
 
         getSharedContext().reset();
         getSharedContext().setBaseURL(url);

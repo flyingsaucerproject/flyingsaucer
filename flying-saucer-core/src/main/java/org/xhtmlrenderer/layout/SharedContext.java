@@ -47,6 +47,7 @@ import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.swing.Java2DTextRenderer;
 import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.Font;
@@ -250,6 +251,7 @@ public final class SharedContext {
         return css;
     }
 
+    @Deprecated
     public void setCss(StyleReference css) {
         this.css = css;
     }
@@ -535,9 +537,15 @@ public final class SharedContext {
     }
 
     public void reset() {
-       styleMap = null;
-       idMap.clear();
-       replacedElementFactory.reset();
+        //have to do this first
+        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
+            css.flushStyleSheets();
+        } else {
+            css.flushAllStyleSheets();
+        }
+        styleMap = null;
+        idMap.clear();
+        replacedElementFactory.reset();
     }
 
     public ReplacedElementFactory getReplacedElementFactory() {

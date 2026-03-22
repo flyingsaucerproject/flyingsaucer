@@ -32,13 +32,12 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
-import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -279,11 +278,6 @@ public class Java2DRenderer {
         this.doc = doc;
 
         sharedContext.reset();
-        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
-            sharedContext.getCss().flushStyleSheets();
-        } else {
-            sharedContext.getCss().flushAllStyleSheets();
-        }
         sharedContext.setBaseURL(url);
         sharedContext.setNamespaceHandler(nsh);
         sharedContext.getCss().setDocumentContext(

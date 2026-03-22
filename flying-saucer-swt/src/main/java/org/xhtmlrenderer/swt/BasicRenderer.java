@@ -66,7 +66,8 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Shape;
 import java.awt.geom.Area;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -91,7 +92,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     private final SharedContext _sharedContext;
 
     // TODO layout_context should not be stored!
-    private LayoutContext _layout_context;
+    private @Nullable LayoutContext _layout_context;
 
     @Nullable
     private Image _layout_image; // Image and GC used in layout_context
@@ -751,12 +752,6 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         _active_element = null;
         _hovered_element = null;
         _focus_element = null;
-        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
-            _sharedContext.getCss().flushStyleSheets();
-        } else {
-            _sharedContext.getCss().flushAllStyleSheets();
-        }
-
         setCursor(null);
         _sharedContext.reset();
         if (_offscreen != null) {
@@ -769,21 +764,13 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         redraw();
     }
 
-    public void setDocument(Document doc, String url, NamespaceHandler nsh) {
+    public void setDocument(@Nullable Document doc, String url, NamespaceHandler nsh) {
         _rootBox = null;
         _doc = doc;
 
         _active_element = null;
         _hovered_element = null;
         _focus_element = null;
-
-        // have to do this first
-        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
-            _sharedContext.getCss().flushStyleSheets();
-        } else {
-            _sharedContext.getCss().flushAllStyleSheets();
-        }
-
         setCursor(null);
         _sharedContext.reset();
         if (_offscreen != null) {
@@ -906,10 +893,12 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return _sharedContext;
     }
 
+    @Nullable
     public LayoutContext getLayoutContext() {
         return _layout_context;
     }
 
+    @Nullable
     public Box find(int x, int y) {
         Layer l = getRootLayer();
         if (l != null) {
@@ -918,17 +907,16 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return null;
     }
 
-    private Element _hovered_element;
-
-    private Element _active_element;
-
-    private Element _focus_element;
+    private @Nullable Element _hovered_element;
+    private @Nullable Element _active_element;
+    private @Nullable Element _focus_element;
 
     @Override
     public boolean isHover(org.w3c.dom.Element e) {
         return e == _hovered_element;
     }
 
+    @Nullable
     public Element getHovered_element() {
         return _hovered_element;
     }
@@ -942,6 +930,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return e == _active_element;
     }
 
+    @Nullable
     public Element getActive_element() {
         return _active_element;
     }
@@ -955,6 +944,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return e == _focus_element;
     }
 
+    @Nullable
     public Element getFocus_element() {
         return _focus_element;
     }
