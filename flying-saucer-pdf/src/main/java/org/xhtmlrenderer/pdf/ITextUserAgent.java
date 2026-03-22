@@ -20,14 +20,14 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import org.openpdf.text.BadElementException;
-import org.openpdf.text.Image;
-import org.openpdf.text.Rectangle;
-import org.openpdf.text.pdf.PdfReader;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.jspecify.annotations.Nullable;
+import org.openpdf.text.BadElementException;
+import org.openpdf.text.Image;
+import org.openpdf.text.Rectangle;
+import org.openpdf.text.pdf.PdfReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -45,8 +45,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static java.lang.Integer.parseInt;
+import static java.lang.Float.parseFloat;
+import static java.lang.Math.round;
+import static java.lang.Math.toIntExact;
 import static java.util.Objects.requireNonNull;
 import static org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper.detectContentType;
 import static org.xhtmlrenderer.util.IOUtil.readBytes;
@@ -55,6 +59,7 @@ import static org.xhtmlrenderer.util.ImageUtil.isEmbeddedBase64Image;
 public class ITextUserAgent extends NaiveUserAgent {
     private static final Logger log = LoggerFactory.getLogger(ITextUserAgent.class);
     private static final int IMAGE_CACHE_CAPACITY = 32;
+    private static final Pattern RE_SIZE_WITH_UNITS = Pattern.compile("(.+?)(\\D{1,2})");
 
     private final ITextOutputDevice _outputDevice;
     private final int dotsPerPixel;
@@ -152,11 +157,11 @@ public class ITextUserAgent extends NaiveUserAgent {
             String width = document.getDocumentElement().getAttribute("width");
             String height = document.getDocumentElement().getAttribute("height");
             if (!width.isEmpty() && !height.isEmpty()) {
-                return new Size(parseInt(width), parseInt(height));
+                return new Size(parseSize(width), parseSize(height));
             }
             String[] viewBox = document.getDocumentElement().getAttribute("viewBox").split(" ", 4);
             if (viewBox.length >= 4) {
-                return new Size(parseInt(viewBox[2]), parseInt(viewBox[3]));
+                return new Size(parseSize(viewBox[2]), parseSize(viewBox[3]));
             }
 
             return new Size(300, 150); // default size in most browsers
@@ -169,4 +174,33 @@ public class ITextUserAgent extends NaiveUserAgent {
             image.scaleAbsolute(image.getPlainWidth() * factor, image.getPlainHeight() * factor);
         }
     }
+
+    /**
+     * Taken from <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units#absolute_length_units">spec</a>
+     *
+     * @param cssValue e.g. "100px", "200pt", "300mm", "400cm", "500Q", "600pc", "700in"
+     * @return the size in pixels
+     */
+    static int parseSize(String cssValue) {
+        CssSize value = parseCssValue(cssValue);
+
+        return toIntExact(round(switch (value.units()) {
+            case "cm" -> 37.8 * value.value();
+            case "mm" -> 96.0 / 25.4 * value.value();
+            case "Q" -> 96.0 / 25.4 / 4 * value.value();
+            case "in" -> 96.0 * value.value();
+            case "pt" -> 96.0 / 72 * value.value();
+            case "pc" -> 96.0 / 72 * 12 * value.value();
+            default -> value.value();
+        }));
+    }
+
+    private static CssSize parseCssValue(String cssValue) {
+        Matcher matcher = RE_SIZE_WITH_UNITS.matcher(cssValue);
+        String value = matcher.matches() ? matcher.group(1) : cssValue;
+        String units = matcher.matches() ? matcher.group(2) : "px";
+        return new CssSize(parseFloat(value), units);
+    }
+
+    private record CssSize(float value, String units) {}
 }
