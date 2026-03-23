@@ -59,9 +59,9 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
 
 /**
  * The SharedContext is that which is kept between successive layout and render runs.
@@ -583,10 +583,16 @@ public final class SharedContext {
         return unsupportedTags;
     }
 
-    public void logUnsupportedTags(Logger log) {
+    public void logUnsupportedFeatures(Logger log) {
         if (!unsupportedTags.isEmpty()) {
             log.warn("Encountered HTML5 elements which are not supported by FlyingSaucer: {}. Rendering may be incorrect.",
-                unsupportedTags.stream().map(tag -> String.format("<%s>", tag)).collect(Collectors.joining(", ")));
+                unsupportedTags.stream().map(tag -> String.format("<%s>", tag)).collect(joining(", ")));
+        }
+
+        Set<String> features = getCss().getUnsupportedCssFeatures();
+        if (!features.isEmpty()) {
+            log.warn("Encountered CSS3 features not supported by FlyingSaucer: {}. Rendering may be incorrect.",
+                features.stream().map(feature -> '"' + feature + '"').collect(joining(", ")));
         }
     }
 }

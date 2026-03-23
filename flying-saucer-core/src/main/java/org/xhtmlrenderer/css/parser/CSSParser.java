@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Locale.ROOT;
@@ -63,6 +64,7 @@ import static org.xhtmlrenderer.css.newmatch.Selector.Axis.IMMEDIATE_SIBLING_AXI
 import static org.xhtmlrenderer.css.newmatch.Selector.FOCUS_PSEUDOCLASS;
 import static org.xhtmlrenderer.css.newmatch.Selector.HOVER_PSEUDOCLASS;
 import static org.xhtmlrenderer.css.newmatch.Selector.VISITED_PSEUDOCLASS;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_IDENT;
 import static org.xhtmlrenderer.css.parser.Token.Type.AT_RULE;
 
 @SuppressWarnings("MissingCasesInEnumSwitch")
@@ -74,6 +76,7 @@ public class CSSParser {
     private Token _saved;
     private final Lexer _lexer;
     private final CSSErrorHandler _errorHandler;
+    private final Consumer<String> _css3FeatureListener;
     @Nullable
     private String _uri;
 
@@ -81,8 +84,13 @@ public class CSSParser {
     private boolean _supportCMYKColors;
 
     public CSSParser(CSSErrorHandler errorHandler) {
+        this(errorHandler, feature -> {});
+    }
+
+    public CSSParser(CSSErrorHandler errorHandler, Consumer<String> css3FeatureListener) {
         _lexer = new Lexer(new StringReader(""));
         _errorHandler = errorHandler;
+        _css3FeatureListener = css3FeatureListener;
     }
 
     @CheckReturnValue
@@ -1246,6 +1254,7 @@ public class CSSParser {
 
     private boolean checkCSSName(@Nullable CSSName cssName, String propertyName) {
         if (cssName == null) {
+            checkForUnsupportedCssProperties(propertyName);
             _errorHandler.error(
                     _uri,
                     propertyName + " is an unrecognized CSS property at line "
@@ -1273,7 +1282,7 @@ public class CSSParser {
         return true;
     }
 
-//  declaration
+    //  declaration
 //    : property ':' S* expr prio?
 //    ;
     private void declaration(Ruleset ruleset, boolean inFontFace) throws IOException {
@@ -1311,6 +1320,7 @@ public class CSSParser {
                     }
 
                     if (valid) {
+                        checkForUnsupportedDisplayValues(cssName, values);
                         try {
                             PropertyBuilder builder = CSSName.getPropertyBuilder(cssName);
                             ruleset.addAllProperties(builder.buildDeclarations(
@@ -1333,7 +1343,7 @@ public class CSSParser {
         }
     }
 
-//  prio
+    //  prio
 //    : IMPORTANT_SYM S*
 //    ;
     private void prio() throws IOException {
@@ -2057,5 +2067,22 @@ public class CSSParser {
     }
 
     private record NamespacePair(String namespaceURI, String name) {
+    }
+
+    private void checkForUnsupportedCssProperties(String propertyName) {
+        if (CSSName.UNSUPPORTED_CSS3_PROPERTIES.contains(propertyName)) {
+            _css3FeatureListener.accept(propertyName);
+        }
+    }
+
+    private void checkForUnsupportedDisplayValues(@Nullable CSSName cssName, List<PropertyValue> values) {
+        if (CSSName.DISPLAY.equals(cssName)) {
+            values.stream()
+                .filter(v -> v.getPropertyValueType() == VALUE_TYPE_IDENT)
+                .map(PropertyValue::getStringValue)
+                .filter(CSSName.UNSUPPORTED_CSS3_DISPLAY_VALUES::contains)
+                .findFirst()
+                .ifPresent(displayValue -> _css3FeatureListener.accept("display: " + displayValue));
+        }
     }
 }

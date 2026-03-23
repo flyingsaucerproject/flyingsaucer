@@ -30,8 +30,8 @@ class BoxBuilderHtml5WarningTest {
                 </body>
             </html>
             """.formatted(tag, tag);
-        Set<String> log = renderAndCaptureLog(html);
-        assertThat(log).containsExactlyInAnyOrder(tag, "summary", "video");
+        Set<String> tags = render(html).getUnsupportedTags();
+        assertThat(tags).containsExactlyInAnyOrder(tag, "summary", "video");
     }
 
     @Test
@@ -45,14 +45,69 @@ class BoxBuilderHtml5WarningTest {
                 </body>
             </html>
             """;
-        Set<String> log = renderAndCaptureLog(html);
-        assertThat(log).doesNotContain("not supported by FlyingSaucer");
+        Set<String> tags = render(html).getUnsupportedTags();
+        assertThat(tags).isEmpty();
     }
 
-    private Set<String> renderAndCaptureLog(String html) throws ParserConfigurationException, IOException, SAXException {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(html.getBytes(UTF_8)));
-        Java2DRenderer renderer = new Java2DRenderer(document, 200);
-        assertThat(renderer.getImage()).isNotNull();
-        return renderer.getSharedContext().getUnsupportedTags();
+    @Test
+    void warnsOnFlexboxDisplayValue() throws Exception {
+        String html = """
+            <html>
+                <head><style>.box { display: flex; }</style></head>
+                <body><div class="box">Hello</div></body>
+            </html>
+            """;
+        Set<String> unsupportedCssFeatures = render(html).getCss().getUnsupportedCssFeatures();
+
+        assertThat(unsupportedCssFeatures).containsExactly("display: flex");
+    }
+
+    @Test
+    void warnsOnGridDisplayValue() throws Exception {
+        String html = """
+            <html>
+                <head><style>.box { display: grid; }</style></head>
+                <body><div class="box">Hello</div></body>
+            </html>
+            """;
+        Set<String> unsupportedCssFeatures = render(html).getCss().getUnsupportedCssFeatures();
+
+        assertThat(unsupportedCssFeatures).containsExactly("display: grid");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"transition", "animation", "transform", "box-shadow", "filter"})
+    void warnsOnCss3PropertyNames(String property) throws Exception {
+        String html = """
+            <html>
+                <head><style>.box { %s: none; } body {resize: both; display: flex}</style></head>
+                <body><div class="box">Hello</div></body>
+            </html>
+            """.formatted(property);
+        Set<String> unsupportedCssFeatures = render(html).getCss().getUnsupportedCssFeatures();
+
+        assertThat(unsupportedCssFeatures).containsExactlyInAnyOrder(property, "resize", "display: flex");
+    }
+
+    @Test
+    void noWarningForCss2Properties() throws Exception {
+        String html = """
+            <html>
+                <head><style>.box { color: red; font-size: 14px; margin: 10px; }</style></head>
+                <body><div class="box">Hello</div></body>
+            </html>
+            """;
+        Set<String> unsupportedCssFeatures = render(html).getCss().getUnsupportedCssFeatures();
+
+        assertThat(unsupportedCssFeatures).isEmpty();
+    }
+
+    private SharedContext render(String html) throws ParserConfigurationException, IOException, SAXException {
+        try (ByteArrayInputStream in = new ByteArrayInputStream(html.getBytes(UTF_8))) {
+            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+            Java2DRenderer renderer = new Java2DRenderer(document, 200);
+            assertThat(renderer.getImage()).isNotNull();
+            return renderer.getSharedContext();
+        }
     }
 }

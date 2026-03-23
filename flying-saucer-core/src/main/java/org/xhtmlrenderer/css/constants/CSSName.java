@@ -43,6 +43,7 @@ import org.xhtmlrenderer.util.XRLog;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -1896,4 +1897,34 @@ public final class CSSName implements Comparable<CSSName> {
 
     public record CSSSideProperties(CSSName top, CSSName right, CSSName bottom, CSSName left) {
     }
+
+    /**
+     * Known CSS3 property names not supported by FlyingSaucer (HTML4/CSS2 only).
+     * Used to give a targeted warning instead of a generic "unrecognized property" message.
+     */
+    public static final Set<String> UNSUPPORTED_CSS3_PROPERTIES = Set.of(
+            // Flexbox
+            "flex", "flex-direction", "flex-wrap", "flex-flow", "flex-grow", "flex-shrink", "flex-basis",
+            "justify-content", "align-items", "align-content", "align-self", "order",
+            // CSS Grid
+            "grid", "grid-template", "grid-template-columns", "grid-template-rows", "grid-template-areas",
+            "grid-column", "grid-row", "grid-area", "gap", "column-gap", "row-gap",
+            "grid-auto-columns", "grid-auto-rows", "grid-auto-flow",
+            // Transitions
+            "transition", "transition-property", "transition-duration", "transition-timing-function", "transition-delay",
+            // Animations
+            "animation", "animation-name", "animation-duration", "animation-timing-function", "animation-delay",
+            "animation-iteration-count", "animation-direction", "animation-fill-mode", "animation-play-state",
+            // Transforms
+            "transform", "transform-origin", "transform-style",
+            // Visual effects
+            "box-shadow", "text-shadow", "filter", "backdrop-filter",
+            // Other common CSS3 properties
+            "user-select", "pointer-events", "resize", "will-change", "object-fit", "object-position", "appearance"
+    );
+
+    /**
+     * CSS3 values for the {@code display} property (flexbox and grid layouts) not supported by FlyingSaucer.
+     */
+    public static final Set<String> UNSUPPORTED_CSS3_DISPLAY_VALUES = Set.of("flex", "inline-flex", "grid", "inline-grid");
 }
