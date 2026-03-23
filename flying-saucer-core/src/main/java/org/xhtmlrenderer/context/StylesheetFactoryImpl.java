@@ -38,7 +38,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -62,10 +64,17 @@ public class StylesheetFactoryImpl implements StylesheetFactory {
      */
     private final Map<String, Stylesheet> _cache = synchronizedMap(new StylesheetCache());
     private final CSSParser _cssParser;
+    private final Set<String> _unsupportedCssFeatures = new LinkedHashSet<>();
 
     public StylesheetFactoryImpl(UserAgentCallback userAgentCallback) {
         _userAgentCallback = userAgentCallback;
-        _cssParser = new CSSParser((uri, message) -> XRLog.cssParse(Level.WARNING, "(" + uri + ") " + message));
+        _cssParser = new CSSParser(
+                (uri, message) -> XRLog.cssParse(Level.WARNING, "(" + uri + ") " + message),
+                _unsupportedCssFeatures::add);
+    }
+
+    Set<String> getUnsupportedCssFeatures() {
+        return _unsupportedCssFeatures;
     }
 
     @Override

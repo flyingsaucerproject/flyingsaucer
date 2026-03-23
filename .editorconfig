@@ -7,3 +7,9 @@ indent_size = 4
 
 [*.xml]
 indent_size = 2
+
+[*.bat]
+end_of_line = crlf
+
+[*.md]
+trim_trailing_whitespace = false

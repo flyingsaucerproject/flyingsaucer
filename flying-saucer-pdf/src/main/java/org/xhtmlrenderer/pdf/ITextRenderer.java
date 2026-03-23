@@ -291,7 +291,7 @@ public class ITextRenderer {
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
         root.layout(c);
-        c.getSharedContext().logUnsupportedTags(log);
+        c.getSharedContext().logUnsupportedFeatures(log);
         _dim = root.getLayer().getPaintingDimension(c);
         root.getLayer().trimEmptyPages(_dim.height);
         root.getLayer().layoutPages(c);

@@ -298,7 +298,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             long end = System.currentTimeMillis();
 
             XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
-            c.getSharedContext().logUnsupportedTags(LoggerFactory.getLogger(getClass()));
+            c.getSharedContext().logUnsupportedFeatures(LoggerFactory.getLogger(getClass()));
 
             // if there is a fixed child then we need to set opaque to false
             // so that the entire viewport will be repainted. this is slower

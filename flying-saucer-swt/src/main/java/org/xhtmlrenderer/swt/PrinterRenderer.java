@@ -139,7 +139,7 @@ public class PrinterRenderer implements UserInterface {
 
                 long end = System.currentTimeMillis();
                 XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
-                _sharedContext.logUnsupportedTags(log);
+                _sharedContext.logUnsupportedFeatures(log);
             } catch (Throwable e) {
                 XRLog.exception(e.getMessage(), e);
                 return;

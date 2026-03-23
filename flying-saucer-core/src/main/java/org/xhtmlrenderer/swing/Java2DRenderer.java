@@ -298,7 +298,7 @@ public class Java2DRenderer {
         BlockBox root = BoxBuilder.createRootBox(c, doc);
         root.setContainingBlock(new ViewportBox(rect));
         root.layout(c);
-        c.getSharedContext().logUnsupportedTags(log);
+        c.getSharedContext().logUnsupportedFeatures(log);
         this.root = root;
     }
 

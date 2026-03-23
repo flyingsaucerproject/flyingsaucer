@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import static org.xhtmlrenderer.css.constants.CSSName.cssProperty;
@@ -226,6 +227,10 @@ public class StyleReference {
 
     public void setSupportCMYKColors(boolean b) {
         _stylesheetFactory.setSupportCMYKColors(b);
+    }
+
+    public Set<String> getUnsupportedCssFeatures() {
+        return _stylesheetFactory.getUnsupportedCssFeatures();
     }
 }
 
