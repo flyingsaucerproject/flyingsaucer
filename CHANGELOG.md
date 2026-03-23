@@ -1,7 +1,9 @@
 # Changelog
 
-## 10.2.0 (TBD) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/47?closed=1
-* TBD
+## 10.2.0 (23.03.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/47?closed=1
+* #630 log a warning if some unsupported HTML5/CSS3 feature was found in input html (#654)
+* #648 support SVG width/height in different units (#653)
+* Bump com.github.librepdf:openpdf from 3.0.2 to 3.0.3 (#649)
 
 ## 10.1.0 (05.03.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/46?closed=1
 * Bump com.github.librepdf:openpdf from 3.0.1 to 3.0.2 (#644)

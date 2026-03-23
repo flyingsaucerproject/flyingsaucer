@@ -94,7 +94,7 @@ public class BoxBuilder {
      * HTML5 semantic/structural elements not supported by FlyingSaucer (HTML4/CSS2 only).
      * Encountering these in input HTML may produce incorrect or unexpected rendering.
      */
-    private static final Set<String> HTML5_TAGS = Set.of(
+    private static final Set<String> UNSUPPORTED_HTML5_TAGS = Set.of(
         "article", "aside", "audio", "canvas", "datalist", "details", "dialog",
         "figcaption", "figure", "footer", "header", "main", "mark", "meter",
         "nav", "output", "picture", "progress", "section", "summary",
@@ -1188,7 +1188,7 @@ public class BoxBuilder {
 
     private static void checkForUnsupportedTags(Element element, SharedContext sharedContext) {
         String tagName = element.getLocalName() != null ? element.getLocalName() : element.getTagName();
-        if (tagName != null && HTML5_TAGS.contains(tagName.toLowerCase())) {
+        if (tagName != null && UNSUPPORTED_HTML5_TAGS.contains(tagName.toLowerCase())) {
             sharedContext.addUnsupportedTag(tagName);
         }
     }
