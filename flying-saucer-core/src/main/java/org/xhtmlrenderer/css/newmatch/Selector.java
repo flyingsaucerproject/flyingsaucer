@@ -42,6 +42,14 @@ import static org.xhtmlrenderer.css.newmatch.Selector.Axis.DESCENDANT_AXIS;
  * @author Torbjoern Gannholm
  */
 public class Selector {
+    public record HasRelativeSelector(List<Axis> axes, List<Selector> selectors) {
+        public HasRelativeSelector {
+            if (axes == null || selectors == null || axes.isEmpty() || selectors.isEmpty() || axes.size() != selectors.size()) {
+                throw new IllegalArgumentException("Axes/selectors must be non-empty and same size");
+            }
+        }
+    }
+
     private final Ruleset _parent;
     private Selector chainedSelector;
     private Selector siblingSelector;
@@ -203,6 +211,13 @@ public class Selector {
     public void addLangCondition(String lang) {
         _specificityC++;
         addCondition(Condition.createLangCondition(lang));
+    }
+
+    public void addHasCondition(List<HasRelativeSelector> relativeSelectors, int specificityB, int specificityC, int specificityD) {
+        _specificityB += specificityB;
+        _specificityC += specificityC;
+        _specificityD += specificityD;
+        addCondition(Condition.createHasCondition(relativeSelectors));
     }
 
     /**
