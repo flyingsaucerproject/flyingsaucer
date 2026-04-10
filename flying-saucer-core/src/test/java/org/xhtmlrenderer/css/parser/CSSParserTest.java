@@ -16,13 +16,16 @@ import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_IDENT;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_NUMBER;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PX;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_URI;
 import static org.xhtmlrenderer.css.constants.CSSName.BACKGROUND_COLOR;
 import static org.xhtmlrenderer.css.constants.CSSName.BACKGROUND_IMAGE;
@@ -116,6 +119,64 @@ class CSSParserTest {
         assertThat(firstSelector.matches(noChild, attributes, treeResolver)).isFalse();
         assertThat(secondSelector.matches(a1, attributes, treeResolver)).isTrue();
         assertThat(secondSelector.matches(a2, attributes, treeResolver)).isFalse();
+    }
+
+    @Test
+    void parsesMultiColumnProperties() throws IOException {
+        Stylesheet stylesheet = parser.parseStylesheet(null, AUTHOR, new StringReader("""
+            div {
+                column-count: 3;
+                column-gap: 24px;
+                column-width: 180px;
+            }
+            """));
+        Ruleset ruleset = (Ruleset) stylesheet.getContents().get(0);
+        List<PropertyDeclaration> declarations = ruleset.getPropertyDeclarations();
+
+        assertThat(declarations).hasSize(3);
+        assertThat(declarations.get(0).getCSSName()).isEqualTo(CSSName.COLUMN_COUNT);
+        assertThat(declarations.get(0).getValue().getPrimitiveType()).isEqualTo(CSS_NUMBER);
+        assertThat(declarations.get(0).getValue().getFloatValue(CSS_NUMBER)).isEqualTo(3f);
+
+        assertThat(declarations.get(1).getCSSName()).isEqualTo(CSSName.COLUMN_GAP);
+        assertThat(declarations.get(1).getValue().getPrimitiveType()).isEqualTo(CSS_PX);
+        assertThat(declarations.get(1).getValue().getFloatValue(CSS_PX)).isEqualTo(24f);
+
+        assertThat(declarations.get(2).getCSSName()).isEqualTo(CSSName.COLUMN_WIDTH);
+        assertThat(declarations.get(2).getValue().getPrimitiveType()).isEqualTo(CSS_PX);
+        assertThat(declarations.get(2).getValue().getFloatValue(CSS_PX)).isEqualTo(180f);
+    }
+
+    @Test
+    void expandsColumnsShorthand() throws IOException {
+        Stylesheet stylesheet = parser.parseStylesheet(null, AUTHOR, new StringReader("""
+            div { columns: 12em 4; }
+            """));
+        Ruleset ruleset = (Ruleset) stylesheet.getContents().get(0);
+        List<PropertyDeclaration> declarations = ruleset.getPropertyDeclarations();
+
+        assertThat(declarations).hasSize(2);
+        assertThat(declarations.get(0).getCSSName()).isEqualTo(CSSName.COLUMN_WIDTH);
+        assertThat(declarations.get(1).getCSSName()).isEqualTo(CSSName.COLUMN_COUNT);
+        assertThat(declarations.get(1).getValue().getPrimitiveType()).isEqualTo(CSS_NUMBER);
+        assertThat(declarations.get(1).getValue().getFloatValue(CSS_NUMBER)).isEqualTo(4f);
+    }
+
+    @Test
+    void expandsColumnsShorthandWithSingleValue() throws IOException {
+        Stylesheet stylesheet = parser.parseStylesheet(null, AUTHOR, new StringReader("""
+            div { columns: 3; }
+            """));
+        Ruleset ruleset = (Ruleset) stylesheet.getContents().get(0);
+        List<PropertyDeclaration> declarations = ruleset.getPropertyDeclarations();
+
+        assertThat(declarations).hasSize(2);
+        assertThat(declarations.get(0).getCSSName()).isEqualTo(CSSName.COLUMN_WIDTH);
+        assertThat(declarations.get(0).getValue().getPrimitiveType()).isEqualTo(CSS_IDENT);
+        assertThat(declarations.get(0).getValue().getCssText()).isEqualTo("auto");
+        assertThat(declarations.get(1).getCSSName()).isEqualTo(CSSName.COLUMN_COUNT);
+        assertThat(declarations.get(1).getValue().getPrimitiveType()).isEqualTo(CSS_NUMBER);
+        assertThat(declarations.get(1).getValue().getFloatValue(CSS_NUMBER)).isEqualTo(3f);
     }
 
     private static PropertyDeclaration css(CSSName property, FSRGBColor color) {
