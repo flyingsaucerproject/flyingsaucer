@@ -23,6 +23,7 @@ package org.xhtmlrenderer.layout;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
@@ -418,9 +419,137 @@ public class BlockBoxing {
         }
         int totalHeight = measureOffset - columnTop;
         for (Box localChild : children) {
-            ((BlockBox) localChild).reset(c);
+            localChild.reset(c);
         }
-        return Math.max(1, (totalHeight + columnCount - 1) / columnCount);
+        if (totalHeight <= 0 || children.isEmpty()) {
+            return Math.max(1, (totalHeight + columnCount - 1) / columnCount);
+        }
+
+        int lo = Math.max(1, (totalHeight + columnCount - 1) / columnCount); // ceil(total/n)
+        int hi = totalHeight;
+        int bestH = hi; // safe fallback
+
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+
+            if (contentFitsInColumns(c, block, children, columnTop, columnCount, mid)) {
+                bestH = mid;   // mid works → try smaller
+                hi = mid - 1;
+            } else {
+                lo = mid + 1;  // mid is too small → try larger
+            }
+        }
+
+        bestH = applyFragmentationRules(c, block, children, columnTop, columnCount, bestH);
+        return Math.max(1, bestH);
+    }
+
+    private static boolean contentFitsInColumns(
+            LayoutContext c, BlockBox block, List<Box> children,
+            int columnTop, int columnCount, int columnH) {
+
+        int usedColumns  = 1;
+        int columnUsed   = 0; // height consumed in the current column
+
+        int measureOffset = columnTop;
+        for (Box localChild : children) {
+            BlockBox child = (BlockBox) localChild;
+
+            // Lay out the child to get its real height.
+            LayoutState state = c.isPrint() ? c.copyStateForRelayout() : null;
+            layoutBlockChild(c, block, child, false, 0, measureOffset, NO_PAGE_TRIM, state);
+            int childHeight = child.getHeight();
+            child.reset(c);
+
+            // Would this child overflow the current column?
+            if (columnUsed + childHeight > columnH) {
+                // Move to the next column.
+                usedColumns++;
+                if (usedColumns > columnCount) {
+                    return false; // needs more columns than allowed → H too small
+                }
+                columnUsed = childHeight; // child starts fresh in the new column
+            } else {
+                columnUsed += childHeight;
+            }
+
+            measureOffset = columnTop + columnUsed; // keep offset in sync
+        }
+
+        return true; // all children fit within columnCount columns
+    }
+
+    private static int applyFragmentationRules(
+            LayoutContext c, BlockBox block, List<Box> children,
+            int columnTop, int columnCount, int initialH) {
+
+        int columnH = initialH;
+        boolean changed = true;
+
+        // Iterate until no more adjustments are needed (usually 1–2 passes).
+        while (changed) {
+            changed = false;
+            int columnUsed = 0;
+
+            int measureOffset = columnTop;
+            for (Box localChild : children) {
+                BlockBox child = (BlockBox) localChild;
+
+                // Lay out child to get its real height.
+                LayoutState state = c.isPrint() ? c.copyStateForRelayout() : null;
+                layoutBlockChild(c, block, child, false, 0, measureOffset, NO_PAGE_TRIM, state);
+                int childHeight = child.getHeight();
+                child.reset(c);
+
+                boolean avoidBreakInside = isBreakInsideAvoid(child);
+
+                if (columnUsed + childHeight > columnH) {
+                    // A column break would occur inside this child.
+                    if (avoidBreakInside && childHeight <= columnH) {
+                        // The child fits in one column on its own but is being split.
+                        // Bump H so the break happens *before* this child (i.e. the
+                        // previous column is extended to exactly columnH, and this
+                        // child starts the next column whole).
+                        // We only need to ensure the previous column's used space
+                        // equals columnH — no change to columnH is needed here;
+                        // the child will simply start in the next column.
+                        // BUT if the child itself is taller than columnH we cannot
+                        // avoid the split — leave it as-is.
+                        columnUsed = childHeight; // child starts fresh in next column
+                    } else if (avoidBreakInside && childHeight > columnH) {
+                        // Child is taller than one column; we must expand columnH
+                        // to at least childHeight so it is never split.
+                        int newH = childHeight;
+                        if (newH > columnH) {
+                            columnH = newH;
+                            changed = true;
+                            break; // restart the pass with the new columnH
+                        }
+                        columnUsed = childHeight;
+                    } else {
+                        // No avoid constraint — normal column break.
+                        columnUsed = childHeight;
+                    }
+                } else {
+                    columnUsed += childHeight;
+                }
+
+                measureOffset = columnTop + columnUsed;
+            }
+        }
+
+        return columnH;
+    }
+
+    private static boolean isBreakInsideAvoid(BlockBox child) {
+        CalculatedStyle style = child.getStyle();
+
+        // CSS 2.1 legacy: page-break-inside
+        if (style.isIdent(CSSName.PAGE_BREAK_INSIDE, IdentValue.AVOID)) {
+            return true;
+        }
+
+        return false;
     }
 
     private static int resolveColumnCount(LayoutContext c, BlockBox block) {
