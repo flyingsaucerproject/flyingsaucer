@@ -953,6 +953,49 @@ public class PrimitivePropertyBuilders {
     public static class Color extends GenericColor {
     }
 
+    public static class ColumnCount extends AbstractPropertyBuilder {
+        @Override
+        public List<PropertyDeclaration> buildDeclarations(
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
+            assertFoundSingleValue(cssName, values);
+            PropertyValue value = (PropertyValue) values.get(0);
+            checkInheritAllowed(value, inheritAllowed);
+            if (value.getCssValueType() != CSS_INHERIT) {
+                checkIdentOrIntegerType(cssName, value);
+                if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+                    IdentValue ident = checkIdent(value);
+                    if (ident != AUTO) {
+                        throw new CSSParseException("Only auto is allowed for " + cssName, -1);
+                    }
+                } else if (value.getFloatValue() < 1.0f) {
+                    throw new CSSParseException(cssName + " must be at least 1", -1);
+                }
+            }
+            return singletonList(new PropertyDeclaration(cssName, value, important, origin));
+        }
+    }
+
+    public static class ColumnGap extends LengthWithNormal {
+        @Override
+        protected boolean isNegativeValuesAllowed() {
+            return false;
+        }
+    }
+
+    public static class ColumnWidth extends LengthWithIdent {
+        private static final BitSet ALLOWED = setFor(AUTO);
+
+        @Override
+        protected BitSet getAllowed() {
+            return ALLOWED;
+        }
+
+        @Override
+        protected boolean isNegativeValuesAllowed() {
+            return false;
+        }
+    }
+
     public static class Cursor extends SingleIdent {
         // [ [<uri> ,]* [ auto | crosshair | default | pointer | move | e-resize
         // | ne-resize | nw-resize | n-resize | se-resize | sw-resize | s-resize

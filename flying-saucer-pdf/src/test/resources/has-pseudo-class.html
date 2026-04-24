@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
+    <title>:has() PDF test</title>
+    <style>
+        .card::after {
+            content: " [PLAIN]";
+        }
+
+        .card:has(.flag)::after {
+            content: " [HAS]";
+        }
+    </style>
+</head>
+<body>
+<div class="card">CARD-1<span class="flag">x</span></div>
+<div class="card">CARD-2</div>
+</body>
+</html>

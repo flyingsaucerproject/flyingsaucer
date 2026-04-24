@@ -1202,6 +1202,11 @@ public class CSSParser {
                     throw e;
                 }
             }
+            case "has" -> {
+                HasPseudoClassResult result = parseHasPseudoClass(selector.getRuleset());
+                selector.addHasCondition(result.relativeSelectors(), result.specificityB(), result.specificityC(), result.specificityD());
+                t = result.lastToken();
+            }
             default -> {
                 push(t);
                 throw new CSSParseException(f + " is not a valid function in this context", getCurrentLine());
@@ -1212,6 +1217,120 @@ public class CSSParser {
             push(t);
             throw new CSSParseException(t, Token.TK_RPAREN, getCurrentLine());
         }
+    }
+
+    private HasPseudoClassResult parseHasPseudoClass(Ruleset ruleset) throws IOException {
+        skip_whitespace();
+        List<Selector.HasRelativeSelector> relativeSelectors = new ArrayList<>();
+        int maxSpecificityB = 0;
+        int maxSpecificityC = 0;
+        int maxSpecificityD = 0;
+
+        while (true) {
+            Token t = la();
+            if (t == Token.TK_RPAREN) {
+                if (relativeSelectors.isEmpty()) {
+                    throw new CSSParseException("The :has() pseudo-class requires a non-empty selector argument", getCurrentLine());
+                }
+                return new HasPseudoClassResult(relativeSelectors, maxSpecificityB, maxSpecificityC, maxSpecificityD, next());
+            }
+
+            if (t == Token.TK_COMMA) {
+                throw new CSSParseException("The :has() pseudo-class does not allow empty selectors", getCurrentLine());
+            }
+
+            ParsedRelativeSelector parsed = parseRelativeSelectorInHas(ruleset);
+            relativeSelectors.add(parsed.relativeSelector());
+            maxSpecificityB = Math.max(maxSpecificityB, parsed.specificityB());
+            maxSpecificityC = Math.max(maxSpecificityC, parsed.specificityC());
+            maxSpecificityD = Math.max(maxSpecificityD, parsed.specificityD());
+
+            skip_whitespace();
+            t = next();
+            if (t == Token.TK_COMMA) {
+                skip_whitespace();
+            } else if (t == Token.TK_RPAREN) {
+                return new HasPseudoClassResult(relativeSelectors, maxSpecificityB, maxSpecificityC, maxSpecificityD, t);
+            } else {
+                push(t);
+                throw new CSSParseException(t, new Token[] {Token.TK_COMMA, Token.TK_RPAREN}, getCurrentLine());
+            }
+        }
+    }
+
+    private ParsedRelativeSelector parseRelativeSelectorInHas(Ruleset ruleset) throws IOException {
+        List<Axis> axes = new ArrayList<>();
+        List<Selector> selectors = new ArrayList<>();
+
+        Axis currentAxis = DESCENDANT_AXIS;
+        Token t = la();
+        if (t == Token.TK_PLUS || t == Token.TK_GREATER) {
+            currentAxis = combinatorToAxis(combinator());
+        }
+
+        selectors.add(simple_selector(ruleset));
+        axes.add(currentAxis);
+
+        int specificityB = selectors.get(0).getSpecificityB();
+        int specificityC = selectors.get(0).getSpecificityC();
+        int specificityD = selectors.get(0).getSpecificityD();
+
+        while (true) {
+            t = la();
+            if (t == Token.TK_RPAREN || t == Token.TK_COMMA) {
+                break;
+            }
+            if (t != Token.TK_PLUS && t != Token.TK_GREATER && t != Token.TK_S) {
+                throw new CSSParseException(
+                        t,
+                        new Token[]{Token.TK_PLUS, Token.TK_GREATER, Token.TK_S, Token.TK_COMMA, Token.TK_RPAREN},
+                        getCurrentLine());
+            }
+
+            Axis axis = combinatorToAxis(combinator());
+            t = la();
+            if (!isSimpleSelectorStart(t)) {
+                throw new CSSParseException(
+                        t,
+                        new Token[]{Token.TK_IDENT, Token.TK_ASTERISK, Token.TK_HASH, Token.TK_PERIOD, Token.TK_LBRACKET, Token.TK_COLON},
+                        getCurrentLine());
+            }
+            Selector next = simple_selector(ruleset);
+            selectors.add(next);
+            axes.add(axis);
+            specificityB += next.getSpecificityB();
+            specificityC += next.getSpecificityC();
+            specificityD += next.getSpecificityD();
+        }
+
+        return new ParsedRelativeSelector(new Selector.HasRelativeSelector(axes, selectors), specificityB, specificityC, specificityD);
+    }
+
+    private Axis combinatorToAxis(Token combinator) {
+        if (combinator == Token.TK_PLUS) {
+            return IMMEDIATE_SIBLING_AXIS;
+        }
+        if (combinator == Token.TK_GREATER) {
+            return CHILD_AXIS;
+        }
+        return DESCENDANT_AXIS;
+    }
+
+    private boolean isSimpleSelectorStart(Token t) {
+        return t == Token.TK_IDENT || t == Token.TK_ASTERISK || t == Token.TK_HASH
+                || t == Token.TK_PERIOD || t == Token.TK_LBRACKET || t == Token.TK_COLON
+                || t == Token.TK_VERTICAL_BAR;
+    }
+
+    private record ParsedRelativeSelector(Selector.HasRelativeSelector relativeSelector, int specificityB, int specificityC, int specificityD) {
+    }
+
+    private record HasPseudoClassResult(
+            List<Selector.HasRelativeSelector> relativeSelectors,
+            int specificityB,
+            int specificityC,
+            int specificityD,
+            Token lastToken) {
     }
 
     private void addPseudoElement(Token t, Selector selector) {

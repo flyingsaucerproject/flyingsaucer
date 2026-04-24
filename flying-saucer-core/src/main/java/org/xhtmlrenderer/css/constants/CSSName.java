@@ -28,6 +28,7 @@ import org.xhtmlrenderer.css.parser.property.BackgroundPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.BorderPropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.BorderSpacingPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.ContentPropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.ColumnsPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.CounterPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.FontPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.ListStylePropertyBuilder;
@@ -436,6 +437,33 @@ public final class CSSName implements Comparable<CSSName> {
                     "none",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.Clear()
+            );
+
+    public static final CSSName COLUMN_COUNT =
+            addProperty(
+                    "column-count",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.ColumnCount()
+            );
+
+    public static final CSSName COLUMN_GAP =
+            addProperty(
+                    "column-gap",
+                    PRIMITIVE,
+                    "normal",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.ColumnGap()
+            );
+
+    public static final CSSName COLUMN_WIDTH =
+            addProperty(
+                    "column-width",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.ColumnWidth()
             );
 
     /**
@@ -1590,6 +1618,15 @@ public final class CSSName implements Comparable<CSSName> {
                     "0",
                     INHERITS,
                     new BorderSpacingPropertyBuilder()
+            );
+
+    public static final CSSName COLUMNS_SHORTHAND =
+            addProperty(
+                    "columns",
+                    SHORTHAND,
+                    "auto auto",
+                    NOT_INHERITED,
+                    new ColumnsPropertyBuilder()
             );
 
     /**

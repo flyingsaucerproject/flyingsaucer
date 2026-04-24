@@ -22,6 +22,7 @@ package org.xhtmlrenderer.css.newmatch;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.TreeResolver;
+import org.xhtmlrenderer.css.newmatch.Selector.Axis;
 import org.xhtmlrenderer.css.parser.CSSParseException;
 
 import java.util.ArrayList;
@@ -158,6 +159,10 @@ abstract class Condition {
      */
     static Condition createUnsupportedCondition() {
         return new UnsupportedCondition();
+    }
+
+    static Condition createHasCondition(List<Selector.HasRelativeSelector> relativeSelectors) {
+        return new HasCondition(relativeSelectors);
     }
 
     private abstract static class AttributeCompareCondition extends Condition {
@@ -468,6 +473,142 @@ abstract class Condition {
             return false;
         }
 
+    }
+
+    private static class HasCondition extends Condition {
+        private final List<Selector.HasRelativeSelector> relativeSelectors;
+
+        private HasCondition(List<Selector.HasRelativeSelector> relativeSelectors) {
+            this.relativeSelectors = relativeSelectors;
+        }
+
+        @Override
+        boolean matches(Node e, AttributeResolver attRes, TreeResolver treeRes) {
+            for (Selector.HasRelativeSelector relativeSelector : relativeSelectors) {
+                if (matchesRelativeSelector(e, attRes, treeRes, relativeSelector)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean matchesRelativeSelector(Node scope, AttributeResolver attRes, TreeResolver treeRes, Selector.HasRelativeSelector relativeSelector) {
+            List<Axis> axes = relativeSelector.axes();
+            List<Selector> selectors = relativeSelector.selectors();
+            Axis firstAxis = axes.getFirst();
+            for (Node candidate : findCandidates(scope, firstAxis)) {
+                if (matchesRelativeSelectorAt(scope, candidate, selectors.size() - 1, selectors, axes, attRes, treeRes)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean matchesRelativeSelectorAt(
+                Node scope,
+                Node candidate,
+                int selectorIndex,
+                List<Selector> selectors,
+                List<Axis> axes,
+                AttributeResolver attRes,
+                TreeResolver treeRes) {
+            Selector selector = selectors.get(selectorIndex);
+            if (!selector.matches(candidate, attRes, treeRes) || !selector.matchesDynamic(candidate, attRes, treeRes)) {
+                return false;
+            }
+
+            Axis relation = axes.get(selectorIndex);
+            if (selectorIndex == 0) {
+                return matchesScopeRelation(scope, candidate, relation, treeRes);
+            }
+
+            return switch (relation) {
+                case CHILD_AXIS -> {
+                    Node parent = treeRes.getParentElement(candidate);
+                    yield parent != null && matchesRelativeSelectorAt(scope, parent, selectorIndex - 1, selectors, axes, attRes, treeRes);
+                }
+                case IMMEDIATE_SIBLING_AXIS -> {
+                    Node previous = treeRes.getPreviousSiblingElement(candidate);
+                    yield previous != null && matchesRelativeSelectorAt(scope, previous, selectorIndex - 1, selectors, axes, attRes, treeRes);
+                }
+                case DESCENDANT_AXIS -> {
+                    Node ancestor = treeRes.getParentElement(candidate);
+                    boolean matched = false;
+                    while (ancestor != null) {
+                        if (matchesRelativeSelectorAt(scope, ancestor, selectorIndex - 1, selectors, axes, attRes, treeRes)) {
+                            matched = true;
+                            break;
+                        }
+                        ancestor = treeRes.getParentElement(ancestor);
+                    }
+                    yield matched;
+                }
+            };
+        }
+
+        private boolean matchesScopeRelation(Node scope, Node candidate, Axis relation, TreeResolver treeRes) {
+            return switch (relation) {
+                case CHILD_AXIS -> scope == treeRes.getParentElement(candidate);
+                case IMMEDIATE_SIBLING_AXIS -> scope == treeRes.getPreviousSiblingElement(candidate);
+                case DESCENDANT_AXIS -> isDescendantOf(candidate, scope, treeRes);
+            };
+        }
+
+        private boolean isDescendantOf(Node candidate, Node scope, TreeResolver treeRes) {
+            Node parent = treeRes.getParentElement(candidate);
+            while (parent != null) {
+                if (parent == scope) {
+                    return true;
+                }
+                parent = treeRes.getParentElement(parent);
+            }
+            return false;
+        }
+
+        private List<Node> findCandidates(Node scope, Axis firstAxis) {
+            return switch (firstAxis) {
+                case CHILD_AXIS -> findChildElements(scope);
+                case DESCENDANT_AXIS -> findDescendantElements(scope);
+                case IMMEDIATE_SIBLING_AXIS -> findNextSiblingElement(scope);
+            };
+        }
+
+        private List<Node> findChildElements(Node scope) {
+            List<Node> result = new ArrayList<>();
+            Node child = scope.getFirstChild();
+            while (child != null) {
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    result.add(child);
+                }
+                child = child.getNextSibling();
+            }
+            return result;
+        }
+
+        private List<Node> findDescendantElements(Node scope) {
+            List<Node> result = new ArrayList<>();
+            collectDescendantElements(scope, result);
+            return result;
+        }
+
+        private void collectDescendantElements(Node node, List<Node> acc) {
+            Node child = node.getFirstChild();
+            while (child != null) {
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    acc.add(child);
+                    collectDescendantElements(child, acc);
+                }
+                child = child.getNextSibling();
+            }
+        }
+
+        private List<Node> findNextSiblingElement(Node scope) {
+            Node sibling = scope.getNextSibling();
+            while (sibling != null && sibling.getNodeType() != Node.ELEMENT_NODE) {
+                sibling = sibling.getNextSibling();
+            }
+            return sibling == null ? List.of() : List.of(sibling);
+        }
     }
 
     private static String[] split(String s, char ch) {
