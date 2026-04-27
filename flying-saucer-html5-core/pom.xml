@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.xhtmlrenderer</groupId>
+    <artifactId>flying-saucer-parent</artifactId>
+    <version>10.2.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>flying-saucer-html5-core</artifactId>
+  <description>Flying Saucer is a HTML 5 + CSS renderer written in Java.  This artifact contains the core rendering and layout code as well as Java2D output.</description>
+
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License (LGPL), version 2.1 or later</name>
+      <url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
+    </license>
+  </licenses>
+
+  <packaging>jar</packaging>
+
+  <name>Flying Saucer HTML5 Core Renderer</name>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>../</directory>
+        <targetPath>META-INF</targetPath>
+        <includes>
+          <include>LICENSE*</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>de.jflex</groupId>
+        <artifactId>jflex-maven-plugin</artifactId>
+        <version>1.9.1</version>
+        <executions>
+          <execution>
+            <id>generate-parser</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>src/main/java</outputDirectory>
+              <lexDefinitions>
+                <lexDefinition>src/main/java/org/xhtmlrenderer/css/parser/Lexer.flex</lexDefinition>
+              </lexDefinitions>
+              <jlex>true</jlex>
+              <minimize>false</minimize>
+              <encodingName>UTF-8</encodingName>
+              <verbose>true</verbose>
+              <backup>false</backup>
+              <dump>true</dump>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>target/classes/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.xhtmlrenderer.flying.saucer.core</Bundle-SymbolicName>
+            <Automatic-Module-Name>flying.saucer</Automatic-Module-Name>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- Dependency resolution seems not to work properly with default
+              behavior of importing the exported packages. -->
+            <Import-Package>!org.xhtmlrenderer.*</Import-Package>
+            <Export-Package>org.xhtmlrenderer.*</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

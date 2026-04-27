@@ -107,6 +107,7 @@
 
   <modules>
     <module>flying-saucer-core</module>
+    <module>flying-saucer-html5-core</module>    
     <module>flying-saucer-pdf</module>
     <module>flying-saucer-pdf-osgi</module>
     <module>flying-saucer-log4j</module>
