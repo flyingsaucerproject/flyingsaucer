@@ -243,7 +243,7 @@ public class Java2DRenderer {
      */
     public BufferedImage getImage() {
         if (!rendered) {
-            setDocument((doc == null ? loadDocument(sourceDocument) : doc), sourceDocumentBase, new XhtmlNamespaceHandler());
+            setDocument((doc == null ? loadDocument(sourceDocument) : doc), sourceDocumentBase, createNamespaceHandler());
 
             layout(this.width);
 
@@ -260,6 +260,11 @@ public class Java2DRenderer {
         }
 
         return outputImage;
+    }
+
+    /** Factory method for the namespace handler used when rendering. Subclasses may override to supply an HTML5-aware handler. */
+    protected NamespaceHandler createNamespaceHandler() {
+        return new XhtmlNamespaceHandler();
     }
 
     /**

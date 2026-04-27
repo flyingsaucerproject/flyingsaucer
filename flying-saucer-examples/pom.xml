@@ -27,12 +27,7 @@
   <dependencies>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
-      <artifactId>flying-saucer-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xhtmlrenderer</groupId>
-      <artifactId>flying-saucer-pdf</artifactId>
+      <artifactId>flying-saucer-html5-pdf</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -49,7 +44,6 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.22.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

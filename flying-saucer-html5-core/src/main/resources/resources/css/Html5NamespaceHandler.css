@@ -1,0 +1,251 @@
+/* ── Block-display elements ────────────────────────────────────────────── */
+
+html, address,
+blockquote,
+body, dd, div,
+dl, dt, fieldset, form,
+frame, frameset,
+h1, h2, h3, h4,
+h5, h6, noframes,
+ol, p, ul, center,
+dir, hr, menu, pre, object   { display: block }
+
+/* HTML5 semantic block elements */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, main, nav,
+section, summary, dialog      { display: block }
+
+li              { display: list-item }
+head, script,
+template, noscript { display: none }
+
+/* ── Body ──────────────────────────────────────────────────────────────── */
+body {
+    margin: 8px;
+    line-height: 1.4;
+}
+
+/* ── Headings ──────────────────────────────────────────────────────────── */
+h1              { font-size: 2em;    margin: .67em 0 }
+h2              { font-size: 1.5em;  margin: .75em 0 }
+h3              { font-size: 1.17em; margin: .83em 0 }
+h4, p,
+blockquote, ul,
+fieldset,
+ol, dl, dir,
+menu            { margin: 1.12em 0 }
+h5              { font-size: .83em; margin: 1.5em 0 }
+h6              { font-size: .75em; margin: 1.67em 0 }
+h1, h2, h3, h4,
+h5, h6, b,
+strong          { font-weight: bold }
+blockquote      { margin-left: 40px; margin-right: 40px }
+
+/* ── Inline typography ─────────────────────────────────────────────────── */
+i, cite, em,
+var, address    { font-style: italic }
+pre, tt, code,
+kbd, samp       { font-family: monospace }
+pre             { white-space: pre }
+big             { font-size: 1.17em }
+small           { font-size: .83em }
+s, strike, del  { text-decoration: line-through }
+u, ins          { text-decoration: underline }
+center          { text-align: center }
+
+/* HTML5 inline / phrasing elements */
+mark            { background-color: yellow; color: black }
+abbr[title]     { text-decoration: underline dotted; cursor: help }
+dfn             { font-style: italic }
+meter, progress, output { display: inline-block }
+video, audio, canvas    { display: inline-block }
+
+/* ── Lists ─────────────────────────────────────────────────────────────── */
+ol, ul, dir,
+menu            { padding-left: 40px }
+dd              { margin-left: 40px }
+ul              { list-style-type: disc }
+ol              { list-style-type: decimal }
+ol ul, ul ol,
+ul ul, ol ol    { margin-top: 0; margin-bottom: 0 }
+
+/* ── Form controls ─────────────────────────────────────────────────────── */
+button, textarea,
+input, select   { display: inline-block; font-family: sans-serif; font-size: 10pt }
+
+/* ── Whitespace / line-break ───────────────────────────────────────────── */
+br:before       { content: "\A"; white-space: pre-line }
+
+/* ── Links ─────────────────────────────────────────────────────────────── */
+a               { color: #0000ff }
+a:link          { cursor: pointer }
+a:link, a:visited { text-decoration: underline }
+
+/* ── Images ────────────────────────────────────────────────────────────── */
+img {
+    display: inline-block;
+    border-width: 1px 1px 1px 1px;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── Sub / sup ─────────────────────────────────────────────────────────── */
+sub {
+    vertical-align: sub;
+    font-size: 0.83em;
+    line-height: normal;
+}
+
+sup {
+    vertical-align: super;
+    font-size: 0.83em;
+    line-height: normal;
+}
+
+/* ── Horizontal rule ───────────────────────────────────────────────────── */
+hr {
+    display: block;
+    border: 1px inset;
+    margin: 0.5em auto 0.5em auto;
+}
+
+hr[size="1"] {
+    border-width: 1px 0 0 0;
+    border-style: solid none none none;
+}
+
+/* ── Pre / code ────────────────────────────────────────────────────────── */
+pre {
+    margin: 1em 0;
+}
+
+code {
+    font-size: 0.9em;
+}
+
+/* ── Form ──────────────────────────────────────────────────────────────── */
+form {
+    margin: 0 0 1em 0;
+}
+
+/* ── Figure ────────────────────────────────────────────────────────────── */
+figure {
+    margin: 1em 40px;
+}
+
+figcaption {
+    font-style: italic;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+/* ── Details / summary ─────────────────────────────────────────────────── */
+details > summary {
+    display: list-item;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* ── Tables ────────────────────────────────────────────────────────────── */
+table {
+    display: table;
+    border-spacing: 2px;
+    border-collapse: separate;
+    margin-top: 0;
+    margin-bottom: 0;
+    text-indent: 0;
+}
+
+caption {
+    display: table-caption;
+    text-align: center;
+}
+
+table[align="center"] > caption {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table[align="center"] > caption[align="left"] {
+    margin-right: 0;
+}
+
+table[align="center"] > caption[align="right"] {
+    margin-left: 0;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+}
+
+col {
+    display: table-column;
+}
+
+colgroup {
+    display: table-column-group;
+}
+
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+}
+
+tfoot {
+    display: table-footer-group;
+    vertical-align: middle;
+}
+
+table > tr {
+    vertical-align: middle;
+}
+
+td {
+    display: table-cell;
+    vertical-align: inherit;
+    text-align: inherit;
+    padding: 1px;
+}
+
+th {
+    display: table-cell;
+    vertical-align: inherit;
+    font-weight: bold;
+    padding: 1px;
+}
+
+/* ── Page defaults ─────────────────────────────────────────────────────── */
+@page {
+    margin: 1in;
+}
+
+@page :first {
+    margin-top: 1.25in;
+}
+
+/* ── Print / PDF rules ─────────────────────────────────────────────────── */
+@media print {
+    /* Keep headings with the content that follows them */
+    h1, h2, h3, h4, h5, h6 { page-break-after: avoid }
+
+    /* Avoid page breaks immediately after a heading */
+    h1 { page-break-before: always }
+    h2, h3 { page-break-before: auto }
+
+    /* Keep list items and table rows together where possible */
+    ul, ol, dl    { page-break-before: avoid }
+    tr, img, pre  { page-break-inside: avoid }
+
+    /* Ensure links show their href in print — handled via content in CSS 2.1 */
+    a[href]:after { content: " (" attr(href) ")"; font-size: 0.85em; color: #555 }
+    a[href^="#"]:after { content: "" }
+
+    /* Suppress decorative borders on print */
+    body { margin: 0 }
+}

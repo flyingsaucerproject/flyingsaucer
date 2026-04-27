@@ -25,6 +25,13 @@
 
   <name>Flying Saucer HTML5 Core Renderer</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.htmlunit</groupId>
+      <artifactId>neko-htmlunit</artifactId>
+    </dependency>
+  </dependencies>
+
   <build>
     <resources>
       <resource>

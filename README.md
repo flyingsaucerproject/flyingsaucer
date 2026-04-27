@@ -33,9 +33,13 @@ of these, along with the license they each have, is listed in the
 
 New releases of Flying Saucer are distributed through Maven. The available artifacts are:
 
+HTML 5 renderer:
+* `org.xhtmlrenderer:flying-saucer-html5-core` - Core library and Java2D rendering with HTML5 support
+* `org.xhtmlrenderer:flying-saucer-html5-pdf` - PDF output using OpenPDF with HTML 5 support.
+
+HTML 4 renderer:
 * `org.xhtmlrenderer:flying-saucer-core` - Core library and Java2D rendering
-* `org.xhtmlrenderer:flying-saucer-pdf` - PDF output using OpenPDF (ex. iText 2.x)
-* `org.xhtmlrenderer:flying-saucer-pdf-openpdf` - not supported anymore (replaced by `flying-saucer-pdf`)
+* `org.xhtmlrenderer:flying-saucer-pdf` - PDF output using OpenPDF
 * `org.xhtmlrenderer:flying-saucer-swt` - SWT output
 * `org.xhtmlrenderer:flying-saucer-log4j` - Logging plugin for log4j
 
