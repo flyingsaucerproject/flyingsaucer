@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.2.1 (2x.05.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/48?closed=1
+* support SVG images with BOM prefix / by Stanley Leong (#665)
+
+
 ## 10.2.0 (23.03.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/47?closed=1
 * #630 log a warning if some unsupported HTML5/CSS3 feature was found in input html (#654)
 * #648 support SVG width/height in different units (#653)

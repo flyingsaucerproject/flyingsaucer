@@ -19,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  *
  * @author mwyraz
  */
-public class ContentTypeDetectingInputStreamWrapper extends BufferedInputStream {
+public final class ContentTypeDetectingInputStreamWrapper extends BufferedInputStream {
     private static final byte[] MAGIC_BYTES_PDF = "%PDF".getBytes(UTF_8);
     private static final byte[] MAGIC_BYTES_XML = "<?xm".getBytes(UTF_8);
     private static final byte[] MAGIC_BYTES_SVG = "<svg".getBytes(UTF_8);
@@ -38,8 +38,8 @@ public class ContentTypeDetectingInputStreamWrapper extends BufferedInputStream 
 
     private ContentTypeDetectingInputStreamWrapper(InputStream source) throws IOException {
         super(source);
-        skipUtf8BomIfPresent(this);
-        this.firstBytes = readFirstBytes(this, MAX_MAGIC_BYTES);
+        skipUtf8BomIfPresent(source);
+        this.firstBytes = readFirstBytes(source, MAX_MAGIC_BYTES);
     }
 
     /**
