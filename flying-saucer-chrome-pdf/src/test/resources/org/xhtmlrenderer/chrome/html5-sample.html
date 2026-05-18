@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>HTML5 &amp; CSS3 Combined</title>
+    <style>
+        /* CSS3 Custom Properties (Variables) for easy theme management */
+        :root {
+            --primary-bg: #f4f4f9;
+            --header-bg: #2c3e50;
+            --text-main: #333;
+            --card-bg: #ffffff;
+        }
+
+        /* Basic Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* CSS3 Viewport height and Flexbox on the body to keep the footer at the bottom */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* HTML5 Semantic Elements Styling */
+        header, footer {
+            background-color: var(--header-bg);
+            color: #ffffff;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        /* Using the HTML5 `main` tag as our CSS3 Flexbox container */
+        main {
+            flex: 1; /* Allows main to grow and push the footer down */
+            display: flex;
+            flex-wrap: wrap; /* Wraps cards on smaller screens */
+            gap: 25px; /* Perfect spacing between cards */
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        /* HTML5 `article` tags styled as interactive CSS3 cards */
+        article {
+            background-color: var(--card-bg);
+            flex: 1 1 300px; /* Grow, shrink, and start at 300px wide */
+            padding: 2rem;
+
+            /* CSS3 Visual Features */
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* CSS3 Hover State */
+        article:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        article h2 {
+            margin-bottom: 1rem;
+            color: var(--header-bg);
+        }
+
+        article p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        @page {
+            size: A4;
+            margin: 20mm;
+
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                color: #666;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Modern Web Architecture</h1>
+    <p>Combining Semantic HTML5 with Responsive CSS3</p>
+</header>
+
+<main>
+
+    <article>
+        <h2>Semantic Structure</h2>
+        <p>By using tags like <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, and <code>&lt;article&gt;</code>, we tell search engines and screen readers exactly what each part of our page does, improving both SEO and accessibility.</p>
+    </article>
+
+    <article>
+        <h2>Flexible Layouts</h2>
+        <p>We applied CSS3 Flexbox directly to the <code>&lt;main&gt;</code> tag. This allows these article cards to sit side-by-side on desktop screens and automatically stack on top of each other on mobile devices.</p>
+    </article>
+
+    <article>
+        <h2>Interactive Styling</h2>
+        <p>Hover over this card to see CSS3 <code>transform</code> and <code>transition</code> in action. It provides a smooth, floating interactive effect without requiring a single line of JavaScript.</p>
+    </article>
+
+    <article class="page-break">
+        <h2>Another page</h2>
+        <p>This blocks comes on a second page</p>
+    </article>
+
+</main>
+
+<footer>
+    <p>&copy; 2026 Web Development Journal. Built with modern standards.</p>
+</footer>
+
+</body>
+</html>

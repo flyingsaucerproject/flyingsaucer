@@ -103,9 +103,6 @@
     </inspection_tool>
     <inspection_tool class="ImplicitDefaultCharsetUsage" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="InnerClassReferencedViaSubclass" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="InstanceVariableInitialization" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="m_ignorePrimitives" value="false" />
-    </inspection_tool>
     <inspection_tool class="InstanceVariableUninitializedUse" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_ignorePrimitives" value="false" />
       <option name="annotationNamesString" value="" />
