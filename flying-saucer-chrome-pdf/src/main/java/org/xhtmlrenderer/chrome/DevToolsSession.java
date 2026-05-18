@@ -29,19 +29,23 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 class DevToolsSession implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(DevToolsSession.class);
     private static final Pattern LISTENING_LINE = Pattern.compile("DevTools listening on (ws://\\S+)");
 
     private final Process process;
+    private final HttpClient httpClient;
     private final WebSocket webSocket;
     private final AtomicLong messageId = new AtomicLong();
     private final ConcurrentHashMap<Long, CompletableFuture<String>> pending = new ConcurrentHashMap<>();
     private final AtomicReference<@Nullable CompletableFuture<Void>> currentLoad = new AtomicReference<>();
     private volatile boolean closed;
 
-    private DevToolsSession(Process process, WebSocket webSocket) {
+    private DevToolsSession(Process process, HttpClient httpClient, WebSocket webSocket) {
         this.process = process;
+        this.httpClient = httpClient;
         this.webSocket = webSocket;
     }
 
@@ -55,30 +59,35 @@ class DevToolsSession implements AutoCloseable {
 
         URI browserWs;
         try {
-            browserWs = listening.get(startupTimeout.toMillis(), TimeUnit.MILLISECONDS);
+            browserWs = listening.get(startupTimeout.toMillis(), MILLISECONDS);
         } catch (Exception e) {
             proc.destroyForcibly();
             throw new IOException("chrome-headless-shell failed to start within " + startupTimeout, e);
         }
 
-        URI pageWs = findFirstPageWebSocketUrl(browserWs.getPort(), startupTimeout);
-
-        SessionHolder holder = new SessionHolder();
-        WebSocket ws;
+        HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
         try {
-            ws = HttpClient.newHttpClient()
-                    .newWebSocketBuilder()
-                    .buildAsync(pageWs, holder.listener())
-                    .get(startupTimeout.toMillis(), TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            proc.destroyForcibly();
-            throw new IOException("Failed to connect to chrome DevTools WebSocket at " + pageWs, e);
-        }
+            URI pageWs = findFirstPageWebSocketUrl(http, browserWs.getPort(), startupTimeout);
 
-        DevToolsSession session = new DevToolsSession(proc, ws);
-        holder.session = session;
-        session.call("Page.enable", "{}", Duration.ofSeconds(5));
-        return session;
+            SessionHolder holder = new SessionHolder();
+            WebSocket ws;
+            try {
+                ws = http.newWebSocketBuilder()
+                        .buildAsync(pageWs, holder.listener())
+                        .get(startupTimeout.toMillis(), MILLISECONDS);
+            } catch (Exception e) {
+                throw new IOException("Failed to connect to chrome DevTools WebSocket at " + pageWs, e);
+            }
+
+            DevToolsSession session = new DevToolsSession(proc, http, ws);
+            holder.session = session;
+            session.call("Page.enable", "{}", Duration.ofSeconds(5));
+            return session;
+        } catch (IOException e) {
+            http.close();
+            proc.destroyForcibly();
+            throw e;
+        }
     }
 
     private static void startStderrReader(Process proc, CompletableFuture<URI> listening) {
@@ -102,8 +111,7 @@ class DevToolsSession implements AutoCloseable {
         reader.start();
     }
 
-    private static URI findFirstPageWebSocketUrl(int port, Duration timeout) throws IOException {
-        HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+    private static URI findFirstPageWebSocketUrl(HttpClient http, int port, Duration timeout) throws IOException {
         long deadline = System.nanoTime() + timeout.toNanos();
         IOException lastError = null;
         while (System.nanoTime() < deadline) {
@@ -182,7 +190,7 @@ class DevToolsSession implements AutoCloseable {
             throw new IOException("Failed to send " + method, e);
         }
         try {
-            String response = fut.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            String response = fut.get(timeout.toMillis(), MILLISECONDS);
             String error = extractObjectField(response, "error");
             if (error != null) {
                 String errMsg = extractStringField(error, "message");
@@ -208,7 +216,7 @@ class DevToolsSession implements AutoCloseable {
         try {
             call("Page.navigate", "{\"url\":\"" + escapeJson(htmlUrl) + "\"}", timeout);
             try {
-                load.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+                load.get(timeout.toMillis(), MILLISECONDS);
             } catch (TimeoutException e) {
                 throw new IOException("Page.loadEventFired did not fire within " + timeout + " for " + htmlUrl, e);
             } catch (InterruptedException e) {
@@ -251,6 +259,7 @@ class DevToolsSession implements AutoCloseable {
             Thread.currentThread().interrupt();
             process.destroyForcibly();
         }
+        httpClient.close();
         IOException reason = new IOException("DevTools session closed");
         for (CompletableFuture<String> f : pending.values()) {
             f.completeExceptionally(reason);

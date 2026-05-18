@@ -14,10 +14,11 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 
 public class ChromiumPdfRenderer implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(ChromiumPdfRenderer.class);
@@ -187,7 +188,7 @@ public class ChromiumPdfRenderer implements AutoCloseable {
 
     private void scheduleIdleCloseLocked() {
         if (idleScheduler == null) {
-            idleScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+            idleScheduler = newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r, "fs-chrome-idle");
                 t.setDaemon(true);
                 return t;
@@ -226,6 +227,7 @@ public class ChromiumPdfRenderer implements AutoCloseable {
         try {
             Runtime.getRuntime().addShutdownHook(shutdownHook);
         } catch (IllegalStateException alreadyShuttingDown) {
+            log.warn("chrome shutdown already in progress", alreadyShuttingDown);
             shutdownHook = null;
         }
     }

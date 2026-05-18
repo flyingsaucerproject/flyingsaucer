@@ -53,15 +53,14 @@ class ChromeBinaryDownloader {
     }
 
     private void httpGetToFile(URI url, Path target) throws IOException {
-        HttpClient client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.ALWAYS)
-                .connectTimeout(Duration.ofSeconds(30))
-                .build();
         HttpRequest request = HttpRequest.newBuilder(url)
                 .timeout(Duration.ofMinutes(5))
                 .GET()
                 .build();
-        try {
+        try (HttpClient client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.ALWAYS)
+                .connectTimeout(Duration.ofSeconds(30))
+                .build()) {
             HttpResponse<Path> response = client.send(request,
                     HttpResponse.BodyHandlers.ofFile(target, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING));
             if (response.statusCode() / 100 != 2) {
