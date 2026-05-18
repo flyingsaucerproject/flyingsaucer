@@ -34,9 +34,29 @@ public class ContentTypeDetectingInputStreamWrapper extends BufferedInputStream 
 
     private final byte[] firstBytes;
 
+    private static final byte[] UTF_8_BOM = { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF };
+
     private ContentTypeDetectingInputStreamWrapper(InputStream source) throws IOException {
         super(source);
+        skipUtf8BomIfPresent(this);
         this.firstBytes = readFirstBytes(this, MAX_MAGIC_BYTES);
+    }
+
+    /**
+     * If the wrapped stream begins with a UTF-8 BOM (EF BB BF), consume it
+     * so {@link #firstBytes} captures the real first glyph. Otherwise the
+     * magic-byte comparison fails for BOM-prefixed XML / SVG written by
+     * text editors that auto-prepend a BOM (e.g. Notepad on Windows), and
+     * {@link #isSvg()} returns {@code false} for what is clearly an SVG.
+     */
+    private static void skipUtf8BomIfPresent(InputStream in) throws IOException {
+        in.mark(UTF_8_BOM.length);
+        byte[] head = new byte[UTF_8_BOM.length];
+        int bytesRead = in.read(head);
+        if (bytesRead == UTF_8_BOM.length && Arrays.equals(head, UTF_8_BOM)) {
+            return; // BOM consumed; subsequent reads see "<svg…" / "<?xml…"
+        }
+        in.reset();
     }
 
     private static byte[] readFirstBytes(InputStream in, int count) throws IOException {
