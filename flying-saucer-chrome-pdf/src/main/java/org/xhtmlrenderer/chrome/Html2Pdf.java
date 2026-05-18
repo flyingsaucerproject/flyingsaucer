@@ -8,12 +8,14 @@ import java.net.URL;
 import static java.util.Objects.requireNonNull;
 
 public final class Html2Pdf {
+    private static final ChromiumPdfRenderer SHARED = new ChromiumPdfRenderer();
+
     private Html2Pdf() {
     }
 
     public static byte[] fromUrl(URL html) {
         try {
-            return new ChromiumPdfRenderer().renderToPdf(html);
+            return SHARED.renderToPdf(html);
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to render PDF from " + html, e);
         }
@@ -21,7 +23,7 @@ public final class Html2Pdf {
 
     public static byte[] fromFile(File html) {
         try {
-            return new ChromiumPdfRenderer().renderToPdf(html);
+            return SHARED.renderToPdf(html);
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to render PDF from " + html, e);
         }
@@ -29,7 +31,7 @@ public final class Html2Pdf {
 
     public static byte[] fromHtml(String html) {
         try {
-            return new ChromiumPdfRenderer().renderFromHtml(html);
+            return SHARED.renderFromHtml(html);
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to render PDF from inline HTML", e);
         }
