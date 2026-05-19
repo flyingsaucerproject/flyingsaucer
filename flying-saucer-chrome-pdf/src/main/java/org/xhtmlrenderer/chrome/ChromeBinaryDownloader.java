@@ -29,7 +29,7 @@ import static java.nio.file.attribute.PosixFilePermission.OWNER_WRITE;
 class ChromeBinaryDownloader {
     private static final Logger log = LoggerFactory.getLogger(ChromeBinaryDownloader.class);
 
-    static final String BASE_URL = "https://storage.googleapis.com/chrome-for-testing-public";
+    private static final String BASE_URL = "https://storage.googleapis.com/chrome-for-testing-public";
 
     URI zipUrl(String version, ChromePlatform platform) {
         return URI.create("%s/%s/%s/chrome-headless-shell-%s.zip"
