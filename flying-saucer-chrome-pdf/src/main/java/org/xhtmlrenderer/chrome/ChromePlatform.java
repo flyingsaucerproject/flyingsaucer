@@ -25,24 +25,29 @@ public enum ChromePlatform {
     }
 
     public static ChromePlatform detect() {
-        String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
-        String arch = System.getProperty("os.arch", "").toLowerCase(Locale.ROOT);
-        boolean arm64 = arch.contains("aarch64") || arch.contains("arm64");
+        String arch = System.getProperty("os.arch", "");
+        boolean arm64 = arch.toLowerCase(Locale.ROOT).contains("aarch64")
+                || arch.toLowerCase(Locale.ROOT).contains("arm64");
+        return detect(System.getProperty("os.name", ""), arch, arm64);
+    }
 
-        if (os.contains("mac") || os.contains("darwin")) {
+    static ChromePlatform detect(String os, String arch, boolean arm64) {
+        String o = os.toLowerCase(Locale.ROOT);
+        if (o.contains("mac") || o.contains("darwin")) {
             return arm64 ? MAC_ARM64 : MAC_X64;
         }
-        if (os.contains("win")) {
+        if (o.contains("win")) {
             return WIN64;
         }
-        if (os.contains("nux") || os.contains("nix")) {
+        if (o.contains("nux") || o.contains("nix")) {
             if (arm64) {
                 throw new UnsupportedOperationException(
-                        "chrome-for-testing does not publish a Linux arm64 build of chrome-headless-shell. " +
+                        "chrome-for-testing does not publish a Linux arm64 build of chrome-headless-shell " +
+                                "(detected os=" + os + ", arch=" + arch + "). " +
                                 "Install chrome-headless-shell manually and pass its path via ChromiumPdfRenderer.setBinaryPath().");
             }
             return LINUX64;
         }
-        throw new UnsupportedOperationException("Unsupported OS for chrome-for-testing: " + os);
+        throw new UnsupportedOperationException("Unsupported OS for chrome-for-testing: " + os + " (arch=" + arch + ")");
     }
 }
