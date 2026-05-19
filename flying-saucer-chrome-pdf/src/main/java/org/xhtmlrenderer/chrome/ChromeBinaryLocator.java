@@ -25,8 +25,8 @@ public class ChromeBinaryLocator {
         this(null, DEFAULT_VERSION, defaultCacheDir(), ChromePlatform.detect(), new ChromeBinaryDownloader());
     }
 
-    public ChromeBinaryLocator(@Nullable Path explicitPath, String version, Path cacheDir,
-                               ChromePlatform platform, ChromeBinaryDownloader downloader) {
+    ChromeBinaryLocator(@Nullable Path explicitPath, String version, Path cacheDir,
+                        ChromePlatform platform, ChromeBinaryDownloader downloader) {
         this.explicitPath = explicitPath;
         this.version = version;
         this.cacheDir = cacheDir;

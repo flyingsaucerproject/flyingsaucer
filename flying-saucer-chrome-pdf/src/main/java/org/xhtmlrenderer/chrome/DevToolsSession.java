@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-class DevToolsSession implements AutoCloseable {
+final class DevToolsSession implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(DevToolsSession.class);
     private static final Pattern LISTENING_LINE = Pattern.compile("DevTools listening on (ws://\\S+)");
 

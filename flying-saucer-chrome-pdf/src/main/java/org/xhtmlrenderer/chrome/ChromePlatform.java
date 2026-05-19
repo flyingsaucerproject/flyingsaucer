@@ -1,6 +1,6 @@
 package org.xhtmlrenderer.chrome;
 
-import java.util.Locale;
+import static java.util.Locale.ROOT;
 
 public enum ChromePlatform {
     LINUX64("linux64", "chrome-headless-shell"),
@@ -26,13 +26,13 @@ public enum ChromePlatform {
 
     public static ChromePlatform detect() {
         String arch = System.getProperty("os.arch", "");
-        boolean arm64 = arch.toLowerCase(Locale.ROOT).contains("aarch64")
-                || arch.toLowerCase(Locale.ROOT).contains("arm64");
+        boolean arm64 = arch.toLowerCase(ROOT).contains("aarch64")
+                || arch.toLowerCase(ROOT).contains("arm64");
         return detect(System.getProperty("os.name", ""), arch, arm64);
     }
 
     static ChromePlatform detect(String os, String arch, boolean arm64) {
-        String o = os.toLowerCase(Locale.ROOT);
+        String o = os.toLowerCase(ROOT);
         if (o.contains("mac") || o.contains("darwin")) {
             return arm64 ? MAC_ARM64 : MAC_X64;
         }
