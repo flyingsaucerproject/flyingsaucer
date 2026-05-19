@@ -153,13 +153,13 @@ final class DevToolsSession implements AutoCloseable {
     }
 
     private void onMessage(String json) {
-        Long id = extractLong(json, "id");
+        Long id = Json.extractLong(json, "id");
         if (id != null) {
             CompletableFuture<String> fut = pending.remove(id);
             if (fut != null) fut.complete(json);
             return;
         }
-        String method = extractStringField(json, "method");
+        String method = Json.extractStringField(json, "method");
         if ("Page.loadEventFired".equals(method)) {
             CompletableFuture<Void> load = currentLoad.get();
             if (load != null) load.complete(null);
@@ -191,9 +191,9 @@ final class DevToolsSession implements AutoCloseable {
         }
         try {
             String response = fut.get(timeout.toMillis(), MILLISECONDS);
-            String error = extractObjectField(response, "error");
+            String error = Json.extractObjectField(response, "error");
             if (error != null) {
-                String errMsg = extractStringField(error, "message");
+                String errMsg = Json.extractStringField(error, "message");
                 throw new IOException("DevTools " + method + " failed: " + (errMsg != null ? errMsg : error));
             }
             return response;
@@ -214,7 +214,7 @@ final class DevToolsSession implements AutoCloseable {
         CompletableFuture<Void> load = new CompletableFuture<>();
         currentLoad.set(load);
         try {
-            call("Page.navigate", "{\"url\":\"" + escapeJson(htmlUrl) + "\"}", timeout);
+            call("Page.navigate", "{\"url\":\"" + Json.escape(htmlUrl) + "\"}", timeout);
             try {
                 load.get(timeout.toMillis(), MILLISECONDS);
             } catch (TimeoutException e) {
@@ -229,9 +229,9 @@ final class DevToolsSession implements AutoCloseable {
             currentLoad.compareAndSet(load, null);
         }
         String pdfResponse = call("Page.printToPDF", buildPrintParams(options), timeout);
-        String resultObj = extractObjectField(pdfResponse, "result");
+        String resultObj = Json.extractObjectField(pdfResponse, "result");
         if (resultObj == null) throw new IOException("Page.printToPDF response missing result: " + pdfResponse);
-        String base64 = extractStringField(resultObj, "data");
+        String base64 = Json.extractStringField(resultObj, "data");
         if (base64 == null) throw new IOException("Page.printToPDF result missing data");
         return Base64.getDecoder().decode(base64);
     }
@@ -329,121 +329,4 @@ final class DevToolsSession implements AutoCloseable {
         }
     }
 
-    // --- minimal JSON extraction (avoid pulling in a JSON library) ---
-
-    /** Find the index in {@code json} after {@code "<field>":} (whitespace tolerant), or -1. */
-    private static int findFieldValueStart(String json, String field) {
-        String key = "\"" + field + "\"";
-        int i = 0;
-        while ((i = json.indexOf(key, i)) >= 0) {
-            int j = i + key.length();
-            while (j < json.length() && Character.isWhitespace(json.charAt(j))) j++;
-            if (j < json.length() && json.charAt(j) == ':') {
-                j++;
-                while (j < json.length() && Character.isWhitespace(json.charAt(j))) j++;
-                return j;
-            }
-            i++;
-        }
-        return -1;
-    }
-
-    @Nullable
-    private static Long extractLong(String json, String field) {
-        int start = findFieldValueStart(json, field);
-        if (start < 0) return null;
-        int end = start;
-        if (end < json.length() && json.charAt(end) == '-') end++;
-        while (end < json.length() && Character.isDigit(json.charAt(end))) end++;
-        if (end == start) return null;
-        try {
-            return Long.parseLong(json.substring(start, end));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    @Nullable
-    private static String extractStringField(String json, String field) {
-        int start = findFieldValueStart(json, field);
-        if (start < 0 || start >= json.length() || json.charAt(start) != '"') return null;
-        StringBuilder out = new StringBuilder();
-        int i = start + 1;
-        while (i < json.length()) {
-            char c = json.charAt(i);
-            if (c == '\\') {
-                if (i + 1 >= json.length()) return null;
-                char next = json.charAt(i + 1);
-                switch (next) {
-                    case '"': out.append('"'); break;
-                    case '\\': out.append('\\'); break;
-                    case '/': out.append('/'); break;
-                    case 'n': out.append('\n'); break;
-                    case 't': out.append('\t'); break;
-                    case 'r': out.append('\r'); break;
-                    case 'b': out.append('\b'); break;
-                    case 'f': out.append('\f'); break;
-                    default: out.append(next); break;
-                }
-                i += 2;
-            } else if (c == '"') {
-                return out.toString();
-            } else {
-                out.append(c);
-                i++;
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    private static String extractObjectField(String json, String field) {
-        int start = findFieldValueStart(json, field);
-        if (start < 0 || start >= json.length() || json.charAt(start) != '{') return null;
-        int depth = 0;
-        int end = start;
-        boolean inString = false;
-        boolean escape = false;
-        while (end < json.length()) {
-            char c = json.charAt(end);
-            if (inString) {
-                if (escape) escape = false;
-                else if (c == '\\') escape = true;
-                else if (c == '"') inString = false;
-            } else {
-                if (c == '"') inString = true;
-                else if (c == '{') depth++;
-                else if (c == '}') {
-                    depth--;
-                    if (depth == 0) return json.substring(start, end + 1);
-                }
-            }
-            end++;
-        }
-        return null;
-    }
-
-    private static String escapeJson(String s) {
-        StringBuilder sb = new StringBuilder(s.length() + 16);
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            switch (c) {
-                case '"': sb.append("\\\""); break;
-                case '\\': sb.append("\\\\"); break;
-                case '\n': sb.append("\\n"); break;
-                case '\t': sb.append("\\t"); break;
-                case '\r': sb.append("\\r"); break;
-                case '\b': sb.append("\\b"); break;
-                case '\f': sb.append("\\f"); break;
-                default:
-                    if (c < 0x20) {
-                        sb.append(String.format("\\u%04x", (int) c));
-                    } else {
-                        sb.append(c);
-                    }
-                    break;
-            }
-        }
-        return sb.toString();
-    }
 }

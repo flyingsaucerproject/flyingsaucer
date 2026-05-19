@@ -4,19 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import static java.nio.file.attribute.PosixFilePermission.GROUP_EXECUTE;
 import static java.nio.file.attribute.PosixFilePermission.GROUP_READ;
@@ -31,6 +27,8 @@ class ChromeBinaryDownloader {
 
     private static final String BASE_URL = "https://storage.googleapis.com/chrome-for-testing-public";
 
+    private final ZipExtractor zipExtractor = new ZipExtractor();
+
     URI zipUrl(String version, ChromePlatform platform) {
         return URI.create("%s/%s/%s/chrome-headless-shell-%s.zip"
                 .formatted(BASE_URL, version, platform.id(), platform.id()));
@@ -43,7 +41,7 @@ class ChromeBinaryDownloader {
         try {
             log.info("Downloading chrome-headless-shell from {}", url);
             httpGetToFile(url, zipFile);
-            unzip(zipFile, versionDir);
+            zipExtractor.extract(zipFile, versionDir);
         } finally {
             Files.deleteIfExists(zipFile);
         }
@@ -69,25 +67,6 @@ class ChromeBinaryDownloader {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Interrupted while downloading " + url, e);
-        }
-    }
-
-    private void unzip(Path zipFile, Path targetDir) throws IOException {
-        try (InputStream in = Files.newInputStream(zipFile);
-             ZipInputStream zip = new ZipInputStream(in)) {
-            ZipEntry entry;
-            while ((entry = zip.getNextEntry()) != null) {
-                Path resolved = targetDir.resolve(entry.getName()).normalize();
-                if (!resolved.startsWith(targetDir)) {
-                    throw new IOException("Zip entry escapes target directory: " + entry.getName());
-                }
-                if (entry.isDirectory()) {
-                    Files.createDirectories(resolved);
-                } else {
-                    Files.createDirectories(resolved.getParent());
-                    Files.copy(zip, resolved, StandardCopyOption.REPLACE_EXISTING);
-                }
-            }
         }
     }
 
