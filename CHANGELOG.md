@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.3.0 (2x.05.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/49?closed=1
+* TBD
+
 ## 10.2.1 (19.05.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/48?closed=1
 * support SVG images with BOM prefix / by Stanley Leong (#665)
 
