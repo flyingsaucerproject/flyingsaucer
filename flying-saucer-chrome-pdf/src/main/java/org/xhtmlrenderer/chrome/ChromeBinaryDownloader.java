@@ -63,7 +63,7 @@ class ChromeBinaryDownloader {
                 .build()) {
             HttpResponse<Path> response = client.send(request,
                     HttpResponse.BodyHandlers.ofFile(target, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING));
-            if (response.statusCode() / 100 != 2) {
+            if (response.statusCode() != 200) {
                 throw new IOException("Failed to download " + url + ": HTTP " + response.statusCode());
             }
         } catch (InterruptedException e) {
