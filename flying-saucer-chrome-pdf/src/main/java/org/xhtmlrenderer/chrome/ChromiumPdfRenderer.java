@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -18,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 
 public class ChromiumPdfRenderer implements AutoCloseable {
@@ -87,7 +87,7 @@ public class ChromiumPdfRenderer implements AutoCloseable {
     public byte[] renderFromHtml(String html) throws IOException {
         Path tempHtml = Files.createTempFile("flying-saucer-chrome-", ".html");
         try {
-            Files.writeString(tempHtml, html, StandardCharsets.UTF_8);
+            Files.writeString(tempHtml, html, UTF_8);
             return renderToPdf(tempHtml.toUri().toString());
         } finally {
             Files.deleteIfExists(tempHtml);
@@ -163,7 +163,7 @@ public class ChromiumPdfRenderer implements AutoCloseable {
         Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
         String output;
         try (InputStream in = process.getInputStream()) {
-            output = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            output = new String(in.readAllBytes(), UTF_8);
         }
         boolean finished;
         try {

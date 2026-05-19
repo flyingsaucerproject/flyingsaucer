@@ -12,7 +12,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.WebSocket;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 final class DevToolsSession implements AutoCloseable {
@@ -92,7 +92,7 @@ final class DevToolsSession implements AutoCloseable {
 
     private static void startStderrReader(Process proc, CompletableFuture<URI> listening) {
         Thread reader = new Thread(() -> {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream(), StandardCharsets.UTF_8))) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream(), UTF_8))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     log.trace("chrome stderr: {}", line);
