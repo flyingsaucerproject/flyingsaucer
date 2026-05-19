@@ -44,6 +44,11 @@ jobs:
           distribution: temurin
           java-version: ${{matrix.java}}
           cache: maven
+      - name: Cache chrome-headless-shell
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/flying-saucer-chrome-pdf
+          key: chrome-headless-shell-${{ runner.os }}-145.0.7632.26
       - name: Build with Maven
         run: mvn -B package
       - name: 'Upload test results'

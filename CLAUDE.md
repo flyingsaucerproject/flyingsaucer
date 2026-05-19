@@ -20,6 +20,11 @@ mvn versions:set -DnewVersion=X.Y.Z             # bump version across all poms (
 
 Surefire only picks up tests under `org/**` (see `pom.xml`). JUnit 4 (`junit:junit`) is banned by the enforcer plugin — write tests in **JUnit 5 (Jupiter)** with **AssertJ**; PDF assertions use `com.codeborne:pdf-test`.
 
+## Test conventions
+
+- **Use AssertJ's type-specific matchers** instead of unwrapping. E.g. for `AtomicInteger`: `assertThat(counter).hasValue(0)` — never `assertThat(counter.get()).isZero()`. Same idea for `Optional`, `Path`, `File`, collections, etc.: assert on the wrapper, not on a manually extracted value.
+- **Static-import common helpers** to keep tests terse: `org.assertj.core.api.Assertions.assertThat`, `java.util.Objects.requireNonNull`, and any project test utility (e.g. `TestUtils.printFile`). Avoid qualifying these inline.
+
 ## Compilation specifics
 
 - `maven-compiler-plugin` runs **Error Prone** as a `-Xplugin`. A handful of checks are disabled globally (`MissingSummary`, `JdkObsolete`, `ReferenceEquality`, `OperatorPrecedence`) and `Lexer.java` is excluded entirely. If you hit unexpected compile errors, suspect Error Prone before suspecting javac.
