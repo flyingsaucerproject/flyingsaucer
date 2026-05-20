@@ -38,8 +38,8 @@ public final class ContentTypeDetectingInputStreamWrapper extends BufferedInputS
 
     private ContentTypeDetectingInputStreamWrapper(InputStream source) throws IOException {
         super(source);
-        skipUtf8BomIfPresent(source);
-        this.firstBytes = readFirstBytes(source, MAX_MAGIC_BYTES);
+        skipUtf8BomIfPresent(this);
+        this.firstBytes = readFirstBytes(this, MAX_MAGIC_BYTES);
     }
 
     /**
