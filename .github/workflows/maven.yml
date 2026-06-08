@@ -45,7 +45,7 @@ jobs:
           java-version: ${{matrix.java}}
           cache: maven
       - name: Cache chrome-headless-shell
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/flying-saucer
           key: chrome-headless-shell-${{ runner.os }}
