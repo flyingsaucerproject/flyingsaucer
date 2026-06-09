@@ -1,7 +1,10 @@
 # Changelog
 
 ## 10.3.0 (2x.05.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/50?closed=1
-* TBD
+* #633 add flying-saucer-chrome-pdf module (#666)
+* feat: add has pseudo class support / by Ilham Ferdian Rudianata (#658)
+* feat: add columns support / by Ilham Ferdian Rudianata (#658)
+* Bump OpenPDF from 3.0.4 to 3.0.5 (#670)
 
 ## 10.2.2 (20.05.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/49?closed=1
 * #668 fix loading of PNG images in PDF
