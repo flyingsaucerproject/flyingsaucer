@@ -1,6 +1,9 @@
 # Changelog
 
-## 10.3.0 (2x.05.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/50?closed=1
+## 10.3.1 (??.06.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/51?closed=1
+* TBD
+
+## 10.3.0 (09.06.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/50?closed=1
 * #633 add flying-saucer-chrome-pdf module (#666)
 * feat: add has pseudo class support / by Ilham Ferdian Rudianata (#658)
 * feat: add columns support / by Ilham Ferdian Rudianata (#658)
