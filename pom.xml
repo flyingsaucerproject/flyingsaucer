@@ -313,7 +313,7 @@
     <junit.version>6.1.0</junit.version>
     <slf4j.version>2.0.18</slf4j.version>
     <assertj.version>3.27.7</assertj.version>
-    <pdftest.version>2.1.0</pdftest.version>
+    <pdftest.version>2.1.1</pdftest.version>
     <pdfbox.version>3.0.7</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
     <java.version>21</java.version>
