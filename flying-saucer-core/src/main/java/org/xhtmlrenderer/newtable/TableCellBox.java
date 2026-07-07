@@ -162,6 +162,12 @@ public class TableCellBox extends BlockBox {
             return result;
         }
 
+        // When box-sizing: border-box, the CSS 'width' already includes padding and border,
+        // so it IS the outer width. No need to add them again.
+        if (getStyle().isBorderBox()) {
+            return result;
+        }
+
         int bordersAndPadding = 0;
         BorderPropertySet border = getBorder(c);
         bordersAndPadding += (int)border.left() + (int)border.right();
@@ -190,6 +196,10 @@ public class TableCellBox extends BlockBox {
         calcDimensions(c);
 
         setContentWidth(width - getLeftMBP() - getRightMBP());
+        // Re-apply min/max-width constraints after setContentWidth overwrites
+        // what calcDimensions already computed. Without this, a cell with
+        // max-width: 80px and allocated width 200px would render at 200px.
+        applyCSSMinMaxWidth(c);
     }
 
     @Override
@@ -972,11 +982,17 @@ public class TableCellBox extends BlockBox {
             int result = (int)getStyle().getFloatPropertyProportionalWidth(
                     CSSName.HEIGHT, getContainingBlock().getContentWidth(), c);
 
-            BorderPropertySet border = getBorder(c);
-            result -= (int)border.top() + (int)border.bottom();
+            if (!getStyle().isBorderBox()) {
+                // Legacy XHTML 1.0 behavior: treat CSS 'height' as border-box height
+                // and convert to content height here.
+                // When box-sizing: border-box is explicitly set, calcDimensions() in
+                // BlockBox will perform this subtraction correctly — avoid double-subtracting.
+                BorderPropertySet border = getBorder(c);
+                result -= (int) border.top() + (int) border.bottom();
 
-            RectPropertySet padding = getPadding(c);
-            result -= (int)padding.top() + (int)padding.bottom();
+                RectPropertySet padding = getPadding(c);
+                result -= (int) padding.top() + (int) padding.bottom();
+            }
 
             return result >= 0 ? result : -1;
         }
