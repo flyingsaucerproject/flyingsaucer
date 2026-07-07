@@ -924,14 +924,25 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
         }
     }
 
-    private void applyCSSMinMaxWidth(CssContext c) {
-        if (! getStyle().isMaxWidthNone()) {
-            int cssMaxWidth = getCSSMaxWidth(c);
+    protected void applyCSSMinMaxWidth(CssContext c) {
+        // When box-sizing: border-box, min/max-width values refer to the border-box width
+        // (content + padding + border). We must subtract padding and border to compare
+        // and clamp against the internal content width.
+        int paddingBorderWidth = 0;
+        if (getStyle().isBorderBox()) {
+            RectPropertySet padding = getPadding(c);
+            BorderPropertySet border = getBorder(c);
+            paddingBorderWidth = (int) padding.width() + (int) border.width();
+        }
+
+        if (!getStyle().isMaxWidthNone()) {
+            int cssMaxWidth = getCSSMaxWidth(c) - paddingBorderWidth;
             if (getContentWidth() > cssMaxWidth) {
                 setContentWidth(cssMaxWidth);
             }
         }
-        int cssMinWidth = getCSSMinWidth(c);
+
+        int cssMinWidth = getCSSMinWidth(c) - paddingBorderWidth;
         if (cssMinWidth > 0 && getContentWidth() < cssMinWidth) {
             setContentWidth(cssMinWidth);
         }
