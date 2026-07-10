@@ -68,7 +68,7 @@ import static java.util.stream.Collectors.joining;
  *
  * @author empty
  */
-public final class SharedContext {
+public class SharedContext {
     private static final Set<String> PAGED_MEDIA_TYPES = Set.of("print", "projection", "embossed", "handheld", "tv");
 
     private TextRenderer textRenderer;
