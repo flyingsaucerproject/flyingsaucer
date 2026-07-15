@@ -21,8 +21,10 @@
 package org.xhtmlrenderer.util;
 
 import org.w3c.dom.Document;
+import org.xhtmlrenderer.resource.FSEntityResolver;
 import org.xml.sax.InputSource;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -46,12 +48,26 @@ public class XMLUtil {
         return createDocumentBuilder().parse(new File(filename).toURI().toURL().openStream());
     }
 
+    /**
+     * A {@link DocumentBuilder} hardened against XXE: external entities are routed through
+     * {@link FSEntityResolver} (which serves local/known DTDs and empty content for anything
+     * else, instead of fetching attacker-supplied URLs), and secure processing is enabled to
+     * bound entity expansion. DOCTYPE declarations are still allowed, since real-world X/HTML
+     * documents rely on them (e.g. for named entities like {@code &nbsp;}).
+     */
+    public static DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        builder.setEntityResolver(FSEntityResolver.instance());
+        return builder;
+    }
+
     private static DocumentBuilder createDocumentBuilder()
         throws ParserConfigurationException {
 
-        DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = fact.newDocumentBuilder();
-
+        DocumentBuilder builder = newDocumentBuilder();
         builder.setErrorHandler( null );
 
         return builder;
