@@ -56,12 +56,23 @@ public class XMLUtil {
      * documents rely on them (e.g. for named entities like {@code &nbsp;}).
      */
     public static DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilder builder = newSecureDocumentBuilderFactory().newDocumentBuilder();
         builder.setEntityResolver(FSEntityResolver.instance());
         return builder;
+    }
+
+    /**
+     * Defense-in-depth on top of {@link FSEntityResolver}: denies external DTD/schema access at
+     * the JAXP level itself, so a bug or future refactor that drops the entity resolver would
+     * still not open an attacker-controlled URL.
+     */
+    static DocumentBuilderFactory newSecureDocumentBuilderFactory() throws ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        factory.setXIncludeAware(false);
+        return factory;
     }
 
     private static DocumentBuilder createDocumentBuilder()

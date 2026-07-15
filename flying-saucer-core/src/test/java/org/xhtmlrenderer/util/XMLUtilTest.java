@@ -3,11 +3,16 @@ package org.xhtmlrenderer.util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class XMLUtilTest {
     @Test
@@ -47,5 +52,22 @@ class XMLUtilTest {
         Document document = XMLUtil.documentFromString(xml);
 
         assertThat(document.getDocumentElement().getTextContent()).isEqualTo("a b\"c");
+    }
+
+    @Test
+    void newSecureDocumentBuilderFactory_deniesExternalDtdAccessAtTheJaxpLevel() throws Exception {
+        // Defense-in-depth: even without FSEntityResolver attached, the factory itself must
+        // refuse to fetch an external DTD.
+        DocumentBuilder builder = XMLUtil.newSecureDocumentBuilderFactory().newDocumentBuilder();
+
+        String xml = """
+                <?xml version="1.0"?>
+                <!DOCTYPE root SYSTEM "http://127.0.0.1:1/unreachable.dtd">
+                <root/>
+                """;
+
+        assertThatThrownBy(() -> builder.parse(new InputSource(new StringReader(xml))))
+                .isInstanceOf(SAXException.class)
+                .hasMessageContaining("accessExternalDTD");
     }
 }
