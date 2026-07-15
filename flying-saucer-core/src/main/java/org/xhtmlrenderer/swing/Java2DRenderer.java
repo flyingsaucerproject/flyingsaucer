@@ -33,9 +33,9 @@ import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.util.ImageUtil;
+import org.xhtmlrenderer.util.XMLUtil;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -355,7 +355,7 @@ public class Java2DRenderer {
     }
 
     public static BufferedImage htmlAsImage(InputStream source, int widthInPixels) throws SAXException, IOException, ParserConfigurationException {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(source);
+        Document document = XMLUtil.newDocumentBuilder().parse(source);
         return new Java2DRenderer(document, widthInPixels).getImage();
     }
 }

@@ -2,11 +2,10 @@ package org.xhtmlrenderer.pdf;
 
 import org.openpdf.text.DocumentException;
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.resource.FSEntityResolver;
+import org.xhtmlrenderer.util.XMLUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URL;
@@ -27,9 +26,7 @@ public class Html2Pdf {
         renderer.getSharedContext().getTextRenderer().setSmoothingThreshold(0);
 
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            builder.setEntityResolver(FSEntityResolver.instance());
-
+            DocumentBuilder builder = XMLUtil.newDocumentBuilder();
             Document doc = builder.parse(html.toString());
             return renderer.createPDF(doc);
         }
