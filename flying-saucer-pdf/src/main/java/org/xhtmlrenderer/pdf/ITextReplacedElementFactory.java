@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
+    private static final String SVG_NAMESPACE_URI = "http://www.w3.org/2000/svg";
     private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
 
     private final ITextOutputDevice _outputDevice;
@@ -121,11 +122,26 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             Transformer transformer = TRANSFORMER_FACTORY.newTransformer();
-            transformer.transform(new DOMSource(e), new StreamResult(out));
+            transformer.transform(new DOMSource(ensureSvgNamespace(e)), new StreamResult(out));
             return out.toByteArray();
         } catch (TransformerException ex) {
             throw new XRRuntimeException("Failed to serialize inline <svg> element", ex);
         }
+    }
+
+    /**
+     * Authors commonly copy-paste HTML5 SVG markup, which omits {@code xmlns} since HTML5 parsers infer
+     * the SVG namespace from the tag name. Flying Saucer requires well-formed XML input, so a bare
+     * {@code <svg>} with no {@code xmlns} attribute (and no inherited SVG namespace) would otherwise be
+     * serialized without one, and Batik would then fail to recognize it as SVG.
+     */
+    private static Element ensureSvgNamespace(Element e) {
+        if (SVG_NAMESPACE_URI.equals(e.getNamespaceURI()) || !e.getAttribute("xmlns").isEmpty()) {
+            return e;
+        }
+        Element clone = (Element) e.cloneNode(true);
+        clone.setAttribute("xmlns", SVG_NAMESPACE_URI);
+        return clone;
     }
 
     private void saveResult(Element e, RadioButtonFormField result) {
