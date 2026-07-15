@@ -108,7 +108,8 @@ public class XhtmlCssOnlyNamespaceHandler extends NoNamespaceHandler {
                 style.append(e, "rowspan", "-fs-table-cell-rowspan: ");
                 break;
             }
-            case "img": {
+            case "img":
+            case "svg": {
                 style.appendWidth(e);
                 style.appendHeight(e);
                 break;

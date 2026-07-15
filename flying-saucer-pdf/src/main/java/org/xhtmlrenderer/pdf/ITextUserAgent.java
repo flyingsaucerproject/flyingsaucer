@@ -31,6 +31,7 @@ import org.openpdf.text.pdf.PdfReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.Size;
 import org.xhtmlrenderer.resource.ImageResource;
@@ -154,18 +155,22 @@ public class ITextUserAgent extends NaiveUserAgent {
         SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName());
         try (ByteArrayInputStream in = new ByteArrayInputStream(svgImage)) {
             Document document = factory.createDocument(uri, in);
-            String width = document.getDocumentElement().getAttribute("width");
-            String height = document.getDocumentElement().getAttribute("height");
-            if (!width.isEmpty() && !height.isEmpty()) {
-                return new Size(parseSize(width), parseSize(height));
-            }
-            String[] viewBox = document.getDocumentElement().getAttribute("viewBox").split(" ", 4);
-            if (viewBox.length >= 4) {
-                return new Size(parseSize(viewBox[2]), parseSize(viewBox[3]));
-            }
-
-            return new Size(300, 150); // default size in most browsers
+            return getSvgSize(document.getDocumentElement());
         }
+    }
+
+    static Size getSvgSize(Element svgRoot) {
+        String width = svgRoot.getAttribute("width");
+        String height = svgRoot.getAttribute("height");
+        if (!width.isEmpty() && !height.isEmpty()) {
+            return new Size(parseSize(width), parseSize(height));
+        }
+        String[] viewBox = svgRoot.getAttribute("viewBox").split(" ", 4);
+        if (viewBox.length >= 4) {
+            return new Size(parseSize(viewBox[2]), parseSize(viewBox[3]));
+        }
+
+        return new Size(300, 150); // default size in most browsers
     }
 
     private void scaleToOutputResolution(Image image) {
