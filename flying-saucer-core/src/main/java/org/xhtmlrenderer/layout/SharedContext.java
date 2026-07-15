@@ -21,7 +21,6 @@ package org.xhtmlrenderer.layout;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -61,7 +60,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.joining;
 
 /**
  * The SharedContext is that which is kept between successive layout and render runs.
@@ -583,16 +581,7 @@ public final class SharedContext {
         return unsupportedTags;
     }
 
-    public void logUnsupportedFeatures(Logger log) {
-        if (!unsupportedTags.isEmpty()) {
-            log.warn("Encountered HTML5 elements which are not supported by FlyingSaucer: {}. Rendering may be incorrect.",
-                unsupportedTags.stream().map(tag -> String.format("<%s>", tag)).collect(joining(", ")));
-        }
-
-        Set<String> features = getCss().getUnsupportedCssFeatures();
-        if (!features.isEmpty()) {
-            log.warn("Encountered CSS3 features not supported by FlyingSaucer: {}. Rendering may be incorrect.",
-                features.stream().map(feature -> '"' + feature + '"').collect(joining(", ")));
-        }
+    public void logUnsupportedFeatures() {
+        Html5Support.logUnsupportedFeatures(unsupportedTags, getCss().getUnsupportedCssFeatures());
     }
 }
