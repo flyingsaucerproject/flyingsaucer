@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
+    private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
+
     private final ITextOutputDevice _outputDevice;
 
     private final Map<Element, RadioButtonFormField> _radioButtonsByElem = new HashMap<>();
@@ -118,7 +120,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
     private static byte[] serializeToXml(Element e) {
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            Transformer transformer = TRANSFORMER_FACTORY.newTransformer();
             transformer.transform(new DOMSource(e), new StreamResult(out));
             return out.toByteArray();
         } catch (TransformerException ex) {
