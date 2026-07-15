@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.pdf;
 
+import com.codeborne.pdftest.PDF;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import java.net.URL;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SvgTest {
     private static final Logger log = LoggerFactory.getLogger(SvgTest.class);
@@ -47,6 +49,9 @@ public class SvgTest {
                 renderer.createPDF(outputStream);
             }
             log.info("PDF with SVG: {}", result.getAbsolutePath());
+
+            PDF pdf = new PDF(result);
+            assertThat(pdf.text).contains("SVG Star:");
         }
     }
 }

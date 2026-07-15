@@ -75,6 +75,10 @@ img {
     padding: 0;
 }
 
+svg {
+    display: inline-block;
+}
+
 a {
     color: #0000ff;
 }

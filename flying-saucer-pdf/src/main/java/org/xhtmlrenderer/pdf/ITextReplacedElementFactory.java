@@ -28,7 +28,14 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +75,12 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
                 }
 
                 break;
+            case "svg":
+                FSImage svgImage = new SvgImage(serializeToXml(e), ITextUserAgent.getSvgSize(e), "inline-svg");
+                if (cssWidth != -1 || cssHeight != -1) {
+                    svgImage = svgImage.scale(cssWidth, cssHeight);
+                }
+                return new ITextImageElement(svgImage);
             case "input":
                 String type = e.getAttribute("type");
                 switch (type) {
@@ -100,6 +113,17 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         }
 
         return null;
+    }
+
+    private static byte[] serializeToXml(Element e) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.transform(new DOMSource(e), new StreamResult(out));
+            return out.toByteArray();
+        } catch (TransformerException ex) {
+            throw new XRRuntimeException("Failed to serialize inline <svg> element", ex);
+        }
     }
 
     private void saveResult(Element e, RadioButtonFormField result) {
