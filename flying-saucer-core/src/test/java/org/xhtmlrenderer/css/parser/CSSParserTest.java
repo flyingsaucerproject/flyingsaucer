@@ -216,6 +216,25 @@ class CSSParserTest {
         assertThat(origin.get(1).getFloatValue()).isEqualTo(100f); // bottom
     }
 
+    @Test
+    void parsesTurnAsANonFirstFunctionArgument() throws IOException {
+        // A DIMENSION token (like "turn") appearing after a comma, rather than as the first
+        // argument, is a separate code path in expr() from the one exercised above.
+        Stylesheet stylesheet = parser.parseStylesheet(null, AUTHOR, new StringReader("""
+            div { transform: skew(50grad, 0.25turn); }
+            """));
+        Ruleset ruleset = (Ruleset) stylesheet.getContents().get(0);
+        List<PropertyDeclaration> declarations = ruleset.getPropertyDeclarations();
+
+        assertThat(declarations).hasSize(1);
+        List<PropertyValue> functions = ((PropertyValue) declarations.get(0).getValue()).getValues();
+        List<PropertyValue> args = functions.get(0).getFunction().getParameters();
+
+        assertThat(args.get(0).getPrimitiveType()).isEqualTo(CSS_GRAD);
+        assertThat(args.get(1).getPrimitiveType()).isEqualTo(CSS_DEG);
+        assertThat(args.get(1).getFloatValue()).isEqualTo(90f);
+    }
+
     private static PropertyDeclaration css(CSSName property, FSRGBColor color) {
         return new PropertyDeclaration(property, new PropertyValue(color), false, AUTHOR);
     }

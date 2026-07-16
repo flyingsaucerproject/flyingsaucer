@@ -341,13 +341,28 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
             bounds = box.getContentAreaEdge(box.getAbsX(), box.getAbsY(), c);
         }
 
-        Point2D docCorner = new Point2D.Double(bounds.x, bounds.y + bounds.height);
-        Point2D pdfCorner = new Point2D.Double();
-        _transform.transform(docCorner, pdfCorner);
-        pdfCorner.setLocation(pdfCorner.getX(), normalizeY((float) pdfCorner.getY()));
+        // Transform all four corners (not just one, plus untransformed width/height) so a rotated or
+        // skewed transform still produces the correct axis-aligned bounding box in PDF space.
+        Point2D[] docCorners = {
+                new Point2D.Double(bounds.x, bounds.y),
+                new Point2D.Double(bounds.x + bounds.width, bounds.y),
+                new Point2D.Double(bounds.x, bounds.y + bounds.height),
+                new Point2D.Double(bounds.x + bounds.width, bounds.y + bounds.height),
+        };
 
-        return new org.openpdf.text.Rectangle((float) pdfCorner.getX(), (float) pdfCorner.getY(),
-                (float) pdfCorner.getX() + getDeviceLength(bounds.width), (float) pdfCorner.getY() + getDeviceLength(bounds.height));
+        float minX = Float.MAX_VALUE, maxX = -Float.MAX_VALUE;
+        float minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
+        for (Point2D docCorner : docCorners) {
+            Point2D pdfCorner = _transform.transform(docCorner, null);
+            float x = (float) pdfCorner.getX();
+            float y = normalizeY((float) pdfCorner.getY());
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+        }
+
+        return new org.openpdf.text.Rectangle(minX, minY, maxX, maxY);
     }
 
     public org.openpdf.text.Rectangle createTargetArea(RenderingContext c, Box box) {

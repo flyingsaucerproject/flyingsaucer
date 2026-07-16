@@ -83,10 +83,60 @@ class TransformOriginPropertyBuilderTest {
     }
 
     @Test
-    void rejectsTopAsHorizontalKeyword() {
-        assertThatThrownBy(() -> builder.buildDeclarations(cssName, List.of(ident("top")), Origin.AUTHOR, false, true))
+    void singleVerticalKeywordImpliesCenteredHorizontalAxis() {
+        List<PropertyDeclaration> result = builder.buildDeclarations(
+                cssName, List.of(ident("top")), Origin.AUTHOR, false, true);
+
+        List<PropertyValue> values = valuesOf(result);
+        assertThat(values.get(0).getFloatValue()).isEqualTo(50f); // horizontal: center
+        assertThat(values.get(1).getFloatValue()).isEqualTo(0f);  // vertical: top
+    }
+
+    @Test
+    void keywordPairsCanAppearInEitherOrder() {
+        List<PropertyDeclaration> topLeft = builder.buildDeclarations(
+                cssName, List.of(ident("top"), ident("left")), Origin.AUTHOR, false, true);
+        List<PropertyValue> topLeftValues = valuesOf(topLeft);
+        assertThat(topLeftValues.get(0).getFloatValue()).isEqualTo(0f);  // horizontal: left
+        assertThat(topLeftValues.get(1).getFloatValue()).isEqualTo(0f); // vertical: top
+
+        // "right" can only be horizontal, so "center" is pushed onto the (otherwise unspecified) vertical axis.
+        List<PropertyDeclaration> centerRight = builder.buildDeclarations(
+                cssName, List.of(ident("center"), ident("right")), Origin.AUTHOR, false, true);
+        List<PropertyValue> centerRightValues = valuesOf(centerRight);
+        assertThat(centerRightValues.get(0).getFloatValue()).isEqualTo(100f); // horizontal: right
+        assertThat(centerRightValues.get(1).getFloatValue()).isEqualTo(50f); // vertical: center
+    }
+
+    @Test
+    void lengthCanBePairedWithAKeywordOnTheOtherAxis() {
+        List<PropertyDeclaration> lengthThenTop = builder.buildDeclarations(
+                cssName, List.of(px(10), ident("top")), Origin.AUTHOR, false, true);
+        List<PropertyValue> lengthThenTopValues = valuesOf(lengthThenTop);
+        assertThat(lengthThenTopValues.get(0).getFloatValue()).isEqualTo(10f);
+        assertThat(lengthThenTopValues.get(1).getFloatValue()).isEqualTo(0f);
+
+        List<PropertyDeclaration> leftThenLength = builder.buildDeclarations(
+                cssName, List.of(ident("left"), px(20)), Origin.AUTHOR, false, true);
+        List<PropertyValue> leftThenLengthValues = valuesOf(leftThenLength);
+        assertThat(leftThenLengthValues.get(0).getFloatValue()).isEqualTo(0f);
+        assertThat(leftThenLengthValues.get(1).getFloatValue()).isEqualTo(20f);
+    }
+
+    @Test
+    void rejectsTwoHorizontalOnlyKeywords() {
+        assertThatThrownBy(() -> builder.buildDeclarations(
+                cssName, List.of(ident("left"), ident("right")), Origin.AUTHOR, false, true))
                 .isInstanceOf(CSSParseException.class)
-                .hasMessageContaining("top");
+                .hasMessageContaining("Invalid combination");
+    }
+
+    @Test
+    void rejectsAVerticalKeywordPairedWithALength() {
+        assertThatThrownBy(() -> builder.buildDeclarations(
+                cssName, List.of(ident("top"), px(10)), Origin.AUTHOR, false, true))
+                .isInstanceOf(CSSParseException.class)
+                .hasMessageContaining("Invalid combination");
     }
 
     @Test

@@ -1510,6 +1510,7 @@ public class CSSParser {
                      EMS,
                      EXS,
                      ANGLE,
+                     DIMENSION,
                      TIME,
                      FREQ,
                      STRING,
@@ -1523,7 +1524,7 @@ public class CSSParser {
                                 Token.TK_NUMBER, Token.TK_PLUS, Token.TK_MINUS,
                                 Token.TK_PERCENTAGE, Token.TK_PX, Token.TK_EMS, Token.TK_EXS,
                                 Token.TK_PC, Token.TK_MM, Token.TK_CM, Token.TK_IN, Token.TK_PT,
-                                Token.TK_ANGLE, Token.TK_TIME, Token.TK_FREQ, Token.TK_STRING,
+                                Token.TK_ANGLE, Token.TK_DIMENSION, Token.TK_TIME, Token.TK_FREQ, Token.TK_STRING,
                                 Token.TK_IDENT, Token.TK_URI, Token.TK_HASH, Token.TK_FUNCTION},
                                 getCurrentLine());
                     } else {
