@@ -1,6 +1,9 @@
 # Changelog
 
-## 10.4.0 (16.06.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/51?closed=1
+## 10.5.0 (??.08.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/52?closed=1
+* TBD
+
+## 10.4.0 (16.07.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/51?closed=1
 * #506 feat(css): support CSS transform/transform-origin in PDF output (#689)
 * fix(layout): honor box-sizing: border-box for display: table-cell / by Ilham Ferdian Rudianata (#682)
 * feat(pdf): support inline <svg> elements in PDF output (#686)
