@@ -31,4 +31,21 @@ class TransformTest {
             assertThat(content).containsPattern("0\\.70711 -0\\.70711 0\\.70711 0\\.70711 [0-9.]+ [0-9.]+ Tm");
         }
     }
+
+    @Test
+    void positionedDescendantOfATransformedBoxInheritsTheTransform() throws IOException {
+        byte[] bytes = Html2Pdf.fromClasspathResource("transform.html");
+        PDF pdf = printFile(log, bytes, "transform.pdf");
+
+        assertThat(pdf).containsText("absolute");
+
+        try (PdfReader reader = new PdfReader(bytes)) {
+            String content = new String(reader.getPageContent(1), StandardCharsets.ISO_8859_1);
+
+            // The "position: absolute" descendant establishes its own layer; unless that layer is
+            // painted as part of its transformed ancestor's stacking context, this text would be drawn
+            // with the identity matrix instead of a 90-degree rotation (cos90=0, sin90=1).
+            assertThat(content).containsPattern("0 -1 1 0 [0-9.]+ [0-9.]+ Tm");
+        }
+    }
 }

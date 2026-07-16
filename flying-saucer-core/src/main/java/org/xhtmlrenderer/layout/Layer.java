@@ -111,7 +111,11 @@ public final class Layer {
     }
 
     public Layer(@Nullable Layer parent, Box master) {
-        this(parent, master, master.getStyle().isPositioned() && !master.getStyle().isAutoZIndex());
+        // A transformed box must be a stacking context too, otherwise collectLayers() flattens it and
+        // paints its own layered descendants (position:absolute, nested transforms, ...) outside the
+        // transform established by this layer's paint().
+        this(parent, master,
+                (master.getStyle().isPositioned() && !master.getStyle().isAutoZIndex()) || master.getStyle().hasTransform());
     }
 
     Layer(@Nullable Layer parent, Box master, boolean stackingContext) {
@@ -135,7 +139,9 @@ public final class Layer {
 
     @CheckReturnValue
     public int getZIndex() {
-        return (int) _master.getStyle().asFloat(CSSName.Z_INDEX);
+        // A stacking context not established by z-index (e.g. a transformed box with the default
+        // z-index: auto) is treated as z-index: 0 among its sibling stacking contexts.
+        return _master.getStyle().isAutoZIndex() ? 0 : (int) _master.getStyle().asFloat(CSSName.Z_INDEX);
     }
 
     public float getOpacity() {
