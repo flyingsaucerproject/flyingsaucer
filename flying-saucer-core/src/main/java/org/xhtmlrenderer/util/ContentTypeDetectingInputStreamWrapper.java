@@ -26,6 +26,7 @@ public final class ContentTypeDetectingInputStreamWrapper extends BufferedInputS
     private static final byte[] COMMENT_START = "<!--".getBytes(UTF_8);
     private static final byte[] COMMENT_END = "-->".getBytes(UTF_8);
     private static final int MAX_MAGIC_BYTES = 4;
+    private static final int MAX_PROLOG_SCAN_BYTES = 4096;
     private static final byte[] NO_DATA = new byte[0];
 
     @Nullable
@@ -95,28 +96,37 @@ public final class ContentTypeDetectingInputStreamWrapper extends BufferedInputS
      * {@code <!--<?xml version="1.0" encoding="UTF-8" standalone="no"?>-->})
      * before the {@code <svg>} or {@code <?xml} magic bytes.
      * <p>
-     * Comments are scanned for and consumed incrementally rather than into a
-     * fixed-size buffer, so there's no cap on how long a leading comment can
-     * be. {@link #mark} covers the whole scan so that whatever gets read
-     * while looking for the real start of the document is always undone by
-     * {@link #reset} before returning — callers that go on to read the full
-     * SVG body (e.g. for the Batik parse) still see it from the very start,
-     * comments included.
+     * The scan is capped at {@link #MAX_PROLOG_SCAN_BYTES}: {@code source}
+     * may be attacker-controlled (e.g. a remote URL referenced from
+     * untrusted HTML/CSS), so an unbounded search for a comment terminator
+     * that never arrives would let {@link BufferedInputStream}'s internal
+     * buffer keep growing for as long as bytes keep arriving — an easy
+     * memory-exhaustion DoS. Exceeding the cap throws rather than silently
+     * misdetecting, since at that point continuing to buffer is unsafe and
+     * genuinely running out of input (EOF within the cap) already resolves
+     * to {@code false} on its own.
+     * <p>
+     * {@link #mark} covers the whole scan so that whatever gets read while
+     * looking for the real start of the document is always undone by
+     * {@link #reset} before returning (or throwing) — callers that go on to
+     * read the full SVG body (e.g. for the Batik parse) still see it from
+     * the very start, comments included.
      */
     private boolean startsWithSvgAfterLeadingComments() throws IOException {
-        mark(Integer.MAX_VALUE);
+        mark(MAX_PROLOG_SCAN_BYTES);
         try {
-            int b = skipWhitespace(read());
+            int[] remaining = {MAX_PROLOG_SCAN_BYTES};
+            int b = skipWhitespace(readBounded(remaining), remaining);
             while (b != -1) {
-                byte[] rest = readNBytes(MAX_MAGIC_BYTES - 1);
+                byte[] rest = readBoundedNBytes(remaining, MAX_MAGIC_BYTES - 1);
                 if (rest.length < MAX_MAGIC_BYTES - 1) {
                     return false; // fewer than 4 bytes left
                 }
                 if (matches(b, rest, COMMENT_START)) {
-                    if (!skipToCommentEnd()) {
-                        return false; // unterminated comment
+                    if (!skipToCommentEnd(remaining)) {
+                        return false; // EOF within the scan cap, comment never closed
                     }
-                    b = skipWhitespace(read());
+                    b = skipWhitespace(readBounded(remaining), remaining);
                     continue;
                 }
                 return matches(b, rest, MAGIC_BYTES_XML) || matches(b, rest, MAGIC_BYTES_SVG);
@@ -140,17 +150,18 @@ public final class ContentTypeDetectingInputStreamWrapper extends BufferedInputS
         return true;
     }
 
-    private int skipWhitespace(int b) throws IOException {
+    private int skipWhitespace(int b, int[] remaining) throws IOException {
         while (b != -1 && isXmlWhitespace((byte) b)) {
-            b = read();
+            b = readBounded(remaining);
         }
         return b;
     }
 
-    private boolean skipToCommentEnd() throws IOException {
+    /** @return {@code true} once {@code -->} is found; {@code false} on EOF (within the scan cap) first. */
+    private boolean skipToCommentEnd(int[] remaining) throws IOException {
         int matched = 0;
         int b;
-        while ((b = read()) != -1) {
+        while ((b = readBounded(remaining)) != -1) {
             if (b == COMMENT_END[matched]) {
                 matched++;
                 if (matched == COMMENT_END.length) {
@@ -161,6 +172,22 @@ public final class ContentTypeDetectingInputStreamWrapper extends BufferedInputS
             }
         }
         return false;
+    }
+
+    private int readBounded(int[] remaining) throws IOException {
+        if (remaining[0] <= 0) {
+            throw new IOException("SVG detection aborted: prolog scan exceeded %d bytes".formatted(MAX_PROLOG_SCAN_BYTES));
+        }
+        remaining[0]--;
+        return read();
+    }
+
+    private byte[] readBoundedNBytes(int[] remaining, int len) throws IOException {
+        if (remaining[0] < len) {
+            throw new IOException("SVG detection aborted: prolog scan exceeded %d bytes".formatted(MAX_PROLOG_SCAN_BYTES));
+        }
+        remaining[0] -= len;
+        return readNBytes(len);
     }
 
     private static boolean isXmlWhitespace(byte b) {

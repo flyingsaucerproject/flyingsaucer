@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.xhtmlrenderer.util.ContentTypeDetectingInputStreamWrapper.detectContentType;
 
 class ContentTypeDetectingInputStreamWrapperTest {
@@ -127,17 +128,19 @@ class ContentTypeDetectingInputStreamWrapperTest {
     }
 
     /**
-     * The leading-comment scan must not truncate at some fixed buffer size,
-     * and must leave the stream fully intact (comment included) for whatever
-     * reads the actual SVG body afterward.
+     * {@code source} may be attacker-controlled (a remote URL referenced from
+     * untrusted HTML/CSS), so the leading-comment scan is capped rather than
+     * unbounded — otherwise a comment that never closes would let the
+     * underlying buffer grow for as long as bytes keep arriving. Exceeding
+     * the cap throws instead of silently misdetecting; the stream must still
+     * come back fully intact afterward for whatever reads the SVG body next.
      */
     @Test
-    void isSvg_withCommentLongerThan4Kb() throws IOException {
+    void isSvg_throwsWhenLeadingCommentExceedsScanLimit() throws IOException {
         byte[] streamBytes = "<!--%s-->\n<svg/>\n".formatted("x".repeat(10_000)).getBytes(UTF_8);
 
         try (var stream = detectContentType(new ByteArrayInputStream(streamBytes))) {
-            assertThat(stream.isSvg()).isTrue();
-            assertThat(stream.isPdf()).isFalse();
+            assertThatIOException().isThrownBy(stream::isSvg);
             assertThat(stream.readAllBytes()).isEqualTo(streamBytes);
         }
     }
