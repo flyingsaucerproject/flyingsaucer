@@ -23,6 +23,8 @@ public final class ContentTypeDetectingInputStreamWrapper extends BufferedInputS
     private static final byte[] MAGIC_BYTES_PDF = "%PDF".getBytes(UTF_8);
     private static final byte[] MAGIC_BYTES_XML = "<?xm".getBytes(UTF_8);
     private static final byte[] MAGIC_BYTES_SVG = "<svg".getBytes(UTF_8);
+    private static final byte[] COMMENT_START = "<!--".getBytes(UTF_8);
+    private static final byte[] COMMENT_END = "-->".getBytes(UTF_8);
     private static final int MAX_MAGIC_BYTES = 4;
     private static final byte[] NO_DATA = new byte[0];
 
@@ -81,9 +83,87 @@ public final class ContentTypeDetectingInputStreamWrapper extends BufferedInputS
         return streamStartsWithMagicBytes(MAGIC_BYTES_PDF);
     }
 
-    public boolean isSvg() {
-        // TODO Ignore leading comments in file, e.g.
-        // <!--<?xml version="1.0" encoding="UTF-8" standalone="no"?>-->
-        return streamStartsWithMagicBytes(MAGIC_BYTES_XML) || streamStartsWithMagicBytes(MAGIC_BYTES_SVG);
+    public boolean isSvg() throws IOException {
+        return streamStartsWithMagicBytes(MAGIC_BYTES_XML)
+            || streamStartsWithMagicBytes(MAGIC_BYTES_SVG)
+            || startsWithSvgAfterLeadingComments();
+    }
+
+    /**
+     * Handles SVGs whose prolog opens with an XML comment (e.g. a real XML
+     * editor or export tool commenting out the declaration:
+     * {@code <!--<?xml version="1.0" encoding="UTF-8" standalone="no"?>-->})
+     * before the {@code <svg>} or {@code <?xml} magic bytes.
+     * <p>
+     * Comments are scanned for and consumed incrementally rather than into a
+     * fixed-size buffer, so there's no cap on how long a leading comment can
+     * be. {@link #mark} covers the whole scan so that whatever gets read
+     * while looking for the real start of the document is always undone by
+     * {@link #reset} before returning — callers that go on to read the full
+     * SVG body (e.g. for the Batik parse) still see it from the very start,
+     * comments included.
+     */
+    private boolean startsWithSvgAfterLeadingComments() throws IOException {
+        mark(Integer.MAX_VALUE);
+        try {
+            int b = skipWhitespace(read());
+            while (b != -1) {
+                byte[] rest = readNBytes(MAX_MAGIC_BYTES - 1);
+                if (rest.length < MAX_MAGIC_BYTES - 1) {
+                    return false; // fewer than 4 bytes left
+                }
+                if (matches(b, rest, COMMENT_START)) {
+                    if (!skipToCommentEnd()) {
+                        return false; // unterminated comment
+                    }
+                    b = skipWhitespace(read());
+                    continue;
+                }
+                return matches(b, rest, MAGIC_BYTES_XML) || matches(b, rest, MAGIC_BYTES_SVG);
+            }
+            return false;
+        } finally {
+            reset();
+        }
+    }
+
+    /** Compares {@code firstByte} followed by {@code rest} against a 4-byte magic pattern. */
+    private static boolean matches(int firstByte, byte[] rest, byte[] pattern) {
+        if (firstByte != pattern[0]) {
+            return false;
+        }
+        for (int i = 0; i < rest.length; i++) {
+            if (rest[i] != pattern[i + 1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int skipWhitespace(int b) throws IOException {
+        while (b != -1 && isXmlWhitespace((byte) b)) {
+            b = read();
+        }
+        return b;
+    }
+
+    private boolean skipToCommentEnd() throws IOException {
+        int matched = 0;
+        int b;
+        while ((b = read()) != -1) {
+            if (b == COMMENT_END[matched]) {
+                matched++;
+                if (matched == COMMENT_END.length) {
+                    return true;
+                }
+            } else {
+                matched = b == COMMENT_END[0] ? 1 : 0;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isXmlWhitespace(byte b) {
+        return b == ' ' || b == '\t' || b == '\r' || b == '\n';
     }
 }
