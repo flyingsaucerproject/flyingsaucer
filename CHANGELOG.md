@@ -1,7 +1,12 @@
 # Changelog
 
-## 10.3.1 (??.06.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/51?closed=1
-* TBD
+## 10.4.0 (16.06.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/51?closed=1
+* #506 feat(css): support CSS transform/transform-origin in PDF output (#689)
+* fix(layout): honor box-sizing: border-box for display: table-cell / by Ilham Ferdian Rudianata (#682)
+* feat(pdf): support inline <svg> elements in PDF output (#686)
+* fix(svg): detect SVG content when the prolog opens with a comment (#690)
+* log "unsupported features" warning under a dedicated logger name Html5Support (#687)
+* #678 fix(security): harden DocumentBuilderFactory usage against XXE (#688)
 
 ## 10.3.0 (09.06.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/50?closed=1
 * #633 add flying-saucer-chrome-pdf module (#666)
