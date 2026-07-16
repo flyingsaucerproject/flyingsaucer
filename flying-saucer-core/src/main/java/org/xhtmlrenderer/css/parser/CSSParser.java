@@ -1568,8 +1568,8 @@ public class CSSParser {
         return getTokenValue(t).substring(s.length());
     }
 
-    private String sign(float sign) {
-        return sign == -1.0f ? "-" : "";
+    private String sign(int sign) {
+        return sign < 0 ? "-" : "";
     }
 
 //  term
@@ -1580,7 +1580,7 @@ public class CSSParser {
 //    ;
     private PropertyValue term(boolean literal, @Nullable Token operatorToken) throws IOException {
         log.trace("term(literal: {}, token: {})", literal, operatorToken);
-        float sign = 1;
+        int sign = 1;
         Token t = la();
         if (t == Token.TK_PLUS || t == Token.TK_MINUS) {
             sign = unary_operator();
