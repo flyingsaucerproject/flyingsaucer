@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_DEG;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_GRAD;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_IDENT;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_NUMBER;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PX;
@@ -177,6 +179,41 @@ class CSSParserTest {
         assertThat(declarations.get(1).getCSSName()).isEqualTo(CSSName.COLUMN_COUNT);
         assertThat(declarations.get(1).getValue().getPrimitiveType()).isEqualTo(CSS_NUMBER);
         assertThat(declarations.get(1).getValue().getFloatValue(CSS_NUMBER)).isEqualTo(3f);
+    }
+
+    @Test
+    void parsesTransformFunctionsAndAngleUnits() throws IOException {
+        Stylesheet stylesheet = parser.parseStylesheet(null, AUTHOR, new StringReader("""
+            div {
+                transform: translate(10px, 20%) rotate(0.25turn) skewX(50grad);
+                transform-origin: right bottom;
+            }
+            """));
+        Ruleset ruleset = (Ruleset) stylesheet.getContents().get(0);
+        List<PropertyDeclaration> declarations = ruleset.getPropertyDeclarations();
+
+        assertThat(declarations).hasSize(2);
+        assertThat(declarations.get(0).getCSSName()).isEqualTo(CSSName.TRANSFORM);
+        assertThat(declarations.get(1).getCSSName()).isEqualTo(CSSName.TRANSFORM_ORIGIN);
+
+        List<PropertyValue> functions = ((PropertyValue) declarations.get(0).getValue()).getValues();
+        assertThat(functions).hasSize(3);
+        // Function names are lower-cased by the tokenizer (CSS identifiers are case-insensitive).
+        assertThat(functions.stream().map(v -> v.getFunction().getName()))
+                .containsExactly("translate", "rotate", "skewx");
+
+        // "turn" has no dedicated DOM unit, so it's normalized to degrees while parsing: 0.25turn == 90deg
+        PropertyValue rotateAngle = functions.get(1).getFunction().getParameters().get(0);
+        assertThat(rotateAngle.getPrimitiveType()).isEqualTo(CSS_DEG);
+        assertThat(rotateAngle.getFloatValue()).isEqualTo(90f);
+
+        PropertyValue skewAngle = functions.get(2).getFunction().getParameters().get(0);
+        assertThat(skewAngle.getPrimitiveType()).isEqualTo(CSS_GRAD);
+        assertThat(skewAngle.getFloatValue()).isEqualTo(50f);
+
+        List<PropertyValue> origin = ((PropertyValue) declarations.get(1).getValue()).getValues();
+        assertThat(origin.get(0).getFloatValue()).isEqualTo(100f); // right
+        assertThat(origin.get(1).getFloatValue()).isEqualTo(100f); // bottom
     }
 
     private static PropertyDeclaration css(CSSName property, FSRGBColor color) {

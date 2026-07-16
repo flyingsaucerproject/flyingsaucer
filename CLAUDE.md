@@ -24,12 +24,15 @@ Surefire only picks up tests under `org/**` (see `pom.xml`). JUnit 4 (`junit:jun
 
 - **Use AssertJ's type-specific matchers** instead of unwrapping. E.g. for `AtomicInteger`: `assertThat(counter).hasValue(0)` — never `assertThat(counter.get()).isZero()`. Same idea for `Optional`, `Path`, `File`, collections, etc.: assert on the wrapper, not on a manually extracted value.
 - **Static-import common helpers** to keep tests terse: `org.assertj.core.api.Assertions.assertThat`, `java.util.Objects.requireNonNull`, and any project test utility (e.g. `TestUtils.printFile`). Avoid qualifying these inline.
+- **Prefer Mockito's no-arg `mock()`** over `mock(SomeClass.class)` — the target type is inferred from the variable/field it's assigned to, e.g. `private final CssContext ctx = mock();` instead of `mock(CssContext.class)`.
 
 ## Compilation specifics
 
 - `maven-compiler-plugin` runs **Error Prone** as a `-Xplugin`. A handful of checks are disabled globally (`MissingSummary`, `JdkObsolete`, `ReferenceEquality`, `OperatorPrecedence`) and `Lexer.java` is excluded entirely. If you hit unexpected compile errors, suspect Error Prone before suspecting javac.
 - `flying-saucer-core` regenerates `org/xhtmlrenderer/css/parser/Lexer.java` from `Lexer.flex` via the **JFlex** plugin during `process-resources`. **Do not hand-edit `Lexer.java`** — change `Lexer.flex` and rebuild.
 - Nullness is annotated with **JSpecify** (`@Nullable`, `@NonNull`); honor those when changing signatures. Indent is 4 spaces (2 for XML), UTF-8 (see `.editorconfig`).
+- Prefer immutability: build immutable objects instead of mutating a collection into shape (`List.of(horizontal, vertical)` instead of `new ArrayList<>(2); add(horizontal); add(vertical)`, or `values.stream().map(...).toList()` instead of populating an `ArrayList` in a loop — reach for a mutable collection only when the final size/contents genuinely can't be expressed as a single literal or stream pipeline); prefer `private final` fields set once (in the constructor or at declaration) over fields reassigned later.
+- Prefer record-style accessor names (`age()`) over JavaBean-style (`getAge()`) in new code, matching Java's `record` convention — but don't rename accessors on existing non-record classes just to match this style.
 
 ## Module layout
 

@@ -84,6 +84,21 @@ public interface OutputDevice<T extends FSImage, FontType extends FSFont> {
 
     void translate(double tx, double ty);
 
+    /**
+     * Applies the box's CSS {@code transform}, if any, around subsequent paint calls for this box
+     * and its descendants; must be paired with a matching {@link #popTransform()}. The default
+     * no-op implementation means CSS {@code transform} only has a visual effect on backends that
+     * override this (currently PDF output only).
+     */
+    default void pushTransform(RenderingContext c, Box box) {
+    }
+
+    /**
+     * Restores the graphics state saved by the matching {@link #pushTransform(RenderingContext, Box)}.
+     */
+    default void popTransform() {
+    }
+
     void setStroke(Stroke s);
     Stroke getStroke();
 
