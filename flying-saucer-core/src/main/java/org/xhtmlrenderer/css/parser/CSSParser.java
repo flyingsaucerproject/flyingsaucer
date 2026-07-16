@@ -1592,6 +1592,7 @@ public class CSSParser {
                 short type = switch (unit) {
                     case "deg" -> CSSPrimitiveValue.CSS_DEG;
                     case "rad" -> CSSPrimitiveValue.CSS_RAD;
+                    case "grad" -> CSSPrimitiveValue.CSS_GRAD;
                     default -> throw new CSSParseException("Unsupported CSS unit " + unit, getCurrentLine());
                 };
 
@@ -1603,8 +1604,22 @@ public class CSSParser {
                 skip_whitespace();
             }
 
+            // "turn" isn't a distinct DOM CSSPrimitiveValue unit, so convert it to degrees eagerly.
+            case DIMENSION -> {
+                String unit = extractUnit(t);
+                if (!unit.equals("turn")) {
+                    throw new CSSParseException("Unsupported CSS unit " + unit, getCurrentLine());
+                }
 
-            case TIME, FREQ, DIMENSION -> throw new CSSParseException("Unsupported CSS unit " + extractUnit(t), getCurrentLine());
+                result = new PropertyValue(CSSPrimitiveValue.CSS_DEG,
+                        sign * Float.parseFloat(extractNumber(t)) * 360f,
+                        sign(sign) + getTokenValue(t));
+
+                next();
+                skip_whitespace();
+            }
+
+            case TIME, FREQ -> throw new CSSParseException("Unsupported CSS unit " + extractUnit(t), getCurrentLine());
             case NUMBER -> {
                     result = new PropertyValue(
                             CSS_NUMBER,

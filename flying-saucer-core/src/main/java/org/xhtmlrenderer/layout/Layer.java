@@ -334,6 +334,7 @@ public final class Layer {
             }
         }
 
+        c.getOutputDevice().pushTransform(c, getMaster());
         try {
             if (! isInline() && ((BlockBox)getMaster()).isReplaced()) {
                 paintLayerBackgroundAndBorder(c);
@@ -375,6 +376,8 @@ public final class Layer {
                 }
             }
         } finally {
+            c.getOutputDevice().popTransform();
+
             // Restore original clip if we applied table cell clipping
             if (needsClipRestore && originalClip != null) {
                 c.getOutputDevice().setClip(originalClip);

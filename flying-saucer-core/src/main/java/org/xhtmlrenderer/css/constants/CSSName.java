@@ -37,6 +37,8 @@ import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.QuotesPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.SizePropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.TransformOriginPropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.TransformPropertyBuilder;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
@@ -1078,6 +1080,24 @@ public final class CSSName implements Comparable<CSSName> {
                     new PrimitivePropertyBuilders.Top()
             );
 
+    public static final CSSName TRANSFORM =
+            addProperty(
+                    "transform",
+                    PRIMITIVE,
+                    "none",
+                    NOT_INHERITED,
+                    new TransformPropertyBuilder()
+            );
+
+    public static final CSSName TRANSFORM_ORIGIN =
+            addProperty(
+                    "transform-origin",
+                    PRIMITIVE,
+                    "50% 50%",
+                    NOT_INHERITED,
+                    new TransformOriginPropertyBuilder()
+            );
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -1952,8 +1972,8 @@ public final class CSSName implements Comparable<CSSName> {
             // Animations
             "animation", "animation-name", "animation-duration", "animation-timing-function", "animation-delay",
             "animation-iteration-count", "animation-direction", "animation-fill-mode", "animation-play-state",
-            // Transforms
-            "transform", "transform-origin", "transform-style",
+            // Transforms (3D only; 2D transform/transform-origin are supported)
+            "transform-style",
             // Visual effects
             "box-shadow", "text-shadow", "filter", "backdrop-filter",
             // Other common CSS3 properties

@@ -84,8 +84,10 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -125,6 +127,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     private ITextFSFont _font;
 
     private AffineTransform _transform = new AffineTransform();
+    private final Deque<AffineTransform> _transformStack = new ArrayDeque<>();
 
     private Color _color = Color.BLACK;
 
@@ -490,6 +493,21 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     @Override
     public void translate(double tx, double ty) {
         _transform.translate(tx, ty);
+    }
+
+    @Override
+    public void pushTransform(RenderingContext c, Box box) {
+        _transformStack.push((AffineTransform) _transform.clone());
+
+        AffineTransform boxTransform = CssTransform.toAffineTransform(c, box);
+        if (boxTransform != null) {
+            _transform.concatenate(boxTransform);
+        }
+    }
+
+    @Override
+    public void popTransform() {
+        _transform = _transformStack.pop();
     }
 
     @Nullable

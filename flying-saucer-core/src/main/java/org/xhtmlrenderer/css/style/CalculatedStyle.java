@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import static java.util.Collections.emptyList;
 import static org.xhtmlrenderer.css.constants.CSSName.PADDING_SIDE_PROPERTIES;
 import static org.xhtmlrenderer.css.constants.CSSName.cssProperty;
 import static org.xhtmlrenderer.css.style.CssKnowledge.BLOCK_EQUIVALENTS;
@@ -340,6 +341,31 @@ public class CalculatedStyle {
 
     public BackgroundPosition getBackgroundPosition() {
         ListValue result = (ListValue) valueByName(CSSName.BACKGROUND_POSITION);
+        List<PropertyValue> values = result.getValues();
+
+        return new BackgroundPosition(values.get(0), values.get(1));
+    }
+
+    public boolean hasTransform() {
+        return !isIdent(CSSName.TRANSFORM, IdentValue.NONE);
+    }
+
+    /**
+     * The parsed {@code transform} functions, in the order they should be applied, or an empty
+     * list if {@code transform: none}. Each value's {@link FSFunction} name is one of
+     * {@code matrix, translate, translateX, translateY, scale, scaleX, scaleY, rotate, skew, skewX, skewY}.
+     */
+    public List<PropertyValue> getTransforms() {
+        if (!hasTransform()) {
+            return emptyList();
+        }
+
+        FSDerivedValue value = valueByName(CSSName.TRANSFORM);
+        return ((ListValue) value).getValues();
+    }
+
+    public BackgroundPosition getTransformOrigin() {
+        ListValue result = (ListValue) valueByName(CSSName.TRANSFORM_ORIGIN);
         List<PropertyValue> values = result.getValues();
 
         return new BackgroundPosition(values.get(0), values.get(1));
@@ -909,6 +935,10 @@ public class CalculatedStyle {
     }
 
     public boolean requiresLayer() {
+        if (hasTransform()) {
+            return true;
+        }
+
         FSDerivedValue value = valueByName(CSSName.POSITION);
 
         if (value instanceof FunctionValue) {  // running(header)

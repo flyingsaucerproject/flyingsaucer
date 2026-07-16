@@ -76,7 +76,7 @@ class BoxBuilderHtml5WarningTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"transition", "animation", "transform", "box-shadow", "filter"})
+    @ValueSource(strings = {"transition", "animation", "backdrop-filter", "box-shadow", "filter"})
     void warnsOnCss3PropertyNames(String property) throws Exception {
         String html = """
             <html>
