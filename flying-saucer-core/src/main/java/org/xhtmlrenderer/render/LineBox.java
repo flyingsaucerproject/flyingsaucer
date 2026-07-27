@@ -230,9 +230,12 @@ public class LineBox extends Box implements InlinePaintable {
 
                 CharCounts counts = countJustifiableChars();
 
-                JustificationInfo info = !getParent().getStyle().isIdent(LETTER_SPACING, NORMAL) ?
-                        new JustificationInfo(0.0f, (float) toAdd / counts.getSpaceCount()) :
-                        justificationInfo(counts, toAdd);
+                boolean isSpaceOnly = !getParent().getStyle().isIdent(LETTER_SPACING, NORMAL) &&
+                        counts.getSpaceCount() > 0;
+
+                JustificationInfo info = isSpaceOnly ?
+                        justificationInfo(counts, toAdd, 0.0f, 1.0f) :
+                        justificationInfo(counts, toAdd, JUSTIFY_NON_SPACE_SHARE, JUSTIFY_SPACE_SHARE);
 
                 adjustChildren(info);
                 setJustificationInfo(info);
@@ -240,13 +243,14 @@ public class LineBox extends Box implements InlinePaintable {
         }
     }
 
-    private static JustificationInfo justificationInfo(CharCounts counts, int toAdd) {
+    private static JustificationInfo justificationInfo(CharCounts counts, int toAdd,
+                                                       float nonSpaceShare, float spaceShare) {
         float nonSpaceAdjust = counts.getNonSpaceCount() > 1 ?
-                toAdd * JUSTIFY_NON_SPACE_SHARE / (counts.getNonSpaceCount() - 1) :
+                toAdd * nonSpaceShare / (counts.getNonSpaceCount() - 1) :
                 0.0f;
 
         float spaceAdjust = counts.getSpaceCount() > 0 ?
-                toAdd * JUSTIFY_SPACE_SHARE / counts.getSpaceCount() :
+                toAdd * spaceShare / counts.getSpaceCount() :
                 0.0f;
 
         return new JustificationInfo(nonSpaceAdjust, spaceAdjust);

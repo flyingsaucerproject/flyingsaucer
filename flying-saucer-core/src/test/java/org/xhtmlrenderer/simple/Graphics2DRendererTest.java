@@ -33,6 +33,16 @@ public class Graphics2DRendererTest {
     }
 
     @Test
+    public void rendersLetterSpacedTextWithSupplementaryCharacters() {
+        URL source = requireNonNull(Thread.currentThread().getContextClassLoader().getResource("letter-spacing-astral.html"));
+
+        BufferedImage image = Graphics2DRenderer.renderToImage(source.toExternalForm(), 600, 200);
+
+        assertThat(image.getWidth()).isEqualTo(600);
+        assertThat(image.getHeight()).isEqualTo(200);
+    }
+
+    @Test
     public void rendersHtmlToImage_hamlet() throws IOException {
         URL source = requireNonNull(Thread.currentThread().getContextClassLoader().getResource("hamlet.xhtml"));
         File output = File.createTempFile("flying-saucer-" + getClass().getSimpleName(), ".png");

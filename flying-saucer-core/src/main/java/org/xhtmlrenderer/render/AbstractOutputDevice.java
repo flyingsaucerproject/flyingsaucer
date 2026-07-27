@@ -37,6 +37,7 @@ import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
+import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
@@ -64,20 +65,13 @@ public abstract class AbstractOutputDevice<T extends FSImage, FontType extends F
             setColor(iB.getStyle().getColor());
             setFont((FontType) iB.getStyle().getFSFont(c));
             setFontSpecification(iB.getStyle().getFontSpecification());
-            if (inlineText.getParent().getStyle().isTextJustify()) {
-                JustificationInfo info = inlineText.getParent().getLineBox().getJustificationInfo();
-                if (info != null) {
-                    c.getTextRenderer().drawString(
-                            c.getOutputDevice(),
-                            text,
-                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline(),
-                            info);
-                } else {
-                    c.getTextRenderer().drawString(
-                            c.getOutputDevice(),
-                            text,
-                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());
-                }
+            JustificationInfo info = justificationInfo(c, inlineText);
+            if (info != null) {
+                c.getTextRenderer().drawString(
+                        c.getOutputDevice(),
+                        text,
+                        iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline(),
+                        info);
             } else {
                 c.getTextRenderer().drawString(
                         c.getOutputDevice(),
@@ -91,6 +85,28 @@ public abstract class AbstractOutputDevice<T extends FSImage, FontType extends F
         }
     }
 
+    /**
+     * The per-character adjustments to draw {@code inlineText} with: the line's
+     * justification (if any) plus the style's {@code letter-spacing} (if any),
+     * or {@code null} when neither applies.
+     */
+    @Nullable
+    @CheckReturnValue
+    protected JustificationInfo justificationInfo(RenderingContext c, InlineText inlineText) {
+        InlineLayoutBox iB = inlineText.getParent();
+        JustificationInfo info = iB.getStyle().isTextJustify() ?
+                iB.getLineBox().getJustificationInfo() :
+                null;
+
+        float letterSpacing = iB.getStyle().letterSpacing(c);
+        if (letterSpacing == 0.0f) {
+            return info;
+        }
+        return info == null ?
+                new JustificationInfo(letterSpacing, letterSpacing) :
+                new JustificationInfo(info.nonSpaceAdjust() + letterSpacing, info.spaceAdjust() + letterSpacing);
+    }
+
     private void drawFontMetrics(RenderingContext c, InlineText inlineText) {
         InlineLayoutBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
@@ -98,9 +114,7 @@ public abstract class AbstractOutputDevice<T extends FSImage, FontType extends F
         setColor(new FSRGBColor(0xFF, 0x33, 0xFF));
 
         FSFontMetrics fm = iB.getStyle().getFSFontMetrics(null);
-        int width = c.getTextRenderer().getWidth(
-                c.getFontContext(),
-                iB.getStyle().getFSFont(c), text);
+        int width = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), text);
         int x = iB.getAbsX() + inlineText.getX();
         int y = iB.getAbsY() + iB.getBaseline();
 

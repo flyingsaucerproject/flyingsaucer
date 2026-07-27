@@ -129,12 +129,17 @@ public class Java2DTextRenderer implements TextRenderer<Java2DOutputDevice, Java
     private void adjustGlyphPositions(
             String string, JustificationInfo info, GlyphVector vector) {
         float adjust = 0.0f;
-        for (int i = 0; i < string.length(); i++) {
+        for (int i = 0; i < string.length() && i < vector.getNumGlyphs(); i++) {
             char c = string.charAt(i);
             if (i != 0) {
                 Point2D point = vector.getGlyphPosition(i);
                 vector.setGlyphPosition(
                         i, new Point2D.Double(point.getX() + adjust, point.getY()));
+            }
+            // a supplementary character occupies two chars (and two glyph slots,
+            // the second invisible) but receives only one spacing adjustment
+            if (Character.isHighSurrogate(c)) {
+                continue;
             }
             if (c == ' ' || c == '\u00a0' || c == '\u3000') {
                 adjust += info.spaceAdjust();
