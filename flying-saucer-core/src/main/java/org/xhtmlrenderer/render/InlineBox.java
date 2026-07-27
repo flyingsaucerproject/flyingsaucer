@@ -186,13 +186,14 @@ public class InlineBox implements Styleable {
 
     @CheckReturnValue
     private int getMaxCharWidth(LayoutContext c, String s) {
-        char[] chars = s.toCharArray();
         int result = 0;
-        for (char aChar : chars) {
-            int width = getTextWidth(c, Character.toString(aChar));
+        for (int i = 0; i < s.length(); ) {
+            int codePoint = s.codePointAt(i);
+            int width = getTextWidth(c, new String(Character.toChars(codePoint)));
             if (width > result) {
                 result = width;
             }
+            i += Character.charCount(codePoint);
         }
         return result;
     }
