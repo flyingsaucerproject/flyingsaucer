@@ -73,6 +73,11 @@ class CSSParserTest {
         " data:image/svg+xml;charset=utf8,%3Csvg xmlns=              | /css/v1/sample.css                 | data:image/svg+xml;charset=utf8,%3Csvg xmlns=",
         " blob:https://site.com/258186e7-a0a1-40e5-bcf8-5ac35f965454 | /css/v1/sample.css                 | blob:https://site.com/258186e7-a0a1-40e5-bcf8-5ac35f965454",
         " blob:                                                      | /css/v1/sample.css                 | blob:",
+        // Synthetic inline stylesheet keys are absolute (opaque) URIs but must not
+        // rewrite server-relative resource paths (e.g. @font-face src in <style>).
+        " /assets/fonts/MyFont.ttf                                   | inline:1                           | /assets/fonts/MyFont.ttf",
+        " assets/fonts/MyFont.ttf                                    | inline:1                           | assets/fonts/MyFont.ttf",
+        " /assets/fonts/MyFont.ttf                                   | style attribute                    | /assets/fonts/MyFont.ttf",
     }, delimiterString = "|")
     void imageUrl(String imageUrl, String cssUrl, String expectedFullImageUrl) throws IOException {
         String css = "div { background-image: url('%s') }".formatted(imageUrl);
@@ -84,6 +89,23 @@ class CSSParserTest {
         assertThat(ruleset.getPropertyDeclarations()).usingRecursiveComparison().isEqualTo(List.of(
             new PropertyDeclaration(BACKGROUND_IMAGE, new PropertyValue(CSS_URI, expectedFullImageUrl, "url('%s')".formatted(imageUrl)), false, AUTHOR)
         ));
+    }
+
+    @Test
+    void fontFaceSrcKeepsServerRelativeUriAgainstInlineStylesheet() throws IOException {
+        Stylesheet stylesheet = parser.parseStylesheet("inline:42", AUTHOR, new StringReader("""
+            @font-face {
+                font-family: 'MyFont';
+                src: url('/assets/fonts/MyFont.ttf');
+            }
+            """));
+
+        assertThat(stylesheet.getFontFaceRules()).hasSize(1);
+        String src = stylesheet.getFontFaceRules().get(0)
+                .getCalculatedStyle()
+                .valueByName(CSSName.SRC)
+                .asString();
+        assertThat(src).isEqualTo("/assets/fonts/MyFont.ttf");
     }
 
     @Test
