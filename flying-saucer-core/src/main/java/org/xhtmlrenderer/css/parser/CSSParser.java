@@ -2103,7 +2103,12 @@ public class CSSParser {
     private String getPartBeforeFirstSlash(String uri) {
         try {
             URI u = new URI(uri);
-            return u.getRawAuthority() == null ? u.getScheme() : u.getScheme() + "://" + u.getRawAuthority();
+            // Keep the scheme delimiter when there is no authority (e.g. file:/path),
+            // otherwise server-relative rewrite yields "file/..." instead of "file:/...".
+            if (u.getRawAuthority() == null) {
+                return u.getScheme() + ":";
+            }
+            return u.getScheme() + "://" + u.getRawAuthority();
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Invalid uri: " + uri, e);
         }

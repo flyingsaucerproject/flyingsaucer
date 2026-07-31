@@ -70,6 +70,10 @@ class CSSParserTest {
         " https://some.com/background.png                            | /css/v1/sample.css                 | https://some.com/background.png",
         " /img/background.png                                        | https://some.com/css/v1/sample.css | https://some.com/img/background.png",
         " /img/background.png                                        | /css/v1/sample.css                 | /img/background.png",
+        // file: bases are hierarchical absolute; preserve the scheme colon (not file/...).
+        " /img/background.png                                        | file:/css/v1/sample.css            | file:/img/background.png",
+        " /img/background.png                                        | file:///css/v1/sample.css          | file:/img/background.png",
+        " /img/background.png                                        | file://localhost/css/v1/sample.css | file://localhost/img/background.png",
         " data:image/svg+xml;charset=utf8,%3Csvg xmlns=              | /css/v1/sample.css                 | data:image/svg+xml;charset=utf8,%3Csvg xmlns=",
         " blob:https://site.com/258186e7-a0a1-40e5-bcf8-5ac35f965454 | /css/v1/sample.css                 | blob:https://site.com/258186e7-a0a1-40e5-bcf8-5ac35f965454",
         " blob:                                                      | /css/v1/sample.css                 | blob:",
