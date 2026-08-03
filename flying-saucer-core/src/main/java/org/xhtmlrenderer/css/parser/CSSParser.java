@@ -2076,7 +2076,7 @@ public class CSSParser {
                 // Relative URIs are resolved relative to CSS file, not XHTML file
                 if (isRelativeURI(uriResult) && _uri != null) {
                     uriResult = getPartBeforeLastSlash(_uri) + uriResult;
-                } else if (isServerRelativeURI(uriResult) && _uri != null && isAbsoluteUri(_uri)) {
+                } else if (isServerRelativeURI(uriResult) && _uri != null && isHierarchicalAbsoluteUri(_uri)) {
                     uriResult = getPartBeforeFirstSlash(_uri) + uriResult;
                 }
 
@@ -2103,7 +2103,12 @@ public class CSSParser {
     private String getPartBeforeFirstSlash(String uri) {
         try {
             URI u = new URI(uri);
-            return u.getRawAuthority() == null ? u.getScheme() : u.getScheme() + "://" + u.getRawAuthority();
+            // Keep the scheme delimiter when there is no authority (e.g. file:/path),
+            // otherwise server-relative rewrite yields "file/..." instead of "file:/...".
+            if (u.getRawAuthority() == null) {
+                return u.getScheme() + ":";
+            }
+            return u.getScheme() + "://" + u.getRawAuthority();
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Invalid uri: " + uri, e);
         }
@@ -2120,6 +2125,24 @@ public class CSSParser {
 
     private boolean isServerRelativeURI(String uri) {
         return uri.startsWith("/") && !isAbsoluteUri(uri);
+    }
+
+    /**
+     * Whether {@code uri} is an absolute hierarchical URI suitable as a base for
+     * resolving server-relative resource paths ({@code /...}).
+     * <p>
+     * Opaque absolute URIs such as the synthetic {@code inline:N} keys used for
+     * {@code <style>} blocks must not participate in path rewriting — otherwise
+     * {@code url('/assets/font.ttf')} becomes {@code inline/assets/font.ttf}.
+     */
+    private boolean isHierarchicalAbsoluteUri(String uri) {
+        try {
+            URI u = new URI(uri);
+            return u.isAbsolute() && !u.isOpaque();
+        } catch (URISyntaxException e) {
+            log.debug("Invalid uri: {}", uri, e);
+            return false;
+        }
     }
 
     private boolean isAbsoluteUri(String uri) {
