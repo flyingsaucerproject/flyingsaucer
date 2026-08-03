@@ -4,6 +4,8 @@ import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.value.FontSpecification;
+import org.xhtmlrenderer.extend.FontContext;
+import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 
@@ -29,6 +31,12 @@ public interface CssContext {
     // and RenderingContext
     @CheckReturnValue
     StyleReference getCss();
+
+    @CheckReturnValue
+    TextRenderer getTextRenderer();
+
+    @CheckReturnValue
+    FontContext getFontContext();
 
     @CheckReturnValue
     FSFontMetrics getFSFontMetrics(FSFont font);

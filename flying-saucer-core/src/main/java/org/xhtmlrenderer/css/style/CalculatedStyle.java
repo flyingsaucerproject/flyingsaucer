@@ -105,6 +105,9 @@ public class CalculatedStyle {
     private float _lineHeight;
     private boolean _lineHeightResolved;
 
+    private float _letterSpacing;
+    private boolean _letterSpacingResolved;
+
     @Nullable
     private FSFont _FSFont;
     @Nullable
@@ -497,6 +500,21 @@ public class CalculatedStyle {
             _lineHeightResolved = true;
         }
         return _lineHeight;
+    }
+
+    /**
+     * Additional spacing applied after each character of inline text
+     * (the {@code letter-spacing} property), resolved to dots.
+     * Returns {@code 0.0f} for {@code letter-spacing: normal}.
+     */
+    public float letterSpacing(CssContext ctx) {
+        if (!_letterSpacingResolved) {
+            _letterSpacing = isIdent(CSSName.LETTER_SPACING, IdentValue.NORMAL) ?
+                    0.0f :
+                    getFloatPropertyProportionalWidth(CSSName.LETTER_SPACING, 0, ctx);
+            _letterSpacingResolved = true;
+        }
+        return _letterSpacing;
     }
 
     /**

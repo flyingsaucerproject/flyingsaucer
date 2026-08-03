@@ -26,6 +26,7 @@ import org.w3c.dom.Text;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.layout.FunctionData;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.util.Uu;
 
@@ -65,7 +66,7 @@ public class InlineText implements InlineChild {
     public void trimTrailingSpace(LayoutContext c) {
         if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
-            setWidth(c.getTextRenderer().getWidth(c.getFontContext(),
+            setWidth(TextUtil.textWidth(c, getParent().getStyle(),
                     getParent().getStyle().getFSFont(c),
                     getSubstring()));
             setTrimmedTrailingSpace();
@@ -166,9 +167,8 @@ public class InlineText implements InlineChild {
         _start = 0;
         _end = value.length();
         _masterText = value;
-        _width = c.getTextRenderer().getWidth(
-                c.getFontContext(), getParent().getStyle().getFSFont(c),
-                value);
+        _width = TextUtil.textWidth(c, getParent().getStyle(),
+                getParent().getStyle().getFSFont(c), value);
     }
 
     @Override

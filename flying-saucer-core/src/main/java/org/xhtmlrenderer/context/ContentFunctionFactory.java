@@ -28,6 +28,7 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.layout.CounterFunction;
 import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
@@ -242,10 +243,8 @@ public class ContentFunctionFactory {
             // Otherwise, there might be a small gap on the right side. This is
             // necessary because a TextRenderer usually use double/float for width.
             String tmp = value.repeat(100);
-            float valueWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), tmp) / 100.0f;
-            int spaceWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), " ");
+            float valueWidth = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), tmp) / 100.0f;
+            int spaceWidth = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), " ");
 
             // compute leader width and necessary count of values
             int leaderWidth = iB.getContainingBlockWidth() - iB.getLineBox().getWidth() + text.getWidth();
@@ -254,8 +253,7 @@ public class ContentFunctionFactory {
             String leaderString = ' ' + value.repeat(Math.max(0, count)) + ' ';
 
             // set left margin to ensure that the leader is right aligned (for TOC)
-            int leaderStringWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), leaderString);
+            int leaderStringWidth = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), leaderString);
             iB.setMarginLeft(c, leaderWidth - leaderStringWidth);
 
             return leaderString;

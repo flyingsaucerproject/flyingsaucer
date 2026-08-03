@@ -635,10 +635,11 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     private PdfTextArray makeJustificationArray(String s, JustificationInfo info) {
         PdfTextArray array = new PdfTextArray();
         int len = s.length();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ) {
             char c = s.charAt(i);
-            array.add(Character.toString(c));
-            if (i != len - 1) {
+            int end = s.offsetByCodePoints(i, 1);
+            array.add(s.substring(i, end));
+            if (end != len) {
                 float offset;
                 if (c == ' ' || c == '\u00a0' || c == '\u3000') {
                     offset = info.spaceAdjust();
@@ -647,6 +648,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
                 }
                 array.add((-offset / _dotsPerPoint) * 1000 / (_font.getSize2D() / _dotsPerPoint));
             }
+            i = end;
         }
         return array;
     }
