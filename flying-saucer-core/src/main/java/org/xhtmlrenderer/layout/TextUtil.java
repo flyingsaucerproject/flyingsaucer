@@ -119,7 +119,7 @@ public class TextUtil {
      * Measures the width of {@code text} in dots, including any
      * {@code letter-spacing} from {@code style} (applied after each character).
      * The spacing contribution is rounded up so that a width accumulated from
-     * substring measurements never exceeds the recorded width of the whole run.
+     * substring measurements never understates the width of the whole run.
      */
     @CheckReturnValue
     public static int textWidth(CssContext c, CalculatedStyle style, FSFont font, String text) {

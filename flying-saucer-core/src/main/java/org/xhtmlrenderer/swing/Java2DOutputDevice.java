@@ -119,9 +119,9 @@ public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage, AWTFSFo
             String string = inlineText.getSubstring();
             float adjust = 0.0f;
             int end = Math.min(inlineText.getSelectionEnd(), vector.getNumGlyphs());
-            for (int i = inlineText.getSelectionStart(); i < end; i++) {
+            for (int i = 0; i < end; i++) {
                 char ch = string.charAt(i);
-                if (i != 0) {
+                if (i != 0 && i >= inlineText.getSelectionStart()) {
                     Point2D point = vector.getGlyphPosition(i);
                     vector.setGlyphPosition(
                             i, new Point2D.Double(point.getX() + adjust, point.getY()));

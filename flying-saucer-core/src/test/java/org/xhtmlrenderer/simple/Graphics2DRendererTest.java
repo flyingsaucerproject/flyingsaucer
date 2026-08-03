@@ -40,6 +40,19 @@ public class Graphics2DRendererTest {
 
         assertThat(image.getWidth()).isEqualTo(600);
         assertThat(image.getHeight()).isEqualTo(200);
+        assertThat(countInkPixels(image)).isGreaterThan(0);
+    }
+
+    private static long countInkPixels(BufferedImage image) {
+        long count = 0;
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                if ((image.getRGB(x, y) & 0xFFFFFF) != 0xFFFFFF) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     @Test

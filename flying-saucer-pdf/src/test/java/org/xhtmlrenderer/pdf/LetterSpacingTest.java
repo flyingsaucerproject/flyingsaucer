@@ -51,10 +51,15 @@ class LetterSpacingTest {
 
     @Test
     void letterSpacingIsIncludedInLineBreaking() throws IOException {
-        // "aaa aaa" fits a 100px paragraph on one line, but with 12px of
-        // letter-spacing it must wrap: one text run for the plain paragraph
-        // plus two for the spaced one, each at its own vertical position
-        assertThat(baselines(pageContent(WRAPPED))).hasSize(3);
+        String content = pageContent(WRAPPED);
+
+        // the plain paragraph keeps "aaa aaa" on one line, drawn as a single string
+        assertThat(content).contains("(aaa aaa)Tj");
+
+        // the letter-spaced paragraph no longer fits 100px and wraps into two
+        // kerned runs ("aaa" / "aaa"), so the page has three distinct baselines
+        assertThat(content.split("]TJ", -1)).hasSize(3);
+        assertThat(baselines(content)).hasSize(3);
     }
 
     private static byte[] render(String resource) {
