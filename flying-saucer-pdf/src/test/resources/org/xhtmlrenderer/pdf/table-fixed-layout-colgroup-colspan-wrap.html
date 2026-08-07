@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style type="text/css">
+        body { margin: 20pt; font-size: 10pt; font-family: serif; }
+        table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+        td { border: 1px solid black; padding: 2pt; vertical-align: top; }
+    </style>
+</head>
+<body>
+
+<!--
+    Regression: 10.4.0 (PR #682) — TableCellBox.setLayoutWidth() calls
+    applyCSSMinMaxWidth(c), which applies max-width: 34% from the <td>
+    and shrinks the colspan=4 cell from its col-allocated 67% down to 34%.
+
+    A4 page = 595pt, margins = 40pt → usable = 555pt
+    67% of 555pt = ~372pt
+    At 10pt serif, avg char width ~5pt → ~74 chars fit per line
+
+    VALUE text below is ~160 chars → MUST wrap even at 67% width.
+    At 34% (bug) it wraps even more aggressively.
+    The newline positions differ, letting us detect which width was used.
+-->
+
+<!-- Test 1: exact user bug report (max-width + colspan=4) -->
+<table id="test1">
+    <colgroup>
+        <col style="width: 33%"/>
+        <col style="width: 1%"/>
+        <col style="width: 34%"/>
+        <col style="width: 12%"/>
+        <col style="width: 1%"/>
+        <col style="width: 20%"/>
+    </colgroup>
+    <tbody>
+    <tr>
+        <td style="vertical-align: top;">KEY</td>
+        <td style="vertical-align: top;"> : </td>
+        <td colspan="4"
+            style="vertical-align: top; word-break: break-word; max-width: 34%;">
+            Alpha Beta Gamma Delta Epsilon Zeta Eta Theta Iota Kappa
+            Lambda Mu Nu Xi Omicron Pi Rho Sigma Tau Upsilon Phi Chi Psi Omega
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<br/>
+
+<!-- Test 2: colspan=4, no max-width — plain natural wrapping -->
+<table id="test2">
+    <colgroup>
+        <col style="width: 33%"/>
+        <col style="width: 1%"/>
+        <col style="width: 34%"/>
+        <col style="width: 12%"/>
+        <col style="width: 1%"/>
+        <col style="width: 20%"/>
+    </colgroup>
+    <tbody>
+    <tr>
+        <td style="vertical-align: top;">KEY2</td>
+        <td style="vertical-align: top;"> : </td>
+        <td colspan="4" style="vertical-align: top;">
+            Lorem ipsum dolor sit amet consectetur adipiscing elit
+            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

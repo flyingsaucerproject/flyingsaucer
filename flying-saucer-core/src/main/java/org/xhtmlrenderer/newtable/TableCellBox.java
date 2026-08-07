@@ -196,10 +196,29 @@ public class TableCellBox extends BlockBox {
         calcDimensions(c);
 
         setContentWidth(width - getLeftMBP() - getRightMBP());
-        // Re-apply min/max-width constraints after setContentWidth overwrites
-        // what calcDimensions already computed. Without this, a cell with
-        // max-width: 80px and allocated width 200px would render at 200px.
-        applyCSSMinMaxWidth(c);
+        // applyCSSMinMaxWidth is required ONLY when box-sizing: border-box is active.
+        //
+        // With border-box, the CSS width/min-width/max-width values include
+        // padding and border. applyCSSMinMaxWidth correctly subtracts paddingBorderWidth
+        // to derive the internal content width from those outer-box constraints.
+        // Without this call, a border-box cell with max-width: 80px (padding 10px,
+        // border 1px) would render at the full col-allocated width instead of 80px.
+        //
+        // For content-box cells (the default), the col-allocated width from
+        // <colgroup>/<col> is authoritative in table-layout: fixed.
+        // Calling applyCSSMinMaxWidth unconditionally lets CSS max-width/min-width
+        // on the <td> override the col-allocated width — which is wrong for
+        // colspan cells. Example:
+        //
+        //   cols 3-6 sum to 67%  →  setContentWidth(67% - mbp) ← correct
+        //   <td colspan="4" style="max-width: 34%">              ← must be ignored
+        //   applyCSSMinMaxWidth shrinks cell to 34%              ← regression
+        //
+        // Chrome and Firefox both ignore max-width/min-width on content-box <td>
+        // elements when table-layout: fixed is active.
+        if (getStyle().isBorderBox()) {
+            applyCSSMinMaxWidth(c);
+        }
     }
 
     @Override
