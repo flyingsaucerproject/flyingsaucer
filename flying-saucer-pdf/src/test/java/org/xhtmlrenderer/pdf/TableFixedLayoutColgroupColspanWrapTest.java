@@ -8,16 +8,15 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 import static com.codeborne.pdftest.assertj.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.xhtmlrenderer.pdf.TestUtils.printFile;
 
 /**
  * Regression test for table-layout:fixed + colgroup/col + colspan text wrapping.
  *
- * Bug (10.4.0 PR #682): TableCellBox.setLayoutWidth() calls applyCSSMinMaxWidth(c),
- * which applies the td's own max-width: 34% and shrinks a colspan=4 cell from its
- * col-allocated 67% down to 34%. Text then overflows on one long line instead of
- * wrapping within the correct cell width.
+ * Bug (10.4.0 PR #682): TableCellBox.setLayoutWidth() unconditionally called
+ * applyCSSMinMaxWidth(c), which applied the td's own max-width: 34% and shrank
+ * a colspan=4 cell from its col-allocated 67% down to 34%. Text then overflowed
+ * on one long line instead of wrapping within the correct cell width.
  *
  * Fix: remove applyCSSMinMaxWidth(c) from setLayoutWidth() — column widths from
  * colgroup/col are authoritative in table-layout: fixed.
@@ -76,25 +75,35 @@ class TableFixedLayoutColgroupColspanWrapTest {
     //
     //    Text is ~160 chars; at 67% of 555pt (~372pt) with 10pt serif
     //    (~5pt/char) only ~74 chars fit per line → text MUST wrap.
-    //    At 34% (bug, ~189pt) text wraps even more tightly.
+    //    At 34% (bug, ~178pt) text wraps more tightly.
     //
     //    We detect WHICH width was used by checking whether words that
     //    fit on the SAME line at 67% are split across lines at 34%.
     //
-    //    "Lambda Mu" (11 chars) comfortably fits at 67% width but is
-    //    split if the cell is only 34% wide (line is ~34 chars).
-    //    So we assert "Lambda Mu" appears as a substring (same line)
-    //    with NO newline between them.
+    //    "Eta Theta" (9 chars) is contiguous at 67% width but is split
+    //    if the cell is incorrectly shrunk to 34% by applyCSSMinMaxWidth
+    //    on a content-box cell. CSS min/max constraints apply only to
+    //    border-box cells; content-box cells keep their col-allocated width.
     // ------------------------------------------------------------------
 
     /**
-     * With the bug (34% cell width), "Lambda" and "Mu" land on separate lines.
-     * With the fix (67% cell width), they appear on the same line.
+     * Asserts that "Eta Theta" appears as a contiguous substring in the PDF text,
+     * confirming the cell was laid out at the correct col-allocated 67% width.
+     *
+     * <p>Why "Eta Theta" and not "Lambda Mu":
+     * At the regressed 34% content width (~178pt, 10pt serif), line 1 fills up at
+     * "...Epsilon Zeta" (~175pt). Adding "Eta" would exceed the line, so "Eta"
+     * wraps to line 2. "Lambda Mu" also lands on that same line 2, so
+     * {@code contains("Lambda Mu")} returns {@code true} at BOTH 67% and 34% --
+     * it cannot detect the regression. "Eta Theta" is the correct boundary:
+     * at 67% it sits well within line 1; at 34% it begins line 2 as a pair,
+     * but any further narrowing would split them -- making it a reliable
+     * width-sensitive regression signal.
      */
     @Test
-    void lambdaAndMuAreOnSameLineAtCorrectCellWidth() throws IOException {
+    void etaAndThetaAreOnSameLineAtCorrectCellWidth() throws IOException {
         byte[] result = Html2Pdf.fromClasspathResource(HTML);
-        PDF pdf = printFile(log, result, "table-fixed-layout-colgroup-colspan-sameline.pdf");
+        PDF pdf = printFile(log, result, "table-fixed-layout-colgroup-colspan-eta-theta.pdf");
 
         // pdf.text is a public final String field — NOT a method call
         String text = pdf.text;
