@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.pdf;
 
 import org.junit.jupiter.api.Test;
+import org.openpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
 
@@ -24,7 +25,6 @@ class ITextRendererTest {
     void getAndSetPdfAConformance() {
         cut.setPdfAConformance(PdfAConformance.PDF_A_1B);
         assertThat(cut.getPdfAConformance()).isEqualTo(PdfAConformance.PDF_A_1B);
-        assertThat(cut.getPDFXConformance()).isEqualTo(PdfAConformance.PDF_A_1B.pdfXConformance());
     }
 
     @Test
@@ -32,6 +32,17 @@ class ITextRendererTest {
         cut.setPdfAConformance(PdfAConformance.PDF_A_1B);
         cut.setPdfAConformance(null);
         assertThat(cut.getPdfAConformance()).isNull();
+    }
+
+    @Test
+    void settingOrClearingPdfAConformanceDoesNotAffectPdfXConformance() {
+        cut.setPDFXConformance(PdfWriter.PDFX1A2001);
+
+        cut.setPdfAConformance(PdfAConformance.PDF_A_1B);
+        assertThat(cut.getPDFXConformance()).isEqualTo(PdfWriter.PDFX1A2001);
+
+        cut.setPdfAConformance(null);
+        assertThat(cut.getPDFXConformance()).isEqualTo(PdfWriter.PDFX1A2001);
     }
 
     @Test

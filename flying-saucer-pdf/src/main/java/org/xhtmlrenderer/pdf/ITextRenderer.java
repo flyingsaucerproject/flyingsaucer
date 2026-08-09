@@ -297,7 +297,6 @@ public class ITextRenderer {
      */
     public void setPdfAConformance(@Nullable PdfAConformance pdfAConformance) {
         _pdfAConformance = pdfAConformance;
-        _pdfXConformance = pdfAConformance == null ? null : pdfAConformance.pdfXConformance();
     }
 
     @Nullable
@@ -417,12 +416,19 @@ public class ITextRenderer {
         info.put(PdfName.CREATOR, new PdfString(pdfCreator));
 
         if (compressionEnabled) {
-            writer.setFullCompression();
             writer.setCompressionLevel(compression);
+            // Object/cross-reference streams are a PDF 1.5+ feature; PDF/A-1 is pinned to PDF 1.4 and forbids them.
+            if (_pdfAConformance != PdfAConformance.PDF_A_1B) {
+                writer.setFullCompression();
+            }
         }
 
-        if (_pdfXConformance != null) {
-            writer.setPDFXConformance(_pdfXConformance);
+        Integer effectiveXConformance = _pdfXConformance;
+        if (_pdfAConformance != null) {
+            effectiveXConformance = _pdfAConformance.pdfXConformance();
+        }
+        if (effectiveXConformance != null) {
+            writer.setPDFXConformance(effectiveXConformance);
         }
 
         if (_pdfAConformance != null) {
