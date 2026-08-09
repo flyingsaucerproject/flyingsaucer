@@ -49,6 +49,9 @@ class PdfAConformanceTest {
              PDDocument document = new PDFParser(buffer).parse()) {
             assertThat(document.isEncrypted()).isFalse();
 
+            // PDF/A-1 is pinned to PDF 1.4 and forbids cross-reference/object streams (a PDF 1.5+ feature).
+            assertThat(document.getDocument().isXRefStream()).isFalse();
+
             PDDocumentCatalog catalog = document.getDocumentCatalog();
             assertThat(catalog.getOutputIntents()).isNotEmpty();
 
