@@ -294,6 +294,11 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
                     _currentPage.beginMarkedContentSequence(struct);
                     return struct;
                 }
+                if ("a".equals(tagName) && _sharedContext.getNamespaceHandler().getLinkUri(element) != null) {
+                    PdfStructureElement struct = structureElementFor(element, PdfName.LINK, documentStructureElement());
+                    _currentPage.beginMarkedContentSequence(struct);
+                    return struct;
+                }
             }
             if (box instanceof TableCellBox cell) {
                 PdfStructureElement struct = tableStructureElementFor(cell);

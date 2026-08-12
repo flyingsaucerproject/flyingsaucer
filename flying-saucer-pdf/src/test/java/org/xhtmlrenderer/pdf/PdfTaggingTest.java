@@ -184,6 +184,34 @@ class PdfTaggingTest {
         });
     }
 
+    @Test
+    void tagsLinkText() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html><body><a href=\"https://example.com\">Click here</a></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+            assertThat(elements).extracting(PDStructureElement::getStructureType).contains("Link");
+        });
+    }
+
+    @Test
+    void doesNotTagAnchorWithoutHref() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html><body><a name=\"anchor\">Text</a></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+            assertThat(elements).extracting(PDStructureElement::getStructureType).doesNotContain("Link");
+        });
+    }
+
     private static List<PDStructureElement> byType(List<PDStructureElement> elements, String type) {
         return elements.stream().filter(e -> type.equals(e.getStructureType())).toList();
     }
