@@ -39,6 +39,7 @@ import org.openpdf.text.pdf.PdfNumber;
 import org.openpdf.text.pdf.PdfOutline;
 import org.openpdf.text.pdf.PdfReader;
 import org.openpdf.text.pdf.PdfString;
+import org.openpdf.text.pdf.PdfStructureElement;
 import org.openpdf.text.pdf.PdfTextArray;
 import org.openpdf.text.pdf.PdfWriter;
 import org.slf4j.Logger;
@@ -90,7 +91,9 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -173,6 +176,20 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
 
     private final Set<String> _linkTargetAreas = new HashSet<>();
 
+    private static final Map<String, PdfName> TAGGABLE_ELEMENTS = Map.of(
+            "h1", PdfName.H1,
+            "h2", PdfName.H2,
+            "h3", PdfName.H3,
+            "h4", PdfName.H4,
+            "h5", PdfName.H5,
+            "h6", PdfName.H6,
+            "p", PdfName.P);
+
+    private final Map<Element, PdfStructureElement> _structureElements = new IdentityHashMap<>();
+
+    @Nullable
+    private PdfStructureElement _documentStructureElement;
+
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
     }
@@ -219,8 +236,75 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
 
     @Override
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
+        PdfStructureElement struct = beginImageStructure(box);
         ITextReplacedElement element = (ITextReplacedElement) box.getReplacedElement();
         element.paint(c, this, box);
+        if (struct != null) {
+            _currentPage.endMarkedContentSequence();
+        }
+    }
+
+    @Override
+    public void drawText(RenderingContext c, InlineText inlineText) {
+        PdfStructureElement struct = isTagged() ? beginTextStructure(inlineText) : null;
+        super.drawText(c, inlineText);
+        if (struct != null) {
+            _currentPage.endMarkedContentSequence();
+        }
+    }
+
+    private boolean isTagged() {
+        return _writer != null && _writer.isTagged();
+    }
+
+    @Nullable
+    private PdfStructureElement beginTextStructure(InlineText inlineText) {
+        Box box = inlineText.getParent();
+        while (box != null) {
+            Element element = box.getElement();
+            if (element != null) {
+                PdfName tag = TAGGABLE_ELEMENTS.get(element.getNodeName().toLowerCase(Locale.ROOT));
+                if (tag != null) {
+                    PdfStructureElement struct = structureElementFor(element, tag);
+                    _currentPage.beginMarkedContentSequence(struct);
+                    return struct;
+                }
+            }
+            box = box.getParent();
+        }
+        return null;
+    }
+
+    @Nullable
+    private PdfStructureElement beginImageStructure(BlockBox box) {
+        if (!isTagged()) {
+            return null;
+        }
+        Element element = box.getElement();
+        if (element == null || !"img".equalsIgnoreCase(element.getNodeName())) {
+            return null;
+        }
+        // alt="" marks the image as decorative; don't expose it to assistive technology as a Figure.
+        if (element.hasAttribute("alt") && element.getAttribute("alt").isEmpty()) {
+            return null;
+        }
+        PdfStructureElement struct = structureElementFor(element, PdfName.FIGURE);
+        if (element.hasAttribute("alt")) {
+            struct.put(PdfName.ALT, new PdfString(element.getAttribute("alt")));
+        }
+        _currentPage.beginMarkedContentSequence(struct);
+        return struct;
+    }
+
+    private PdfStructureElement structureElementFor(Element element, PdfName tag) {
+        return _structureElements.computeIfAbsent(element, e -> new PdfStructureElement(documentStructureElement(), tag));
+    }
+
+    private PdfStructureElement documentStructureElement() {
+        if (_documentStructureElement == null) {
+            _documentStructureElement = new PdfStructureElement(_writer.getStructureTreeRoot(), PdfName.DOCUMENT);
+        }
+        return _documentStructureElement;
     }
 
     @Override

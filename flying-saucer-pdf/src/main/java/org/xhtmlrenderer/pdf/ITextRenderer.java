@@ -134,6 +134,8 @@ public class ITextRenderer {
     @Nullable
     private PdfAConformance _pdfAConformance;
 
+    private boolean _tagged;
+
     @Nullable
     private PDFCreationListener _listener;
 
@@ -304,6 +306,19 @@ public class ITextRenderer {
         return _pdfAConformance;
     }
 
+    /**
+     * Requests a tagged PDF: a structure tree describing headings, paragraphs and images (with their
+     * {@code alt} text) so that screen readers and other assistive technology can navigate the document.
+     * See {@link ITextOutputDevice} for which HTML elements are currently tagged.
+     */
+    public void setTagged(boolean tagged) {
+        _tagged = tagged;
+    }
+
+    public boolean isTagged() {
+        return _tagged;
+    }
+
     public void layout() {
         LayoutContext c = newLayoutContext();
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
@@ -429,6 +444,10 @@ public class ITextRenderer {
         }
         if (effectiveXConformance != null) {
             writer.setPDFXConformance(effectiveXConformance);
+        }
+
+        if (_tagged) {
+            writer.setTagged();
         }
 
         if (_pdfAConformance != null) {
