@@ -140,6 +140,50 @@ class PdfTaggingTest {
         });
     }
 
+    @Test
+    void tagsListsAndListItems() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html><body><ul><li>First</li><li>Second</li></ul></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+
+            assertThat(elements).extracting(PDStructureElement::getStructureType).contains("L");
+            List<PDStructureElement> items = byType(elements, "LI");
+            assertThat(items).hasSize(2);
+            assertThat(items).allMatch(li -> "L".equals(parentType(li)));
+        });
+    }
+
+    @Test
+    void nestsNestedLists() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html><body><ul><li>Item<ul><li>Nested</li></ul></li></ul></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+
+            List<PDStructureElement> lists = byType(elements, "L");
+            assertThat(lists).hasSize(2);
+
+            PDStructureElement innerList = lists.stream()
+                    .filter(l -> "LI".equals(parentType(l)))
+                    .findFirst()
+                    .orElseThrow();
+            PDStructureElement outerItem = (PDStructureElement) innerList.getParent();
+            PDStructureElement outerList = (PDStructureElement) outerItem.getParent();
+
+            assertThat(outerItem.getStructureType()).isEqualTo("LI");
+            assertThat(outerList.getStructureType()).isEqualTo("L");
+        });
+    }
+
     private static List<PDStructureElement> byType(List<PDStructureElement> elements, String type) {
         return elements.stream().filter(e -> type.equals(e.getStructureType())).toList();
     }

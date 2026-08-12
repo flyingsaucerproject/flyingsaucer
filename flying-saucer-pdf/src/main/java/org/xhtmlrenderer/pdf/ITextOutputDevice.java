@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
@@ -189,7 +190,18 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
             "h6", PdfName.H6,
             "p", PdfName.P);
 
+    private static final Map<String, PdfName> LIST_ELEMENTS = Map.of(
+            "ul", PdfName.L,
+            "ol", PdfName.L,
+            "li", PdfName.LI);
+
     private final Map<Object, PdfStructureElement> _structureElements = new IdentityHashMap<>();
+
+    // A ListItem's own text is never marked directly against the LI structure element: OpenPDF requires a
+    // structure element's /K entries to be either all marked-content references or all child structure
+    // elements, never a mix — and an <li> can also host a nested <ul>/<ol> (a child L element). So the
+    // item's text goes under its own LBody child instead, keeping LI's kids uniformly structural.
+    private final Map<Element, PdfStructureElement> _listItemBodies = new IdentityHashMap<>();
 
     @Nullable
     private PdfStructureElement _documentStructureElement;
@@ -267,9 +279,18 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
         while (box != null) {
             Element element = box.getElement();
             if (element != null) {
-                PdfName tag = TAGGABLE_ELEMENTS.get(element.getNodeName().toLowerCase(Locale.ROOT));
-                if (tag != null) {
-                    PdfStructureElement struct = structureElementFor(element, tag, documentStructureElement());
+                String tagName = element.getNodeName().toLowerCase(Locale.ROOT);
+                PdfName flatTag = TAGGABLE_ELEMENTS.get(tagName);
+                if (flatTag != null) {
+                    PdfStructureElement struct = structureElementFor(element, flatTag, documentStructureElement());
+                    _currentPage.beginMarkedContentSequence(struct);
+                    return struct;
+                }
+                PdfName listTag = LIST_ELEMENTS.get(tagName);
+                if (listTag != null) {
+                    PdfStructureElement struct = listTag == PdfName.LI
+                            ? listItemBodyStructureElementFor(element)
+                            : listStructureElementFor(element, listTag);
                     _currentPage.beginMarkedContentSequence(struct);
                     return struct;
                 }
@@ -280,6 +301,34 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
                 return struct;
             }
             box = box.getParent();
+        }
+        return null;
+    }
+
+    private PdfStructureElement listItemBodyStructureElementFor(Element liElement) {
+        return _listItemBodies.computeIfAbsent(liElement,
+                e -> new PdfStructureElement(listStructureElementFor(e, PdfName.LI), PdfName.LBODY));
+    }
+
+    private PdfStructureElement listStructureElementFor(Element element, PdfName tag) {
+        PdfStructureElement cached = _structureElements.get(element);
+        if (cached != null) {
+            return cached;
+        }
+        Element parentElement = nearestListAncestor(element.getParentNode());
+        PdfStructureElement parent = parentElement != null
+                ? listStructureElementFor(parentElement, LIST_ELEMENTS.get(parentElement.getNodeName().toLowerCase(Locale.ROOT)))
+                : documentStructureElement();
+        return structureElementFor(element, tag, parent);
+    }
+
+    @Nullable
+    private static Element nearestListAncestor(@Nullable Node node) {
+        while (node instanceof Element element) {
+            if (LIST_ELEMENTS.containsKey(element.getNodeName().toLowerCase(Locale.ROOT))) {
+                return element;
+            }
+            node = element.getParentNode();
         }
         return null;
     }
