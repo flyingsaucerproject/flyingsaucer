@@ -75,6 +75,79 @@ class PdfTaggingTest {
         });
     }
 
+    @Test
+    void tagsTableSectionsRowsAndCells() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("""
+            <html><body><table>
+                <thead><tr><th>Name</th><th>Age</th></tr></thead>
+                <tbody><tr><td>Alice</td><td>30</td></tr></tbody>
+            </table></body></html>
+            """);
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+
+            assertThat(elements).extracting(PDStructureElement::getStructureType).contains("Table");
+            assertThat(byType(elements, "TH")).allMatch(th -> "TR".equals(parentType(th)));
+            assertThat(byType(elements, "TD")).allMatch(td -> "TR".equals(parentType(td)));
+            assertThat(byType(elements, "TR"))
+                    .extracting(PdfTaggingTest::parentType)
+                    .containsExactlyInAnyOrder("THead", "TBody");
+            assertThat(byType(elements, "THead")).allMatch(section -> "Table".equals(parentType(section)));
+            assertThat(byType(elements, "TBody")).allMatch(section -> "Table".equals(parentType(section)));
+        });
+    }
+
+    @Test
+    void tagsImplicitTbodyForBareRows() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html><body><table><tr><td>A</td></tr></table></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+
+            PDStructureElement td = byType(elements, "TD").get(0);
+            PDStructureElement tr = (PDStructureElement) td.getParent();
+            PDStructureElement tbody = (PDStructureElement) tr.getParent();
+
+            assertThat(tr.getStructureType()).isEqualTo("TR");
+            assertThat(tbody.getStructureType()).isEqualTo("TBody");
+            assertThat(parentType(tbody)).isEqualTo("Table");
+        });
+    }
+
+    @Test
+    void nestsImageInsideTableCell() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString(
+                "<html><body><table><tr><td><img src=\"classpath:flyingsaucer.png\" alt=\"A cat\" /></td></tr></table></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+
+            PDStructureElement figure = byType(elements, "Figure").get(0);
+            assertThat(parentType(figure)).isEqualTo("TD");
+        });
+    }
+
+    private static List<PDStructureElement> byType(List<PDStructureElement> elements, String type) {
+        return elements.stream().filter(e -> type.equals(e.getStructureType())).toList();
+    }
+
+    private static String parentType(PDStructureElement element) {
+        return ((PDStructureElement) element.getParent()).getStructureType();
+    }
+
     private static void withCatalog(ITextRenderer renderer, Consumer<PDDocumentCatalog> assertions) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         renderer.createPDF(os);

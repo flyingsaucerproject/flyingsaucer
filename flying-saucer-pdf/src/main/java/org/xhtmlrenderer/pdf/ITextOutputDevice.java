@@ -58,6 +58,10 @@ import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.newtable.TableBox;
+import org.xhtmlrenderer.newtable.TableCellBox;
+import org.xhtmlrenderer.newtable.TableRowBox;
+import org.xhtmlrenderer.newtable.TableSectionBox;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -185,7 +189,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
             "h6", PdfName.H6,
             "p", PdfName.P);
 
-    private final Map<Element, PdfStructureElement> _structureElements = new IdentityHashMap<>();
+    private final Map<Object, PdfStructureElement> _structureElements = new IdentityHashMap<>();
 
     @Nullable
     private PdfStructureElement _documentStructureElement;
@@ -265,10 +269,15 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
             if (element != null) {
                 PdfName tag = TAGGABLE_ELEMENTS.get(element.getNodeName().toLowerCase(Locale.ROOT));
                 if (tag != null) {
-                    PdfStructureElement struct = structureElementFor(element, tag);
+                    PdfStructureElement struct = structureElementFor(element, tag, documentStructureElement());
                     _currentPage.beginMarkedContentSequence(struct);
                     return struct;
                 }
+            }
+            if (box instanceof TableCellBox cell) {
+                PdfStructureElement struct = tableStructureElementFor(cell);
+                _currentPage.beginMarkedContentSequence(struct);
+                return struct;
             }
             box = box.getParent();
         }
@@ -288,7 +297,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
         if (element.hasAttribute("alt") && element.getAttribute("alt").isEmpty()) {
             return null;
         }
-        PdfStructureElement struct = structureElementFor(element, PdfName.FIGURE);
+        PdfStructureElement struct = structureElementFor(element, PdfName.FIGURE, tableAncestorStructureElement(box));
         if (element.hasAttribute("alt")) {
             struct.put(PdfName.ALT, new PdfString(element.getAttribute("alt")));
         }
@@ -296,8 +305,50 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
         return struct;
     }
 
-    private PdfStructureElement structureElementFor(Element element, PdfName tag) {
-        return _structureElements.computeIfAbsent(element, e -> new PdfStructureElement(documentStructureElement(), tag));
+    private PdfStructureElement tableAncestorStructureElement(Box box) {
+        Box ancestor = box.getParent();
+        while (ancestor != null) {
+            if (ancestor instanceof TableCellBox cell) {
+                return tableStructureElementFor(cell);
+            }
+            ancestor = ancestor.getParent();
+        }
+        return documentStructureElement();
+    }
+
+    private PdfStructureElement tableStructureElementFor(BlockBox box) {
+        PdfStructureElement cached = _structureElements.get(box);
+        if (cached != null) {
+            return cached;
+        }
+        Box parentBox = box.getParent();
+        PdfStructureElement parent = isTableBox(parentBox) ? tableStructureElementFor((BlockBox) parentBox) : documentStructureElement();
+        return structureElementFor(box, tableTag(box), parent);
+    }
+
+    private static boolean isTableBox(@Nullable Box box) {
+        return box instanceof TableBox || box instanceof TableSectionBox || box instanceof TableRowBox || box instanceof TableCellBox;
+    }
+
+    private static PdfName tableTag(BlockBox box) {
+        if (box instanceof TableBox) {
+            return PdfName.TABLE;
+        }
+        if (box instanceof TableSectionBox section) {
+            return section.isHeader() ? PdfName.THEAD : section.isFooter() ? PdfName.TFOOT : PdfName.TBODY;
+        }
+        if (box instanceof TableRowBox) {
+            return PdfName.TABLEROW;
+        }
+        if (box instanceof TableCellBox cell) {
+            Element element = cell.getElement();
+            return element != null && "th".equalsIgnoreCase(element.getNodeName()) ? PdfName.TH : PdfName.TD;
+        }
+        throw new IllegalArgumentException("Not a table box: " + box);
+    }
+
+    private PdfStructureElement structureElementFor(Object key, PdfName tag, PdfStructureElement parent) {
+        return _structureElements.computeIfAbsent(key, k -> new PdfStructureElement(parent, tag));
     }
 
     private PdfStructureElement documentStructureElement() {
