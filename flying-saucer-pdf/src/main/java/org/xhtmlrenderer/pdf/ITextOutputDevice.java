@@ -195,6 +195,11 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
             "ol", PdfName.L,
             "li", PdfName.LI);
 
+    // No PdfName.COLSPAN/ROWSPAN constants exist in OpenPDF; these are the raw key names the PDF/UA
+    // Table attribute-owner dictionary expects (ISO 32000-2 §14.8.5.7).
+    private static final PdfName COLSPAN = new PdfName("ColSpan");
+    private static final PdfName ROWSPAN = new PdfName("RowSpan");
+
     private final Map<Object, PdfStructureElement> _structureElements = new IdentityHashMap<>();
 
     // A ListItem's own text is never marked directly against the LI structure element: OpenPDF requires a
@@ -377,7 +382,28 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
         }
         Box parentBox = box.getParent();
         PdfStructureElement parent = isTableBox(parentBox) ? tableStructureElementFor((BlockBox) parentBox) : documentStructureElement();
-        return structureElementFor(box, tableTag(box), parent);
+        PdfStructureElement struct = structureElementFor(box, tableTag(box), parent);
+        if (box instanceof TableCellBox cell) {
+            addCellSpanAttributes(struct, cell);
+        }
+        return struct;
+    }
+
+    private static void addCellSpanAttributes(PdfStructureElement struct, TableCellBox cell) {
+        int colSpan = cell.getStyle().getColSpan();
+        int rowSpan = cell.getStyle().getRowSpan();
+        if (colSpan <= 1 && rowSpan <= 1) {
+            return;
+        }
+        PdfDictionary attributes = new PdfDictionary();
+        attributes.put(PdfName.O, PdfName.TABLE);
+        if (colSpan > 1) {
+            attributes.put(COLSPAN, new PdfNumber(colSpan));
+        }
+        if (rowSpan > 1) {
+            attributes.put(ROWSPAN, new PdfNumber(rowSpan));
+        }
+        struct.put(PdfName.A, attributes);
     }
 
     private static boolean isTableBox(@Nullable Box box) {
