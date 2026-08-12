@@ -5,9 +5,11 @@ import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDAttributeObject;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDTableAttributeObject;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -120,6 +122,49 @@ class PdfTaggingTest {
             assertThat(tr.getStructureType()).isEqualTo("TR");
             assertThat(tbody.getStructureType()).isEqualTo("TBody");
             assertThat(parentType(tbody)).isEqualTo("Table");
+        });
+    }
+
+    @Test
+    void tagsCellSpanAttributes() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("""
+            <html><body><table>
+                <tr><td colspan="2">Wide</td></tr>
+                <tr><td>A</td><td>B</td></tr>
+            </table></body></html>
+            """);
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+
+            PDStructureElement wideCell = byType(elements, "TD").stream()
+                    .filter(td -> td.getAttributes().size() > 0)
+                    .findFirst()
+                    .orElseThrow();
+            PDAttributeObject attribute = wideCell.getAttributes().getObject(0);
+
+            assertThat(attribute).isInstanceOf(PDTableAttributeObject.class);
+            assertThat(((PDTableAttributeObject) attribute).getColSpan()).isEqualTo(2);
+        });
+    }
+
+    @Test
+    void doesNotTagUnspannedCells() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html><body><table><tr><td>A</td></tr></table></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+
+            PDStructureElement td = byType(elements, "TD").get(0);
+            assertThat(td.getAttributes().size()).isZero();
         });
     }
 
