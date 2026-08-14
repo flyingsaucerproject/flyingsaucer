@@ -257,6 +257,66 @@ class PdfTaggingTest {
         });
     }
 
+    @Test
+    void setsDocumentLanguageWhenTagged() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html lang=\"en\"><body><p>Hello</p></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> assertThat(catalog.getLanguage()).isEqualTo("en"));
+    }
+
+    @Test
+    void doesNotSetLanguageWhenAbsent() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html><body><p>Hello</p></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> assertThat(catalog.getLanguage()).isNull());
+    }
+
+    @Test
+    void setsDisplayDocTitleViewerPreferenceWhenTagged() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html><body><p>Hello</p></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> assertThat(catalog.getViewerPreferences().displayDocTitle()).isTrue());
+    }
+
+    @Test
+    void taggedTableWithBackgroundsAndBordersStillRendersCorrectStructure() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("""
+            <html><body>
+                <table style="border: 1px solid black; background: #eee;">
+                    <tr><td style="border: 1px solid black; background: #ccc;">A</td></tr>
+                </table>
+            </body></html>
+            """);
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+
+            PDStructureElement td = byType(elements, "TD").get(0);
+            PDStructureElement tr = (PDStructureElement) td.getParent();
+            PDStructureElement tbody = (PDStructureElement) tr.getParent();
+
+            assertThat(tr.getStructureType()).isEqualTo("TR");
+            assertThat(tbody.getStructureType()).isEqualTo("TBody");
+            assertThat(parentType(tbody)).isEqualTo("Table");
+        });
+    }
+
     private static List<PDStructureElement> byType(List<PDStructureElement> elements, String type) {
         return elements.stream().filter(e -> type.equals(e.getStructureType())).toList();
     }

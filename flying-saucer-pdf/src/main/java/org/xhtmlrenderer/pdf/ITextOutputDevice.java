@@ -52,8 +52,10 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
@@ -199,6 +201,9 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     // Table attribute-owner dictionary expects (ISO 32000-2 §14.8.5.7).
     private static final PdfName COLSPAN = new PdfName("ColSpan");
     private static final PdfName ROWSPAN = new PdfName("RowSpan");
+
+    // No PdfName.ARTIFACT constant exists in OpenPDF either.
+    private static final PdfName ARTIFACT = new PdfName("Artifact");
 
     private final Map<Object, PdfStructureElement> _structureElements = new IdentityHashMap<>();
 
@@ -440,9 +445,42 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
 
     @Override
     public void paintBackground(RenderingContext c, Box box) {
-        super.paintBackground(c, box);
+        paintAsArtifact(() -> super.paintBackground(c, box));
 
         processLink(c, box);
+    }
+
+    @Override
+    public void paintBackground(RenderingContext c, CalculatedStyle style, Rectangle bounds, Rectangle bgImageContainer,
+            BorderPropertySet border) {
+        paintAsArtifact(() -> super.paintBackground(c, style, bounds, bgImageContainer, border));
+    }
+
+    @Override
+    public void paintBorder(RenderingContext c, Box box) {
+        paintAsArtifact(() -> super.paintBorder(c, box));
+    }
+
+    @Override
+    public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
+        paintAsArtifact(() -> super.paintBorder(c, style, edge, sides));
+    }
+
+    @Override
+    public void paintCollapsedBorder(RenderingContext c, BorderPropertySet border, Rectangle bounds, int side) {
+        paintAsArtifact(() -> super.paintCollapsedBorder(c, border, bounds, side));
+    }
+
+    // Decorative chrome (backgrounds/borders) is marked as an Artifact rather than left untagged, so
+    // assistive technology explicitly skips it instead of treating it as unmarked/ambiguous content.
+    private void paintAsArtifact(Runnable painter) {
+        if (isTagged()) {
+            _currentPage.beginMarkedContentSequence(ARTIFACT);
+            painter.run();
+            _currentPage.endMarkedContentSequence();
+        } else {
+            painter.run();
+        }
     }
 
     private org.openpdf.text.Rectangle calcTotalLinkArea(RenderingContext c, Box box) {
