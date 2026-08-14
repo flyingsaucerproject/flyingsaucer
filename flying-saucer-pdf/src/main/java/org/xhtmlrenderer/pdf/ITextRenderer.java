@@ -448,6 +448,11 @@ public class ITextRenderer {
 
         if (_tagged) {
             writer.setTagged();
+            writer.setViewerPreferences(PdfWriter.DisplayDocTitle);
+            String lang = _doc.getDocumentElement().getAttribute("lang");
+            if (!lang.isEmpty()) {
+                writer.getExtraCatalog().put(PdfName.LANG, new PdfString(lang));
+            }
         }
 
         if (_pdfAConformance != null) {
