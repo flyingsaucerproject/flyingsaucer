@@ -23,6 +23,8 @@ import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.util.Uu;
 
 import static java.lang.Character.END_PUNCTUATION;
@@ -112,6 +114,22 @@ public class TextUtil {
         };
     }
 
+
+    /**
+     * Measures the width of {@code text} in dots, including any
+     * {@code letter-spacing} from {@code style} (applied after each character).
+     * The spacing contribution is rounded up so that a width accumulated from
+     * substring measurements never understates the width of the whole run.
+     */
+    @CheckReturnValue
+    public static int textWidth(CssContext c, CalculatedStyle style, FSFont font, String text) {
+        int width = c.getTextRenderer().getWidth(c.getFontContext(), font, text);
+        float letterSpacing = style.letterSpacing(c);
+        if (letterSpacing == 0.0f) {
+            return width;
+        }
+        return width + (int) Math.ceil(letterSpacing * text.codePointCount(0, text.length()));
+    }
 
     private static String capitalizeWords(String text) {
         if (text.isEmpty()) {
