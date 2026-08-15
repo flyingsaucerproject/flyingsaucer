@@ -293,6 +293,20 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     @Nullable
     private PdfStructureElement beginTextStructure(InlineText inlineText) {
         Box box = inlineText.getParent();
+
+        // A table cell's own structure element requires homogeneous kids (either all marked-content
+        // references or all child structure elements, never mixed - see the LI/LBody handling above for
+        // the same OpenPDF constraint). Rather than risk mixing by tagging a <p>/<h1> nested inside a cell
+        // as its own child structure element, all text anywhere inside a cell is associated with the cell
+        // directly, so headings/paragraphs/lists lose their own tag within a cell but always correctly
+        // nest under the required Table/TR/TD hierarchy instead of leaking out to the flat Document node.
+        TableCellBox cell = findNearestTableCell(box);
+        if (cell != null) {
+            PdfStructureElement struct = tableStructureElementFor(cell);
+            _currentPage.beginMarkedContentSequence(struct);
+            return struct;
+        }
+
         while (box != null) {
             Element element = box.getElement();
             if (element != null) {
@@ -317,10 +331,16 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
                     return struct;
                 }
             }
+            box = box.getParent();
+        }
+        return null;
+    }
+
+    @Nullable
+    private static TableCellBox findNearestTableCell(@Nullable Box box) {
+        while (box != null) {
             if (box instanceof TableCellBox cell) {
-                PdfStructureElement struct = tableStructureElementFor(cell);
-                _currentPage.beginMarkedContentSequence(struct);
-                return struct;
+                return cell;
             }
             box = box.getParent();
         }

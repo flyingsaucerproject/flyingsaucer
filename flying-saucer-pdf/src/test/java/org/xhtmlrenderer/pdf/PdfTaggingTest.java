@@ -23,6 +23,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PdfTaggingTest {
 
     @Test
+    void paragraphInsideTableCellIsAssociatedWithTheCellNotTheDocument() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html><body><table><tr><td><p>Alice</p></td></tr></table></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+            // The <p>'s text is marked directly against the TD (proving it's associated with the required
+            // table hierarchy) rather than producing a separate P tag hanging flatly off Document.
+            assertThat(elements).extracting(PDStructureElement::getStructureType).doesNotContain("P");
+            PDStructureElement td = byType(elements, "TD").get(0);
+            assertThat(parentType(td)).isEqualTo("TR");
+        });
+    }
+
+    @Test
     void tagsSecondDocumentCorrectlyWhenRendererIsReused() throws IOException {
         ITextRenderer renderer = new ITextRenderer();
         renderer.getSharedContext().setMedia("pdf");
