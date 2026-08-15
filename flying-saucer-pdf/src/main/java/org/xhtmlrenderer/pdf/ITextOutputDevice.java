@@ -213,6 +213,13 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     // item's text goes under its own LBody child instead, keeping LI's kids uniformly structural.
     private final Map<Element, PdfStructureElement> _listItemBodies = new IdentityHashMap<>();
 
+    // Same constraint as above: a table cell can hold both its own text and a real child structure
+    // element (an <img>'s Figure, added directly under the cell - see beginImageStructure). Marking text
+    // directly against the cell's own structure element would make its /K entries a mix of marked-content
+    // references and structure elements, which OpenPDF rejects. So cell text goes under a NonStruct child
+    // instead, keeping the cell's own kids uniformly structural (this wrapper, plus any Figures).
+    private final Map<TableCellBox, PdfStructureElement> _tableCellTextWrappers = new IdentityHashMap<>();
+
     @Nullable
     private PdfStructureElement _documentStructureElement;
 
@@ -227,6 +234,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
             _structureElements.clear();
             _documentStructureElement = null;
             _listItemBodies.clear();
+            _tableCellTextWrappers.clear();
         }
         _writer = writer;
     }
@@ -294,15 +302,15 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     private PdfStructureElement beginTextStructure(InlineText inlineText) {
         Box box = inlineText.getParent();
 
-        // A table cell's own structure element requires homogeneous kids (either all marked-content
-        // references or all child structure elements, never mixed - see the LI/LBody handling above for
-        // the same OpenPDF constraint). Rather than risk mixing by tagging a <p>/<h1> nested inside a cell
-        // as its own child structure element, all text anywhere inside a cell is associated with the cell
-        // directly, so headings/paragraphs/lists lose their own tag within a cell but always correctly
-        // nest under the required Table/TR/TD hierarchy instead of leaking out to the flat Document node.
+        // All text anywhere inside a table cell is associated with that cell (rather than tagging a
+        // <p>/<h1> nested inside it as its own child structure element), so headings/paragraphs/lists lose
+        // their own tag within a cell but always correctly nest under the required Table/TR/TD hierarchy
+        // instead of leaking out to the flat Document node. The text itself goes under the cell's NonStruct
+        // wrapper (see tableCellTextStructureElementFor), not the cell's own structure element directly,
+        // to stay homogeneous with any Figure children the cell might also have (see beginImageStructure).
         TableCellBox cell = findNearestTableCell(box);
         if (cell != null) {
-            PdfStructureElement struct = tableStructureElementFor(cell);
+            PdfStructureElement struct = tableCellTextStructureElementFor(cell);
             _currentPage.beginMarkedContentSequence(struct);
             return struct;
         }
@@ -345,6 +353,11 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
             box = box.getParent();
         }
         return null;
+    }
+
+    private PdfStructureElement tableCellTextStructureElementFor(TableCellBox cell) {
+        return _tableCellTextWrappers.computeIfAbsent(cell,
+                c -> new PdfStructureElement(tableStructureElementFor(c), PdfName.NONSTRUCT));
     }
 
     private PdfStructureElement listItemBodyStructureElementFor(Element liElement) {

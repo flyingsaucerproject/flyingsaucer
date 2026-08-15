@@ -32,11 +32,13 @@ class PdfTaggingTest {
 
         withCatalog(renderer, catalog -> {
             List<PDStructureElement> elements = structureElementsOf(catalog);
-            // The <p>'s text is marked directly against the TD (proving it's associated with the required
-            // table hierarchy) rather than producing a separate P tag hanging flatly off Document.
+            // The <p>'s text is marked against the TD's NonStruct wrapper (proving it's associated with the
+            // required table hierarchy) rather than producing a separate P tag hanging flatly off Document.
             assertThat(elements).extracting(PDStructureElement::getStructureType).doesNotContain("P");
+            assertThat(byType(elements, "TD")).hasSize(1);
             PDStructureElement td = byType(elements, "TD").get(0);
             assertThat(parentType(td)).isEqualTo("TR");
+            assertThat(byType(elements, "NonStruct")).singleElement().extracting(PdfTaggingTest::parentType).isEqualTo("TD");
         });
     }
 
@@ -225,6 +227,22 @@ class PdfTaggingTest {
 
             PDStructureElement td = byType(elements, "TD").get(0);
             assertThat(td.getAttributes().size()).isZero();
+        });
+    }
+
+    @Test
+    void tableCellWithTextAndImageDoesNotCrash() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString(
+                "<html><body><table><tr><td>Some text <img src=\"classpath:flyingsaucer.png\" alt=\"A cat\" /></td></tr></table></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+            PDStructureElement figure = byType(elements, "Figure").get(0);
+            assertThat(parentType(figure)).isEqualTo("TD");
         });
     }
 
