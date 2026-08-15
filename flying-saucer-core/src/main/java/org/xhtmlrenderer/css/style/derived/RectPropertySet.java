@@ -38,10 +38,10 @@ public class RectPropertySet {
     ) {
         // HACK isLengthValue is part of margin auto hack
         return new RectPropertySet(
-                ! style.isLengthOrNumber(sideProperties.top()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.top(), cbWidth, ctx),
-                ! style.isLengthOrNumber(sideProperties.right()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.right(), cbWidth, ctx),
-                ! style.isLengthOrNumber(sideProperties.bottom()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.bottom(), cbWidth, ctx),
-                ! style.isLengthOrNumber(sideProperties.left()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.left(), cbWidth, ctx)
+            !style.isLengthOrNumber(sideProperties.top()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.top(), cbWidth, ctx),
+            !style.isLengthOrNumber(sideProperties.right()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.right(), cbWidth, ctx),
+            !style.isLengthOrNumber(sideProperties.bottom()) ? 0 : style.getFloatPropertyProportionalHeight(sideProperties.bottom(), cbWidth, ctx),
+            !style.isLengthOrNumber(sideProperties.left()) ? 0 : style.getFloatPropertyProportionalWidth(sideProperties.left(), cbWidth, ctx)
         );
     }
 

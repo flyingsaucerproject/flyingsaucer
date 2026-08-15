@@ -88,7 +88,7 @@ public class PropertyValue implements CSSPrimitiveValue {
         _cssValueType = CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = cssText;
 
-        _propertyValueType = (type == CSS_NUMBER && floatValue != 0.0f) ? VALUE_TYPE_NUMBER : VALUE_TYPE_LENGTH;
+        _propertyValueType = type == CSS_NUMBER && floatValue != 0.0f ? VALUE_TYPE_NUMBER : VALUE_TYPE_LENGTH;
         _stringValue = null;
         _stringArrayValue = null;
         _values = emptyList();
@@ -131,7 +131,7 @@ public class PropertyValue implements CSSPrimitiveValue {
         _cssValueType = _stringValue.equalsIgnoreCase("inherit") ? CSSValue.CSS_INHERIT : CSSValue.CSS_PRIMITIVE_VALUE;
         _cssText = cssText;
 
-        _propertyValueType = (type == CSS_IDENT) ? VALUE_TYPE_IDENT : VALUE_TYPE_STRING;
+        _propertyValueType = type == CSS_IDENT ? VALUE_TYPE_IDENT : VALUE_TYPE_STRING;
         _stringArrayValue = ArrayUtil.cloneOrEmpty(stringArrayValue);
         _values = emptyList();
         _function = null;

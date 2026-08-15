@@ -19,7 +19,8 @@
  */
 package org.xhtmlrenderer.util;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
@@ -92,7 +93,7 @@ public class ScalingOptions {
      * @return true if image dimensions already match target size
      */
     public boolean sizeMatches(int w, int h) {
-        return (w == getTargetWidth() && h == getTargetHeight());
+        return w == getTargetWidth() && h == getTargetHeight();
     }
 
     public int getTargetWidth() {

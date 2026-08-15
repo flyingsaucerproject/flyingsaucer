@@ -1,9 +1,9 @@
 package org.xhtmlrenderer.pdf;
 
+import org.jspecify.annotations.Nullable;
 import org.openpdf.text.DocumentException;
 import org.openpdf.text.pdf.BaseFont;
 import org.openpdf.text.pdf.RandomAccessFileOrArray;
-import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.pdf.FontDescription.Decorations;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -59,7 +59,7 @@ public class TrueTypeUtil {
 
         List<String> result = new ArrayList<>();
         for (String[] name : names) {
-            if ((name[0].equals("1") && name[1].equals("0")) || name[2].equals("1033")) {
+            if (name[0].equals("1") && name[1].equals("0") || name[2].equals("1033")) {
                 result.add(name[3]);
             }
         }

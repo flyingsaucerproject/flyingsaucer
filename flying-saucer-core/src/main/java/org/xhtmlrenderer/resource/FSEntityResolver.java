@@ -120,7 +120,7 @@ public class FSEntityResolver implements EntityResolver2 {
         } else {
             XRLog.xmlEntities("Entity public: " + publicID + ", no local mapping. Replacing with empty content.");
         }
-        return (local == null) ? newEmptySource() : local;
+        return local == null ? newEmptySource() : local;
     }
 
     @Override

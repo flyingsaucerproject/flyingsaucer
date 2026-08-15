@@ -62,7 +62,7 @@ public class ListItemPainter {
         int x = getReferenceX(c, box);
         // FIXME: findbugs possible loss of precision, cf. int / (float)2
         x += -marker.getLayoutWidth() +
-                (marker.getLayoutWidth() / 2 - img.getWidth() / 2);
+            marker.getLayoutWidth() / 2 - img.getWidth() / 2;
         c.getOutputDevice().drawImage(img,
                 x,
                 getListItemCenterBaseline(c, box) - img.getHeight() / 2);

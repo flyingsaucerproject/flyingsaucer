@@ -103,7 +103,7 @@ public class Breaker {
 
         //check if we may wrap
         if (whitespace == IdentValue.PRE ||
-                (context.isNeedsNewLine() && context.getWidth() <= avail)) {
+            context.isNeedsNewLine() && context.getWidth() <= avail) {
             return;
         }
 

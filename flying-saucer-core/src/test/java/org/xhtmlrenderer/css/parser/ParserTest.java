@@ -51,7 +51,7 @@ public class ParserTest {
             Stylesheet stylesheet = p.parseStylesheet(null, USER_AGENT, new StringReader(longTest));
             long end = System.currentTimeMillis();
             log.trace(" Parsing #{} took {} ms", i, end - start);
-            total += (end-start);
+            total += end - start;
 
             assertThat(stylesheet.getContents()).hasSize(count);
         }
@@ -64,7 +64,7 @@ public class ParserTest {
             Stylesheet stylesheet = p.parseStylesheet(null, USER_AGENT, new StringReader(longTest));
             long end = System.currentTimeMillis();
             log.trace("Parsing #{} took {} ms", i, end - start);
-            total += (end-start);
+            total += end - start;
             assertThat(stylesheet.getContents()).hasSize(count);
         }
         log.info("Average {} ms", total / 10);
@@ -82,7 +82,7 @@ public class ParserTest {
             }
             long end = System.currentTimeMillis();
             log.trace("Parsing #{} took {} ms", i, end - start);
-            total += (end-start);
+            total += end - start;
         }
         log.info("Average {} ms", total / 10);
     }

@@ -371,7 +371,7 @@ public class PrimitivePropertyBuilders {
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                     IdentValue ident = checkIdent(value);
                     checkValidity(cssName, getAllowed(), ident);
-                } else if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
+                } else if (!isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
                     throw new CSSParseException(cssName + " may not be negative", -1);
                 }
             }
@@ -401,7 +401,7 @@ public class PrimitivePropertyBuilders {
                 if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
                     IdentValue ident = checkIdent(value);
                     checkValidity(cssName, getAllowed(), ident);
-                } else if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
+                } else if (!isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
                     throw new CSSParseException(cssName + " may not be negative", -1);
                 }
             }
@@ -426,7 +426,7 @@ public class PrimitivePropertyBuilders {
             if (value.getCssValueType() != CSS_INHERIT) {
                 checkLengthOrPercentType(cssName, value);
 
-                if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
+                if (!isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
                     throw new CSSParseException(cssName + " may not be negative", -1);
                 }
             }
@@ -478,7 +478,7 @@ public class PrimitivePropertyBuilders {
             if (value.getCssValueType() != CSS_INHERIT) {
                 checkInteger(cssName, value);
 
-                if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
+                if (!isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
                     throw new CSSParseException(cssName + " may not be negative", -1);
                 }
             }
@@ -503,7 +503,7 @@ public class PrimitivePropertyBuilders {
             if (value.getCssValueType() != CSS_INHERIT) {
                 checkLengthType(cssName, value);
 
-                if (! isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
+                if (!isNegativeValuesAllowed() && value.getFloatValue() < 0.0f) {
                     throw new CSSParseException(cssName + " may not be negative", -1);
                 }
             }
@@ -1515,7 +1515,7 @@ public class PrimitivePropertyBuilders {
             if (value.getCssValueType() != CSS_INHERIT) {
                 checkIdentType(cssName, value);
 
-                if (! value.getStringValue().equals("auto")) {
+                if (!value.getStringValue().equals("auto")) {
                     // Treat as string since it won't be a proper IdentValue
                     value = new PropertyValue(
                             CSSPrimitiveValue.CSS_STRING, value.getStringValue(), value.getCssText());

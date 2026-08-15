@@ -29,7 +29,7 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.PageBox;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.RandomAccess;
@@ -59,7 +59,7 @@ public class BlockBoxing {
         int offset = -1;
 
         List<Box> localChildren = block.getChildren();
-        if (c.isPrint() && ! (localChildren instanceof RandomAccess)) {
+        if (c.isPrint() && !(localChildren instanceof RandomAccess)) {
             localChildren = new ArrayList<>(localChildren);
         }
 
@@ -268,7 +268,7 @@ public class BlockBoxing {
                     layoutBlockChild(
                             c, block, child, true, 0, childOffset, pageCount, relayoutData.getLayoutState());
 
-                    if (tryToAvoidPageBreak && child.crossesPageBreak(c) && ! keepWithInline) {
+                    if (tryToAvoidPageBreak && child.crossesPageBreak(c) && !keepWithInline) {
                         c.restoreStateForRelayout(relayoutData.getLayoutState());
                         child.reset(c);
                         layoutBlockChild(
@@ -629,10 +629,10 @@ public class BlockBoxing {
             IdentValue currentBefore =
                     current.getStyle().getIdent(CSSName.PAGE_BREAK_BEFORE);
 
-            if ((previousAfter == IdentValue.AVOID && currentBefore == IdentValue.AUTO) ||
-                    (previousAfter == IdentValue.AUTO && currentBefore == IdentValue.AVOID) ||
-                    (previousAfter == IdentValue.AVOID && currentBefore == IdentValue.AVOID)) {
-                if (! previousData.isInRun()) {
+            if (previousAfter == IdentValue.AVOID && currentBefore == IdentValue.AUTO ||
+                previousAfter == IdentValue.AUTO && currentBefore == IdentValue.AVOID ||
+                previousAfter == IdentValue.AVOID && currentBefore == IdentValue.AVOID) {
+                if (!previousData.isInRun()) {
                     previousData.setStartsRun();
                 }
                 previousData.setInRun();
@@ -651,10 +651,10 @@ public class BlockBoxing {
         int getRunStart(int runEnd) {
             int offset = runEnd;
             RelayoutData current = get(offset);
-            if (! current.isEndsRun()) {
+            if (!current.isEndsRun()) {
                 throw new RuntimeException("Not the end of a run");
             }
-            while (! current.isStartsRun()) {
+            while (!current.isStartsRun()) {
                 current = get(--offset);
             }
             return offset;

@@ -102,15 +102,15 @@ public class BorderPropertyBuilders {
                     }
                 }
 
-                if (! haveBorderWidth) {
+                if (!haveBorderWidth) {
                     addAll(result, props[0], new PropertyValue(IdentValue.FS_INITIAL_VALUE), origin, important);
                 }
 
-                if (! haveBorderStyle) {
+                if (!haveBorderStyle) {
                     addAll(result, props[1], new PropertyValue(IdentValue.FS_INITIAL_VALUE), origin, important);
                 }
 
-                if (! haveBorderColor) {
+                if (!haveBorderColor) {
                     addAll(result, props[2], new PropertyValue(IdentValue.FS_INITIAL_VALUE), origin, important);
                 }
 
@@ -134,7 +134,7 @@ public class BorderPropertyBuilders {
         @Nullable
         private CSSPrimitiveValue convertToBorderWidth(CSSPrimitiveValue value) {
             int type = value.getPrimitiveType();
-            if (type != CSSPrimitiveValue.CSS_IDENT && ! isLength(value)) {
+            if (type != CSSPrimitiveValue.CSS_IDENT && !isLength(value)) {
                 return null;
             }
 

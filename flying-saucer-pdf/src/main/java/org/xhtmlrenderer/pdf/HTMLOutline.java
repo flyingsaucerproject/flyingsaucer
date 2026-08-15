@@ -221,7 +221,7 @@ class HTMLOutline {
         @Nullable
         private static NodeIterator iterator(Element root) {
             Document ownerDocument = root.getOwnerDocument();
-            return (ownerDocument instanceof DocumentTraversal documentTraversal)
+            return ownerDocument instanceof DocumentTraversal documentTraversal
                 ? documentTraversal.createNodeIterator(root, SHOW_ELEMENT, INSTANCE, true)
                 : null;
         }

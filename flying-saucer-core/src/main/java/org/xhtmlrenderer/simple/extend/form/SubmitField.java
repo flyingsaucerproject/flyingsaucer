@@ -49,7 +49,7 @@ class SubmitField extends AbstractButtonField<JButton> {
 
     @Override
     public boolean includeInSubmission(JComponent source) {
-        return (source == component());
+        return source == component();
     }
 
     @Override

@@ -880,7 +880,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
                 resetMode = true;
                 ensureStrokeColor();
             }
-            if ((fontSpec.fontStyle() == IdentValue.ITALIC) && (desc.getStyle() != IdentValue.ITALIC) && (desc.getStyle() != IdentValue.OBLIQUE)) {
+            if (fontSpec.fontStyle() == IdentValue.ITALIC && desc.getStyle() != IdentValue.ITALIC && desc.getStyle() != IdentValue.OBLIQUE) {
                 b = 0.0f;
                 c = 0.21256f;
             }
@@ -939,7 +939,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
                 } else {
                     offset = info.nonSpaceAdjust();
                 }
-                array.add((-offset / _dotsPerPoint) * 1000 / (_font.getSize2D() / _dotsPerPoint));
+                array.add(-offset / _dotsPerPoint * 1000 / (_font.getSize2D() / _dotsPerPoint));
             }
             i = end;
         }
@@ -1062,7 +1062,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
             return;
         if (!(newStroke instanceof BasicStroke nStroke))
             return;
-        boolean oldOk = (oldStroke instanceof BasicStroke);
+        boolean oldOk = oldStroke instanceof BasicStroke;
         BasicStroke oStroke = null;
         if (oldOk)
             oStroke = (BasicStroke) oldStroke;
@@ -1442,7 +1442,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
      *            the name of the metadata element to add.
      */
     public void addMetadata(String name, String value) {
-        if ((name != null) && (value != null)) {
+        if (name != null && value != null) {
             Metadata m = new Metadata(name, value);
             _metadata.add(m);
         }
@@ -1461,7 +1461,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     @Nullable
     public String getMetadataByName(String name) {
         for (Metadata m : _metadata) {
-            if ((m != null) && m.getName().equalsIgnoreCase(name)) {
+            if (m != null && m.getName().equalsIgnoreCase(name)) {
                 return m.getContent();
             }
         }
@@ -1482,7 +1482,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
         List<String> result = new ArrayList<>();
         if (name != null) {
             for (Metadata m : _metadata) {
-                if ((m != null) && m.getName().equalsIgnoreCase(name)) {
+                if (m != null && m.getName().equalsIgnoreCase(name)) {
                     result.add(m.getContent());
                 }
             }
@@ -1531,7 +1531,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
      */
     public void setMetadata(String name, String value) {
         if (name != null) {
-            boolean remove = (value == null); // removing all instances of name?
+            boolean remove = value == null; // removing all instances of name?
             int free = -1; // first open slot in array
             for (int i = 0, len = _metadata.size(); i < len; i++) {
                 Metadata m = _metadata.get(i);
@@ -1651,7 +1651,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
         }
 
         float x = box.getAbsX() + page.getMarginBorderPadding(c, Edge.LEFT);
-        float y = (page.getBottom() - (box.getAbsY() + box.getHeight())) + page.getMarginBorderPadding(c, Edge.BOTTOM);
+        float y = page.getBottom() - (box.getAbsY() + box.getHeight()) + page.getMarginBorderPadding(c, Edge.BOTTOM);
 
         return new PagePosition(id, page.getPageNo(),
                 x / _dotsPerPoint, box.getEffectiveWidth() / _dotsPerPoint,

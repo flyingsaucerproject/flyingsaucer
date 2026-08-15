@@ -380,7 +380,7 @@ public final class SharedContext {
      */
     public void setDPI(float dpi) {
         this.dpi = dpi;
-        mm_per_dot = (CM__PER__IN * MM__PER__CM) / dpi;
+        mm_per_dot = CM__PER__IN * MM__PER__CM / dpi;
     }
 
     /**

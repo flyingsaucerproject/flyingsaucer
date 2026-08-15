@@ -33,7 +33,9 @@ import org.xhtmlrenderer.simple.extend.XhtmlForm;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTextAreaUI;
 import javax.swing.plaf.basic.BasicTextUI;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Insets;
 
 import static org.xhtmlrenderer.util.GeneralUtil.parseIntRelaxed;
 
@@ -136,11 +138,11 @@ class TextAreaField extends FormField<JScrollPane> {
         @Override
         public Dimension getPreferredScrollableViewportSize() {
             Dimension size = super.getPreferredScrollableViewportSize();
-            size = (size == null) ? new Dimension(400,400) : size;
+            size = size == null ? new Dimension(400,400) : size;
             Insets insets = getInsets();
 
-            size.width = (getColumns() == 0) ? size.width : getColumns() * getColumnWidth() + insets.left + insets.right;
-            size.height = (getRows() == 0) ? size.height : getRows() * getRowHeight() + insets.top + insets.bottom;
+            size.width = getColumns() == 0 ? size.width : getColumns() * getColumnWidth() + insets.left + insets.right;
+            size.height = getRows() == 0 ? size.height : getRows() * getRowHeight() + insets.top + insets.bottom;
             return size;
         }
     }

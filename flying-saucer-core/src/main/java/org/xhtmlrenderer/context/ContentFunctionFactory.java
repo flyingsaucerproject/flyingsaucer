@@ -191,7 +191,7 @@ public class ContentFunctionFactory {
                     if (f == null ||
                             f.getParameters().size() != 1 ||
                             f.getParameters().get(0).getPrimitiveType() != CSS_IDENT ||
-                            ! "href".equals(f.getParameters().get(0).getStringValue())) {
+                            !"href".equals(f.getParameters().get(0).getStringValue())) {
                         return false;
                     }
 
@@ -248,7 +248,7 @@ public class ContentFunctionFactory {
 
             // compute leader width and necessary count of values
             int leaderWidth = iB.getContainingBlockWidth() - iB.getLineBox().getWidth() + text.getWidth();
-            int count = (int) ((leaderWidth - (2 * spaceWidth)) / valueWidth);
+            int count = (int) ((leaderWidth - 2 * spaceWidth) / valueWidth);
 
             String leaderString = ' ' + value.repeat(Math.max(0, count)) + ' ';
 
@@ -295,10 +295,10 @@ public class ContentFunctionFactory {
                 if (parameters.size() == 1) {
                     PropertyValue param = parameters.get(0);
                     return param.getPrimitiveType() == CSS_STRING ||
-                            (param.getPrimitiveType() == CSS_IDENT &&
-                                    ("dotted".equals(param.getStringValue()) ||
-                                            "solid".equals(param.getStringValue()) ||
-                                            "space".equals(param.getStringValue())));
+                        param.getPrimitiveType() == CSS_IDENT &&
+                                ("dotted".equals(param.getStringValue()) ||
+                                        "solid".equals(param.getStringValue()) ||
+                                        "space".equals(param.getStringValue()));
                 }
             }
 

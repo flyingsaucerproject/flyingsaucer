@@ -142,7 +142,10 @@ public class ITextRenderer {
     public ITextRenderer(File file) throws IOException {
         this();
         File parent = file.getAbsoluteFile().getParentFile();
-        setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
+        setDocument(
+            loadDocument(file.toURI().toURL().toExternalForm()),
+            parent == null ? "" : parent.toURI().toURL().toExternalForm()
+        );
     }
 
     public ITextRenderer() {

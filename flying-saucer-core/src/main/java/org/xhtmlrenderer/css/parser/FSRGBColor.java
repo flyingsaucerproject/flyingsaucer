@@ -60,7 +60,7 @@ public class FSRGBColor implements FSColor {
     }
 
     public FSRGBColor(int color) {
-        this(((color & 0xff0000) >> 16), ((color & 0x00ff00) >> 8), color & 0xff);
+        this((color & 0xff0000) >> 16, (color & 0x00ff00) >> 8, color & 0xff);
     }
 
     public int getBlue() {
@@ -145,8 +145,8 @@ public class FSRGBColor implements FSColor {
         float redc = (cmax - r) / (cmax - cmin);
         float greenc = (cmax - g) / (cmax - cmin);
         float bluec = (cmax - b) / (cmax - cmin);
-        final float hue1 = (r == cmax) ?
-            bluec - greenc : (g == cmax) ?
+        final float hue1 = r == cmax ?
+            bluec - greenc : g == cmax ?
             2.0f + redc - bluec :
             4.0f + greenc - redc;
 

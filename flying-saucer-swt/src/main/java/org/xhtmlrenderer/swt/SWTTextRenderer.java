@@ -30,7 +30,7 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.util.Configuration;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 /**
  * Render text with SWT.
@@ -59,7 +59,7 @@ public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTF
             float y) {
         GC gc = outputDevice.getGC();
         FontMetrics metrics = gc.getFontMetrics();
-        y -= (metrics.getAscent() + metrics.getLeading());
+        y -= metrics.getAscent() + metrics.getLeading();
         gc.drawText(string, (int) x, (int) y, SWT.DRAW_TRANSPARENT);
     }
 
@@ -91,7 +91,7 @@ public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTF
 
     @Override
     public void setSmoothingThreshold(float fontsize) {
-        _antialiasing = (fontsize >= 0);
+        _antialiasing = fontsize >= 0;
     }
 
     @Override
