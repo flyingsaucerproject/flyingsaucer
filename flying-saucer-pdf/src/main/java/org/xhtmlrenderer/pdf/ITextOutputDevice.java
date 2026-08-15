@@ -226,6 +226,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
             // reference objects from a different document when this device is reused across createPDF calls.
             _structureElements.clear();
             _documentStructureElement = null;
+            _listItemBodies.clear();
         }
         _writer = writer;
     }

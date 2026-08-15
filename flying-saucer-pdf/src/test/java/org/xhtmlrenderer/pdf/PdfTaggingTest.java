@@ -45,6 +45,26 @@ class PdfTaggingTest {
     }
 
     @Test
+    void tagsListItemBodiesFreshOnEachCreatePdfCallForTheSameDocument() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+        renderer.setDocumentFromString("<html><body><ul><li>An item</li></ul></body></html>");
+        renderer.layout();
+
+        renderer.createPDF(new ByteArrayOutputStream());
+
+        ByteArrayOutputStream secondOutput = new ByteArrayOutputStream();
+        renderer.createPDF(secondOutput);
+
+        try (RandomAccessRead buffer = new RandomAccessReadBuffer(secondOutput.toByteArray());
+             PDDocument document = new PDFParser(buffer).parse()) {
+            List<PDStructureElement> elements = structureElementsOf(document.getDocumentCatalog());
+            assertThat(elements).extracting(PDStructureElement::getStructureType).contains("L", "LI", "LBody");
+        }
+    }
+
+    @Test
     void taggingIsDisabledByDefault() throws IOException {
         ITextRenderer renderer = new ITextRenderer();
         renderer.getSharedContext().setMedia("pdf");
