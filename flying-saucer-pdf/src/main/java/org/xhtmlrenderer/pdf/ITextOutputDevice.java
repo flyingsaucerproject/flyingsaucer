@@ -221,6 +221,12 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     }
 
     public void setWriter(PdfWriter writer) {
+        if (_writer != writer) {
+            // Cached structure elements belong to the previous writer's PDF; carrying them over would
+            // reference objects from a different document when this device is reused across createPDF calls.
+            _structureElements.clear();
+            _documentStructureElement = null;
+        }
         _writer = writer;
     }
 

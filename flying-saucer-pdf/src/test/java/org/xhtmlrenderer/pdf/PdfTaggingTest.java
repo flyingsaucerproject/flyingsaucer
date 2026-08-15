@@ -23,6 +23,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PdfTaggingTest {
 
     @Test
+    void tagsSecondDocumentCorrectlyWhenRendererIsReused() throws IOException {
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.setTagged(true);
+
+        renderer.setDocumentFromString("<html><body><h1>First document</h1></body></html>");
+        renderer.layout();
+        renderer.createPDF(new ByteArrayOutputStream());
+
+        renderer.setDocumentFromString("<html><body><p>Second document</p></body></html>");
+        renderer.layout();
+
+        withCatalog(renderer, catalog -> {
+            List<PDStructureElement> elements = structureElementsOf(catalog);
+            assertThat(elements)
+                    .extracting(PDStructureElement::getStructureType)
+                    .contains("P")
+                    .doesNotContain("H1");
+        });
+    }
+
+    @Test
     void taggingIsDisabledByDefault() throws IOException {
         ITextRenderer renderer = new ITextRenderer();
         renderer.getSharedContext().setMedia("pdf");
