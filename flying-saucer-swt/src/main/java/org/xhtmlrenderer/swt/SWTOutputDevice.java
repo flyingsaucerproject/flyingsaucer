@@ -42,7 +42,10 @@ import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.swt.simple.SWTFormControl;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
@@ -121,7 +124,7 @@ public class SWTOutputDevice extends AbstractOutputDevice<SWTFSImage, SWTFSFont>
             _clippingPath.dispose();
         }
         _clippingPath = path;
-        _clippingArea = (s == null ? null : new Area(s));
+        _clippingArea = s == null ? null : new Area(s);
     }
 
     @Nullable

@@ -32,7 +32,15 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_CM;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_EMS;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_EXS;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_IN;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_MM;
 import static org.w3c.dom.css.CSSPrimitiveValue.CSS_NUMBER;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PC;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PT;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_PX;
 import static org.w3c.dom.css.CSSValue.CSS_INHERIT;
 
 public abstract class AbstractPropertyBuilder implements PropertyBuilder {
@@ -71,11 +79,11 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
 
     protected void checkIdentOrIntegerType(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
-        if ((type != CSSPrimitiveValue.CSS_IDENT &&
-                type != CSS_NUMBER) ||
-            (type == CSS_NUMBER &&
+        if (type != CSSPrimitiveValue.CSS_IDENT &&
+                type != CSS_NUMBER ||
+            type == CSS_NUMBER &&
                     (int)value.getFloatValue(CSS_NUMBER) !=
-                        Math.round(value.getFloatValue(CSS_NUMBER)))) {
+                        Math.round(value.getFloatValue(CSS_NUMBER))) {
             throw new CSSParseException("Value for " + cssName + " must be an identifier or an integer", -1);
         }
     }
@@ -90,7 +98,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
 
     protected void checkIdentOrLengthType(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
-        if (type != CSSPrimitiveValue.CSS_IDENT && ! isLength(value)) {
+        if (type != CSSPrimitiveValue.CSS_IDENT && !isLength(value)) {
             throw new CSSParseException("Value for " + cssName + " must be an identifier or a length", -1);
         }
     }
@@ -104,20 +112,20 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
 
     protected void checkIdentLengthOrPercentType(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
-        if (type != CSSPrimitiveValue.CSS_IDENT && ! isLength(value) && type != CSSPrimitiveValue.CSS_PERCENTAGE) {
+        if (type != CSSPrimitiveValue.CSS_IDENT && !isLength(value) && type != CSSPrimitiveValue.CSS_PERCENTAGE) {
             throw new CSSParseException("Value for " + cssName + " must be an identifier, length, or percentage", -1);
         }
     }
 
     protected void checkLengthOrPercentType(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
-        if (! isLength(value) && type != CSSPrimitiveValue.CSS_PERCENTAGE) {
+        if (!isLength(value) && type != CSSPrimitiveValue.CSS_PERCENTAGE) {
             throw new CSSParseException("Value for " + cssName + " must be a length or percentage", -1);
         }
     }
 
     protected void checkLengthType(CSSName cssName, CSSPrimitiveValue value) {
-        if (! isLength(value)) {
+        if (!isLength(value)) {
             throw new CSSParseException("Value for " + cssName + " must be a length", -1);
         }
     }
@@ -138,9 +146,9 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
     protected void checkIdentLengthNumberOrPercentType(CSSName cssName, CSSPrimitiveValue value) {
         int type = value.getPrimitiveType();
         if (type != CSSPrimitiveValue.CSS_IDENT &&
-                ! isLength(value) &&
-                type != CSSPrimitiveValue.CSS_PERCENTAGE &&
-                type != CSS_NUMBER) {
+            !isLength(value) &&
+            type != CSSPrimitiveValue.CSS_PERCENTAGE &&
+            type != CSS_NUMBER) {
             throw new CSSParseException("Value for " + cssName + " must be an identifier, length, or percentage", -1);
         }
     }
@@ -152,16 +160,16 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
     }
 
     protected boolean isLength(CSSPrimitiveValue value) {
-        int unit = value.getPrimitiveType();
-        return unit == CSSPrimitiveValue.CSS_EMS || unit == CSSPrimitiveValue.CSS_EXS
-                || unit == CSSPrimitiveValue.CSS_PX || unit == CSSPrimitiveValue.CSS_IN
-                || unit == CSSPrimitiveValue.CSS_CM || unit == CSSPrimitiveValue.CSS_MM
-                || unit == CSSPrimitiveValue.CSS_PT || unit == CSSPrimitiveValue.CSS_PC
-                || (unit == CSS_NUMBER && value.getFloatValue(CSSPrimitiveValue.CSS_IN) == 0.0f);
+        short unit = value.getPrimitiveType();
+        return switch (unit) {
+            case CSS_EMS, CSS_EXS, CSS_PX, CSS_IN, CSS_CM, CSS_MM, CSS_PT, CSS_PC -> true;
+            case CSS_NUMBER -> value.getFloatValue(CSS_IN) == 0.0f;
+            default -> false;
+        };
     }
 
     protected void checkValidity(CSSName cssName, BitSet validValues, IdentValue value) {
-        if (! validValues.get(value.FS_ID)) {
+        if (!validValues.get(value.FS_ID)) {
             throw new CSSParseException("Ident " + value + " is an invalid or unsupported value for " + cssName, -1);
         }
     }
@@ -180,7 +188,7 @@ public abstract class AbstractPropertyBuilder implements PropertyBuilder {
     }
 
     protected void checkInheritAllowed(CSSPrimitiveValue value, boolean inheritAllowed) {
-        if (value.getCssValueType() == CSS_INHERIT && ! inheritAllowed) {
+        if (value.getCssValueType() == CSS_INHERIT && !inheritAllowed) {
             throw new CSSParseException("Invalid use of inherit", -1);
         }
     }

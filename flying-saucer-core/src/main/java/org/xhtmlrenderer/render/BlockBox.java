@@ -51,7 +51,8 @@ import org.xhtmlrenderer.newtable.TableRowBox;
 import org.xhtmlrenderer.render.MarkerData.ImageMarker;
 import org.xhtmlrenderer.render.MarkerData.TextMarker;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -682,11 +683,11 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
             if (c.isPrint() && getStyle().isDynamicAutoWidth()) {
                 setContentWidth(calcEffPageRelativeWidth(c));
             } else {
-                setContentWidth((getContainingBlockWidth() - getLeftMBP() - getRightMBP()));
+                setContentWidth(getContainingBlockWidth() - getLeftMBP() - getRightMBP());
             }
             setHeight(0);
 
-            if (! isAnonymous() || (isFromCaptionedTable() && isFloated())) {
+            if (! isAnonymous() || isFromCaptionedTable() && isFloated()) {
                 int pinnedContentWidth = -1;
 
                 boolean borderBox = style.isBorderBox();
@@ -909,10 +910,10 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
     protected void calcLayoutHeight(
             LayoutContext c, BorderPropertySet border,
             RectPropertySet margin, RectPropertySet padding) {
-        setHeight(getHeight() + ((int) margin.top() + (int) border.top() + (int) padding.top() +
-                (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom()));
-        setChildrenHeight(getChildrenHeight() + ((int) margin.top() + (int) border.top() + (int) padding.top() +
-                (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom()));
+        setHeight(getHeight() + (int) margin.top() + (int) border.top() + (int) padding.top() +
+            (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom());
+        setChildrenHeight(getChildrenHeight() + (int) margin.top() + (int) border.top() + (int) padding.top() +
+            (int) padding.bottom() + (int) border.bottom() + (int) margin.bottom());
     }
 
 
@@ -1401,7 +1402,7 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
         } else {
             // We have a percentage height, defer to our block parent (if applicable)
             Box cb = getContainingBlock();
-            if (cb.isStyled() && (cb instanceof BlockBox blockBox)) {
+            if (cb.isStyled() && cb instanceof BlockBox blockBox) {
                 return blockBox.isAutoHeight();
             } else return !(cb instanceof BlockBox) || !cb.isInitialContainingBlock();
         }
@@ -1531,7 +1532,7 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
                 }
             }
 
-            if (isReplaced() || (width != -1 && ! isFixedWidthAdvisoryOnly())) {
+            if (isReplaced() || width != -1 && ! isFixedWidthAdvisoryOnly()) {
                 _minWidth = _maxWidth =
                         (int) margin.left() + (int) border.left() + (int) padding.left() +
                                 width +

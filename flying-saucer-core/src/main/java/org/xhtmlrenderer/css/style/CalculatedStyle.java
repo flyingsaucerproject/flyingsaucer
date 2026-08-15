@@ -195,7 +195,7 @@ public class CalculatedStyle {
     @CheckReturnValue
     public CalculatedStyle deriveStyle(CascadedStyle matched) {
         String fingerprint = matched.getFingerprint();
-        return _childCache.computeIfAbsent(fingerprint, (key) -> new CalculatedStyle(this, matched));
+        return _childCache.computeIfAbsent(fingerprint, key -> new CalculatedStyle(this, matched));
     }
 
     @Nullable
@@ -987,7 +987,7 @@ public class CalculatedStyle {
     }
 
     public FSLinearGradient getLinearGradient(final CssContext cssContext, final int w, final int h) {
-        assert (isLinearGradient());
+        assert isLinearGradient();
 
         final FunctionValue value = (FunctionValue) valueByName(CSSName.BACKGROUND_IMAGE);
         return new FSLinearGradient(value.getFunction(), this, w, h, cssContext);

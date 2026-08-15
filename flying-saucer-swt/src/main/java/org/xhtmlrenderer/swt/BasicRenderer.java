@@ -132,7 +132,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     private static int checkStyle(int style) {
         final int mask = SWT.BORDER;
-        return (style & mask) | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.V_SCROLL
+        return style & mask | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.V_SCROLL
                 | SWT.H_SCROLL | SWT.NO_RADIO_GROUP;
     }
 
@@ -524,7 +524,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
                 // the origin has been corrected
                 if (_offscreen != null) {
                     if (_hasFixedContent
-                            || (_specialRedraw != null && !(_specialRedraw instanceof RedrawNewOrigin))) {
+                            || _specialRedraw != null && !(_specialRedraw instanceof RedrawNewOrigin)) {
                         _offscreen.dispose();
                         _offscreen = null;
                     } else if (_specialRedraw == null) {

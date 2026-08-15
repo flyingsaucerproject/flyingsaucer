@@ -20,7 +20,8 @@
 package org.xhtmlrenderer.simple;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -197,7 +198,7 @@ public class FSScrollPane extends JScrollPane {
 
                 // want to page down leaving the current line at the bottom be the first at the top
                 // TODO: this will only work once unit increment is set correctly; multiplier is a workaround (PWW 28-01-05)
-                int incr = (int)(getSize().getHeight() - (bar.getUnitIncrement(1) * 3));
+                int incr = (int)(getSize().getHeight() - bar.getUnitIncrement(1) * 3);
                 getVerticalScrollBar().setBlockIncrement(incr);
             }
         });

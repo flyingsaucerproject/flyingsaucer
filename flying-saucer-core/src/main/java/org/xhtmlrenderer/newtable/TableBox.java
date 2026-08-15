@@ -39,7 +39,7 @@ import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.ArrayUtil;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -817,7 +817,7 @@ public class TableBox extends BlockBox {
             belowCell = section.cellAt(rBelow, effCol);
             effCol--;
         } while (belowCell == TableCellBox.SPANNING_CELL && effCol >= 0);
-        return (belowCell == TableCellBox.SPANNING_CELL) ? null : belowCell;
+        return belowCell == TableCellBox.SPANNING_CELL ? null : belowCell;
     }
 
     @Nullable
@@ -834,7 +834,7 @@ public class TableBox extends BlockBox {
             prevCell = section.cellAt(cell.getRow(), effCol - 1);
             effCol--;
         } while (prevCell == TableCellBox.SPANNING_CELL && effCol >= 0);
-        return (prevCell == TableCellBox.SPANNING_CELL) ? null : prevCell;
+        return prevCell == TableCellBox.SPANNING_CELL ? null : prevCell;
     }
 
     @Nullable
@@ -844,7 +844,7 @@ public class TableBox extends BlockBox {
             return null;
         }
         TableCellBox result = cell.getSection().cellAt(cell.getRow(), effCol);
-        return (result == TableCellBox.SPANNING_CELL) ? null : result;
+        return result == TableCellBox.SPANNING_CELL ? null : result;
     }
 
     @Override
@@ -1215,7 +1215,7 @@ public class TableBox extends BlockBox {
                     w = col.getParent().getStyle().asLength(c, CSSName.WIDTH);
                 }
 
-                if ((w.isFixed() && w.value() == 0) || (w.isPercent() && w.value() == 0)) {
+                if (w.isFixed() && w.value() == 0 || w.isPercent() && w.value() == 0) {
                     w = ZERO;
                 }
                 int cEffCol = table.colToEffCol(cCol);
@@ -1531,7 +1531,7 @@ public class TableBox extends BlockBox {
                 maxWidth += layout.effMaxWidth();
                 if (layout.effWidth().isPercent()) {
                     long percent = Math.min(layout.effWidth().value(), remainingPercent);
-                    long pw = (layout.effMaxWidth() * 100) / Math.max(percent, 1);
+                    long pw = layout.effMaxWidth() * 100 / Math.max(percent, 1);
                     remainingPercent -= (int) percent;
                     maxPercent = Math.max(pw, maxPercent);
                 } else {

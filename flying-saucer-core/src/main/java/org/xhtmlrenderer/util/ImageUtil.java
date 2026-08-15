@@ -24,7 +24,16 @@ import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.Size;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -196,8 +205,8 @@ public class ImageUtil {
         }
 
         ScalingOptions normalizedOptions = opt.withTarget(
-                (opt.getTargetWidth() <= 0 ? w : opt.getTargetWidth()),
-                (opt.getTargetHeight() <= 0 ? h : opt.getTargetHeight())
+            opt.getTargetWidth() <= 0 ? w : opt.getTargetWidth(),
+            opt.getTargetHeight() <= 0 ? h : opt.getTargetHeight()
         );
 
         Scaler scaler = qualities.get(opt.getDownscalingHint());

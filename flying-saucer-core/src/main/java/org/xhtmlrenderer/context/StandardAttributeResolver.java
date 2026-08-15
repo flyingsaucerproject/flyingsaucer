@@ -67,7 +67,7 @@ public class StandardAttributeResolver implements AttributeResolver {
     @Override
     @Nullable
     public String getClass(Node e) {
-        return classAttributeCache.computeIfAbsent(e, (x) -> nsh.getClass((Element) e));
+        return classAttributeCache.computeIfAbsent(e, x -> nsh.getClass((Element) e));
     }
 
     /**

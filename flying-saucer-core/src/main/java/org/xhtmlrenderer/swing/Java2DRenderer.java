@@ -240,7 +240,7 @@ public class Java2DRenderer {
      */
     public BufferedImage getImage() {
         if (!rendered) {
-            setDocument((doc == null ? loadDocument(sourceDocument) : doc), sourceDocumentBase, new XhtmlNamespaceHandler());
+            setDocument(doc == null ? loadDocument(sourceDocument) : doc, sourceDocumentBase, new XhtmlNamespaceHandler());
 
             layout(this.width);
 

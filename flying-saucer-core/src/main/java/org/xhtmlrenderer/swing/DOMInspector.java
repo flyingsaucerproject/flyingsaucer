@@ -42,7 +42,13 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -420,7 +426,7 @@ class DOMTreeModel implements TreeModel {
                 Node child = nl.item(i);
                 if (child.getNodeType() == Node.ELEMENT_NODE ||
                         child.getNodeType() == Node.COMMENT_NODE ||
-                        (child.getNodeType() == Node.TEXT_NODE && !child.getNodeValue().trim().isEmpty())) {
+                    child.getNodeType() == Node.TEXT_NODE && !child.getNodeValue().trim().isEmpty()) {
                     children.add(child);
                 }
             }

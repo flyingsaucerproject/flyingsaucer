@@ -113,19 +113,19 @@ public class LengthValue extends DerivedValue {
                 absVal = relVal * ctx.getDotsPerPixel();
                 break;
             case CSSPrimitiveValue.CSS_IN:
-                absVal = (((relVal * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerDot());
+                absVal = relVal * CM__PER__IN * MM__PER__CM / ctx.getMmPerDot();
                 break;
             case CSSPrimitiveValue.CSS_CM:
-                absVal = ((relVal * MM__PER__CM) / ctx.getMmPerDot());
+                absVal = relVal * MM__PER__CM / ctx.getMmPerDot();
                 break;
             case CSSPrimitiveValue.CSS_MM:
                 absVal = relVal / ctx.getMmPerDot();
                 break;
             case CSSPrimitiveValue.CSS_PT:
-                absVal = (((relVal * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerDot();
+                absVal = relVal * PT__PER__IN * CM__PER__IN * MM__PER__CM / ctx.getMmPerDot();
                 break;
             case CSSPrimitiveValue.CSS_PC:
-                absVal = ((((relVal * PC__PER__PT) * PT__PER__IN) * CM__PER__IN) * MM__PER__CM) / ctx.getMmPerDot();
+                absVal = relVal * PC__PER__PT * PT__PER__IN * CM__PER__IN * MM__PER__CM / ctx.getMmPerDot();
                 break;
             case CSSPrimitiveValue.CSS_EMS:
                 // EM is equal to font-size of element on which it is used
@@ -169,7 +169,7 @@ public class LengthValue extends DerivedValue {
                     FontSpecification font = style.getFont(ctx);
                     baseValue = ctx.getFontSize2D(font);
                 }
-                absVal = (relVal / 100.0F) * baseValue;
+                absVal = relVal / 100.0F * baseValue;
 
                 break;
             case CSSPrimitiveValue.CSS_NUMBER:

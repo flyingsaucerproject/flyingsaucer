@@ -334,7 +334,7 @@ public class Selector {
      * @return The pseudoClass value
      */
     public boolean isPseudoClass(int pc) {
-        return ((_pc & pc) != 0);
+        return (_pc & pc) != 0;
     }
 
     /**
@@ -460,7 +460,7 @@ public class Selector {
     }
 
     public String getSelectorText() {
-    	return _text + (chainedSelector != null ? (" "+chainedSelector.getSelectorText()) : "");
+        return _text + (chainedSelector != null ? " " + chainedSelector.getSelectorText() : "");
     }
 
     public void setPos(int pos) {

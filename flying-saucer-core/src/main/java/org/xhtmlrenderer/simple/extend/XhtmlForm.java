@@ -73,7 +73,7 @@ public class XhtmlForm {
             groupName = createNewDefaultGroupName();
         }
 
-        ButtonGroupWrapper group = _buttonGroups.computeIfAbsent(groupName, (name) -> new ButtonGroupWrapper());
+        ButtonGroupWrapper group = _buttonGroups.computeIfAbsent(groupName, name -> new ButtonGroupWrapper());
 
         group.add(button);
     }

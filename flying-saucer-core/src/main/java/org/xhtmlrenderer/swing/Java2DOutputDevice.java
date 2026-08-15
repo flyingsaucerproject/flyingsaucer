@@ -36,7 +36,16 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.RenderingContext;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.LinearGradientPaint;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -82,8 +91,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage, AWTFSFo
                         iB.getAbsY() + iB.getBaseline());
                 Graphics2D graphics = getGraphics();
                 double scaleX = graphics.getTransform().getScaleX();
-                boolean allSelected = (text.length() == inlineText.getSelectionEnd() - inlineText.getSelectionStart());
-                int startX = (inlineText.getSelectionStart() == inlineText.getStart()) ? iB.getAbsX() + inlineText.getX() : (int) Math.round(start.x / scaleX);
+                boolean allSelected = text.length() == inlineText.getSelectionEnd() - inlineText.getSelectionStart();
+                int startX = inlineText.getSelectionStart() == inlineText.getStart() ? iB.getAbsX() + inlineText.getX() : (int) Math.round(start.x / scaleX);
                 int endX = allSelected ? startX + inlineText.getWidth() : (int) Math.round((end.x + end.width) / scaleX);
                 _graphics.setColor(UIManager.getColor("TextArea.selectionBackground"));  // FIXME
                 fillRect(

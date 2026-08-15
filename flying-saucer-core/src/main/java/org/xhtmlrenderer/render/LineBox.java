@@ -36,7 +36,8 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-import java.awt.*;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -315,8 +316,8 @@ public class LineBox extends Box implements InlinePaintable {
 
     @Override
     public boolean intersects(CssContext cssCtx, Shape clip) {
-        return clip == null || (intersectsLine(cssCtx, clip) ||
-            (isContainsBlockLevelContent() && intersectsInlineBlocks(cssCtx, clip)));
+        return clip == null || intersectsLine(cssCtx, clip) ||
+            isContainsBlockLevelContent() && intersectsInlineBlocks(cssCtx, clip);
     }
 
     private boolean intersectsLine(CssContext cssCtx, Shape clip) {

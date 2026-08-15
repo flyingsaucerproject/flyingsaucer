@@ -27,8 +27,8 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.property.BackgroundPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.BorderPropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.BorderSpacingPropertyBuilder;
-import org.xhtmlrenderer.css.parser.property.ContentPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.ColumnsPropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.ContentPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.CounterPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.FontPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.ListStylePropertyBuilder;
@@ -1894,7 +1894,7 @@ public final class CSSName implements Comparable<CSSName> {
             @Nullable PropertyBuilder builder
     ) {
         CSSName cssName = new CSSName(
-                propName, initialValue, (inherit == INHERITS), implemented, builder);
+                propName, initialValue, inherit == INHERITS, implemented, builder);
 
         ALL_PROPERTY_NAMES.put(propName, cssName);
 

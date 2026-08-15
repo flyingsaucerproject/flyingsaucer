@@ -40,7 +40,10 @@ import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -115,7 +118,7 @@ public final class Layer {
         // paints its own layered descendants (position:absolute, nested transforms, ...) outside the
         // transform established by this layer's paint().
         this(parent, master,
-                (master.getStyle().isPositioned() && !master.getStyle().isAutoZIndex()) || master.getStyle().hasTransform());
+                master.getStyle().isPositioned() && !master.getStyle().isAutoZIndex() || master.getStyle().hasTransform());
     }
 
     Layer(@Nullable Layer parent, Box master, boolean stackingContext) {
@@ -342,7 +345,7 @@ public final class Layer {
 
         c.getOutputDevice().pushTransform(c, getMaster());
         try {
-            if (! isInline() && ((BlockBox)getMaster()).isReplaced()) {
+            if (!isInline() && ((BlockBox) getMaster()).isReplaced()) {
                 paintLayerBackgroundAndBorder(c);
                 paintReplacedElement(c, (BlockBox)getMaster());
             } else {
@@ -354,7 +357,7 @@ public final class Layer {
                 BoxCollector collector = new BoxCollector();
                 collector.collect(c, c.getOutputDevice().getClip(), this, blocks, lines, rangeLists);
 
-                if (! isInline()) {
+                if (!isInline()) {
                     paintLayerBackgroundAndBorder(c);
                     if (c.debugDrawBoxes()) {
                         ((BlockBox)getMaster()).paintDebugOutline(c);
@@ -579,7 +582,7 @@ public final class Layer {
         if (contentBounds.x != loc.x || contentBounds.y != loc.y) {
             replaced.getReplacedElement().setLocation(contentBounds.x, contentBounds.y);
         }
-        if (! c.isInteractive() || replaced.getReplacedElement().isRequiresInteractivePaint()) {
+        if (!c.isInteractive() || replaced.getReplacedElement().isRequiresInteractivePaint()) {
             c.getOutputDevice().paintReplacedElement(c, replaced);
         }
     }
@@ -621,12 +624,12 @@ public final class Layer {
     }
 
     private void position(LayoutContext c) {
-        if (getMaster().getStyle().isAbsolute() && ! c.isPrint()) {
-            ((BlockBox)getMaster()).positionAbsolute(c, Position.BOTH);
+        if (getMaster().getStyle().isAbsolute() && !c.isPrint()) {
+            ((BlockBox) getMaster()).positionAbsolute(c, Position.BOTH);
         } else if (getMaster().getStyle().isRelative() &&
                 (isInline() || ((BlockBox)getMaster()).isInline())) {
             getMaster().positionRelative(c);
-            if (! isInline()) {
+            if (!isInline()) {
                 getMaster().calcCanvasLocation();
                 getMaster().calcChildLocations();
             }
@@ -675,7 +678,7 @@ public final class Layer {
             }
         }
 
-        if (! removed) {
+        if (!removed) {
             throw new RuntimeException("Could not find layer to remove");
         }
     }
@@ -718,7 +721,7 @@ public final class Layer {
         if (c.isPrint()) {
             layoutAbsoluteChildren(c);
         }
-        if (! isInline()) {
+        if (!isInline()) {
             positionChildren(c);
         }
     }
@@ -884,7 +887,7 @@ public final class Layer {
                 int high = count-6;
 
                 while (low <= high) {
-                    int mid = (low + high) >> 1;
+                    int mid = low + high >> 1;
                     PageBox pageBox = pages.get(mid);
 
                     if (yOffset >= pageBox.getTop() && yOffset < pageBox.getBottom()) {
@@ -1114,7 +1117,7 @@ public final class Layer {
         if (c.getInitialPageNo() > 0) {
             initial = c.getInitialPageNo() - 1;
         }
-        if ((sequences == null) || sequences.isEmpty()) {
+        if (sequences == null || sequences.isEmpty()) {
             return initial + getPage(c, absY).getPageNo();
         } else {
             BlockBox pageSequence = findPageSequence(sequences, absY);
@@ -1129,7 +1132,7 @@ public final class Layer {
     private BlockBox findPageSequence(List<BlockBox> sequences, int absY) {
         for (int i = 0; i < sequences.size(); i++) {
             BlockBox result = sequences.get(i);
-            if ((i < sequences.size() - 1) && (sequences.get(i + 1).getAbsY() > absY)) {
+            if (i < sequences.size() - 1 && sequences.get(i + 1).getAbsY() > absY) {
                 return result;
             }
         }

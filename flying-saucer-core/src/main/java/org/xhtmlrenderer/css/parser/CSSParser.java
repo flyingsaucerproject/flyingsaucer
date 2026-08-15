@@ -249,7 +249,7 @@ public class CSSParser {
             }
         } catch (CSSParseException e) {
             // "shouldn't" happen
-            if (! e.isCallerNotified()) {
+            if (!e.isCallerNotified()) {
                 error(e, "stylesheet", false);
             }
         }
@@ -638,7 +638,7 @@ public class CSSParser {
             t = next();
             if (t == Token.TK_IDENT) {
                 String result = getTokenValue(t);
-                if (! (result.equals("first") || result.equals("left") || result.equals("right"))) {
+                if (!(result.equals("first") || result.equals("left") || result.equals("right"))) {
                     throw new CSSParseException("Pseudo page must be one of first, left, or right", getCurrentLine());
                 }
                 return result;
@@ -692,7 +692,7 @@ public class CSSParser {
     private int unary_operator() throws IOException {
         log.trace("unary_operator()");
         Token t = next();
-        if (! (t == Token.TK_MINUS || t == Token.TK_PLUS)) {
+        if (t != Token.TK_MINUS && t != Token.TK_PLUS) {
             push(t);
             throw new CSSParseException(
                     t, new Token[] { Token.TK_MINUS, Token.TK_PLUS}, getCurrentLine());
@@ -873,7 +873,7 @@ public class CSSParser {
             second.setSpecificityC(second.getSpecificityC() + first.getSpecificityC());
             second.setSpecificityD(second.getSpecificityD() + first.getSpecificityD());
 
-            if (! sibling) {
+            if (!sibling) {
                 if (result == null) {
                     result = first;
                 }
@@ -884,7 +884,7 @@ public class CSSParser {
                     result = second;
                 }
                 if (i > 0) {
-                    for (int j = i-1; j >= 0; j--) {
+                    for (int j = i - 1; j >= 0; j--) {
                         Selector selector = selectors.get(j);
                         if (selector.getChainedSelector() == first) {
                             selector.setChainedSelector(second);
@@ -1018,7 +1018,7 @@ public class CSSParser {
                 throw new CSSParseException("There is no namespace with prefix " + prefix + " defined",
                         getCurrentLine());
             }
-        } else if (prefix == null && ! matchAttribute) {
+        } else if (prefix == null && !matchAttribute) {
             namespaceURI = _namespaces.get(null);
         }
 
@@ -1381,7 +1381,7 @@ public class CSSParser {
             return false;
         }
 
-        if (! CSSName.isImplemented(cssName)) {
+        if (!CSSName.isImplemented(cssName)) {
             _errorHandler.error(
                     _uri,
                     propertyName + " is not implemented at line "
@@ -1431,7 +1431,7 @@ public class CSSParser {
                     }
 
                     t = la();
-                    if (! (t == Token.TK_SEMICOLON || t == Token.TK_RBRACE || t == Token.TK_EOF)) {
+                    if (!(t == Token.TK_SEMICOLON || t == Token.TK_RBRACE || t == Token.TK_EOF)) {
                         throw new CSSParseException(
                                 t,
                                 new Token[] { Token.TK_SEMICOLON, Token.TK_RBRACE },
@@ -1772,7 +1772,7 @@ public class CSSParser {
             if (f.equals("rgb(") || f.equals("rgba(")) {
                 result = new PropertyValue(createRGBColorFromFunction(params), operatorToken);
             } else if (f.equals("cmyk(")) {
-                if (! isSupportCMYKColors()) {
+                if (!isSupportCMYKColors()) {
                     throw new CSSParseException(
                             "The current output device does not support CMYK colors", getCurrentLine());
                 }
@@ -1801,7 +1801,7 @@ public class CSSParser {
         float[] colorComponents = new float[4];
 
         for (int i = 0; i < params.size(); i++) {
-            colorComponents[i] = parseCMYKColorComponent(params.get(i), (i+1)); //Warning on the truncation?
+            colorComponents[i] = parseCMYKColorComponent(params.get(i), i + 1); //Warning on the truncation?
         }
 
         return new FSCMYKColor(colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3]);
@@ -1892,7 +1892,7 @@ public class CSSParser {
         Token t = next();
         if (t == Token.TK_HASH) {
             String s = getTokenValue(t);
-            if ((s.length() != 3 && s.length() != 6) || ! isHexString(s)) {
+            if (s.length() != 3 && s.length() != 6 || !isHexString(s)) {
                 push(t);
                 throw new CSSParseException('#' + s + " is not a valid color definition", getCurrentLine());
             }
@@ -1920,7 +1920,7 @@ public class CSSParser {
 
     private boolean isHexString(String s) {
         for (int i = 0; i < s.length(); i++) {
-            if (! isHexChar(s.charAt(i))) {
+            if (!isHexChar(s.charAt(i))) {
                 return false;
             }
         }
@@ -1984,7 +1984,7 @@ public class CSSParser {
     }
 
     private void error(CSSParseException e, String what, boolean rethrowEOF) {
-        if (! e.isCallerNotified()) {
+        if (!e.isCallerNotified()) {
             String message = e.getMessage() + " Skipping " + what + ".";
             _errorHandler.error(_uri, message);
         }
@@ -2137,7 +2137,7 @@ public class CSSParser {
     }
 
     private static boolean isHexChar(char c) {
-        return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+        return c >= '0' && c <= '9' || c >= 'A' && c <= 'F' || c >= 'a' && c <= 'f';
     }
 
     private static String processEscapes(char[] ch, int start, int end) {
@@ -2148,18 +2148,18 @@ public class CSSParser {
 
             if (c == '\\') {
                 // eat escaped newlines and handle te\st == test situations
-                if (i < end - 2 && (ch[i+1] == '\r' && ch[i+2] == '\n')) {
+                if (i < end - 2 && ch[i + 1] == '\r' && ch[i + 2] == '\n') {
                     i += 2;
                     continue;
                 } else {
-                    if ((i+1) < ch.length && (ch[i+1] == '\n' || ch[i+1] == '\r' || ch[i+1] == '\f')) {
+                    if (i + 1 < ch.length && (ch[i + 1] == '\n' || ch[i + 1] == '\r' || ch[i + 1] == '\f')) {
                         i++;
                         continue;
-                    } else if ((i+1) >= ch.length) {
-                       // process \ escaped (\\)
-                       result.append(c);
-                       continue;
-                    } else if (! isHexChar(ch[i+1])) {
+                    } else if (i + 1 >= ch.length) {
+                        // process \ escaped (\\)
+                        result.append(c);
+                        continue;
+                    } else if (!isHexChar(ch[i + 1])) {
                         continue;
                     }
                 }
@@ -2177,7 +2177,7 @@ public class CSSParser {
 
                 i--;
 
-                if (i < end - 2 && (ch[i+1] == '\r' && ch[i+2] == '\n')) {
+                if (i < end - 2 && ch[i + 1] == '\r' && ch[i + 2] == '\n') {
                     i += 2;
                 } else if (i < end - 1 &&
                         (ch[i+1] == ' ' || ch[i+1] == '\t' ||

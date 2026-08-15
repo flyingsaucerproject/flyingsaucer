@@ -221,7 +221,7 @@ public class InlineBoxing {
                         }
 
                         if (!lbContext.isUnbreakable() ||
-                                (lbContext.isUnbreakable() && !currentLine.isContainsContent())) {
+                            lbContext.isUnbreakable() && !currentLine.isContainsContent()) {
                             if (iB.isDynamicFunction()) {
                                 inlineText.setFunctionData(new FunctionData(
                                         iB.getContentFunction(), iB.getFunction()));
@@ -484,7 +484,7 @@ public class InlineBoxing {
 
     private static void positionVertically(
             LayoutContext c, Box container, LineBox current, @Nullable MarkerData markerData) {
-        if (current.getChildCount() == 0 || ! current.isContainsVisibleContent()) {
+        if (current.getChildCount() == 0 || !current.isContainsVisibleContent()) {
             current.setHeight(0);
         } else {
             FSFontMetrics strutM = container.getStyle().getFSFontMetrics(c);
@@ -716,7 +716,7 @@ public class InlineBoxing {
                 box.setY(Math.round((float) (measurements.getBaseline() - measurements.getTextTop()) / 2
                         - (ascent + descent) / 2));
             } else if (vAlign == IdentValue.SUPER) {
-                box.setY(Math.round(measurements.getBaseline() - (3*ascent/2)));
+                box.setY(Math.round(measurements.getBaseline() - 3*ascent/2));
             } else if (vAlign == IdentValue.SUB) {
                 box.setY(Math.round(measurements.getBaseline() - ascent / 2));
             } else {
@@ -757,9 +757,9 @@ public class InlineBoxing {
     private static void positionInlineContentVertically(LayoutContext c,
             VerticalAlignContext vaContext, Box child) {
         VerticalAlignContext vaTarget = vaContext;
-        if (! child.getStyle().isLength(CSSName.VERTICAL_ALIGN)) {
+        if (!child.getStyle().isLength(CSSName.VERTICAL_ALIGN)) {
             IdentValue vAlign = child.getStyle().getIdent(
-                    CSSName.VERTICAL_ALIGN);
+                CSSName.VERTICAL_ALIGN);
             if (vAlign == IdentValue.TOP || vAlign == IdentValue.BOTTOM) {
                 vaTarget = vaContext.createChild(child);
             }
@@ -788,7 +788,7 @@ public class InlineBoxing {
         // text?  Is a line required to always have a minimum height?
         if (current.getHeight() != 0 &&
                 current.getHeight() < minHeight &&
-                ! current.isContainsOnlyBlockLevelContent()) {
+            !current.isContainsOnlyBlockLevelContent()) {
             current.setHeight(minHeight);
         }
 
@@ -822,12 +822,12 @@ public class InlineBoxing {
     }
 
     private static void alignLine(final LayoutContext c, final LineBox current, final int maxAvailableWidth) {
-        FloatDistances distances = (!current.isContainsDynamicFunction() && !current.getParent().getStyle().isTextJustify()) ?
+        FloatDistances distances = !current.isContainsDynamicFunction() && !current.getParent().getStyle().isTextJustify() ?
                 new DynamicFloatDistances(c, current, maxAvailableWidth) :
                 new StaticFloatDistances(c, current, maxAvailableWidth);
         current.setFloatDistances(distances);
         current.align(false);
-        if (! current.isContainsDynamicFunction() && ! current.getParent().getStyle().isTextJustify()) {
+        if (!current.isContainsDynamicFunction() && !current.getParent().getStyle().isTextJustify()) {
             current.setFloatDistances(null);
         }
     }
@@ -907,16 +907,16 @@ public class InlineBoxing {
     private static boolean hasTrimmableLeadingSpace(
             LineBox line, CalculatedStyle style, LineBreakContext lbContext,
             boolean zeroWidthInlineBlock) {
-        if ((! line.isContainsContent() || zeroWidthInlineBlock) &&
+        if ((!line.isContainsContent() || zeroWidthInlineBlock) &&
                 lbContext.getStartSubstring().startsWith(WhitespaceStripper.SPACE)) {
             IdentValue whitespace = style.getWhitespace();
             return whitespace == IdentValue.NORMAL
                     || whitespace == IdentValue.NOWRAP
                     || whitespace == IdentValue.PRE_LINE
-                    || (whitespace == IdentValue.PRE_WRAP
+                    || whitespace == IdentValue.PRE_WRAP
                     && lbContext.getStart() > 0
-                    && (lbContext.getMaster().length() > lbContext.getStart() - 1)
-                    && lbContext.getMaster().charAt(lbContext.getStart() - 1) != WhitespaceStripper.EOLC);
+                    && lbContext.getMaster().length() > lbContext.getStart() - 1
+                    && lbContext.getMaster().charAt(lbContext.getStart() - 1) != WhitespaceStripper.EOLC;
         }
         return false;
     }
