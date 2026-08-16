@@ -13,6 +13,14 @@ public final class Html2Pdf {
     private Html2Pdf() {
     }
 
+    public static void warmup() {
+        try {
+            SHARED.warmup();
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to warm up chrome-headless-shell", e);
+        }
+    }
+
     public static byte[] fromUrl(URL html) {
         try {
             return SHARED.renderToPdf(html);

@@ -29,4 +29,9 @@ class Html2PdfTest {
 
         assertThat(pdf).containsText("Inline content");
     }
+
+    @Test
+    void warmsUpChromeBinary() {
+        Html2Pdf.warmup();
+    }
 }
