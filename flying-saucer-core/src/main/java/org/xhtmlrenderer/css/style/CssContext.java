@@ -13,6 +13,7 @@ import org.xhtmlrenderer.render.FSFontMetrics;
  * User: tobe
  * Date: 2005-jun-23
  */
+@CheckReturnValue
 public interface CssContext {
     float getMmPerDot();
 
@@ -23,21 +24,16 @@ public interface CssContext {
     float getXHeight(FontSpecification parentFont);
 
     @Nullable
-    @CheckReturnValue
     FSFont getFont(FontSpecification font);
 
     // FIXME Doesn't really belong here, but this is
     // the only common interface of LayoutContext
     // and RenderingContext
-    @CheckReturnValue
     StyleReference getCss();
 
-    @CheckReturnValue
     TextRenderer getTextRenderer();
 
-    @CheckReturnValue
     FontContext getFontContext();
 
-    @CheckReturnValue
     FSFontMetrics getFSFontMetrics(FSFont font);
 }

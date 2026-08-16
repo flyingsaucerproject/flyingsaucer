@@ -33,7 +33,7 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 /**
  * Supplies information about the context in which rendering will take place
@@ -41,6 +41,7 @@ import java.awt.*;
  * @author jmarinacci
  *         November 16, 2004
  */
+@CheckReturnValue
 public class RenderingContext implements CssContext {
     protected final SharedContext sharedContext;
     private final OutputDevice outputDevice;
@@ -101,6 +102,7 @@ public class RenderingContext implements CssContext {
         return sharedContext.getXHeight(getFontContext(), parentFont);
     }
 
+    @Override
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
     }
@@ -123,14 +125,12 @@ public class RenderingContext implements CssContext {
     }
 
     @Nullable
-    @CheckReturnValue
     @Override
     public FSFont getFont(FontSpecification font) {
         return sharedContext.getFont(font);
     }
 
     @Nullable
-    @CheckReturnValue
     public FSCanvas getCanvas() {
         return sharedContext.getCanvas();
     }
@@ -178,6 +178,7 @@ public class RenderingContext implements CssContext {
         return outputDevice;
     }
 
+    @Override
     public FontContext getFontContext() {
         return fontContext;
     }
@@ -204,13 +205,11 @@ public class RenderingContext implements CssContext {
         return pageNo;
     }
 
-    @CheckReturnValue
     @Override
     public StyleReference getCss() {
         return sharedContext.getCss();
     }
 
-    @CheckReturnValue
     @Override
     public FSFontMetrics getFSFontMetrics(FSFont font) {
         return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
@@ -226,7 +225,6 @@ public class RenderingContext implements CssContext {
     }
 
     @Nullable
-    @CheckReturnValue
     public Box getBoxById(String id) {
         return sharedContext.getBoxById(id);
     }
