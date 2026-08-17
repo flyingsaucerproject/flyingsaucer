@@ -17,6 +17,7 @@ public class WordBreakTest {
     void breakAll() throws IOException {
         byte[] result = Html2Pdf.fromClasspathResource("org/xhtmlrenderer/pdf/break-all.html");
         PDF pdf = printFile(log, result, "break-all.pdf");
-        assertThat(pdf).containsExactText("HelloWorld1\nHelloWorld2\nHelloWorld3\nHelloWorld4\nHelloWorld5\n");
+        String nl = System.lineSeparator();
+        assertThat(pdf).containsExactText("HelloWorld1" + nl + "HelloWorld2" + nl + "HelloWorld3" + nl + "HelloWorld4" + nl + "HelloWorld5" + nl);
     }
 }
