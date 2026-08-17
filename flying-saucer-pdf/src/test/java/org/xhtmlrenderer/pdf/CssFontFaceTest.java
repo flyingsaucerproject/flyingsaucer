@@ -11,15 +11,19 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.junit.jupiter.api.Test;
 import org.openpdf.text.pdf.BaseFont;
 import org.w3c.dom.Document;
+import org.xhtmlrenderer.css.constants.CSSName;
+import org.xhtmlrenderer.resource.FSEntityResolver;
+import org.xhtmlrenderer.resource.XMLResource;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
 
 import static com.codeborne.pdftest.assertj.Assertions.assertThat;
 import static java.util.Objects.requireNonNull;
 import static org.xhtmlrenderer.pdf.TestUtils.getFontNames;
-import org.xhtmlrenderer.resource.FSEntityResolver;
 
 public class CssFontFaceTest {
 
@@ -68,6 +72,62 @@ public class CssFontFaceTest {
 
         Document doc = builder.parse(htmlUrl.toString());
         byte[] pdfBytes = renderer.createPDF(doc);
+        assertEmbeddedJacquard(pdfBytes);
+    }
+
+    /**
+     * Issue #695: {@code url('/abs/path.ttf')} inside an inline {@code <style>}
+     * {@code @font-face} used to be rewritten to {@code inline/abs/path.ttf}. Relative
+     * urls still resolve against the HTML document, so they never show that.
+     * A server-relative path does, and the font must still be embedded.
+     */
+    @Test
+    public void serverRelativeFontPathFromInlineStyleIsEmbedded() throws Exception {
+        Path font = jacquardFontPath();
+        String html = """
+                <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+                <head>
+                    <style>
+                        @font-face {
+                            font-family: "Jacquard 24";
+                            src: url("%s");
+                            -fs-pdf-font-embed: embed;
+                        }
+                        .jacquard { font-family: "Jacquard 24", sans-serif; }
+                    </style>
+                </head>
+                <body>
+                    <p class="jacquard">JACQUARD FONT</p>
+                </body>
+                </html>
+                """.formatted(font);
+
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.getSharedContext().setMedia("pdf");
+        renderer.getSharedContext().setInteractive(false);
+        renderer.getSharedContext().getTextRenderer().setSmoothingThreshold(0);
+
+        Document doc = XMLResource.load(html).getDocument();
+        byte[] pdfBytes = renderer.createPDF(doc);
+
+        String src = renderer.getSharedContext().getCss().getFontFaceRules().get(0)
+                .getCalculatedStyle()
+                .valueByName(CSSName.SRC)
+                .asString();
+        assertThat(src)
+                .isEqualTo(font.toString())
+                .doesNotContain("inline/");
+        assertEmbeddedJacquard(pdfBytes);
+    }
+
+    private static Path jacquardFontPath() throws URISyntaxException {
+        URL fontUrl = requireNonNull(
+                CssFontFaceTest.class.getClassLoader().getResource("fonts/Jacquard24-Regular.ttf"),
+                "test resource not found: fonts/Jacquard24-Regular.ttf");
+        return Path.of(fontUrl.toURI());
+    }
+
+    private static void assertEmbeddedJacquard(byte[] pdfBytes) throws IOException {
         try (RandomAccessRead buffer = new RandomAccessReadBuffer(pdfBytes);
              PDDocument document = new PDFParser(buffer).parse()) {
             assertThat(document.getNumberOfPages()).isGreaterThanOrEqualTo(1);
