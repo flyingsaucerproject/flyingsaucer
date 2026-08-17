@@ -16,9 +16,7 @@ import org.xhtmlrenderer.resource.FSEntityResolver;
 import org.xhtmlrenderer.resource.XMLResource;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.List;
 
 import static com.codeborne.pdftest.assertj.Assertions.assertThat;
@@ -83,7 +81,7 @@ public class CssFontFaceTest {
      */
     @Test
     public void serverRelativeFontPathFromInlineStyleIsEmbedded() throws Exception {
-        Path font = jacquardFontPath();
+        String fontUri = "/fonts/Jacquard24-Regular.ttf";
         String html = """
                 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
                 <head>
@@ -100,9 +98,21 @@ public class CssFontFaceTest {
                     <p class="jacquard">JACQUARD FONT</p>
                 </body>
                 </html>
-                """.formatted(font);
+                """.formatted(fontUri);
 
         ITextRenderer renderer = new ITextRenderer();
+        ITextUserAgent userAgent = new ITextUserAgent(
+                renderer.getOutputDevice(),
+                Math.round(renderer.getOutputDevice().getDotsPerPoint())) {
+            @Override
+            public byte[] getBinaryResource(String uri) {
+                if (uri != null && uri.endsWith(fontUri)) {
+                    return super.getBinaryResource("classpath:fonts/Jacquard24-Regular.ttf");
+                }
+                return super.getBinaryResource(uri);
+            }
+        };
+        renderer.getSharedContext().setUserAgentCallback(userAgent);
         renderer.getSharedContext().setMedia("pdf");
         renderer.getSharedContext().setInteractive(false);
         renderer.getSharedContext().getTextRenderer().setSmoothingThreshold(0);
@@ -114,17 +124,8 @@ public class CssFontFaceTest {
                 .getCalculatedStyle()
                 .valueByName(CSSName.SRC)
                 .asString();
-        assertThat(src)
-                .isEqualTo(font.toString())
-                .doesNotContain("inline/");
+        assertThat(src).isEqualTo(fontUri);
         assertEmbeddedJacquard(pdfBytes);
-    }
-
-    private static Path jacquardFontPath() throws URISyntaxException {
-        URL fontUrl = requireNonNull(
-                CssFontFaceTest.class.getClassLoader().getResource("fonts/Jacquard24-Regular.ttf"),
-                "test resource not found: fonts/Jacquard24-Regular.ttf");
-        return Path.of(fontUrl.toURI());
     }
 
     private static void assertEmbeddedJacquard(byte[] pdfBytes) throws IOException {
