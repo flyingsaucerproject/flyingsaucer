@@ -926,24 +926,13 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
     }
 
     protected void applyCSSMinMaxWidth(CssContext c) {
-        // When box-sizing: border-box, min/max-width values refer to the border-box width
-        // (content + padding + border). We must subtract padding and border to compare
-        // and clamp against the internal content width.
-        int paddingBorderWidth = 0;
-        if (getStyle().isBorderBox()) {
-            RectPropertySet padding = getPadding(c);
-            BorderPropertySet border = getBorder(c);
-            paddingBorderWidth = (int) padding.width() + (int) border.width();
-        }
-
         if (!getStyle().isMaxWidthNone()) {
-            int cssMaxWidth = getCSSMaxWidth(c) - paddingBorderWidth;
+            int cssMaxWidth = getCSSMaxWidth(c);
             if (getContentWidth() > cssMaxWidth) {
                 setContentWidth(cssMaxWidth);
             }
         }
-
-        int cssMinWidth = getCSSMinWidth(c) - paddingBorderWidth;
+        int cssMinWidth = getCSSMinWidth(c);
         if (cssMinWidth > 0 && getContentWidth() < cssMinWidth) {
             setContentWidth(cssMinWidth);
         }
@@ -1409,11 +1398,33 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
     }
 
     private int getCSSMinWidth(CssContext c) {
-        return getStyle().getMinWidth(c, getContainingBlockWidth());
+        int result = getStyle().getMinWidth(c, getContainingBlockWidth());
+        if (result > 0 && getStyle().isBorderBox()) {
+            // min-width in border-box mode refers to the total outer width.
+            // Subtract paddingBorderWidth so calcMinMaxWidth stores the correct
+            // content-width floor — preventing AutoTableLayout from over-allocating
+            // the column before applyCSSMinMaxWidth runs.
+            RectPropertySet padding = getPadding(c);
+            BorderPropertySet border = getBorder(c);
+            int paddingBorderWidth = (int) padding.width() + (int) border.width();
+            result = Math.max(0, result - paddingBorderWidth);
+        }
+        return result;
     }
 
     private int getCSSMaxWidth(CssContext c) {
-        return getStyle().getMaxWidth(c, getContainingBlockWidth());
+        int result = getStyle().getMaxWidth(c, getContainingBlockWidth());
+        if (getStyle().isBorderBox()) {
+            // max-width in border-box mode refers to the total outer width.
+            // Subtract paddingBorderWidth to convert to a content-width ceiling
+            // so calcMinMaxWidth and applyCSSMinMaxWidth both operate on the
+            // same axis as contentWidth.
+            RectPropertySet padding = getPadding(c);
+            BorderPropertySet border = getBorder(c);
+            int paddingBorderWidth = (int) padding.width() + (int) border.width();
+            result = Math.max(0, result - paddingBorderWidth);
+        }
+        return result;
     }
 
     private int getCSSMinHeight(CssContext c) {
