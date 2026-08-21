@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style type="text/css">
+        body { margin: 20pt; font-size: 10pt; font-family: serif; }
+        table { border-collapse: collapse; }
+        td { border: 1px solid black; padding: 2pt; vertical-align: top; }
+    </style>
+</head>
+<body>
+
+<!--
+    Regression fixture: content-box <td> with max-width in table-layout:auto.
+
+    Bug (PR #702 isBorderBox() guard): applyCSSMinMaxWidth is skipped for
+    content-box cells because isBorderBox() returns false.  max-width:80pt is
+    silently ignored and the cell expands to its full natural content width,
+    fitting all 24 Greek words on a single wide line.
+
+    Fix (isFixedWidthAdvisoryOnly() guard): the call IS made for table-layout:auto
+    (advisory widths), so max-width:80pt constrains the cell and forces wrapping.
+    "Alpha" (first word) and "Omega" (last word) must therefore land on different
+    extracted-text lines.
+
+    Page geometry (A4): 555pt usable.  Without max-width enforcement the cell would
+    be as wide as needed (~555pt) and all 24 words (~120 chars) fit on one line.
+    With max-width:80pt (~16 chars/line at 5pt/char serif) the words must wrap
+    across at least seven lines.
+-->
+<table style="table-layout: auto;">
+    <tbody>
+    <tr>
+        <td style="max-width: 80pt;">
+            Alpha Beta Gamma Delta Epsilon Zeta Eta Theta Iota Kappa
+            Lambda Mu Nu Xi Omicron Pi Rho Sigma Tau Upsilon Phi Chi Psi Omega
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

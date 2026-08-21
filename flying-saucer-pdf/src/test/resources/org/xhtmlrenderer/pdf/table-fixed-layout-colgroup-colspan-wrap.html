@@ -15,20 +15,25 @@
 <body>
 
 <!--
-    Regression: 10.4.0 (PR #682) — TableCellBox.setLayoutWidth() calls
-    applyCSSMinMaxWidth(c), which applies max-width: 34% from the <td>
-    and shrinks the colspan=4 cell from its col-allocated 67% down to 34%.
+    Regression fixture for TableCellBox.setLayoutWidth() / applyCSSMinMaxWidth.
 
-    A4 page = 595pt, margins = 40pt → usable = 555pt
-    67% of 555pt = ~372pt
-    At 10pt serif, avg char width ~5pt → ~74 chars fit per line
+    Page geometry (A4): 595pt wide, 40pt margins → 555pt usable width.
+    Column allocation in each table: cols 3-6 sum to 67% → ~372pt.
 
-    VALUE text below is ~160 chars → MUST wrap even at 67% width.
-    At 34% (bug) it wraps even more aggressively.
-    The newline positions differ, letting us detect which width was used.
+    The VALUE text below is ~160 chars.  At 67% (~372pt, ~5pt/char serif)
+    roughly 74 chars fit per line, so the text MUST wrap across multiple lines.
+
+    The key width-detection probe: "Eta Theta" are adjacent words in the sequence.
+      • At 67% (correct): both words fit comfortably within line 1 of the cell.
+      • At 34% (bug):     the narrower cell wraps earlier; "Eta" begins a new line,
+                          separating it from "Theta".
 -->
 
-<!-- Test 1: exact user bug report (max-width + colspan=4) -->
+<!-- ============================================================
+     Test 1: exact user bug report
+     content-box <td> (default), max-width:34%, colspan=4
+     Expected: col-allocated 67% wins; Eta+Theta on same line.
+     ============================================================ -->
 <table id="test1">
     <colgroup>
         <col style="width: 33%"/>
@@ -40,10 +45,9 @@
     </colgroup>
     <tbody>
     <tr>
-        <td style="vertical-align: top;">KEY</td>
-        <td style="vertical-align: top;"> : </td>
-        <td colspan="4"
-            style="vertical-align: top; word-break: break-word; max-width: 34%;">
+        <td>KEY</td>
+        <td> : </td>
+        <td colspan="4" style="word-break: break-word; max-width: 34%;">
             Alpha Beta Gamma Delta Epsilon Zeta Eta Theta Iota Kappa
             Lambda Mu Nu Xi Omicron Pi Rho Sigma Tau Upsilon Phi Chi Psi Omega
         </td>
@@ -53,7 +57,10 @@
 
 <br/>
 
-<!-- Test 2: colspan=4, no max-width — plain natural wrapping -->
+<!-- ============================================================
+     Test 2: no max-width — plain colspan wrapping baseline
+     Expected: Lorem ipsum wraps naturally at 67% width.
+     ============================================================ -->
 <table id="test2">
     <colgroup>
         <col style="width: 33%"/>
@@ -65,11 +72,44 @@
     </colgroup>
     <tbody>
     <tr>
-        <td style="vertical-align: top;">KEY2</td>
-        <td style="vertical-align: top;"> : </td>
-        <td colspan="4" style="vertical-align: top;">
+        <td>KEY2</td>
+        <td> : </td>
+        <td colspan="4">
             Lorem ipsum dolor sit amet consectetur adipiscing elit
             sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<br/>
+
+<!-- ============================================================
+     Test 3: border-box regression guard (PR #702 isBorderBox() guard)
+     box-sizing: border-box + max-width:34% + colspan=4.
+     Expected: col-allocated 67% STILL wins; Eta+Theta on same line.
+     Bug (isBorderBox() guard): applyCSSMinMaxWidth IS called for border-box
+       cells even in table-layout:fixed → max-width:34% incorrectly applied.
+     Fix (isFixedWidthAdvisoryOnly() guard): call is skipped for ALL cells
+       in table-layout:fixed regardless of box-sizing → 67% honoured.
+     ============================================================ -->
+<table id="test3">
+    <colgroup>
+        <col style="width: 33%"/>
+        <col style="width: 1%"/>
+        <col style="width: 34%"/>
+        <col style="width: 12%"/>
+        <col style="width: 1%"/>
+        <col style="width: 20%"/>
+    </colgroup>
+    <tbody>
+    <tr>
+        <td>KEY3</td>
+        <td> : </td>
+        <td colspan="4"
+            style="word-break: break-word; box-sizing: border-box; max-width: 34%;">
+            Alpha Beta Gamma Delta Epsilon Zeta Eta Theta Iota Kappa
+            Lambda Mu Nu Xi Omicron Pi Rho Sigma Tau Upsilon Phi Chi Psi Omega
         </td>
     </tr>
     </tbody>

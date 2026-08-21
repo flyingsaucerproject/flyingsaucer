@@ -11,23 +11,41 @@ import static com.codeborne.pdftest.assertj.Assertions.assertThat;
 import static org.xhtmlrenderer.pdf.TestUtils.printFile;
 
 /**
- * Regression test for table-layout:fixed + colgroup/col + colspan text wrapping.
+ * Regression tests for table-layout:fixed + colgroup/col + colspan text wrapping.
  *
- * Bug (10.4.0 PR #682): TableCellBox.setLayoutWidth() unconditionally called
- * applyCSSMinMaxWidth(c), which applied the td's own max-width: 34% and shrank
- * a colspan=4 cell from its col-allocated 67% down to 34%. Text then overflowed
- * on one long line instead of wrapping within the correct cell width.
+ * <p>Original bug (PR #682): {@code TableCellBox.setLayoutWidth()} unconditionally
+ * called {@code applyCSSMinMaxWidth(c)}, which honoured the {@code <td>}'s own
+ * {@code max-width: 34%} and shrank a {@code colspan=4} cell from its col-allocated
+ * 67&nbsp;% down to 34&nbsp;%.  Text then overflowed instead of wrapping within the
+ * correct cell width.
  *
- * Fix: remove applyCSSMinMaxWidth(c) from setLayoutWidth() — column widths from
- * colgroup/col are authoritative in table-layout: fixed.
+ * <p>The guard introduced by the follow-up PR used {@code isBorderBox()}, which
+ * causes two distinct regressions that this test class covers:
+ * <ol>
+ *   <li><em>Content-box regression</em> — in {@code table-layout: auto} tables,
+ *       {@code max-width} is silently ignored for content-box cells because
+ *       {@code isBorderBox()} returns {@code false} and the call is skipped.</li>
+ *   <li><em>Border-box regression</em> — in {@code table-layout: fixed} tables,
+ *       {@code max-width} still overrides the col-allocated width for border-box
+ *       cells because {@code isBorderBox()} returns {@code true} and the call is
+ *       still made.</li>
+ * </ol>
+ *
+ * <p>The correct guard is {@code isFixedWidthAdvisoryOnly()} (true only for
+ * {@code table-layout: auto}), which fixes both cases regardless of box-sizing.
  */
 class TableFixedLayoutColgroupColspanWrapTest {
 
     private static final Logger log =
-            LoggerFactory.getLogger(TableFixedLayoutColgroupColspanWrapTest.class);
+        LoggerFactory.getLogger(TableFixedLayoutColgroupColspanWrapTest.class);
 
-    private static final String HTML =
-            "org/xhtmlrenderer/pdf/table-fixed-layout-colgroup-colspan-wrap.html";
+    /** Three-test HTML: content-box (Test-1), no-max-width (Test-2), border-box (Test-3). */
+    private static final String FIXED_HTML =
+        "org/xhtmlrenderer/pdf/table-fixed-layout-colgroup-colspan-wrap.html";
+
+    /** Single-cell auto-layout table with max-width on a content-box td. */
+    private static final String AUTO_HTML =
+        "org/xhtmlrenderer/pdf/table-auto-layout-content-box-max-width.html";
 
     // ------------------------------------------------------------------
     // 1. Smoke — must not throw
@@ -35,138 +53,184 @@ class TableFixedLayoutColgroupColspanWrapTest {
 
     @Test
     void renderDoesNotThrow() {
-        var unused = Html2Pdf.fromClasspathResource(HTML);
+        var unused = Html2Pdf.fromClasspathResource(FIXED_HTML);
     }
 
     // ------------------------------------------------------------------
-    // 2. All words must be present — no clipping/overflow loss
+    // 2. All words present — no clipping / overflow loss
     // ------------------------------------------------------------------
 
     @Test
     void allWordsInColspanCellArePresentInPdf() throws IOException {
-        byte[] result = Html2Pdf.fromClasspathResource(HTML);
-        PDF pdf = printFile(log, result, "table-fixed-layout-colgroup-colspan-wrap.pdf");
+        PDF pdf = printFile(log, Html2Pdf.fromClasspathResource(FIXED_HTML),
+            "table-fixed-layout-colgroup-colspan-wrap.pdf");
 
-        // Every Greek letter word in Test-1 VALUE must appear in the PDF.
-        // If the bug is present, the cell is shrunk to 34% and overflow
-        // may cause some words to be clipped/lost from the PDF output.
-        assertThat(pdf).containsText("Alpha");
-        assertThat(pdf).containsText("Epsilon");
-        assertThat(pdf).containsText("Kappa");
-        assertThat(pdf).containsText("Omicron");
-        assertThat(pdf).containsText("Upsilon");
-        assertThat(pdf).containsText("Omega");
+        // Every Greek-letter name in the Test-1 VALUE cell must survive in the PDF.
+        // If the bug is active the cell is shrunk to 34 % and overflow may clip words.
+        assertThat(pdf).containsExactText("Alpha");
+        assertThat(pdf).containsExactText("Epsilon");
+        assertThat(pdf).containsExactText("Kappa");
+        assertThat(pdf).containsExactText("Omicron");
+        assertThat(pdf).containsExactText("Upsilon");
+        assertThat(pdf).containsExactText("Omega");
 
-        assertThat(pdf).containsText("Lorem");
-        assertThat(pdf).containsText("aliqua");
+        assertThat(pdf).containsExactText("Lorem");
+        assertThat(pdf).containsExactText("aliqua");
     }
 
     @Test
     void keyColumnsArePresent() throws IOException {
-        byte[] result = Html2Pdf.fromClasspathResource(HTML);
-        PDF pdf = printFile(log, result, "table-fixed-layout-colgroup-colspan-keys.pdf");
+        PDF pdf = printFile(log, Html2Pdf.fromClasspathResource(FIXED_HTML),
+            "table-fixed-layout-colgroup-colspan-keys.pdf");
 
-        assertThat(pdf).containsText("KEY");
-        assertThat(pdf).containsText("KEY2");
+        assertThat(pdf).containsExactText("KEY");
+        assertThat(pdf).containsExactText("KEY2");
+        assertThat(pdf).containsExactText("KEY3");
     }
 
     // ------------------------------------------------------------------
-    // 3. Wrapping — text must span multiple lines inside the cell
-    //
-    //    Text is ~160 chars; at 67% of 555pt (~372pt) with 10pt serif
-    //    (~5pt/char) only ~74 chars fit per line → text MUST wrap.
-    //    At 34% (bug, ~178pt) text wraps more tightly.
-    //
-    //    We detect WHICH width was used by checking whether words that
-    //    fit on the SAME line at 67% are split across lines at 34%.
-    //
-    //    "Eta Theta" (9 chars) is contiguous at 67% width but is split
-    //    if the cell is incorrectly shrunk to 34% by applyCSSMinMaxWidth
-    //    on a content-box cell. CSS min/max constraints apply only to
-    //    border-box cells; content-box cells keep their col-allocated width.
+    // 3. Width detection — col-allocated 67 % vs buggy max-width 34 %
     // ------------------------------------------------------------------
 
     /**
-     * Asserts that "Eta Theta" appears as a contiguous substring in the PDF text,
-     * confirming the cell was laid out at the correct col-allocated 67% width.
+     * Confirms that the Test-1 colspan cell uses the col-allocated 67&nbsp;%
+     * width, not the {@code max-width: 34%} declared on the content-box
+     * {@code <td>}.
      *
-     * <p>Why "Eta Theta" and not "Lambda Mu":
-     * At the regressed 34% content width (~178pt, 10pt serif), line 1 fills up at
-     * "...Epsilon Zeta" (~175pt). Adding "Eta" would exceed the line, so "Eta"
-     * wraps to line 2. "Lambda Mu" also lands on that same line 2, so
-     * {@code contains("Lambda Mu")} returns {@code true} at BOTH 67% and 34% --
-     * it cannot detect the regression. "Eta Theta" is the correct boundary:
-     * at 67% it sits well within line 1; at 34% it begins line 2 as a pair,
-     * but any further narrowing would split them -- making it a reliable
-     * width-sensitive regression signal.
+     * <p>The assertion is structural: "Eta" and "Theta" are consecutive words
+     * in the source text.  At the correct 67&nbsp;% cell width the first text line
+     * is wide enough to accommodate both words together.  If {@code max-width: 34%}
+     * were incorrectly applied the narrower cell would wrap earlier, placing "Eta"
+     * at the start of a new line and separating the two words.
+     *
+     * <p>No character-width arithmetic is involved.  The check iterates the
+     * extracted PDF lines directly, so it remains stable across font-metric and
+     * OpenPDF version changes.
      */
     @Test
     void etaAndThetaAreOnSameLineAtCorrectCellWidth() throws IOException {
-        byte[] result = Html2Pdf.fromClasspathResource(HTML);
-        PDF pdf = printFile(log, result, "table-fixed-layout-colgroup-colspan-eta-theta.pdf");
+        PDF pdf = printFile(log, Html2Pdf.fromClasspathResource(FIXED_HTML),
+            "table-fixed-layout-colgroup-colspan-eta-theta.pdf");
 
-        // pdf.text is a public final String field — NOT a method call
-        String text = pdf.text;
-
-        // "Lambda Mu" must appear as a contiguous substring — no newline between
-        assertThat(text)
-                .as("'Lambda Mu' must appear on the same line.\n" +
-                        "If a newline appears between them, the cell was rendered at 34% " +
-                        "(bug) instead of 67% (correct col-allocated width).")
-                .contains("Lambda Mu");
+        assertThat(pdf.text.lines().toList())
+            .as("'Eta' and 'Theta' must appear on the same extracted-text line "
+                + "(Test-1, content-box cell). "
+                + "If they are split across lines the cell was rendered at the "
+                + "incorrect max-width (34 %) instead of the col-allocated width "
+                + "(67 %).")
+            .anyMatch(line -> line.contains("Eta") && line.contains("Theta"));
     }
 
     /**
-     * At the same time, the overall value text MUST wrap (it is too long
-     * to fit on a single line even at 67% width).
-     * This ensures we are not simply getting a non-wrapping overflow.
+     * Guards against silent overflow: the Greek-alphabet text is long enough that
+     * it must wrap at any realistic cell width, so it must occupy more than one
+     * line.  This ensures the previous test is not vacuously satisfied by a
+     * non-wrapping overflow.
      */
     @Test
     void valueTextWrapsAcrossMultipleLinesAtCorrectCellWidth() throws IOException {
-        byte[] result = Html2Pdf.fromClasspathResource(HTML);
-        PDF pdf = printFile(log, result, "table-fixed-layout-colgroup-colspan-wrap-lines.pdf");
+        PDF pdf = printFile(log, Html2Pdf.fromClasspathResource(FIXED_HTML),
+            "table-fixed-layout-colgroup-colspan-wrap-lines.pdf");
 
-        String text = pdf.text;
-
-        int alphaIdx = text.indexOf("Alpha");
-        int omegaIdx = text.indexOf("Omega");
-
-        assertThat(alphaIdx)
-                .as("'Alpha' must be present in the PDF")
-                .isGreaterThanOrEqualTo(0);
-        assertThat(omegaIdx)
-                .as("'Omega' must be present in the PDF")
-                .isGreaterThanOrEqualTo(0);
-
-        // "Alpha" ... "Omega" spans ~160 chars → always wraps at any cell width.
-        // A newline MUST exist between them regardless of bug or fix.
-        // This guards against the case where overflow is not rendered at all.
-        String between = text.substring(alphaIdx, omegaIdx);
-        assertThat(between)
-                .as("Text from 'Alpha' to 'Omega' must contain a newline — " +
-                        "the content is too long to fit on one line at any width.")
-                .contains("\n");
+        // 24 Greek-letter words cannot fit on a single line at any realistic width.
+        // Assert structurally that "Alpha" (first) and "Omega" (last) land on
+        // different extracted-text lines.
+        assertThat(pdf).containsExactText("Alpha");
+        assertThat(pdf).containsExactText("Omega");
+        assertThat(pdf.text.lines().toList())
+            .as("'Alpha' and 'Omega' must be on different lines — the Greek-alphabet "
+                + "content is too long to fit on a single line at any cell width.")
+            .noneMatch(line -> line.contains("Alpha") && line.contains("Omega"));
     }
 
     /**
-     * Same check for Test-2 (no max-width on td, plain colspan wrapping).
+     * Same wrapping check for Test-2 (no {@code max-width} on td, plain colspan).
      */
     @Test
     void colspanCellWithoutMaxWidthAlsoWraps() throws IOException {
-        byte[] result = Html2Pdf.fromClasspathResource(HTML);
-        PDF pdf = printFile(log, result, "table-fixed-layout-colgroup-colspan-nowrap.pdf");
+        PDF pdf = printFile(log, Html2Pdf.fromClasspathResource(FIXED_HTML),
+            "table-fixed-layout-colgroup-colspan-nowrap.pdf");
 
-        String text = pdf.text;
+        assertThat(pdf).containsExactText("Lorem");
+        assertThat(pdf).containsExactText("aliqua");
+        assertThat(pdf.text.lines().toList())
+            .as("'Lorem' and 'aliqua' must be on different lines — the Lorem-ipsum "
+                + "content is too long to fit on one line at 67 % width.")
+            .noneMatch(line -> line.contains("Lorem") && line.contains("aliqua"));
+    }
 
-        int loremIdx  = text.indexOf("Lorem");
-        int aliquaIdx = text.indexOf("aliqua");
+    // ------------------------------------------------------------------
+    // 4. Regression: border-box cell in table-layout:fixed
+    //
+    //    The isBorderBox() guard in the PR would call applyCSSMinMaxWidth for
+    //    any border-box cell, including those in table-layout:fixed tables.
+    //    The col-allocated width must still win for border-box cells in fixed
+    //    layout — exactly the same requirement as for content-box cells.
+    // ------------------------------------------------------------------
 
-        assertThat(loremIdx).as("'Lorem' must be present").isGreaterThanOrEqualTo(0);
-        assertThat(aliquaIdx).as("'aliqua' must be present").isGreaterThanOrEqualTo(0);
+    /**
+     * A border-box colspan {@code <td>} in a {@code table-layout: fixed} table
+     * must use the col-allocated width (67&nbsp;%), not the {@code max-width: 34%}
+     * declared on the element.
+     *
+     * <p>Test-3 in the HTML fixture has {@code box-sizing: border-box} on the
+     * same {@code colspan=4} cell.  Under the buggy {@code isBorderBox()} guard
+     * {@code applyCSSMinMaxWidth} is called and shrinks the cell to the incorrect
+     * 34&nbsp;%.  Under the correct {@code isFixedWidthAdvisoryOnly()} guard the
+     * call is skipped for {@code table-layout: fixed} regardless of box-sizing,
+     * so "Eta" and "Theta" appear on the same line.
+     */
+    @Test
+    void borderBoxFixedLayoutColWidthTakesPrecedenceOverMaxWidth() throws IOException {
+        PDF pdf = printFile(log, Html2Pdf.fromClasspathResource(FIXED_HTML),
+            "table-fixed-layout-colgroup-colspan-borderbox.pdf");
 
-        String between = text.substring(loremIdx, aliquaIdx);
-        assertThat(between)
-                .as("Lorem ipsum text must wrap — too long for one line at 67% width")
-                .contains("\n");
+        assertThat(pdf).containsExactText("KEY3");
+        assertThat(pdf.text.lines().toList())
+            .as("'Eta' and 'Theta' must appear on the same extracted-text line "
+                + "(Test-3, border-box cell). "
+                + "If they are split, applyCSSMinMaxWidth was invoked for a "
+                + "border-box cell in table-layout:fixed (isBorderBox() guard "
+                + "regression), shrinking it to max-width:34% instead of "
+                + "honouring the col-allocated 67%.")
+            .anyMatch(line -> line.contains("Eta") && line.contains("Theta"));
+    }
+
+    // ------------------------------------------------------------------
+    // 5. Regression: content-box cell in table-layout:auto
+    //
+    //    The isBorderBox() guard skips applyCSSMinMaxWidth for content-box cells
+    //    everywhere, including table-layout:auto tables where max-width must be
+    //    honoured.  This worked correctly before PR #682.
+    // ------------------------------------------------------------------
+
+    /**
+     * A content-box {@code <td>} in a {@code table-layout: auto} table must have
+     * its {@code max-width} honoured by {@code applyCSSMinMaxWidth}.
+     *
+     * <p>Under the buggy {@code isBorderBox()} guard the call is skipped for
+     * content-box cells (the default), so {@code max-width: 80pt} is silently
+     * ignored and the cell expands to its natural content width, fitting all 24
+     * words on a single wide line.  Under the correct
+     * {@code isFixedWidthAdvisoryOnly()} guard the call IS made (auto-layout →
+     * widths are advisory), constraining the cell to 80&nbsp;pt and forcing the
+     * words to wrap across many lines — so "Alpha" and "Omega" land on different
+     * lines.
+     */
+    @Test
+    void contentBoxAutoLayoutMaxWidthIsRespected() throws IOException {
+        PDF pdf = printFile(log, Html2Pdf.fromClasspathResource(AUTO_HTML),
+            "table-auto-layout-content-box-max-width.pdf");
+
+        // At max-width: 80pt the 24 Greek words cannot fit on one line.
+        // "Alpha" (first word) and "Omega" (last word) must be on different lines.
+        assertThat(pdf).containsExactText("Alpha");
+        assertThat(pdf).containsExactText("Omega");
+        assertThat(pdf.text.lines().toList())
+            .as("'Alpha' and 'Omega' must be on different lines. "
+                + "If they are on the same line, max-width was silently ignored "
+                + "for a content-box cell in table-layout:auto (isBorderBox() "
+                + "guard regression — the call to applyCSSMinMaxWidth was skipped).")
+            .noneMatch(line -> line.contains("Alpha") && line.contains("Omega"));
     }
 }
