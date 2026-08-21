@@ -140,6 +140,22 @@ public class ITextFontResolver implements FontResolver {
         }
     }
 
+    /**
+     * Names of {@code @font-face} families that were registered without embedding (see
+     * {@code -fs-pdf-font-embed}). PDF/A requires every font used in the document to be embedded, so
+     * callers requesting PDF/A conformance should ensure this returns an empty list before generating
+     * the PDF.
+     */
+    public List<String> getNonEmbeddedFontFaceFamilies() {
+        return getFonts().values().stream()
+                .flatMap(family -> family.getFontDescriptions().stream())
+                .filter(FontDescription::isFromFontFace)
+                .filter(description -> !description.getFont().isEmbedded())
+                .map(description -> description.getFont().getPostscriptFontName())
+                .distinct()
+                .toList();
+    }
+
     public void addEmbedFontFace(String fontFamily, String encoding) {
         _embedFontFaces.put(fontFamily, encoding);
     }

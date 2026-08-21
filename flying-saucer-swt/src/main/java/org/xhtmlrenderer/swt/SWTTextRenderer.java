@@ -30,7 +30,7 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.util.Configuration;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 /**
  * Render text with SWT.
@@ -59,7 +59,7 @@ public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTF
             float y) {
         GC gc = outputDevice.getGC();
         FontMetrics metrics = gc.getFontMetrics();
-        y -= (metrics.getAscent() + metrics.getLeading());
+        y -= metrics.getAscent() + metrics.getLeading();
         gc.drawText(string, (int) x, (int) y, SWT.DRAW_TRANSPARENT);
     }
 
@@ -91,7 +91,7 @@ public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTF
 
     @Override
     public void setSmoothingThreshold(float fontsize) {
-        _antialiasing = (fontsize >= 0);
+        _antialiasing = fontsize >= 0;
     }
 
     @Override
@@ -102,8 +102,21 @@ public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTF
     @Override
     public void drawString(SWTOutputDevice outputDevice, String string, float x, float y,
             JustificationInfo info) {
-        // TODO handle justification
-        drawString(outputDevice, string, x, y);
+        GC gc = outputDevice.getGC();
+        float xc = x;
+        for (int i = 0; i < string.length(); ) {
+            char c = string.charAt(i);
+            int end = string.offsetByCodePoints(i, 1);
+            String character = string.substring(i, end);
+            drawString(outputDevice, character, xc, y);
+            xc += gc.stringExtent(character).x;
+            if (c == ' ' || c == '\u00a0' || c == '\u3000') {
+                xc += info.spaceAdjust();
+            } else {
+                xc += info.nonSpaceAdjust();
+            }
+            i = end;
+        }
     }
 
     @Override

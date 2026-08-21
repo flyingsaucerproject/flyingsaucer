@@ -111,7 +111,7 @@ public class AWTFontResolver implements FontResolver {
         Font fnt = root_font.deriveFont(fontStyle, fontSize);
         if (variant != null) {
             if (variant == IdentValue.SMALL_CAPS) {
-                fnt = fnt.deriveFont((float) (((float) fnt.getSize()) * 0.6));
+                fnt = fnt.deriveFont((float) ((float) fnt.getSize() * 0.6));
             }
         }
 
@@ -193,7 +193,7 @@ public class AWTFontResolver implements FontResolver {
      * Gets the fontInstanceHashName attribute of the FontResolverTest object
      */
     protected static String getFontInstanceHashName(SharedContext ctx, String name, float size, IdentValue weight, IdentValue style, IdentValue variant) {
-        return name + "-" + (size * ctx.getTextRenderer().getFontScale()) + "-" + weight + "-" + style + "-" + variant;
+        return name + "-" + size * ctx.getTextRenderer().getFontScale() + "-" + weight + "-" + style + "-" + variant;
     }
 
     @Nullable

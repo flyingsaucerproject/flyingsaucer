@@ -66,6 +66,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author empty
  */
+@CheckReturnValue
 public final class SharedContext {
     private static final Set<String> PAGED_MEDIA_TYPES = Set.of("print", "projection", "embossed", "handheld", "tv");
 
@@ -180,7 +181,6 @@ public final class SharedContext {
      *
      * @return The fontResolver value
      */
-    @CheckReturnValue
     public FontResolver getFontResolver() {
         return fontResolver;
     }
@@ -194,7 +194,6 @@ public final class SharedContext {
     /**
      * The media for this context
      */
-    @CheckReturnValue
     public String getMedia() {
         return media;
     }
@@ -208,7 +207,6 @@ public final class SharedContext {
     @Nullable
     private FSCanvas canvas;
 
-    @CheckReturnValue
     public TextRenderer getTextRenderer() {
         return textRenderer;
     }
@@ -260,7 +258,6 @@ public final class SharedContext {
     }
 
     @Nullable
-    @CheckReturnValue
     public FSCanvas getCanvas() {
         return canvas;
     }
@@ -302,7 +299,6 @@ public final class SharedContext {
     }
 
     @Nullable
-    @CheckReturnValue
     public Box getBoxById(String id) {
         return idMap.get(id);
     }
@@ -322,7 +318,7 @@ public final class SharedContext {
      * @param textRenderer The new textRenderer value
      * @deprecated pass textRenderer to a constructor instead of using setter
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public void setTextRenderer(TextRenderer textRenderer) {
         this.textRenderer = requireNonNull(textRenderer);
     }
@@ -345,7 +341,6 @@ public final class SharedContext {
      *
      * @return The uac value
      */
-    @CheckReturnValue
     public UserAgentCallback getUac() {
         return uac;
     }
@@ -380,7 +375,7 @@ public final class SharedContext {
      */
     public void setDPI(float dpi) {
         this.dpi = dpi;
-        mm_per_dot = (CM__PER__IN * MM__PER__CM) / dpi;
+        mm_per_dot = CM__PER__IN * MM__PER__CM / dpi;
     }
 
     /**
@@ -393,7 +388,6 @@ public final class SharedContext {
     }
 
     @Nullable
-    @CheckReturnValue
     public FSFont getFont(FontSpecification spec) {
         return fontResolver.resolveFont(this, spec);
     }
@@ -488,9 +482,9 @@ public final class SharedContext {
     }
 
     /**
-     * @deprecated pass textRenderer to a constructor instead of using setter
+     * @deprecated pass resolver to a constructor instead of using setter
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public void setFontResolver(FontResolver resolver) {
         fontResolver = requireNonNull(resolver);
     }

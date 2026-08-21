@@ -26,7 +26,8 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -188,7 +189,7 @@ public class FloatManager {
 
     private boolean fitsInContainingBlock(BlockBox current) {
         return current.getX() >= 0 &&
-                (current.getX() + current.getWidth()) <= current.getContainingBlock().getContentWidth();
+                current.getX() + current.getWidth() <= current.getContainingBlock().getContentWidth();
     }
 
     private int findLowestY(CssContext cssCtx, List<BoxOffset> floats) {
@@ -242,7 +243,7 @@ public class FloatManager {
         int floatY = findLowestY(cssCtx, floats);
 
         if (floatY - boxY > 0) {
-            current.setY(current.getY() + (floatY - boxY));
+            current.setY(current.getY() + floatY - boxY);
         }
     }
 

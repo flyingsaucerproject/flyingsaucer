@@ -118,10 +118,10 @@ public class SWTFSImage implements FSImage {
             return this;
         } else if (width < 0) {
             width = Math.round(_width
-                    * (_height == 0 ? 1 : ((float) height / _height)));
+                    * (_height == 0 ? 1 : (float) height / _height));
         } else if (height < 0) {
             height = Math.round(_height
-                    * (_width == 0 ? 1 : ((float) width / _width)));
+                    * (_width == 0 ? 1 : (float) width / _width));
         }
         return new SWTFSImage(_image, _uac, _uri, width, height);
     }

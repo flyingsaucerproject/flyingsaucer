@@ -58,6 +58,8 @@ import javax.xml.transform.stream.StreamResult;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.color.ColorSpace;
+import java.awt.color.ICC_Profile;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -130,12 +132,20 @@ public class ITextRenderer {
     private Integer _pdfXConformance;
 
     @Nullable
+    private PdfAConformance _pdfAConformance;
+
+    private boolean _tagged;
+
+    @Nullable
     private PDFCreationListener _listener;
 
     public ITextRenderer(File file) throws IOException {
         this();
         File parent = file.getAbsoluteFile().getParentFile();
-        setDocument(loadDocument(file.toURI().toURL().toExternalForm()), (parent == null ? "" : parent.toURI().toURL().toExternalForm()));
+        setDocument(
+            loadDocument(file.toURI().toURL().toExternalForm()),
+            parent == null ? "" : parent.toURI().toURL().toExternalForm()
+        );
     }
 
     public ITextRenderer() {
@@ -282,6 +292,36 @@ public class ITextRenderer {
         return _pdfXConformance == null ? '0' : _pdfXConformance;
     }
 
+    /**
+     * Requests PDF/A conformance for the generated document: registers an sRGB ICC output intent and
+     * document-level XMP metadata in addition to setting the underlying PDF/X conformance flag. See
+     * {@link PdfAConformance} for the font-embedding caveat that this setting cannot enforce on its own.
+     * <p>
+     * PDF/A forbids encryption, so combining this with {@link #setPDFEncryption(PDFEncryption)} will fail
+     * at {@link #createPDF(OutputStream)} time.
+     */
+    public void setPdfAConformance(@Nullable PdfAConformance pdfAConformance) {
+        _pdfAConformance = pdfAConformance;
+    }
+
+    @Nullable
+    public PdfAConformance getPdfAConformance() {
+        return _pdfAConformance;
+    }
+
+    /**
+     * Requests a tagged PDF: a structure tree describing headings, paragraphs and images (with their
+     * {@code alt} text) so that screen readers and other assistive technology can navigate the document.
+     * See {@link ITextOutputDevice} for which HTML elements are currently tagged.
+     */
+    public void setTagged(boolean tagged) {
+        _tagged = tagged;
+    }
+
+    public boolean isTagged() {
+        return _tagged;
+    }
+
     public void layout() {
         LayoutContext c = newLayoutContext();
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
@@ -358,8 +398,7 @@ public class ITextRenderer {
 
     public void finishPDF() {
         if (_pdfDoc != null) {
-            fireOnClose();
-            _pdfDoc.close();
+            closeDocument(_pdfDoc, _writer);
         }
     }
 
@@ -395,12 +434,39 @@ public class ITextRenderer {
         info.put(PdfName.CREATOR, new PdfString(pdfCreator));
 
         if (compressionEnabled) {
-            writer.setFullCompression();
             writer.setCompressionLevel(compression);
+            // Object/cross-reference streams are a PDF 1.5+ feature; PDF/A-1 is pinned to PDF 1.4 and forbids them.
+            if (_pdfAConformance != PdfAConformance.PDF_A_1B) {
+                writer.setFullCompression();
+            }
         }
 
-        if (_pdfXConformance != null) {
-            writer.setPDFXConformance(_pdfXConformance);
+        Integer effectiveXConformance = _pdfXConformance;
+        if (_pdfAConformance != null) {
+            effectiveXConformance = _pdfAConformance.pdfXConformance();
+        }
+        if (effectiveXConformance != null) {
+            writer.setPDFXConformance(effectiveXConformance);
+        }
+
+        if (_tagged) {
+            writer.setTagged();
+            writer.setViewerPreferences(PdfWriter.DisplayDocTitle);
+            String lang = _doc.getDocumentElement().getAttribute("lang");
+            if (!lang.isEmpty()) {
+                writer.getExtraCatalog().put(PdfName.LANG, new PdfString(lang));
+            }
+        }
+
+        if (_pdfAConformance != null) {
+            if (_pdfEncryption != null) {
+                throw new IllegalStateException("PDF/A conformance and PDF encryption are mutually exclusive");
+            }
+            List<String> nonEmbeddedFonts = getFontResolver().getNonEmbeddedFontFaceFamilies();
+            if (!nonEmbeddedFonts.isEmpty()) {
+                throw new IllegalStateException(
+                        "PDF/A conformance requires all fonts to be embedded; not embedded: " + nonEmbeddedFonts);
+            }
         }
 
         if (pdfPageEvent != null) {
@@ -417,12 +483,32 @@ public class ITextRenderer {
         firePreOpen();
         doc.open();
 
+        if (_pdfAConformance != null) {
+            setOutputIntent(writer);
+        }
+
         writePDF(pages, c, firstPageSize, doc, writer);
 
         if (finish) {
-            fireOnClose();
-            doc.close();
+            closeDocument(doc, writer);
         }
+    }
+
+    private static void setOutputIntent(PdfWriter writer) {
+        try {
+            ICC_Profile srgb = ICC_Profile.getInstance(ColorSpace.CS_sRGB);
+            writer.setOutputIntents("", "sRGB IEC61966-2.1", "http://www.color.org", "sRGB IEC61966-2.1", srgb);
+        } catch (IOException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    private void closeDocument(org.openpdf.text.Document doc, @Nullable PdfWriter writer) {
+        if (_pdfAConformance != null && writer != null) {
+            writer.createXmpMetadata();
+        }
+        fireOnClose();
+        doc.close();
     }
 
     private void firePreOpen() {

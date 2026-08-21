@@ -187,7 +187,7 @@ public class XHTMLPanel extends BasicPanel {
     public void setDocument(File file) throws MalformedURLException {
         resetListeners();
         File parent = file.getAbsoluteFile().getParentFile();
-        String parentURL = ( parent == null ? "" : parent.toURI().toURL().toExternalForm());
+        String parentURL = parent == null ? "" : parent.toURI().toURL().toExternalForm();
         setDocument(
                 loadDocument(file.toURI().toURL().toExternalForm()),
                 parentURL

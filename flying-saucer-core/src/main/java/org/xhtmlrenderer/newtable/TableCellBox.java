@@ -148,6 +148,16 @@ public class TableCellBox extends BlockBox {
         return _table;
     }
 
+    @Override
+    protected int getContainingBlockWidth() {
+        // A table row has no width of its own (it always spans the full table), so at the
+        // point cell widths are calculated (TableSectionBox.setCellWidths()) the row's content
+        // width is not yet established. Percentages (e.g. max-width: 10%) must resolve against
+        // the table's width instead, per CSS 2.1 17.4.
+        TableBox table = getTable();
+        return table == null ? super.getContainingBlockWidth() : table.getContentWidth();
+    }
+
     @Nullable
     protected TableSectionBox getSection() {
         if (_section == null) {

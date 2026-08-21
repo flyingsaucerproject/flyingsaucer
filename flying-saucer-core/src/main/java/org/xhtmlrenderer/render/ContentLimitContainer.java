@@ -59,7 +59,7 @@ public class ContentLimitContainer {
     @CheckReturnValue
     private ContentLimit getContentLimit(int pageNo, boolean addAsNeeded) {
         if (addAsNeeded) {
-            while (_contentLimits.size() < (pageNo - _initialPageNo + 1)) {
+            while (_contentLimits.size() < pageNo - _initialPageNo + 1) {
                 _contentLimits.add(new ContentLimit());
             }
         }

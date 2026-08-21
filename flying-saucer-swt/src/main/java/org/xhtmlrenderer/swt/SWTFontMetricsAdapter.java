@@ -61,7 +61,7 @@ public class SWTFontMetricsAdapter implements FSFontMetrics {
 
     @Override
     public float getStrikethroughThickness() {
-        return Math.max(1, ((float) _fm.getHeight()) / 20);
+        return Math.max(1, (float) _fm.getHeight() / 20);
     }
 
     @Override
@@ -71,6 +71,6 @@ public class SWTFontMetricsAdapter implements FSFontMetrics {
 
     @Override
     public float getUnderlineThickness() {
-        return Math.max(1, ((float) _fm.getHeight()) / 20);
+        return Math.max(1, (float) _fm.getHeight() / 20);
     }
 }

@@ -23,9 +23,8 @@ public class BuilderUtil {
 
     public static boolean isLength(CSSPrimitiveValue value) {
         short unit = value.getPrimitiveType();
-        return LENGTH_VALUES.contains(unit) || (
-            unit == CSSPrimitiveValue.CSS_NUMBER && value.getFloatValue(CSSPrimitiveValue.CSS_IN) == 0.0f
-        );
+        return LENGTH_VALUES.contains(unit) ||
+            unit == CSSPrimitiveValue.CSS_NUMBER && value.getFloatValue(CSSPrimitiveValue.CSS_IN) == 0.0f;
     }
 
     public static void checkFunctionsAllowed(final FSFunction func, String... allowed) {

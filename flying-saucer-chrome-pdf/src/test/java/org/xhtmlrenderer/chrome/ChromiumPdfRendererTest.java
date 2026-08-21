@@ -48,6 +48,11 @@ class ChromiumPdfRendererTest {
     }
 
     @Test
+    void warmsUpAndDownloadsChromeIfMissing() throws IOException {
+        new ChromiumPdfRenderer().warmup();
+    }
+
+    @Test
     void failsWithMissingExplicitBinary(@TempDir Path tmp) {
         Path bogus = tmp.resolve("not-chrome");
         URL html = requireNonNull(

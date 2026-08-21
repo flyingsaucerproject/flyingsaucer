@@ -39,24 +39,32 @@ import org.openpdf.text.pdf.PdfNumber;
 import org.openpdf.text.pdf.PdfOutline;
 import org.openpdf.text.pdf.PdfReader;
 import org.openpdf.text.pdf.PdfString;
+import org.openpdf.text.pdf.PdfStructureElement;
 import org.openpdf.text.pdf.PdfTextArray;
 import org.openpdf.text.pdf.PdfWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.CssContext;
+import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.newtable.TableBox;
+import org.xhtmlrenderer.newtable.TableCellBox;
+import org.xhtmlrenderer.newtable.TableRowBox;
+import org.xhtmlrenderer.newtable.TableSectionBox;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
@@ -90,7 +98,9 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -173,11 +183,59 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
 
     private final Set<String> _linkTargetAreas = new HashSet<>();
 
+    private static final Map<String, PdfName> TAGGABLE_ELEMENTS = Map.of(
+            "h1", PdfName.H1,
+            "h2", PdfName.H2,
+            "h3", PdfName.H3,
+            "h4", PdfName.H4,
+            "h5", PdfName.H5,
+            "h6", PdfName.H6,
+            "p", PdfName.P);
+
+    private static final Map<String, PdfName> LIST_ELEMENTS = Map.of(
+            "ul", PdfName.L,
+            "ol", PdfName.L,
+            "li", PdfName.LI);
+
+    // No PdfName.COLSPAN/ROWSPAN constants exist in OpenPDF; these are the raw key names the PDF/UA
+    // Table attribute-owner dictionary expects (ISO 32000-2 §14.8.5.7).
+    private static final PdfName COLSPAN = new PdfName("ColSpan");
+    private static final PdfName ROWSPAN = new PdfName("RowSpan");
+
+    // No PdfName.ARTIFACT constant exists in OpenPDF either.
+    private static final PdfName ARTIFACT = new PdfName("Artifact");
+
+    private final Map<Object, PdfStructureElement> _structureElements = new IdentityHashMap<>();
+
+    // A ListItem's own text is never marked directly against the LI structure element: OpenPDF requires a
+    // structure element's /K entries to be either all marked-content references or all child structure
+    // elements, never a mix — and an <li> can also host a nested <ul>/<ol> (a child L element). So the
+    // item's text goes under its own LBody child instead, keeping LI's kids uniformly structural.
+    private final Map<Element, PdfStructureElement> _listItemBodies = new IdentityHashMap<>();
+
+    // Same constraint as above: a table cell can hold both its own text and a real child structure
+    // element (an <img>'s Figure, added directly under the cell - see beginImageStructure). Marking text
+    // directly against the cell's own structure element would make its /K entries a mix of marked-content
+    // references and structure elements, which OpenPDF rejects. So cell text goes under a NonStruct child
+    // instead, keeping the cell's own kids uniformly structural (this wrapper, plus any Figures).
+    private final Map<TableCellBox, PdfStructureElement> _tableCellTextWrappers = new IdentityHashMap<>();
+
+    @Nullable
+    private PdfStructureElement _documentStructureElement;
+
     public ITextOutputDevice(float dotsPerPoint) {
         _dotsPerPoint = dotsPerPoint;
     }
 
     public void setWriter(PdfWriter writer) {
+        if (_writer != writer) {
+            // Cached structure elements belong to the previous writer's PDF; carrying them over would
+            // reference objects from a different document when this device is reused across createPDF calls.
+            _structureElements.clear();
+            _documentStructureElement = null;
+            _listItemBodies.clear();
+            _tableCellTextWrappers.clear();
+        }
         _writer = writer;
     }
 
@@ -219,15 +277,250 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
 
     @Override
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
+        PdfStructureElement struct = beginImageStructure(box);
         ITextReplacedElement element = (ITextReplacedElement) box.getReplacedElement();
         element.paint(c, this, box);
+        if (struct != null) {
+            _currentPage.endMarkedContentSequence();
+        }
+    }
+
+    @Override
+    public void drawText(RenderingContext c, InlineText inlineText) {
+        PdfStructureElement struct = isTagged() ? beginTextStructure(inlineText) : null;
+        super.drawText(c, inlineText);
+        if (struct != null) {
+            _currentPage.endMarkedContentSequence();
+        }
+    }
+
+    private boolean isTagged() {
+        return _writer != null && _writer.isTagged();
+    }
+
+    @Nullable
+    private PdfStructureElement beginTextStructure(InlineText inlineText) {
+        Box box = inlineText.getParent();
+
+        // All text anywhere inside a table cell is associated with that cell (rather than tagging a
+        // <p>/<h1> nested inside it as its own child structure element), so headings/paragraphs/lists lose
+        // their own tag within a cell but always correctly nest under the required Table/TR/TD hierarchy
+        // instead of leaking out to the flat Document node. The text itself goes under the cell's NonStruct
+        // wrapper (see tableCellTextStructureElementFor), not the cell's own structure element directly,
+        // to stay homogeneous with any Figure children the cell might also have (see beginImageStructure).
+        TableCellBox cell = findNearestTableCell(box);
+        if (cell != null) {
+            PdfStructureElement struct = tableCellTextStructureElementFor(cell);
+            _currentPage.beginMarkedContentSequence(struct);
+            return struct;
+        }
+
+        while (box != null) {
+            Element element = box.getElement();
+            if (element != null) {
+                String tagName = element.getNodeName().toLowerCase(Locale.ROOT);
+                PdfName flatTag = TAGGABLE_ELEMENTS.get(tagName);
+                if (flatTag != null) {
+                    PdfStructureElement struct = structureElementFor(element, flatTag, documentStructureElement());
+                    _currentPage.beginMarkedContentSequence(struct);
+                    return struct;
+                }
+                PdfName listTag = LIST_ELEMENTS.get(tagName);
+                if (listTag != null) {
+                    PdfStructureElement struct = listTag == PdfName.LI
+                            ? listItemBodyStructureElementFor(element)
+                            : listStructureElementFor(element, listTag);
+                    _currentPage.beginMarkedContentSequence(struct);
+                    return struct;
+                }
+                if ("a".equals(tagName) && _sharedContext.getNamespaceHandler().getLinkUri(element) != null) {
+                    PdfStructureElement struct = structureElementFor(element, PdfName.LINK, documentStructureElement());
+                    _currentPage.beginMarkedContentSequence(struct);
+                    return struct;
+                }
+            }
+            box = box.getParent();
+        }
+        return null;
+    }
+
+    @Nullable
+    private static TableCellBox findNearestTableCell(@Nullable Box box) {
+        while (box != null) {
+            if (box instanceof TableCellBox cell) {
+                return cell;
+            }
+            box = box.getParent();
+        }
+        return null;
+    }
+
+    private PdfStructureElement tableCellTextStructureElementFor(TableCellBox cell) {
+        return _tableCellTextWrappers.computeIfAbsent(cell,
+                c -> new PdfStructureElement(tableStructureElementFor(c), PdfName.NONSTRUCT));
+    }
+
+    private PdfStructureElement listItemBodyStructureElementFor(Element liElement) {
+        return _listItemBodies.computeIfAbsent(liElement,
+                e -> new PdfStructureElement(listStructureElementFor(e, PdfName.LI), PdfName.LBODY));
+    }
+
+    private PdfStructureElement listStructureElementFor(Element element, PdfName tag) {
+        PdfStructureElement cached = _structureElements.get(element);
+        if (cached != null) {
+            return cached;
+        }
+        Element parentElement = nearestListAncestor(element.getParentNode());
+        PdfStructureElement parent = parentElement != null
+                ? listStructureElementFor(parentElement, LIST_ELEMENTS.get(parentElement.getNodeName().toLowerCase(Locale.ROOT)))
+                : documentStructureElement();
+        return structureElementFor(element, tag, parent);
+    }
+
+    @Nullable
+    private static Element nearestListAncestor(@Nullable Node node) {
+        while (node instanceof Element element) {
+            if (LIST_ELEMENTS.containsKey(element.getNodeName().toLowerCase(Locale.ROOT))) {
+                return element;
+            }
+            node = element.getParentNode();
+        }
+        return null;
+    }
+
+    @Nullable
+    private PdfStructureElement beginImageStructure(BlockBox box) {
+        if (!isTagged()) {
+            return null;
+        }
+        Element element = box.getElement();
+        if (element == null || !"img".equalsIgnoreCase(element.getNodeName())) {
+            return null;
+        }
+        // alt="" marks the image as decorative; don't expose it to assistive technology as a Figure.
+        if (element.hasAttribute("alt") && element.getAttribute("alt").isEmpty()) {
+            return null;
+        }
+        PdfStructureElement struct = structureElementFor(element, PdfName.FIGURE, tableAncestorStructureElement(box));
+        if (element.hasAttribute("alt")) {
+            struct.put(PdfName.ALT, new PdfString(element.getAttribute("alt")));
+        }
+        _currentPage.beginMarkedContentSequence(struct);
+        return struct;
+    }
+
+    private PdfStructureElement tableAncestorStructureElement(Box box) {
+        Box ancestor = box.getParent();
+        while (ancestor != null) {
+            if (ancestor instanceof TableCellBox cell) {
+                return tableStructureElementFor(cell);
+            }
+            ancestor = ancestor.getParent();
+        }
+        return documentStructureElement();
+    }
+
+    private PdfStructureElement tableStructureElementFor(BlockBox box) {
+        PdfStructureElement cached = _structureElements.get(box);
+        if (cached != null) {
+            return cached;
+        }
+        Box parentBox = box.getParent();
+        PdfStructureElement parent = isTableBox(parentBox) ? tableStructureElementFor((BlockBox) parentBox) : documentStructureElement();
+        PdfStructureElement struct = structureElementFor(box, tableTag(box), parent);
+        if (box instanceof TableCellBox cell) {
+            addCellSpanAttributes(struct, cell);
+        }
+        return struct;
+    }
+
+    private static void addCellSpanAttributes(PdfStructureElement struct, TableCellBox cell) {
+        int colSpan = cell.getStyle().getColSpan();
+        int rowSpan = cell.getStyle().getRowSpan();
+        if (colSpan <= 1 && rowSpan <= 1) {
+            return;
+        }
+        PdfDictionary attributes = new PdfDictionary();
+        attributes.put(PdfName.O, PdfName.TABLE);
+        if (colSpan > 1) {
+            attributes.put(COLSPAN, new PdfNumber(colSpan));
+        }
+        if (rowSpan > 1) {
+            attributes.put(ROWSPAN, new PdfNumber(rowSpan));
+        }
+        struct.put(PdfName.A, attributes);
+    }
+
+    private static boolean isTableBox(@Nullable Box box) {
+        return box instanceof TableBox || box instanceof TableSectionBox || box instanceof TableRowBox || box instanceof TableCellBox;
+    }
+
+    private static PdfName tableTag(BlockBox box) {
+        if (box instanceof TableBox) {
+            return PdfName.TABLE;
+        }
+        if (box instanceof TableSectionBox section) {
+            return section.isHeader() ? PdfName.THEAD : section.isFooter() ? PdfName.TFOOT : PdfName.TBODY;
+        }
+        if (box instanceof TableRowBox) {
+            return PdfName.TABLEROW;
+        }
+        if (box instanceof TableCellBox cell) {
+            Element element = cell.getElement();
+            return element != null && "th".equalsIgnoreCase(element.getNodeName()) ? PdfName.TH : PdfName.TD;
+        }
+        throw new IllegalArgumentException("Not a table box: " + box);
+    }
+
+    private PdfStructureElement structureElementFor(Object key, PdfName tag, PdfStructureElement parent) {
+        return _structureElements.computeIfAbsent(key, k -> new PdfStructureElement(parent, tag));
+    }
+
+    private PdfStructureElement documentStructureElement() {
+        if (_documentStructureElement == null) {
+            _documentStructureElement = new PdfStructureElement(_writer.getStructureTreeRoot(), PdfName.DOCUMENT);
+        }
+        return _documentStructureElement;
     }
 
     @Override
     public void paintBackground(RenderingContext c, Box box) {
-        super.paintBackground(c, box);
+        paintAsArtifact(() -> super.paintBackground(c, box));
 
         processLink(c, box);
+    }
+
+    @Override
+    public void paintBackground(RenderingContext c, CalculatedStyle style, Rectangle bounds, Rectangle bgImageContainer,
+            BorderPropertySet border) {
+        paintAsArtifact(() -> super.paintBackground(c, style, bounds, bgImageContainer, border));
+    }
+
+    @Override
+    public void paintBorder(RenderingContext c, Box box) {
+        paintAsArtifact(() -> super.paintBorder(c, box));
+    }
+
+    @Override
+    public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
+        paintAsArtifact(() -> super.paintBorder(c, style, edge, sides));
+    }
+
+    @Override
+    public void paintCollapsedBorder(RenderingContext c, BorderPropertySet border, Rectangle bounds, int side) {
+        paintAsArtifact(() -> super.paintCollapsedBorder(c, border, bounds, side));
+    }
+
+    // Decorative chrome (backgrounds/borders) is marked as an Artifact rather than left untagged, so
+    // assistive technology explicitly skips it instead of treating it as unmarked/ambiguous content.
+    private void paintAsArtifact(Runnable painter) {
+        if (isTagged()) {
+            _currentPage.beginMarkedContentSequence(ARTIFACT);
+            painter.run();
+            _currentPage.endMarkedContentSequence();
+        } else {
+            painter.run();
+        }
     }
 
     private org.openpdf.text.Rectangle calcTotalLinkArea(RenderingContext c, Box box) {
@@ -587,7 +880,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
                 resetMode = true;
                 ensureStrokeColor();
             }
-            if ((fontSpec.fontStyle() == IdentValue.ITALIC) && (desc.getStyle() != IdentValue.ITALIC) && (desc.getStyle() != IdentValue.OBLIQUE)) {
+            if (fontSpec.fontStyle() == IdentValue.ITALIC && desc.getStyle() != IdentValue.ITALIC && desc.getStyle() != IdentValue.OBLIQUE) {
                 b = 0.0f;
                 c = 0.21256f;
             }
@@ -635,18 +928,20 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     private PdfTextArray makeJustificationArray(String s, JustificationInfo info) {
         PdfTextArray array = new PdfTextArray();
         int len = s.length();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ) {
             char c = s.charAt(i);
-            array.add(Character.toString(c));
-            if (i != len - 1) {
+            int end = s.offsetByCodePoints(i, 1);
+            array.add(s.substring(i, end));
+            if (end != len) {
                 float offset;
                 if (c == ' ' || c == '\u00a0' || c == '\u3000') {
                     offset = info.spaceAdjust();
                 } else {
                     offset = info.nonSpaceAdjust();
                 }
-                array.add((-offset / _dotsPerPoint) * 1000 / (_font.getSize2D() / _dotsPerPoint));
+                array.add(-offset / _dotsPerPoint * 1000 / (_font.getSize2D() / _dotsPerPoint));
             }
+            i = end;
         }
         return array;
     }
@@ -767,7 +1062,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
             return;
         if (!(newStroke instanceof BasicStroke nStroke))
             return;
-        boolean oldOk = (oldStroke instanceof BasicStroke);
+        boolean oldOk = oldStroke instanceof BasicStroke;
         BasicStroke oStroke = null;
         if (oldOk)
             oStroke = (BasicStroke) oldStroke;
@@ -1147,7 +1442,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
      *            the name of the metadata element to add.
      */
     public void addMetadata(String name, String value) {
-        if ((name != null) && (value != null)) {
+        if (name != null && value != null) {
             Metadata m = new Metadata(name, value);
             _metadata.add(m);
         }
@@ -1166,7 +1461,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
     @Nullable
     public String getMetadataByName(String name) {
         for (Metadata m : _metadata) {
-            if ((m != null) && m.getName().equalsIgnoreCase(name)) {
+            if (m != null && m.getName().equalsIgnoreCase(name)) {
                 return m.getContent();
             }
         }
@@ -1187,7 +1482,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
         List<String> result = new ArrayList<>();
         if (name != null) {
             for (Metadata m : _metadata) {
-                if ((m != null) && m.getName().equalsIgnoreCase(name)) {
+                if (m != null && m.getName().equalsIgnoreCase(name)) {
                     result.add(m.getContent());
                 }
             }
@@ -1236,7 +1531,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
      */
     public void setMetadata(String name, String value) {
         if (name != null) {
-            boolean remove = (value == null); // removing all instances of name?
+            boolean remove = value == null; // removing all instances of name?
             int free = -1; // first open slot in array
             for (int i = 0, len = _metadata.size(); i < len; i++) {
                 Metadata m = _metadata.get(i);
@@ -1356,7 +1651,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
         }
 
         float x = box.getAbsX() + page.getMarginBorderPadding(c, Edge.LEFT);
-        float y = (page.getBottom() - (box.getAbsY() + box.getHeight())) + page.getMarginBorderPadding(c, Edge.BOTTOM);
+        float y = page.getBottom() - (box.getAbsY() + box.getHeight()) + page.getMarginBorderPadding(c, Edge.BOTTOM);
 
         return new PagePosition(id, page.getPageNo(),
                 x / _dotsPerPoint, box.getEffectiveWidth() / _dotsPerPoint,

@@ -76,6 +76,16 @@ public class ChromiumPdfRenderer implements AutoCloseable {
         return this;
     }
 
+    /**
+     * Ensures the chrome-headless-shell binary is downloaded and ready to use, downloading it if necessary.
+     * Logs the resolved browser version and its location on disk.
+     */
+    public void warmup() throws IOException {
+        Path binary = locateBinary();
+        String version = runProcessCapturingOutput(List.of(binary.toString(), "--version")).strip();
+        log.info("chrome-headless-shell is ready: {} at {}", version, binary);
+    }
+
     public byte[] renderToPdf(URL htmlSource) throws IOException {
         return renderToPdf(htmlSource.toString());
     }
@@ -159,6 +169,13 @@ public class ChromiumPdfRenderer implements AutoCloseable {
     }
 
     private void runOneShotProcess(List<String> command) throws IOException {
+        String output = runProcessCapturingOutput(command);
+        if (!output.isBlank()) {
+            log.debug("chrome-headless-shell output: {}", output);
+        }
+    }
+
+    private String runProcessCapturingOutput(List<String> command) throws IOException {
         log.debug("Running: {}", command);
         Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
         String output;
@@ -181,9 +198,7 @@ public class ChromiumPdfRenderer implements AutoCloseable {
         if (exitCode != 0) {
             throw new IOException("chrome-headless-shell exited with code " + exitCode + ". Output:\n" + output);
         }
-        if (!output.isBlank()) {
-            log.debug("chrome-headless-shell output: {}", output);
-        }
+        return output;
     }
 
     private void scheduleIdleCloseLocked() {

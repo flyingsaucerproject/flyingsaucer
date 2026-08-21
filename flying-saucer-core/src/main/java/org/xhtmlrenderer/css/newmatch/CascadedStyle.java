@@ -197,7 +197,7 @@ public class CascadedStyle {
      */
     public IdentValue getIdent(CSSName cssName) {
         PropertyDeclaration pd = propertyByName(cssName);
-        return (pd == null ? null : pd.asIdentValue());
+        return pd == null ? null : pd.asIdentValue();
     }
 
 

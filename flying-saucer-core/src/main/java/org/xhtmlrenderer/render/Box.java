@@ -39,7 +39,9 @@ import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -401,11 +403,11 @@ public abstract class Box implements Styleable {
         }
 
         if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-            setY(getY() + ((int)style.getFloatPropertyProportionalHeight(
-                    CSSName.TOP, cbContentHeight, cssCtx)));
+            setY(getY() + (int)style.getFloatPropertyProportionalHeight(
+                    CSSName.TOP, cbContentHeight, cssCtx));
         } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-            setY(getY() - ((int)style.getFloatPropertyProportionalHeight(
-                    CSSName.BOTTOM, cbContentHeight, cssCtx)));
+            setY(getY() - (int)style.getFloatPropertyProportionalHeight(
+                    CSSName.BOTTOM, cbContentHeight, cssCtx));
         }
 
         _relativeOffset = new Dimension(getX() - initialX, getY() - initialY);
@@ -445,8 +447,8 @@ public abstract class Box implements Styleable {
     }
 
     private boolean isPaintsRootElementBackground() {
-        return (isRoot() && getStyle().isHasBackground()) ||
-                (isBody() && ! getParent().getStyle().isHasBackground());
+        return isRoot() && getStyle().isHasBackground() ||
+            isBody() && ! getParent().getStyle().isHasBackground();
     }
 
     public void paintBackground(RenderingContext c) {
@@ -604,8 +606,8 @@ public abstract class Box implements Styleable {
                     c.getRootLayer().addPage(c);
                 }
             }
-            if ((page.isLeftPage() && pageBreakValue == IdentValue.LEFT) ||
-                    (page.isRightPage() && pageBreakValue == IdentValue.RIGHT)) {
+            if (page.isLeftPage() && pageBreakValue == IdentValue.LEFT ||
+                page.isRightPage() && pageBreakValue == IdentValue.RIGHT) {
                 pageBreakCount++;
             }
 
@@ -646,8 +648,8 @@ public abstract class Box implements Styleable {
         PageBox page = c.getRootLayer().getLastPage(c, this);
 
         if (page != null) {
-            if ((page.isLeftPage() && pageBreakValue == IdentValue.LEFT) ||
-                    (page.isRightPage() && pageBreakValue == IdentValue.RIGHT)) {
+            if (page.isLeftPage() && pageBreakValue == IdentValue.LEFT ||
+                page.isRightPage() && pageBreakValue == IdentValue.RIGHT) {
                 needSecondPageBreak = true;
             }
 

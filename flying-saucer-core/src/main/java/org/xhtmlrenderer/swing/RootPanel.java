@@ -319,7 +319,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             // Otherwise, if the intrinsic width is different then we can't
             // couple the width of the view pane to the width of this panel
             // (we hit the minimum size threshold).
-            viewportMatchWidth = (initialExtents.width == intrinsic_size.width);
+            viewportMatchWidth = initialExtents.width == intrinsic_size.width;
 
             setPreferredSize(intrinsic_size);
             revalidate();

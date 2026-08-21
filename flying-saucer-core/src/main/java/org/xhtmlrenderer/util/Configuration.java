@@ -626,7 +626,7 @@ public class Configuration {
     public static String valueFor(String key, String defaultVal) {
         Configuration conf = instance();
         String val = conf.properties.getProperty(key);
-        val = (val == null ? defaultVal : val);
+        val = val == null ? defaultVal : val;
 
         //noinspection ConstantValue
         if (val == null) {

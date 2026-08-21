@@ -27,7 +27,8 @@ import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import java.awt.*;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.List;
 
 /**
@@ -111,7 +112,7 @@ public class BoxCollector {
 
         if (container instanceof LineBox lineBox) {
             if (intersectsAggregateBounds(clip, container) ||
-                    (container.getPaintingInfo() == null && container.intersects(c, clip))) {
+                container.getPaintingInfo() == null && container.intersects(c, clip)) {
                 inlineContent.add(container);
                 lineBox.addAllChildren(inlineContent, layer);
             }
@@ -119,7 +120,7 @@ public class BoxCollector {
             boolean intersectsAggregateBounds = intersectsAggregateBounds(clip, container);
             if (container.getLayer() == null || !(container instanceof BlockBox)) {
                 if (intersectsAggregateBounds ||
-                        (container.getPaintingInfo() == null && container.intersects(c, clip))) {
+                    container.getPaintingInfo() == null && container.intersects(c, clip)) {
                     blockContent.add(container);
                     if (container.getStyle().isTable() && c instanceof RenderingContext renderingContext) {  // HACK
                         assert container instanceof TableBox;

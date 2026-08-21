@@ -36,7 +36,16 @@ import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.render.RenderingContext;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.LinearGradientPaint;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -82,8 +91,8 @@ public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage, AWTFSFo
                         iB.getAbsY() + iB.getBaseline());
                 Graphics2D graphics = getGraphics();
                 double scaleX = graphics.getTransform().getScaleX();
-                boolean allSelected = (text.length() == inlineText.getSelectionEnd() - inlineText.getSelectionStart());
-                int startX = (inlineText.getSelectionStart() == inlineText.getStart()) ? iB.getAbsX() + inlineText.getX() : (int) Math.round(start.x / scaleX);
+                boolean allSelected = text.length() == inlineText.getSelectionEnd() - inlineText.getSelectionStart();
+                int startX = inlineText.getSelectionStart() == inlineText.getStart() ? iB.getAbsX() + inlineText.getX() : (int) Math.round(start.x / scaleX);
                 int endX = allSelected ? startX + inlineText.getWidth() : (int) Math.round((end.x + end.width) / scaleX);
                 _graphics.setColor(UIManager.getColor("TextArea.selectionBackground"));  // FIXME
                 fillRect(
@@ -114,25 +123,26 @@ public class Java2DOutputDevice extends AbstractOutputDevice<AWTFSImage, AWTFSFo
         for (int i = inlineText.getSelectionEnd(); i < inlineText.getSubstring().length(); i++) {
             vector.setGlyphPosition(i, new Point2D.Float(-100000, -100000));
         }
-        if(inlineText.getParent().getStyle().isTextJustify()) {
-            JustificationInfo info = inlineText.getParent().getLineBox().getJustificationInfo();
-            if(info!=null) {
-                String string = inlineText.getSubstring();
-                float adjust = 0.0f;
-                for (int i = inlineText.getSelectionStart(); i < inlineText.getSelectionEnd(); i++) {
-                    char ch = string.charAt(i);
-                    if (i != 0) {
-                        Point2D point = vector.getGlyphPosition(i);
-                        vector.setGlyphPosition(
-                                i, new Point2D.Double(point.getX() + adjust, point.getY()));
-                    }
-                    if (ch == ' ' || ch == '\u00a0' || ch == '\u3000') {
-                        adjust += info.spaceAdjust();
-                    } else {
-                        adjust += info.nonSpaceAdjust();
-                    }
+        JustificationInfo info = justificationInfo(c, inlineText);
+        if (info != null) {
+            String string = inlineText.getSubstring();
+            float adjust = 0.0f;
+            int end = Math.min(inlineText.getSelectionEnd(), vector.getNumGlyphs());
+            for (int i = 0; i < end; i++) {
+                char ch = string.charAt(i);
+                if (i != 0 && i >= inlineText.getSelectionStart()) {
+                    Point2D point = vector.getGlyphPosition(i);
+                    vector.setGlyphPosition(
+                            i, new Point2D.Double(point.getX() + adjust, point.getY()));
                 }
-
+                if (Character.isHighSurrogate(ch)) {
+                    continue;
+                }
+                if (ch == ' ' || ch == '\u00a0' || ch == '\u3000') {
+                    adjust += info.spaceAdjust();
+                } else {
+                    adjust += info.nonSpaceAdjust();
+                }
             }
         }
         c.getTextRenderer().drawGlyphVector(

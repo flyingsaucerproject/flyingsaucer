@@ -122,7 +122,7 @@ public class BoxBuilder {
 
         c.pushLayer(result);
         if (c.isPrint()) {
-            if (! style.isIdent(CSSName.PAGE, IdentValue.AUTO)) {
+            if (!style.isIdent(CSSName.PAGE, IdentValue.AUTO)) {
                 c.setPageName(style.getStringProperty(CSSName.PAGE));
             }
             c.getRootLayer().addPage(c);
@@ -161,7 +161,7 @@ public class BoxBuilder {
             int height,
             MarginDirection direction)
     {
-        if (! pageInfo.hasAny(names)) {
+        if (!pageInfo.hasAny(names)) {
             return null;
         }
 
@@ -254,7 +254,7 @@ public class BoxBuilder {
 
         CalculatedStyle style = new EmptyStyle().deriveStyle(cascadedStyle);
 
-        if (style.isDisplayNone() && ! alwaysCreate) {
+        if (style.isDisplayNone() && !alwaysCreate) {
             return null;
         }
 
@@ -263,7 +263,7 @@ public class BoxBuilder {
             hasContent = false;
         }
 
-        if (style.isAutoWidth() && ! alwaysCreate && ! hasContent) {
+        if (style.isAutoWidth() && !alwaysCreate && !hasContent) {
             return null;
         }
 
@@ -275,9 +275,9 @@ public class BoxBuilder {
         Element element = c.getRootLayer().getMaster().getElement(); // XXX Doesn't make sense, but we need something here
         TableCellBox result = new TableCellBox(element, style, true);
 
-        if (hasContent && ! style.isDisplayNone()) {
+        if (hasContent && !style.isDisplayNone()) {
             children.addAll(createGeneratedMarginBoxContent(
-                    c,
+                c,
                     c.getRootLayer().getMaster().getElement(),
                     (PropertyValue)contentDecl.getValue(),
                     style,
@@ -286,7 +286,7 @@ public class BoxBuilder {
             stripAllWhitespace(children);
         }
 
-        if (children.isEmpty() && style.isAutoWidth() && ! alwaysCreate) {
+        if (children.isEmpty() && style.isAutoWidth() && !alwaysCreate) {
             return null;
         }
 
@@ -406,16 +406,16 @@ public class BoxBuilder {
         boolean started = false;
         for (current = 0; current < content.size(); current++) {
             Styleable styleable = content.get(current);
-            if (! styleable.getStyle().isLaidOutInInlineContext()) {
+            if (!styleable.getStyle().isLaidOutInInlineContext()) {
                 if (started) {
                     int before = content.size();
                     WhitespaceStripper.stripInlineContent(content.subList(start, current));
                     int after = content.size();
-                    current -= (before - after);
+                    current -= before - after;
                 }
                 started = false;
             } else {
-                if (! started) {
+                if (!started) {
                     started = true;
                     start = current;
                 }
@@ -935,7 +935,7 @@ public class BoxBuilder {
             result.setChildrenContentType(ContentType.INLINE);
             result.setPseudoElementOrClass(peName);
 
-            if (! style.isLaidOutInInlineContext()) {
+            if (!style.isLaidOutInInlineContext()) {
                 info.setContainsBlockLevelContent();
             }
 
@@ -971,15 +971,15 @@ public class BoxBuilder {
             return result;
         } else if (style.isSpecifiedAsBlock()) {
             return new BlockBox(source, style, anonymous);
-        } else if (! generated && (style.isTable() || style.isInlineTable())) {
+        } else if (!generated && (style.isTable() || style.isInlineTable())) {
             return new TableBox(source, style, anonymous);
         } else if (style.isTableCell()) {
             info.setContainsTableContent();
             return new TableCellBox(source, style, anonymous);
-        } else if (! generated && style.isTableRow()) {
+        } else if (!generated && style.isTableRow()) {
             info.setContainsTableContent();
             return new TableRowBox(source, style, anonymous);
-        } else if (! generated && style.isTableSection()) {
+        } else if (!generated && style.isTableSection()) {
             info.setContainsTableContent();
             return new TableSectionBox(source, style, anonymous);
         } else if (style.isTableCaption()) {
@@ -1009,7 +1009,7 @@ public class BoxBuilder {
             }
             working = working.getNextSibling();
         }
-        if (! found) {
+        if (!found) {
             table.addStyleColumn(parent);
         }
     }
@@ -1064,7 +1064,7 @@ public class BoxBuilder {
 
                     if (style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN)
                             || style.isIdent(CSSName.DISPLAY, IdentValue.TABLE_COLUMN_GROUP)) {
-                        if ((blockParent != null) &&
+                        if (blockParent != null &&
                                 (blockParent.getStyle().isTable() || blockParent.getStyle().isInlineTable())) {
                             TableBox table = (TableBox) blockParent;
                             addColumnOrColumnGroup(c, table, element, style);

@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.context.ContentFunctionFactory;
@@ -41,7 +42,7 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.PageBox;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -57,6 +58,7 @@ import static java.util.Collections.emptyList;
  * tree and not here.  It also provides pass-though calls to many methods in
  * {@link SharedContext}.
  */
+@CheckReturnValue
 public class LayoutContext implements CssContext {
     private final SharedContext _sharedContext;
 
@@ -97,11 +99,11 @@ public class LayoutContext implements CssContext {
     @Nullable
     private BreakAtLineContext _breakAtLineContext;
 
+    @Override
     public TextRenderer getTextRenderer() {
         return _sharedContext.getTextRenderer();
     }
 
-    @CheckReturnValue
     @Override
     public StyleReference getCss() {
         return _sharedContext.getCss();
@@ -269,13 +271,11 @@ public class LayoutContext implements CssContext {
     }
 
     @Nullable
-    @CheckReturnValue
     @Override
     public FSFont getFont(FontSpecification font) {
         return _sharedContext.getFont(font);
     }
 
-    @CheckReturnValue
     public UserAgentCallback getUac() {
         return _sharedContext.getUac();
     }
@@ -293,7 +293,6 @@ public class LayoutContext implements CssContext {
     }
 
     @Nullable
-    @CheckReturnValue
     public MarkerData getCurrentMarkerData() {
         return _currentMarkerData;
     }
@@ -306,6 +305,7 @@ public class LayoutContext implements CssContext {
         return _sharedContext.getReplacedElementFactory();
     }
 
+    @Override
     public FontContext getFontContext() {
         return _fontContext;
     }
@@ -348,7 +348,6 @@ public class LayoutContext implements CssContext {
         return _counterContextMap.get(style);
     }
 
-    @CheckReturnValue
     @Override
     public FSFontMetrics getFSFontMetrics(FSFont font) {
         return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
@@ -409,6 +408,7 @@ public class LayoutContext implements CssContext {
         /**
          * @return true if a counter was found and incremented
          */
+        @CanIgnoreReturnValue
         private boolean incrementCounter(CounterData cd) {
             if ("list-item".equals(cd.getName())) {//reserved name for list-item counter in CSS3
                 incrementListItemCounter(cd.getValue());
@@ -477,7 +477,6 @@ public class LayoutContext implements CssContext {
     }
 
     @Nullable
-    @CheckReturnValue
     public String getPageName() {
         return _pageName;
     }
@@ -499,7 +498,6 @@ public class LayoutContext implements CssContext {
     }
 
     @Nullable
-    @CheckReturnValue
     public String getPendingPageName() {
         return _pendingPageName;
     }
@@ -509,7 +507,6 @@ public class LayoutContext implements CssContext {
     }
 
     @Nullable
-    @CheckReturnValue
     public Layer getRootDocumentLayer() {
         return _rootDocumentLayer;
     }
@@ -519,7 +516,6 @@ public class LayoutContext implements CssContext {
     }
 
     @Nullable
-    @CheckReturnValue
     public PageBox getPage() {
         return _page;
     }
@@ -537,7 +533,6 @@ public class LayoutContext implements CssContext {
     }
 
     @Nullable
-    @CheckReturnValue
     public BreakAtLineContext getBreakAtLineContext() {
         return _breakAtLineContext;
     }

@@ -28,6 +28,7 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.layout.CounterFunction;
 import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
@@ -190,7 +191,7 @@ public class ContentFunctionFactory {
                     if (f == null ||
                             f.getParameters().size() != 1 ||
                             f.getParameters().get(0).getPrimitiveType() != CSS_IDENT ||
-                            ! "href".equals(f.getParameters().get(0).getStringValue())) {
+                            !"href".equals(f.getParameters().get(0).getStringValue())) {
                         return false;
                     }
 
@@ -242,20 +243,17 @@ public class ContentFunctionFactory {
             // Otherwise, there might be a small gap on the right side. This is
             // necessary because a TextRenderer usually use double/float for width.
             String tmp = value.repeat(100);
-            float valueWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), tmp) / 100.0f;
-            int spaceWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), " ");
+            float valueWidth = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), tmp) / 100.0f;
+            int spaceWidth = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), " ");
 
             // compute leader width and necessary count of values
             int leaderWidth = iB.getContainingBlockWidth() - iB.getLineBox().getWidth() + text.getWidth();
-            int count = (int) ((leaderWidth - (2 * spaceWidth)) / valueWidth);
+            int count = (int) ((leaderWidth - 2 * spaceWidth) / valueWidth);
 
             String leaderString = ' ' + value.repeat(Math.max(0, count)) + ' ';
 
             // set left margin to ensure that the leader is right aligned (for TOC)
-            int leaderStringWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), leaderString);
+            int leaderStringWidth = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), leaderString);
             iB.setMarginLeft(c, leaderWidth - leaderStringWidth);
 
             return leaderString;
@@ -297,10 +295,10 @@ public class ContentFunctionFactory {
                 if (parameters.size() == 1) {
                     PropertyValue param = parameters.get(0);
                     return param.getPrimitiveType() == CSS_STRING ||
-                            (param.getPrimitiveType() == CSS_IDENT &&
-                                    ("dotted".equals(param.getStringValue()) ||
-                                            "solid".equals(param.getStringValue()) ||
-                                            "space".equals(param.getStringValue())));
+                        param.getPrimitiveType() == CSS_IDENT &&
+                                ("dotted".equals(param.getStringValue()) ||
+                                        "solid".equals(param.getStringValue()) ||
+                                        "space".equals(param.getStringValue()));
                 }
             }
 

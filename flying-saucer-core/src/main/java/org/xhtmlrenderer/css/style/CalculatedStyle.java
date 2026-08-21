@@ -105,6 +105,9 @@ public class CalculatedStyle {
     private float _lineHeight;
     private boolean _lineHeightResolved;
 
+    private float _letterSpacing;
+    private boolean _letterSpacingResolved;
+
     @Nullable
     private FSFont _FSFont;
     @Nullable
@@ -192,7 +195,7 @@ public class CalculatedStyle {
     @CheckReturnValue
     public CalculatedStyle deriveStyle(CascadedStyle matched) {
         String fingerprint = matched.getFingerprint();
-        return _childCache.computeIfAbsent(fingerprint, (key) -> new CalculatedStyle(this, matched));
+        return _childCache.computeIfAbsent(fingerprint, key -> new CalculatedStyle(this, matched));
     }
 
     @Nullable
@@ -497,6 +500,21 @@ public class CalculatedStyle {
             _lineHeightResolved = true;
         }
         return _lineHeight;
+    }
+
+    /**
+     * Additional spacing applied after each character of inline text
+     * (the {@code letter-spacing} property), resolved to dots.
+     * Returns {@code 0.0f} for {@code letter-spacing: normal}.
+     */
+    public float letterSpacing(CssContext ctx) {
+        if (!_letterSpacingResolved) {
+            _letterSpacing = isIdent(CSSName.LETTER_SPACING, IdentValue.NORMAL) ?
+                    0.0f :
+                    getFloatPropertyProportionalWidth(CSSName.LETTER_SPACING, 0, ctx);
+            _letterSpacingResolved = true;
+        }
+        return _letterSpacing;
     }
 
     /**
@@ -969,7 +987,7 @@ public class CalculatedStyle {
     }
 
     public FSLinearGradient getLinearGradient(final CssContext cssContext, final int w, final int h) {
-        assert (isLinearGradient());
+        assert isLinearGradient();
 
         final FunctionValue value = (FunctionValue) valueByName(CSSName.BACKGROUND_IMAGE);
         return new FSLinearGradient(value.getFunction(), this, w, h, cssContext);

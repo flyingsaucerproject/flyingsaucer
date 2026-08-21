@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>10.5.0-SNAPSHOT</version>
+    <version>10.6.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20260719</version>
+      <version>20260814</version>
     </dependency>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>

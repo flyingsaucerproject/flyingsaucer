@@ -76,7 +76,7 @@ public class DirectoryLister {
             for (File f : files) {
                 if (f.isHidden()) continue;
                 long len = f.length();
-                String lenDesc = (len > 1024 ? new DecimalFormat("#,###KB").format(len / 1024) : "");
+                String lenDesc = len > 1024 ? new DecimalFormat("#,###KB").format(len / 1024) : "";
                 String lastMod = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a").format(new Date(f.lastModified()));
                 sb.append("<tr>");
 

@@ -30,12 +30,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
     strategy:
         matrix:
+            os: [ ubuntu-latest, windows-latest ]
             # The last 2 LTS releases
             java: [ 21, 25 ]
-    name: Java ${{matrix.java}}
+    name: Java ${{matrix.java}} (${{matrix.os}})
     steps:
       - uses: actions/checkout@v7
       - name: Setup java
@@ -55,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: test-report-${{matrix.java}}
+          name: test-report-${{matrix.java}}-${{matrix.os}}
           retention-days: 14
           path: |
             **/target/site

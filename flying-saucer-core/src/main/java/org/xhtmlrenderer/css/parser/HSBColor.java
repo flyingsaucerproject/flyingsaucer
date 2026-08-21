@@ -15,7 +15,7 @@ public record HSBColor(
             float f = h - (float) java.lang.Math.floor(h);
             float p = brightness * (1.0f - saturation);
             float q = brightness * (1.0f - saturation * f);
-            float t = brightness * (1.0f - (saturation * (1.0f - f)));
+            float t = brightness * (1.0f - saturation * (1.0f - f));
             switch ((int) h) {
                 case 0:
                     r = (int) (brightness * 255.0f + 0.5f);
