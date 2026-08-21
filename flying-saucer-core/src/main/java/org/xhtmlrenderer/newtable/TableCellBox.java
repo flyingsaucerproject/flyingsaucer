@@ -206,10 +206,9 @@ public class TableCellBox extends BlockBox {
         calcDimensions(c);
 
         setContentWidth(width - getLeftMBP() - getRightMBP());
-        // Re-apply min/max-width constraints after setContentWidth overwrites
-        // what calcDimensions already computed. Without this, a cell with
-        // max-width: 80px and allocated width 200px would render at 200px.
-        applyCSSMinMaxWidth(c);
+        if (isFixedWidthAdvisoryOnly()) {
+            applyCSSMinMaxWidth(c);
+        }
     }
 
     @Override
