@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.util;
 
 import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.io.BufferedInputStream;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Path;
@@ -63,14 +66,8 @@ public class IOUtil {
     @Nullable
     public static InputStream openStreamAtUrl(String uri) {
         try {
-            URLConnection uc = new URL(uri).openConnection();
-            uc.setConnectTimeout(10 * 1000);
-            uc.setReadTimeout(30 * 1000);
-            uc.setRequestProperty("Accept", "*/*");
-            uc.connect();
-
-            return uc.getInputStream();
-        } catch (MalformedURLException e) {
+            return streamAtUrl(uri);
+        } catch (MalformedURLException | URISyntaxException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (FileNotFoundException e) {
             XRLog.exception("item at URI " + uri + " not found (caused by: " + e + ")");
@@ -79,6 +76,18 @@ public class IOUtil {
         }
 
         return null;
+    }
+
+    @NullMarked
+    @CheckReturnValue
+    public static InputStream streamAtUrl(String uri) throws IOException, URISyntaxException {
+        URLConnection uc = new URI(uri).toURL().openConnection();
+        uc.setConnectTimeout(10 * 1000);
+        uc.setReadTimeout(30 * 1000);
+        uc.setRequestProperty("Accept", "*/*");
+        uc.connect();
+
+        return uc.getInputStream();
     }
 
     /**
