@@ -135,11 +135,12 @@ class TableFixedLayoutColgroupColspanWrapTest {
         // 24 Greek-letter words cannot fit on a single line at any realistic width.
         // Assert structurally that "Alpha" (first) and "Omega" (last) land on
         // different extracted-text lines.
-        assertThat(pdf).containsExactText("Alpha");
+        assertThat(pdf).containsExactText("Alpha"); // Test-1-only: Test-3 starts with "Alfa"
         assertThat(pdf).containsExactText("Omega");
         assertThat(pdf.text.lines().toList())
-            .as("'Alpha' and 'Omega' must be on different lines — the Greek-alphabet "
-                + "content is too long to fit on a single line at any cell width.")
+            .as("'Alpha' and 'Omega' must be on different lines (Test-1 only). "
+                + "'Alpha' does not appear in Test-3 (uses 'Alfa'), so this "
+                + "assertion cannot be satisfied by Test-3's rendered output.")
             .noneMatch(line -> line.contains("Alpha") && line.contains("Omega"));
     }
 
@@ -187,13 +188,13 @@ class TableFixedLayoutColgroupColspanWrapTest {
 
         assertThat(pdf).containsExactText("KEY3");
         assertThat(pdf.text.lines().toList())
-            .as("'Eta' and 'Theta' must appear on the same extracted-text line "
-                + "(Test-3, border-box cell). "
+            .as("'Ita' and 'Thita' must appear on the same extracted-text line "
+                + "(Test-3 only — modern Greek names, unique to this table). "
                 + "If they are split, applyCSSMinMaxWidth was invoked for a "
                 + "border-box cell in table-layout:fixed (isBorderBox() guard "
                 + "regression), shrinking it to max-width:34% instead of "
                 + "honouring the col-allocated 67%.")
-            .anyMatch(line -> line.contains("Eta") && line.contains("Theta"));
+            .anyMatch(line -> line.contains("Ita") && line.contains("Thita"));
     }
 
     // ------------------------------------------------------------------
@@ -227,10 +228,10 @@ class TableFixedLayoutColgroupColspanWrapTest {
         assertThat(pdf).containsExactText("Alpha");
         assertThat(pdf).containsExactText("Omega");
         assertThat(pdf.text.lines().toList())
-            .as("'Alpha' and 'Omega' must be on different lines. "
-                + "If they are on the same line, max-width was silently ignored "
-                + "for a content-box cell in table-layout:auto (isBorderBox() "
-                + "guard regression — the call to applyCSSMinMaxWidth was skipped).")
+            .as("'Eta' and 'Theta' must appear on the same extracted-text line "
+                + "(Test-1 only — Test-3 uses 'Ita'/'Thita', not 'Eta'/'Theta'). "
+                + "If they are split across lines the cell was rendered at the "
+                + "incorrect max-width (34%) instead of the col-allocated width (67%).")
             .noneMatch(line -> line.contains("Alpha") && line.contains("Omega"));
     }
 }
