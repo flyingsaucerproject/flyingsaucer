@@ -206,7 +206,7 @@ public class TableCellBox extends BlockBox {
         calcDimensions(c);
 
         setContentWidth(width - getLeftMBP() - getRightMBP());
-        if (isFixedWidthAdvisoryOnly()) {
+        if (isFixedWidthAdvisoryOnly() && getStyle().getColSpan() <= 1) {
             applyCSSMinMaxWidth(c);
         }
     }
