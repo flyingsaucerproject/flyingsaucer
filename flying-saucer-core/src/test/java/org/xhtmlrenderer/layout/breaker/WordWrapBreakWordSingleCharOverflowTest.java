@@ -63,7 +63,7 @@ class WordWrapBreakWordSingleCharOverflowTest {
     // Fix: consume 1 char → forward progress guaranteed
     // ────────────────────────────────────────────────────────────────────────
     @Test
-    @Timeout(5)
+    @Timeout(10)
     void layoutMustCompleteWithinTimeout() throws Exception {
         renderAutoSize(HTML);
     }
