@@ -188,6 +188,9 @@ public class Breaker {
                 doBreakText(c, context, avail, style, true);
                 return;
             }
+            context.setEnd(context.getStart() + 1);
+            context.setWidth(TextUtil.textWidth(c, style, f, currentString.substring(0, 1)));
+            return;
         }
 
         if (right > 0) { // found a place to wrap
