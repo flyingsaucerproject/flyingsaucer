@@ -228,10 +228,10 @@ class TableFixedLayoutColgroupColspanWrapTest {
         assertThat(pdf).containsExactText("Alpha");
         assertThat(pdf).containsExactText("Omega");
         assertThat(pdf.text.lines().toList())
-            .as("'Eta' and 'Theta' must appear on the same extracted-text line "
-                + "(Test-1 only — Test-3 uses 'Ita'/'Thita', not 'Eta'/'Theta'). "
-                + "If they are split across lines the cell was rendered at the "
-                + "incorrect max-width (34%) instead of the col-allocated width (67%).")
+            .as("'Alpha' and 'Omega' must be on different extracted-text lines. "
+                + "At max-width:80pt the 24 Greek words cannot fit on one line, so if "
+                + "they appear together max-width was not honoured and the cell "
+                + "expanded to its natural (unwrapped) content width instead.")
             .noneMatch(line -> line.contains("Alpha") && line.contains("Omega"));
     }
 }

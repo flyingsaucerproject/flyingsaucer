@@ -32,21 +32,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  *   for every box-sizing value.
  *   Section 3 tests are therefore split into two sub-groups accordingly.
  *
- * NOTE — applyCSSMinMaxWidth and border-box adjustment (asymmetric behaviour):
+ * NOTE — applyCSSMinMaxWidth and border-box adjustment:
  *
- *   max-width + border-box: paddingBorderWidth IS subtracted correctly.
+ *   Both max-width and min-width in border-box mode have paddingBorderWidth
+ *   subtracted correctly (BlockBox.getCSSMaxWidth / getCSSMinWidth):
  *     max-width:80px, padding:20px each side →
  *       contentWidth = 80 − 40 = 40   ✅ matches browsers
  *       getWidth()   = 40 + 40  = 80
- *
- *   min-width + border-box: paddingBorderWidth is NOT subtracted.
  *     min-width:120px, padding:20px each side →
- *       contentWidth = 120            ⚠ browser-correct would be 120 − 40 = 80
- *       getWidth()   = 120 + 40 = 160
- *   Fixing the min-width border-box adjustment inside applyCSSMinMaxWidth is a
- *   separate, pre-existing concern and is out of scope for this PR.
- *   The getContentWidth() assertion in borderBox_minWidth_autoLayout documents
- *   the current value and must be updated when that fix is applied.
+ *       contentWidth = 120 − 40 = 80  ✅ matches browsers
+ *       getWidth()   = 80 + 40  = 120
  */
 @DisplayName("box-sizing: border-box")
 class BoxSizingBorderBoxTest {
