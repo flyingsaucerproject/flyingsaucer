@@ -197,9 +197,11 @@ public class Breaker {
                 context.setWidth(TextUtil.textWidth(c, style, f, context.getCalculatedSubstring()));
             } else {
                 // avail IS the full line width → container genuinely too narrow
-                // → force 1-char break (browser behaviour)
-                context.setEnd(context.getStart() + 1);
-                context.setWidth(TextUtil.textWidth(c, style, f, currentString.substring(0, 1)));
+                // → force a break after one code point (browser behaviour),
+                // keeping surrogate pairs intact
+                int oneCodePoint = currentString.offsetByCodePoints(0, 1);
+                context.setEnd(context.getStart() + oneCodePoint);
+                context.setWidth(TextUtil.textWidth(c, style, f, currentString.substring(0, oneCodePoint)));
             }
             return;
         }
