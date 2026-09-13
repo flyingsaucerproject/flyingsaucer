@@ -74,7 +74,7 @@ public class Breaker {
     }
 
     public static void breakText(LayoutContext c,
-            LineBreakContext context, int avail, CalculatedStyle style) {
+            LineBreakContext context, int avail, int fullLineWidth, CalculatedStyle style) {
         FSFont font = style.getFSFont(c);
         IdentValue whitespace = style.getWhitespace();
 
@@ -111,7 +111,7 @@ public class Breaker {
 
         boolean tryToBreakAnywhere = style.getWordBreak() == IdentValue.BREAK_ALL;
 
-        doBreakText(c, context, avail, style, tryToBreakAnywhere);
+        doBreakText(c, context, avail, style, tryToBreakAnywhere, fullLineWidth);
     }
 
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Element element, CalculatedStyle style) {
@@ -144,7 +144,7 @@ public class Breaker {
 
     private static void doBreakText(LayoutContext c,
             LineBreakContext context, int avail, CalculatedStyle style,
-            boolean tryToBreakAnywhere) {
+            boolean tryToBreakAnywhere, int fullLineWidth) {
         FSFont f = style.getFSFont(c);
         String currentString = context.getStartSubstring();
         BreakPointsProvider iterator = getBreakPointsProvider(currentString, c, context.getTextNode(), style);
@@ -185,9 +185,23 @@ public class Breaker {
         context.setNeedsNewLine(true);
         if (right <= 0 && style.getWordWrap() == IdentValue.BREAK_WORD) {
             if (!tryToBreakAnywhere) {
-                doBreakText(c, context, avail, style, true);
+                doBreakText(c, context, avail, style, true, fullLineWidth);
                 return;
             }
+
+            if (avail < fullLineWidth) {
+                // Float reduced avail — word may fit on next full line
+                // → unbreakable: InlineBoxing's getNextLineBoxDelta moves past float
+                context.setEnd(context.getStart() + currentString.length());
+                context.setUnbreakable(true);
+                context.setWidth(TextUtil.textWidth(c, style, f, context.getCalculatedSubstring()));
+            } else {
+                // avail IS the full line width → container genuinely too narrow
+                // → force 1-char break (browser behaviour)
+                context.setEnd(context.getStart() + 1);
+                context.setWidth(TextUtil.textWidth(c, style, f, currentString.substring(0, 1)));
+            }
+            return;
         }
 
         if (right > 0) { // found a place to wrap

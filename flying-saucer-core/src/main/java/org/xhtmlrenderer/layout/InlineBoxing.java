@@ -207,7 +207,7 @@ public class InlineBoxing {
                     } else {
                         lbContext.saveEnd();
                         InlineText inlineText = layoutText(
-                                c, iB.getStyle(), remainingWidth - fit, lbContext, false);
+                                c, iB.getStyle(), remainingWidth - fit, maxAvailableWidth, lbContext, false);
                         if (lbContext.isUnbreakable() && !currentLine.isContainsContent()) {
                             int delta = c.getBlockFormattingContext().getNextLineBoxDelta(c, currentLine, maxAvailableWidth);
                             if (delta > 0) {
@@ -393,7 +393,7 @@ public class InlineBoxing {
         currentIB.addInlineChild(c, iB);
         current.setContainsContent(true);
 
-        InlineText text = layoutText(c, iB.getStyle(), remainingWidth, lbContext, true);
+        InlineText text = layoutText(c, iB.getStyle(), remainingWidth, maxAvailableWidth, lbContext, true);
         iB.addInlineChild(c, text);
         iB.setInlineWidth(text.getWidth());
 
@@ -863,7 +863,8 @@ public class InlineBoxing {
         }
     }
 
-    private static InlineText layoutText(LayoutContext c, CalculatedStyle style, int remainingWidth,
+    private static InlineText layoutText(LayoutContext c, CalculatedStyle style,
+                                         int remainingWidth, int maxAvailableWidth,
                                          LineBreakContext lbContext, boolean needFirstLetter) {
         String masterText = lbContext.getMaster();
         if (needFirstLetter) {
@@ -871,7 +872,7 @@ public class InlineBoxing {
             lbContext.setMaster(masterText);
             Breaker.breakFirstLetter(c, lbContext, remainingWidth, style);
         } else {
-            Breaker.breakText(c, lbContext, remainingWidth, style);
+            Breaker.breakText(c, lbContext, remainingWidth, maxAvailableWidth, style);
         }
 
         return new InlineText(lbContext.getMaster(), lbContext.getTextNode(),
