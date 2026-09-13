@@ -92,6 +92,24 @@ class BreakAnywhereLineBreakStrategyTest {
             .isEmpty();
     }
 
+    // ────────────────────────────────────────────────────────────────────────
+    // Test 5 — Supplementary characters (surrogate pairs) must stay intact
+    // A break point must land after a whole code point, never between the
+    // high and low surrogate of a single character — otherwise substring()
+    // splits it into two invalid UTF-16 halves.
+    // ────────────────────────────────────────────────────────────────────────
+    @Test
+    void shouldOfferBreakPointsOnCodePointBoundariesForSurrogatePairs() {
+        String str = "😀😁"; // two emoji, 4 UTF-16 chars / 2 code points
+        BreakAnywhereLineBreakStrategy strategy = new BreakAnywhereLineBreakStrategy(str);
+
+        List<Integer> positions = collectAllPositions(strategy);
+
+        assertThat(positions)
+            .as("Break points must fall after each whole emoji (code point), not mid-surrogate-pair")
+            .containsExactly(2, 4);
+    }
+
     // ── Helper ───────────────────────────────────────────────────────────────
 
     private List<Integer> collectAllPositions(BreakAnywhereLineBreakStrategy strategy) {

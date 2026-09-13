@@ -33,7 +33,8 @@ public class BreakAnywhereLineBreakStrategy implements BreakPointsProvider {
     @Override
     public BreakPoint next() {
         if (position >= currentString.length()) return BreakPoint.getDonePoint();
-        return new BreakPoint(++position);
+        position = currentString.offsetByCodePoints(position, 1);
+        return new BreakPoint(position);
     }
 
 }
