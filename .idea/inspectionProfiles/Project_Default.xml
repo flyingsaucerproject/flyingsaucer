@@ -229,10 +229,6 @@
     </inspection_tool>
     <inspection_tool class="UnnecessaryQualifierForThis" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="INFORMATION_ATTRIBUTES" />
     <inspection_tool class="UnreachableCode" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="UseOfAnotherObjectsPrivateField" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="ignoreSameClass" value="false" />
-      <option name="ignoreEquals" value="false" />
-    </inspection_tool>
     <inspection_tool class="UseOfObsoleteDateTimeApi" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UseOfPropertiesAsHashtable" enabled="true" level="WARNING" enabled_by_default="true" />
   </profile>
