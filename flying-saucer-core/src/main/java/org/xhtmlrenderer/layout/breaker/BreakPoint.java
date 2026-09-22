@@ -21,26 +21,30 @@ package org.xhtmlrenderer.layout.breaker;
 import org.jspecify.annotations.Nullable;
 
 import java.text.BreakIterator;
+import java.util.Comparator;
+import java.util.Objects;
+
+import static java.util.Objects.requireNonNullElse;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class BreakPoint implements Comparable<BreakPoint> {
 
-    private int position;
-    @Nullable
-    private String hyphen;
+    private final int position;
+    private final String hyphen;
 
     public BreakPoint(int position) {
+        this(position, null);
+    }
+
+    public BreakPoint(int position, @Nullable String hyphen) {
         this.position = position;
+        this.hyphen = requireNonNullElse(hyphen, "");
     }
 
     public int getPosition() {
         return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
     }
 
     @Override
@@ -50,15 +54,25 @@ public class BreakPoint implements Comparable<BreakPoint> {
 
     @Override
     public int compareTo(BreakPoint o) {
-        return Integer.compare(position, o.position);
+        return Comparator.<BreakPoint>
+            comparingInt(x -> x.position)
+            .thenComparing(x -> x.hyphen)
+            .compare(this, o);
     }
 
-    public void setHyphen(String hyphen) {
-        this.hyphen = hyphen;
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof BreakPoint other &&
+            Objects.equals(this.position, other.position) &&
+            Objects.equals(this.hyphen, other.hyphen);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, hyphen);
     }
 
     public String getHyphen() {
-        if (hyphen == null) return "";
         return hyphen;
     }
 

@@ -58,8 +58,7 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
         if (style.getHyphens() == IdentValue.MANUAL) {
             int index = text.indexOf(SOFT_HYPHEN);
             while (index >= 0) {
-                BreakPoint point = new BreakPoint(index);
-                addHyphen(point);
+                BreakPoint point = new BreakPoint(index, "-");
                 points.add(point);
                 index = text.indexOf(SOFT_HYPHEN, index + 1);
             }
@@ -71,8 +70,7 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
             if (s == null) return points;
             for (int i = 0; i < s.getHyphenationPoints().length; i++) {
                 int position = s.getHyphenationPoints()[i];
-                BreakPoint point = new BreakPoint(position);
-                addHyphen(point);
+                BreakPoint point = new BreakPoint(position, "-");
                 points.add(point);
             }
         }
@@ -83,9 +81,4 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
     public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
         return new ListBreakPointsProvider(List.of(getPoints(text, lang, style).toArray(new BreakPoint[0])));
     }
-
-    private void addHyphen(BreakPoint p) {
-        p.setHyphen("-");
-    }
-
 }
