@@ -115,8 +115,8 @@ class BreakAnywhereLineBreakStrategyTest {
     private List<Integer> collectAllPositions(BreakAnywhereLineBreakStrategy strategy) {
         List<Integer> positions = new ArrayList<>();
         BreakPoint bp;
-        while ((bp = strategy.next()).getPosition() != BreakIterator.DONE) {
-            positions.add(bp.getPosition());
+        while ((bp = strategy.next()).position() != BreakIterator.DONE) {
+            positions.add(bp.position());
         }
         return positions;
     }

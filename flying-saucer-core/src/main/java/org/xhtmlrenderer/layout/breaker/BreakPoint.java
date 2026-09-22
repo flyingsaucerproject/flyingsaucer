@@ -22,17 +22,14 @@ import org.jspecify.annotations.Nullable;
 
 import java.text.BreakIterator;
 import java.util.Comparator;
-import java.util.Objects;
 
 import static java.util.Objects.requireNonNullElse;
 
 /**
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
-public class BreakPoint implements Comparable<BreakPoint> {
-
-    private final int position;
-    private final String hyphen;
+public record BreakPoint(int position, String hyphen) implements Comparable<BreakPoint> {
+    public static final BreakPoint DONE = new BreakPoint(BreakIterator.DONE);
 
     public BreakPoint(int position) {
         this(position, null);
@@ -43,15 +40,6 @@ public class BreakPoint implements Comparable<BreakPoint> {
         this.hyphen = requireNonNullElse(hyphen, "");
     }
 
-    public int getPosition() {
-        return position;
-    }
-
-    @Override
-    public String toString() {
-        return "BreakPoint [position=" + position + "]";
-    }
-
     @Override
     public int compareTo(BreakPoint o) {
         return Comparator.<BreakPoint>
@@ -59,25 +47,4 @@ public class BreakPoint implements Comparable<BreakPoint> {
             .thenComparing(x -> x.hyphen)
             .compare(this, o);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof BreakPoint other &&
-            Objects.equals(this.position, other.position) &&
-            Objects.equals(this.hyphen, other.hyphen);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(position, hyphen);
-    }
-
-    public String getHyphen() {
-        return hyphen;
-    }
-
-    public static BreakPoint getDonePoint() {
-        return new BreakPoint(BreakIterator.DONE);
-    }
-
 }

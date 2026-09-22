@@ -60,7 +60,7 @@ public class NonBreakPointsTest {
 
         Iterator<BreakPoint> it = calculated.iterator();
         for (int point : expected) {
-            assertThat(it.next().getPosition()).isEqualTo(point);
+            assertThat(it.next().position()).isEqualTo(point);
         }
     }
 

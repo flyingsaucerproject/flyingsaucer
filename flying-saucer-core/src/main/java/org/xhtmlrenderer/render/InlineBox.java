@@ -266,7 +266,7 @@ public class InlineBox implements Styleable {
         BreakPointsProvider breakIterator = Breaker.getBreakPointsProvider(text, c, getElement(), getStyle());
 
         // Breaker should be used
-        while ( (current = breakIterator.next().getPosition()) != BreakIterator.DONE) {
+        while ( (current = breakIterator.next().position()) != BreakIterator.DONE) {
             String currentWord = text.substring(last, current);
             int wordWidth = getTextWidth(c, currentWord);
             int minWordWidth;
