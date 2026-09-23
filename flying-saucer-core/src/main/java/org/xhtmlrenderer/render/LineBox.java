@@ -86,6 +86,12 @@ public class LineBox extends Box implements InlinePaintable {
     @Nullable
     private JustificationInfo _justificationInfo;
 
+    /**
+     * The width this line actually spans once {@code text-align: justify} has spread its
+     * content, in dots. Zero unless the line was justified.
+     */
+    private int _justifiedContentWidth;
+
     public LineBox(@Nullable Box parent, @Nullable CalculatedStyle style) {
         super(parent, style);
     }
@@ -242,6 +248,7 @@ public class LineBox extends Box implements InlinePaintable {
 
                 adjustChildren(info);
                 setJustificationInfo(info);
+                _justifiedContentWidth = available;
             }
         }
     }
@@ -673,6 +680,10 @@ public class LineBox extends Box implements InlinePaintable {
 
     public JustificationInfo getJustificationInfo() {
         return _justificationInfo;
+    }
+
+    public int getJustifiedContentWidth() {
+        return _justifiedContentWidth;
     }
 
     private void setJustificationInfo(JustificationInfo justificationInfo) {

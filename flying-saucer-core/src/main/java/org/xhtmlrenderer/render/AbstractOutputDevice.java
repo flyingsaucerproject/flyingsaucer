@@ -135,8 +135,14 @@ public abstract class AbstractOutputDevice<T extends FSImage, FontType extends F
 
         Rectangle edge = iB.getContentAreaEdge(iB.getAbsX(), iB.getAbsY(), c);
 
+        // Justification is handed to the text renderers rather than baked into the box widths,
+        // so a justified box has to grow by the adjustment its own content received or the
+        // decoration stops short of the text it underlines.
+        int width = edge.width +
+                (iB.getLineBox().getJustificationInfo() != null ? iB.getJustificationAdjust() : 0);
+
         fillRect(edge.x, iB.getAbsY() + decoration.getOffset(),
-                    edge.width, decoration.getThickness());
+                    width, decoration.getThickness());
     }
 
     @Override
@@ -153,9 +159,12 @@ public abstract class AbstractOutputDevice<T extends FSImage, FontType extends F
                         parent.getAbsX() + parent.getTx() + parent.getContentWidth() - lineBox.getAbsX(),
                         textDecoration.getThickness());
             } else {
+                // a justified line spans its block's content box, not its layout width
+                int width = lineBox.getJustificationInfo() != null ?
+                        lineBox.getJustifiedContentWidth() : lineBox.getContentWidth();
                 fillRect(
                         lineBox.getAbsX(), lineBox.getAbsY() + textDecoration.getOffset(),
-                        lineBox.getContentWidth(),
+                        width,
                         textDecoration.getThickness());
             }
         }

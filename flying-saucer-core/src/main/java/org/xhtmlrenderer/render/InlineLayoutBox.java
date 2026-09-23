@@ -67,6 +67,12 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
 
     private int _inlineWidth;
 
+    /**
+     * The total justification added by {@code text-align: justify} to the content of this box,
+     * in dots. Zero unless this box sits on a justified line.
+     */
+    private int _justificationAdjust;
+
     @Nullable
     private List<TextDecoration> _textDecorations;
 
@@ -394,6 +400,10 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
 
     public void setInlineWidth(int inlineWidth) {
         _inlineWidth = inlineWidth;
+    }
+
+    public int getJustificationAdjust() {
+        return _justificationAdjust;
     }
 
     public boolean isContainsVisibleContent() {
@@ -900,6 +910,12 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
         }
     }
 
+    /**
+     * Shifts the content of this box, and its descendants, to spread {@code info} across the
+     * line, returning the total adjustment applied to the content of this box. That total is
+     * retained as {@link #getJustificationAdjust()}, because it is the amount by which the box
+     * outgrows its layout width on a justified line.
+     */
     public float adjustHorizontalPosition(JustificationInfo info, float adjust) {
         float runningTotal = adjust;
 
@@ -928,6 +944,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
                 }
             }
         }
+
+        _justificationAdjust = Math.round(result);
 
         return result;
     }
