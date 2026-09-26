@@ -19,20 +19,29 @@ import static org.xhtmlrenderer.pdf.TestUtils.printFile;
 /**
  * A justified line spreads its content with per-character adjustments that are handed to the
  * text renderers rather than baked into the box widths, so a text decoration has to grow by the
- * adjustment its own content received, or it stops short of the text it underlines.
+ * adjustment its own content received, or it stops short of the text it underlines. It cannot
+ * grow past the line's content edge either: the adjustment counted for the line's final
+ * character trails the last glyph, which nothing is drawn after, so the decoration of the box
+ * holding that character would otherwise overshoot by exactly one adjustment.
  *
- * The fixture underlines the whole of a wrapping paragraph -- so every line of it but the last is
+ * One fixture underlines the whole of a wrapping paragraph -- so every line of it but the last is
  * justified -- and a single phrase of a second paragraph, which is underlined only as far as its
- * own content runs.
+ * own content runs. The other wraps a number with {@code word-wrap: break-word}, so its lines
+ * have no space at all to spread: one character's share of the extra space is the whole of it,
+ * and the overshoot is far larger than a pixel of tolerance can hide.
  *
  */
 class JustifiedUnderlineTest {
     private static final Logger log = LoggerFactory.getLogger(JustifiedUnderlineTest.class);
 
-    /** The fixture's {@code width: 200px}, which the PDF device draws at 3/4 of a point per pixel. */
+    /** The first fixture's {@code width: 200px}, which the PDF device draws at 3/4 of a point per pixel. */
     private static final double CONTENT_WIDTH = 150.0;
 
-    private static final byte[] PDF_BYTES = render();
+    /** The second fixture's {@code width: 100px}, which the PDF device draws at 3/4 of a point per pixel. */
+    private static final double NARROW_CONTENT_WIDTH = 75.0;
+
+    private static final byte[] PDF_BYTES = render("justified-underline.html");
+    private static final byte[] NO_SPACE_PDF_BYTES = render("justified-underline-no-space.html");
 
     @Test
     void justifiedLinesAreUnderlinedToTheContentEdge() throws IOException {
@@ -71,13 +80,29 @@ class JustifiedUnderlineTest {
                 .isCloseTo(lastRunStartOnBaseline(content, partial.top()), within(0.01));
     }
 
-    private static byte[] render() {
+    @Test
+    void justifiedLineWithoutSpacesIsUnderlinedToTheContentEdge() throws IOException {
+        List<Underline> underlines = underlines(pageContent(NO_SPACE_PDF_BYTES));
+
+        // every line of the wrapped number but the left aligned last one is justified, and with no
+        // space on any of them to spread, each character -- the line's last included -- carries the
+        // whole of the extra space. The underline of the box holding that last character therefore
+        // overshoots by an adjustment several pixels wide, not by a fraction of one, and the
+        // tolerance here can be a hundredth of a point where the test above spends a whole pixel.
+        assertThat(underlines.subList(0, underlines.size() - 1))
+                .isNotEmpty()
+                .allSatisfy(underline -> assertThat(underline.right())
+                        .as("justified line %s", underline)
+                        .isCloseTo(NARROW_CONTENT_WIDTH, within(0.01)));
+    }
+
+    private static byte[] render(String resource) {
         try {
-            byte[] bytes = Html2Pdf.fromClasspathResource("justified-underline.html");
-            printFile(log, bytes, "justified-underline.pdf");
+            byte[] bytes = Html2Pdf.fromClasspathResource(resource);
+            printFile(log, bytes, resource.replace(".html", ".pdf"));
             return bytes;
         } catch (IOException e) {
-            throw new UncheckedIOException("Failed to render justified-underline.html", e);
+            throw new UncheckedIOException("Failed to render " + resource, e);
         }
     }
 
