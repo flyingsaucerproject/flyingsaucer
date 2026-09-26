@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>justified underline without spaces</title>
+    <style>
+        @page { margin: 0; }
+        body { margin: 0; font-size: 36px; }
+        /* A narrow column, and digits, whose glyphs all have one width: every line of the
+           wrapped number then breaks at the same character and is left the same share of
+           extra space to spread over it. */
+        p { width: 100px; text-align: justify; margin: 0; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <p><u>1234567890123456789012345678901234567890</u></p>
+</body>
+</html>

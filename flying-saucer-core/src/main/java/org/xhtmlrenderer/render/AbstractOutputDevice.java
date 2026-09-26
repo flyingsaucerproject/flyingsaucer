@@ -135,8 +135,23 @@ public abstract class AbstractOutputDevice<T extends FSImage, FontType extends F
 
         Rectangle edge = iB.getContentAreaEdge(iB.getAbsX(), iB.getAbsY(), c);
 
+        // Justification is handed to the text renderers rather than baked into the box widths,
+        // so a justified box has to grow by the adjustment its own content received or the
+        // decoration stops short of the text it underlines.
+        LineBox lineBox = iB.getLineBox();
+        int width = edge.width;
+        if (lineBox.getJustificationInfo() != null) {
+            // The line's justified content edge is as far as that growth can reach: the
+            // adjustment counted for the line's final character trails the last glyph it is
+            // applied before, and nothing is drawn after that glyph, so the box holding that
+            // character would otherwise claim it and end an adjustment past the line.
+            width = Math.min(
+                    edge.width + iB.getJustificationAdjust(),
+                    lineBox.getAbsX() + lineBox.getJustifiedContentWidth() - edge.x);
+        }
+
         fillRect(edge.x, iB.getAbsY() + decoration.getOffset(),
-                    edge.width, decoration.getThickness());
+                    width, decoration.getThickness());
     }
 
     @Override
@@ -153,9 +168,12 @@ public abstract class AbstractOutputDevice<T extends FSImage, FontType extends F
                         parent.getAbsX() + parent.getTx() + parent.getContentWidth() - lineBox.getAbsX(),
                         textDecoration.getThickness());
             } else {
+                // a justified line spans its block's content box, not its layout width
+                int width = lineBox.getJustificationInfo() != null ?
+                        lineBox.getJustifiedContentWidth() : lineBox.getContentWidth();
                 fillRect(
                         lineBox.getAbsX(), lineBox.getAbsY() + textDecoration.getOffset(),
-                        lineBox.getContentWidth(),
+                        width,
                         textDecoration.getThickness());
             }
         }
