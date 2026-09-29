@@ -19,16 +19,18 @@ import static org.xhtmlrenderer.pdf.TestUtils.printFile;
 /**
  * A justified line spreads its content with per-character adjustments that are handed to the
  * text renderers rather than baked into the box widths, so a text decoration has to grow by the
- * adjustment its own content received, or it stops short of the text it underlines. It cannot
- * grow past the line's content edge either: the adjustment counted for the line's final
- * character trails the last glyph, which nothing is drawn after, so the decoration of the box
- * holding that character would otherwise overshoot by exactly one adjustment.
+ * adjustment its own content received, or it stops short of the text it underlines. It must not
+ * grow by the adjustment counted for the line's final character either: that one trails the last
+ * glyph, which nothing is drawn after, so the decoration of the box holding that character would
+ * otherwise overshoot its text by exactly one adjustment.
  *
  * One fixture underlines the whole of a wrapping paragraph -- so every line of it but the last is
  * justified -- and a single phrase of a second paragraph, which is underlined only as far as its
- * own content runs. The other wraps a number with {@code word-wrap: break-word}, so its lines
+ * own content runs. The others wrap a number with {@code word-wrap: break-word}, so their lines
  * have no space at all to spread: one character's share of the extra space is the whole of it,
- * and the overshoot is far larger than a pixel of tolerance can hide.
+ * and the overshoot is far larger than a pixel of tolerance can hide. One of them holds the number
+ * in padded boxes, so a line ends in padding rather than at the content edge; another is too
+ * narrow for more than a single digit a line, which leaves no gap to spread anything over.
  *
  */
 class JustifiedUnderlineTest {
@@ -40,8 +42,16 @@ class JustifiedUnderlineTest {
     /** The second fixture's {@code width: 100px}, which the PDF device draws at 3/4 of a point per pixel. */
     private static final double NARROW_CONTENT_WIDTH = 75.0;
 
+    /** The single character fixture's {@code width: 30px}, in points. */
+    private static final double NARROW_SINGLE_CHARACTER_WIDTH = 22.5;
+
+    /** The padded fixture's {@code padding-right: 30px}, in points. */
+    private static final double PADDING = 22.5;
+
     private static final byte[] PDF_BYTES = render("justified-underline.html");
     private static final byte[] NO_SPACE_PDF_BYTES = render("justified-underline-no-space.html");
+    private static final byte[] PADDING_PDF_BYTES = render("justified-underline-padding.html");
+    private static final byte[] SINGLE_CHARACTER_PDF_BYTES = render("justified-underline-single-character.html");
 
     @Test
     void justifiedLinesAreUnderlinedToTheContentEdge() throws IOException {
@@ -94,6 +104,34 @@ class JustifiedUnderlineTest {
                 .allSatisfy(underline -> assertThat(underline.right())
                         .as("justified line %s", underline)
                         .isCloseTo(NARROW_CONTENT_WIDTH, within(0.01)));
+    }
+
+    @Test
+    void justifiedLineEndingInPaddingIsUnderlinedToTheEndOfItsText() throws IOException {
+        List<Underline> underlines = underlines(pageContent(PADDING_PDF_BYTES));
+
+        // each justified line holds a single padded box, whose text is spread to the start of its
+        // padding. The adjustment counted for the box's last digit is several pixels wide and
+        // would carry the underline into that padding, where the line's content edge cannot stop it.
+        assertThat(underlines.subList(0, underlines.size() - 1))
+                .isNotEmpty()
+                .allSatisfy(underline -> assertThat(underline.right())
+                        .as("justified line %s", underline)
+                        .isCloseTo(NARROW_CONTENT_WIDTH - PADDING, within(0.01)));
+    }
+
+    @Test
+    void justifiedLineWithASingleCharacterIsNotStretched() throws IOException {
+        List<Underline> underlines = underlines(pageContent(SINGLE_CHARACTER_PDF_BYTES));
+
+        // a line of one digit has no gap to spread the extra space over, so it stays as wide as
+        // the left aligned last line, and so does the underline of the paragraph
+        double lastLineWidth = underlines.getLast().width();
+        assertThat(underlines)
+                .allSatisfy(underline -> assertThat(underline.width())
+                        .as("single character line %s", underline)
+                        .isCloseTo(lastLineWidth, within(0.01))
+                        .isLessThan(NARROW_SINGLE_CHARACTER_WIDTH - 1));
     }
 
     private static byte[] render(String resource) {

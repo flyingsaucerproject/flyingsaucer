@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>justified underline of a padded box</title>
+    <style>
+        @page { margin: 0; }
+        body { margin: 0; font-size: 36px; }
+        /* Three digits and their padding fit a line, a fourth does not, so every line breaks
+           between two of the padded boxes and ends with the padding of the box it holds. */
+        p { width: 100px; text-align: justify; margin: 0; word-wrap: break-word; }
+        u { padding-right: 30px; }
+    </style>
+</head>
+<body>
+    <p><u>123</u><u>456</u><u>789</u><u>012</u><u>345</u></p>
+</body>
+</html>
