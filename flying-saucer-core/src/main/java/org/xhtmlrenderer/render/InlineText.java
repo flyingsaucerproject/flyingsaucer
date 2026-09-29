@@ -325,15 +325,23 @@ public class InlineText implements InlineChild {
 
         float result = 0.0f;
         for (int i = 0; i < len; i++) {
-            char c = s.charAt(i);
-            if (c == ' ' || c == '\u00a0' || c == '\u3000') {
-                result += info.spaceAdjust();
-            } else {
-                result += info.nonSpaceAdjust();
-            }
+            result += adjustment(s.charAt(i), info);
         }
 
         return result;
+    }
+
+    /**
+     * The adjustment {@link #calcTotalAdjustment} counts for the final character of this run,
+     * or zero if the run is empty.
+     */
+    public float calcTrailingAdjustment(JustificationInfo info) {
+        String s = getSubstring();
+        return s.isEmpty() ? 0.0f : adjustment(s.charAt(s.length() - 1), info);
+    }
+
+    private static float adjustment(char c, JustificationInfo info) {
+        return c == ' ' || c == '\u00a0' || c == '\u3000' ? info.spaceAdjust() : info.nonSpaceAdjust();
     }
     public int getStart(){
         return _start;

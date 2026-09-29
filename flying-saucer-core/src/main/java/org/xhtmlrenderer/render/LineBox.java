@@ -246,11 +246,45 @@ public class LineBox extends Box implements InlinePaintable {
                     info = justificationInfo(counts, toAdd, JUSTIFY_NON_SPACE_SHARE, JUSTIFY_SPACE_SHARE);
                 }
 
+                // with a single character, or none, there is no gap to spread the space over
+                if (info.nonSpaceAdjust() == 0.0f && info.spaceAdjust() == 0.0f) {
+                    return;
+                }
+
                 adjustChildren(info);
+                trimTrailingAdjustment(info);
                 setJustificationInfo(info);
                 _justifiedContentWidth = available;
             }
         }
+    }
+
+    /**
+     * The adjustment counted for the line's final character is applied after it, where nothing
+     * is drawn, so the boxes holding that character must not grow by it.
+     */
+    private void trimTrailingAdjustment(JustificationInfo info) {
+        InlineText trailingText = trailingText();
+        if (trailingText != null) {
+            float trailingAdjust = trailingText.calcTrailingAdjustment(info);
+            for (Box b = trailingText.getParent(); b instanceof InlineLayoutBox iB; b = iB.getParent()) {
+                iB.trimTrailingJustificationAdjust(trailingAdjust);
+            }
+        }
+    }
+
+    @Nullable
+    private InlineText trailingText() {
+        for (Box b : getChildren().reversed()) {
+            if (b instanceof InlineLayoutBox iB) {
+                if (iB.isContainsVisibleContent()) {
+                    return iB.trailingText();
+                }
+            } else if (b.getWidth() > 0 || b.getHeight() > 0) {
+                return null;
+            }
+        }
+        return null;
     }
 
     private static JustificationInfo justificationInfo(CharCounts counts, int toAdd,

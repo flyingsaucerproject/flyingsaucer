@@ -69,9 +69,10 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
 
     /**
      * The total justification added by {@code text-align: justify} to the content of this box,
-     * in dots. Zero unless this box sits on a justified line.
+     * in dots, less the adjustment of the line's final character if this box holds it. Zero
+     * unless this box sits on a justified line.
      */
-    private int _justificationAdjust;
+    private float _justificationAdjust;
 
     @Nullable
     private List<TextDecoration> _textDecorations;
@@ -403,7 +404,45 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
     }
 
     public int getJustificationAdjust() {
-        return _justificationAdjust;
+        return Math.round(_justificationAdjust);
+    }
+
+    /**
+     * Drops the adjustment counted for the final character of a justified line from this box,
+     * which holds that character. The adjustment is applied after the character it is counted
+     * for, and nothing is drawn after the line's final one, so the box never grows by it.
+     */
+    void trimTrailingJustificationAdjust(float trailingAdjust) {
+        _justificationAdjust -= trailingAdjust;
+    }
+
+    /**
+     * The text run holding the final character of this box's content, or {@code null} if the
+     * content has no characters, or ends with a box that is not text.
+     */
+    @Nullable
+    InlineText trailingText() {
+        for (InlineChild child : _inlineChildren.reversed()) {
+            switch (child) {
+                case InlineText iT -> {
+                    if (!iT.getSubstring().isEmpty()) {
+                        return iT;
+                    }
+                }
+                case InlineLayoutBox iB -> {
+                    if (iB.isContainsVisibleContent()) {
+                        return iB.trailingText();
+                    }
+                }
+                case Box b -> {
+                    if (b.getWidth() > 0 || b.getHeight() > 0) {
+                        return null;
+                    }
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + child);
+            }
+        }
+        return null;
     }
 
     public boolean isContainsVisibleContent() {
@@ -945,7 +984,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
             }
         }
 
-        _justificationAdjust = Math.round(result);
+        _justificationAdjust = result;
 
         return result;
     }
