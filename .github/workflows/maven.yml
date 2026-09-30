@@ -34,8 +34,8 @@ jobs:
     strategy:
         matrix:
             os: [ ubuntu-latest, windows-latest ]
-            # The last 2 LTS releases
-            java: [ 21, 25 ]
+            # The last 2 LTS releases + latest Java
+            java: [ 21, 25, 27 ]
     name: Java ${{matrix.java}} (${{matrix.os}})
     steps:
       - uses: actions/checkout@v7
