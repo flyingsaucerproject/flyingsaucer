@@ -252,36 +252,20 @@ public class LineBox extends Box implements InlinePaintable {
                 }
 
                 adjustChildren(info);
-                trimTrailingAdjustment(info);
                 setJustificationInfo(info);
                 _justifiedContentWidth = available;
             }
         }
     }
 
-    /**
-     * The adjustment counted for the line's final character is applied after it, where nothing
-     * is drawn, so the boxes holding that character must not grow by it.
-     */
-    private void trimTrailingAdjustment(JustificationInfo info) {
-        InlineText trailingText = trailingText();
-        if (trailingText != null) {
-            float trailingAdjust = trailingText.calcTrailingAdjustment(info);
-            for (Box b = trailingText.getParent(); b instanceof InlineLayoutBox iB; b = iB.getParent()) {
-                iB.trimTrailingJustificationAdjust(trailingAdjust);
-            }
-        }
-    }
-
     @Nullable
-    private InlineText trailingText() {
+    private InlineText lastText() {
         for (Box b : getChildren().reversed()) {
             if (b instanceof InlineLayoutBox iB) {
-                if (iB.isContainsVisibleContent()) {
-                    return iB.trailingText();
+                InlineText lastText = iB.lastText();
+                if (lastText != null) {
+                    return lastText;
                 }
-            } else if (b.getWidth() > 0 || b.getHeight() > 0) {
-                return null;
             }
         }
         return null;
@@ -301,12 +285,13 @@ public class LineBox extends Box implements InlinePaintable {
     }
 
     private void adjustChildren(JustificationInfo info) {
+        InlineText lastText = lastText();
         float adjust = 0.0f;
         for (Box b : getChildren()) {
             b.setX(b.getX() + Math.round(adjust));
 
             if (b instanceof InlineLayoutBox inlineLayoutBox) {
-                adjust += inlineLayoutBox.adjustHorizontalPosition(info, adjust);
+                adjust += inlineLayoutBox.adjustHorizontalPosition(info, adjust, lastText);
             }
         }
 

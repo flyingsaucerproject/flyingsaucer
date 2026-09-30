@@ -30,7 +30,9 @@ import static org.xhtmlrenderer.pdf.TestUtils.printFile;
  * have no space at all to spread: one character's share of the extra space is the whole of it,
  * and the overshoot is far larger than a pixel of tolerance can hide. One of them holds the number
  * in padded boxes, so a line ends in padding rather than at the content edge; another is too
- * narrow for more than a single digit a line, which leaves no gap to spread anything over.
+ * narrow for more than a single digit a line, which leaves no gap to spread anything over. The
+ * last ends a line with an inline-block, which must be moved by the gaps between the characters
+ * before it, and not by an adjustment after the last of them.
  *
  */
 class JustifiedUnderlineTest {
@@ -52,6 +54,7 @@ class JustifiedUnderlineTest {
     private static final byte[] NO_SPACE_PDF_BYTES = render("justified-underline-no-space.html");
     private static final byte[] PADDING_PDF_BYTES = render("justified-underline-padding.html");
     private static final byte[] SINGLE_CHARACTER_PDF_BYTES = render("justified-underline-single-character.html");
+    private static final byte[] TRAILING_BOX_PDF_BYTES = render("justified-underline-trailing-box.html");
 
     @Test
     void justifiedLinesAreUnderlinedToTheContentEdge() throws IOException {
@@ -134,6 +137,17 @@ class JustifiedUnderlineTest {
                         .isLessThan(NARROW_SINGLE_CHARACTER_WIDTH - 1));
     }
 
+    @Test
+    void justifiedLineEndingInABoxEndsAtTheContentEdge() throws IOException {
+        String content = pageContent(TRAILING_BOX_PDF_BYTES);
+
+        // the first line holds two digits and the inline-block after them. The single gap
+        // between the digits takes all the extra space, so the box lands on the content edge
+        // rather than an adjustment past it, and so does the underline beneath it.
+        assertThat(boxRight(content)).isCloseTo(NARROW_CONTENT_WIDTH, within(0.01));
+        assertThat(underlines(content).getFirst().right()).isCloseTo(NARROW_CONTENT_WIDTH, within(0.01));
+    }
+
     private static byte[] render(String resource) {
         try {
             byte[] bytes = Html2Pdf.fromClasspathResource(resource);
@@ -170,6 +184,16 @@ class JustifiedUnderlineTest {
                 .as("expected the fixture's underlined lines in:%n%s", content)
                 .hasSizeGreaterThan(2);
         return result;
+    }
+
+    /** The right edge of the fixture's inline-block, the only path filled in red. */
+    private static double boxRight(String content) {
+        Matcher box = Pattern.compile("1 0 0 rg\\s+([^h]*)h\\s+f").matcher(content);
+        assertThat(box.find()).as("expected a red box in:%n%s", content).isTrue();
+        return Pattern.compile("(-?[0-9.]+) -?[0-9.]+ [ml]").matcher(box.group(1)).results()
+                .mapToDouble(point -> Double.parseDouble(point.group(1)))
+                .max()
+                .orElseThrow();
     }
 
     /** The x the last text run on {@code baseline} starts at. */

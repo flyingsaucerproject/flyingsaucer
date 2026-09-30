@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>justified underline of a line ending in a box</title>
+    <style>
+        @page { margin: 0; }
+        body { margin: 0; font-size: 36px; }
+        /* Two digits and the inline-block fit a line, a third digit does not, so the first line
+           ends with the inline-block rather than with a character. */
+        p { width: 100px; text-align: justify; margin: 0; word-wrap: break-word; }
+        i { display: inline-block; width: 50px; height: 10px; background: red; }
+    </style>
+</head>
+<body>
+    <p><u>12<i></i>345678</u></p>
+</body>
+</html>
