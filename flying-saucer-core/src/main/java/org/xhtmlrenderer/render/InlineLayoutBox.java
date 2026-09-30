@@ -69,8 +69,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
 
     /**
      * The total justification added by {@code text-align: justify} to the content of this box,
-     * in dots, less the adjustment of the line's final character if this box holds it. Zero
-     * unless this box sits on a justified line.
+     * in dots. Zero unless this box sits on a justified line.
      */
     private float _justificationAdjust;
 
@@ -408,20 +407,11 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
     }
 
     /**
-     * Drops the adjustment counted for the final character of a justified line from this box,
-     * which holds that character. The adjustment is applied after the character it is counted
-     * for, and nothing is drawn after the line's final one, so the box never grows by it.
-     */
-    void trimTrailingJustificationAdjust(float trailingAdjust) {
-        _justificationAdjust -= trailingAdjust;
-    }
-
-    /**
      * The text run holding the final character of this box's content, or {@code null} if the
-     * content has no characters, or ends with a box that is not text.
+     * content has no characters. Boxes that follow that character are skipped.
      */
     @Nullable
-    InlineText trailingText() {
+    InlineText lastText() {
         for (InlineChild child : _inlineChildren.reversed()) {
             switch (child) {
                 case InlineText iT -> {
@@ -430,14 +420,12 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
                     }
                 }
                 case InlineLayoutBox iB -> {
-                    if (iB.isContainsVisibleContent()) {
-                        return iB.trailingText();
+                    InlineText lastText = iB.lastText();
+                    if (lastText != null) {
+                        return lastText;
                     }
                 }
                 case Box b -> {
-                    if (b.getWidth() > 0 || b.getHeight() > 0) {
-                        return null;
-                    }
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + child);
             }
@@ -954,8 +942,13 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
      * line, returning the total adjustment applied to the content of this box. That total is
      * retained as {@link #getJustificationAdjust()}, because it is the amount by which the box
      * outgrows its layout width on a justified line.
+     *
+     * @param lineLastText the text run holding the line's final character. The line's extra
+     *                     space is spread over the gaps between its characters, so there is no
+     *                     gap after that character to receive an adjustment, and content that
+     *                     follows it, such as an inline-block, must not be moved by one.
      */
-    public float adjustHorizontalPosition(JustificationInfo info, float adjust) {
+    public float adjustHorizontalPosition(JustificationInfo info, float adjust, @Nullable InlineText lineLastText) {
         float runningTotal = adjust;
 
         float result = 0.0f;
@@ -966,7 +959,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
 
                     iT.setX(iT.getX() + Math.round(result));
 
-                    float adj = iT.calcTotalAdjustment(info);
+                    float adj = iT.calcTotalAdjustment(info) -
+                            (iT == lineLastText ? iT.calcTrailingAdjustment(info) : 0.0f);
                     result += adj;
                     runningTotal += adj;
                 }
@@ -974,7 +968,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
                     b.setX(b.getX() + Math.round(runningTotal));
 
                     if (b instanceof InlineLayoutBox) {
-                        float adj = ((InlineLayoutBox) b).adjustHorizontalPosition(info, runningTotal);
+                        float adj = ((InlineLayoutBox) b).adjustHorizontalPosition(info, runningTotal, lineLastText);
                         result += adj;
                         runningTotal += adj;
                     }

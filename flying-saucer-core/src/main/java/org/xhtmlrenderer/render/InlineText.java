@@ -333,7 +333,8 @@ public class InlineText implements InlineChild {
 
     /**
      * The adjustment {@link #calcTotalAdjustment} counts for the final character of this run,
-     * or zero if the run is empty.
+     * or zero if the run is empty. When that character ends a justified line, there is no gap
+     * after it to receive the adjustment.
      */
     public float calcTrailingAdjustment(JustificationInfo info) {
         String s = getSubstring();
