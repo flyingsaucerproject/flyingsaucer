@@ -235,23 +235,24 @@ public class LineBox extends Box implements InlinePaintable {
             if (available > getContentWidth()) {
                 int toAdd = available - getContentWidth();
 
-                CharCounts counts = countJustifiableChars();
-
-                JustificationInfo info;
-                if (counts.getSpaceCount() == 0) {
-                    info = justificationInfo(counts, toAdd, 1.0f, 0.0f);
-                } else if (!getParent().getStyle().isIdent(LETTER_SPACING, NORMAL)) {
-                    info = justificationInfo(counts, toAdd, 0.0f, 1.0f);
-                } else {
-                    info = justificationInfo(counts, toAdd, JUSTIFY_NON_SPACE_SHARE, JUSTIFY_SPACE_SHARE);
-                }
+                InlineText lastText = lastText();
+                CharCounts gaps = countJustifiableGaps(lastText);
 
                 // with a single character, or none, there is no gap to spread the space over
-                if (info.nonSpaceAdjust() == 0.0f && info.spaceAdjust() == 0.0f) {
+                if (gaps.getNonSpaceCount() == 0 && gaps.getSpaceCount() == 0) {
                     return;
                 }
 
-                adjustChildren(info);
+                JustificationInfo info;
+                if (gaps.getSpaceCount() == 0) {
+                    info = justificationInfo(gaps, toAdd, 1.0f, 0.0f);
+                } else if (gaps.getNonSpaceCount() == 0 || !getParent().getStyle().isIdent(LETTER_SPACING, NORMAL)) {
+                    info = justificationInfo(gaps, toAdd, 0.0f, 1.0f);
+                } else {
+                    info = justificationInfo(gaps, toAdd, JUSTIFY_NON_SPACE_SHARE, JUSTIFY_SPACE_SHARE);
+                }
+
+                adjustChildren(info, lastText);
                 setJustificationInfo(info);
                 _justifiedContentWidth = available;
             }
@@ -271,21 +272,20 @@ public class LineBox extends Box implements InlinePaintable {
         return null;
     }
 
-    private static JustificationInfo justificationInfo(CharCounts counts, int toAdd,
+    private static JustificationInfo justificationInfo(CharCounts gaps, int toAdd,
                                                        float nonSpaceShare, float spaceShare) {
-        float nonSpaceAdjust = counts.getNonSpaceCount() > 1 ?
-                toAdd * nonSpaceShare / (counts.getNonSpaceCount() - 1) :
+        float nonSpaceAdjust = gaps.getNonSpaceCount() > 0 ?
+                toAdd * nonSpaceShare / gaps.getNonSpaceCount() :
                 0.0f;
 
-        float spaceAdjust = counts.getSpaceCount() > 0 ?
-                toAdd * spaceShare / counts.getSpaceCount() :
+        float spaceAdjust = gaps.getSpaceCount() > 0 ?
+                toAdd * spaceShare / gaps.getSpaceCount() :
                 0.0f;
 
         return new JustificationInfo(nonSpaceAdjust, spaceAdjust);
     }
 
-    private void adjustChildren(JustificationInfo info) {
-        InlineText lastText = lastText();
+    private void adjustChildren(JustificationInfo info, @Nullable InlineText lastText) {
         float adjust = 0.0f;
         for (Box b : getChildren()) {
             b.setX(b.getX() + Math.round(adjust));
@@ -312,12 +312,24 @@ public class LineBox extends Box implements InlinePaintable {
         return true;
     }
 
-    private CharCounts countJustifiableChars() {
+    /**
+     * Counts the characters of this line that are followed by a gap to spread its extra space
+     * into: all the justifiable ones but the line's final character, held by {@code lastText}.
+     */
+    private CharCounts countJustifiableGaps(@Nullable InlineText lastText) {
         CharCounts result = new CharCounts();
 
         for (Box b : getChildren()) {
             if (b instanceof InlineLayoutBox inlineLayoutBox) {
                 inlineLayoutBox.countJustifiableChars(result);
+            }
+        }
+
+        if (lastText != null && lastText.getParent().getStyle().isTextJustify()) {
+            if (lastText.endsWithSpace()) {
+                result.setSpaceCount(result.getSpaceCount() - 1);
+            } else {
+                result.setNonSpaceCount(result.getNonSpaceCount() - 1);
             }
         }
 

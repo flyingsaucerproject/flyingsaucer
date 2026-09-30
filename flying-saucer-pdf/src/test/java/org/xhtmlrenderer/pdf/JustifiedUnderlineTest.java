@@ -1,6 +1,8 @@
 package org.xhtmlrenderer.pdf;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +33,9 @@ import static org.xhtmlrenderer.pdf.TestUtils.printFile;
  * and the overshoot is far larger than a pixel of tolerance can hide. One of them holds the number
  * in padded boxes, so a line ends in padding rather than at the content edge; another is too
  * narrow for more than a single digit a line, which leaves no gap to spread anything over. The
- * last ends a line with an inline-block, which must be moved by the gaps between the characters
- * before it, and not by an adjustment after the last of them.
+ * last two end a line with an inline-block, which must be moved by the gaps between the
+ * characters before it, and not by an adjustment after the last of them -- even when that last
+ * character is a space.
  *
  */
 class JustifiedUnderlineTest {
@@ -54,7 +57,6 @@ class JustifiedUnderlineTest {
     private static final byte[] NO_SPACE_PDF_BYTES = render("justified-underline-no-space.html");
     private static final byte[] PADDING_PDF_BYTES = render("justified-underline-padding.html");
     private static final byte[] SINGLE_CHARACTER_PDF_BYTES = render("justified-underline-single-character.html");
-    private static final byte[] TRAILING_BOX_PDF_BYTES = render("justified-underline-trailing-box.html");
 
     @Test
     void justifiedLinesAreUnderlinedToTheContentEdge() throws IOException {
@@ -137,13 +139,16 @@ class JustifiedUnderlineTest {
                         .isLessThan(NARROW_SINGLE_CHARACTER_WIDTH - 1));
     }
 
-    @Test
-    void justifiedLineEndingInABoxEndsAtTheContentEdge() throws IOException {
-        String content = pageContent(TRAILING_BOX_PDF_BYTES);
+    @ParameterizedTest
+    @ValueSource(strings = {"justified-underline-trailing-box.html", "justified-underline-trailing-box-after-space.html"})
+    void justifiedLineEndingInABoxEndsAtTheContentEdge(String resource) throws IOException {
+        String content = pageContent(render(resource));
 
-        // the first line holds two digits and the inline-block after them. The single gap
-        // between the digits takes all the extra space, so the box lands on the content edge
-        // rather than an adjustment past it, and so does the underline beneath it.
+        // the first line holds two digits, in one fixture followed by a no-break space, and the
+        // inline-block after them. The single gap between the digits takes all the extra space:
+        // the space is the line's final character, with no gap after it, just like the second
+        // digit where there is none. So the box lands on the content edge rather than short of
+        // it or an adjustment past it, and so does the underline beneath it.
         assertThat(boxRight(content)).isCloseTo(NARROW_CONTENT_WIDTH, within(0.01));
         assertThat(underlines(content).getFirst().right()).isCloseTo(NARROW_CONTENT_WIDTH, within(0.01));
     }

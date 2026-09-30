@@ -307,8 +307,7 @@ public class InlineText implements InlineChild {
         int other = 0;
 
         for (int i = 0; i < len; i++) {
-            char c = s.charAt(i);
-            if (c == ' ' || c == '\u00a0' || c == '\u3000') {
+            if (isSpace(s.charAt(i))) {
                 spaces++;
             } else {
                 other++;
@@ -341,8 +340,21 @@ public class InlineText implements InlineChild {
         return s.isEmpty() ? 0.0f : adjustment(s.charAt(s.length() - 1), info);
     }
 
+    /**
+     * Whether the final character of this run is one that {@link #countJustifiableChars} counts
+     * as a space. False if the run is empty.
+     */
+    public boolean endsWithSpace() {
+        String s = getSubstring();
+        return !s.isEmpty() && isSpace(s.charAt(s.length() - 1));
+    }
+
     private static float adjustment(char c, JustificationInfo info) {
-        return c == ' ' || c == '\u00a0' || c == '\u3000' ? info.spaceAdjust() : info.nonSpaceAdjust();
+        return isSpace(c) ? info.spaceAdjust() : info.nonSpaceAdjust();
+    }
+
+    private static boolean isSpace(char c) {
+        return c == ' ' || c == '\u00a0' || c == '\u3000';
     }
     public int getStart(){
         return _start;
