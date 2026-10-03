@@ -8,6 +8,9 @@ h5, h6, noframes,
 ol, p, ul, center,
 dir, hr, menu, pre, object   { display: block }
 li              { display: list-item }
+details         { display: block }
+summary         { display: list-item; list-style: disclosure-closed inside }
+details[open] > summary { list-style-type: disclosure-open }
 head, script    { display: none }
 body            { margin: 8px }
 h1              { font-size: 2em; margin: .67em 0 }

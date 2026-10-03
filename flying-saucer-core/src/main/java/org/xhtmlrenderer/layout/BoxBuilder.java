@@ -95,9 +95,9 @@ public class BoxBuilder {
      * Encountering these in input HTML may produce incorrect or unexpected rendering.
      */
     private static final Set<String> UNSUPPORTED_HTML5_TAGS = Set.of(
-        "article", "aside", "audio", "canvas", "datalist", "details", "dialog",
+        "article", "aside", "audio", "canvas", "datalist", "dialog",
         "figcaption", "figure", "footer", "header", "main", "mark", "meter",
-        "nav", "output", "picture", "progress", "section", "summary",
+        "nav", "output", "picture", "progress", "section",
         "template", "time", "track", "video", "wbr"
     );
 
@@ -1046,9 +1046,14 @@ public class BoxBuilder {
         Node working = parent.getFirstChild();
         boolean needStartText = inline;
         boolean needEndText = inline;
+        boolean closedDetails = isClosedDetails(parent);
+        @Nullable Element visibleSummary = closedDetails ? findSummary(parent) : null;
         if (working != null) {
             InlineBox previousIB = null;
             do {
+                if (closedDetails && working != visibleSummary) {
+                    continue;
+                }
                 Styleable child = null;
                 short nodeType = working.getNodeType();
                 if (nodeType == Node.ELEMENT_NODE) {
@@ -1186,8 +1191,30 @@ public class BoxBuilder {
         insertGeneratedContent(c, parent, parentStyle, "after", children, info);
     }
 
+    /**
+     * A {@code <details>} element without {@code open} attribute shows only its summary.
+     */
+    private static boolean isClosedDetails(Element element) {
+        return "details".equalsIgnoreCase(localName(element)) && !element.hasAttribute("open");
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private static Element findSummary(Element details) {
+        for (Node node = details.getFirstChild(); node != null; node = node.getNextSibling()) {
+            if (node instanceof Element element && "summary".equalsIgnoreCase(localName(element))) {
+                return element;
+            }
+        }
+        return null;
+    }
+
+    private static String localName(Element element) {
+        return element.getLocalName() != null ? element.getLocalName() : element.getTagName();
+    }
+
     private static void checkForUnsupportedTags(Element element, SharedContext sharedContext) {
-        String tagName = element.getLocalName() != null ? element.getLocalName() : element.getTagName();
+        String tagName = localName(element);
         if (tagName != null && UNSUPPORTED_HTML5_TAGS.contains(tagName.toLowerCase())) {
             sharedContext.addUnsupportedTag(tagName);
         }

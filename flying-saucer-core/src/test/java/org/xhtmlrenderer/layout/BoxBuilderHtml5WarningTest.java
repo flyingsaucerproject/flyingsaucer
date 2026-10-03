@@ -25,13 +25,13 @@ class BoxBuilderHtml5WarningTest {
             <html>
                 <body>
                     <%s>content</%s>
-                    <summary>foo</summary>
+                    <dialog>foo</dialog>
                     <video/>
                 </body>
             </html>
             """.formatted(tag, tag);
         Set<String> tags = render(html).getUnsupportedTags();
-        assertThat(tags).containsExactlyInAnyOrder(tag, "summary", "video");
+        assertThat(tags).containsExactlyInAnyOrder(tag, "dialog", "video");
     }
 
     @Test
