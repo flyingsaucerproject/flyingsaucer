@@ -22,7 +22,20 @@ class MultipleTbodyWithPaginationTest {
         PDF pdf = printFile(log, bytes, "multiple-tbody-with-pagination.pdf");
 
         assertThat(pdf.numberOfPages).isEqualTo(2);
-        assertThat(pdf).containsExactText("Left 1\nRight 1.a\nRight 1.b");
-        assertThat(pdf).containsExactText("Left 2\nRight 2.a\nRight 2.b");
+        assertThat(pdf.text.lines()).containsExactly(
+                "Name Age", "Left 1", "Right 1.a", "Right 1.b",
+                "Name Age", "Left 2", "Right 2.a", "Right 2.b");
+    }
+
+    /**
+     * Without {@code page-break-inside: avoid}, the second rowspan cell ("Left 2") is split across pages.
+     */
+    @Test
+    void rowspanCellSplitAcrossPages() throws IOException {
+        byte[] bytes = Html2Pdf.fromClasspathResource("multiple-tbody-with-rowspan-split.html");
+        PDF pdf = printFile(log, bytes, "multiple-tbody-with-rowspan-split.pdf");
+
+        assertThat(pdf.numberOfPages).isEqualTo(2);
+        assertThat(pdf).containsText("Left 1", "Right 1.a", "Right 1.b", "Left 2", "Right 2.a", "Right 2.b");
     }
 }
