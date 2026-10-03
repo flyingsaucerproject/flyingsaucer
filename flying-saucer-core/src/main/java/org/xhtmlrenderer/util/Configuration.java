@@ -393,7 +393,7 @@ public class Configuration {
             final Properties sysProps = System.getProperties();
 
             cnt = 0;
-            for (String key : sortedKeys(sysProps)) {
+            for (String key : sysProps.stringPropertyNames().stream().sorted().toList()) {
                 if (key.startsWith("xr.") && !this.properties.containsKey(key)) {
                     String val = sysProps.getProperty(key);
                     this.properties.setProperty(key, val);
