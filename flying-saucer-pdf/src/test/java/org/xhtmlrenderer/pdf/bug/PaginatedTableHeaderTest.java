@@ -66,6 +66,7 @@ class PaginatedTableHeaderTest {
 
     private static String pageText(PDDocument pdf, int pageNo) throws IOException {
         PDFTextStripper stripper = new PDFTextStripper();
+        stripper.setLineSeparator("\n");
         stripper.setStartPage(pageNo);
         stripper.setEndPage(pageNo);
         return stripper.getText(pdf);
