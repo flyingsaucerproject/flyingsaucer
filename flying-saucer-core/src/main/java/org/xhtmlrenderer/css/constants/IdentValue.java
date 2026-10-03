@@ -89,6 +89,8 @@ public class IdentValue implements FSDerivedValue {
     public static final IdentValue DECIMAL = addValue("decimal");
     public static final IdentValue DECIMAL_LEADING_ZERO = addValue("decimal-leading-zero");
     public static final IdentValue DISC = addValue("disc");
+    public static final IdentValue DISCLOSURE_CLOSED = addValue("disclosure-closed");
+    public static final IdentValue DISCLOSURE_OPEN = addValue("disclosure-open");
     public static final IdentValue DOTTED = addValue("dotted");
     public static final IdentValue DOUBLE = addValue("double");
     public static final IdentValue DYNAMIC = addValue("dynamic");

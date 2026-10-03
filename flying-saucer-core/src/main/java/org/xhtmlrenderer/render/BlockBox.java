@@ -61,6 +61,8 @@ import java.util.List;
 import static org.xhtmlrenderer.css.constants.CSSName.DISPLAY;
 import static org.xhtmlrenderer.css.constants.IdentValue.CIRCLE;
 import static org.xhtmlrenderer.css.constants.IdentValue.DISC;
+import static org.xhtmlrenderer.css.constants.IdentValue.DISCLOSURE_CLOSED;
+import static org.xhtmlrenderer.css.constants.IdentValue.DISCLOSURE_OPEN;
 import static org.xhtmlrenderer.css.constants.IdentValue.NONE;
 import static org.xhtmlrenderer.css.constants.IdentValue.SQUARE;
 import static org.xhtmlrenderer.render.BlockBox.ContentType.UNKNOWN;
@@ -327,6 +329,8 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
         }
         else if (listStyle == CIRCLE || listStyle == SQUARE || listStyle == DISC) {
             return new MarkerData(strutMetrics, null, makeGlyphMarker(strutMetrics), null);
+        } else if (listStyle == DISCLOSURE_OPEN || listStyle == DISCLOSURE_CLOSED) {
+            return new MarkerData(strutMetrics, null, makeDisclosureMarker(strutMetrics), null);
         } else if (listStyle != NONE) {
             return new MarkerData(strutMetrics, null, null, makeTextMarker(c, listStyle));
         } else {
@@ -338,6 +342,12 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
         int diameter = (int) ((strutMetrics.getAscent() + strutMetrics.getDescent()) / 3);
 
         return new MarkerData.GlyphMarker(diameter, diameter * 3);
+    }
+
+    private MarkerData.GlyphMarker makeDisclosureMarker(StrutMetrics strutMetrics) {
+        int size = (int) ((strutMetrics.getAscent() + strutMetrics.getDescent()) / 2);
+
+        return new MarkerData.GlyphMarker(size, size * 2);
     }
 
     @Nullable

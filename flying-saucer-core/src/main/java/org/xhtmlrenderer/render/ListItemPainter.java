@@ -24,6 +24,8 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.extend.FSImage;
 
+import java.awt.Polygon;
+
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_DEFAULT;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
@@ -95,10 +97,34 @@ public class ListItemPainter {
             c.getOutputDevice().fillRect(x, y, marker.getDiameter(), marker.getDiameter());
         } else if (listStyle == IdentValue.CIRCLE) {
             c.getOutputDevice().drawOval(x, y, marker.getDiameter(), marker.getDiameter());
+        } else if (listStyle == IdentValue.DISCLOSURE_CLOSED) {
+            c.getOutputDevice().fill(disclosureClosedTriangle(x, y, marker.getDiameter()));
+        } else if (listStyle == IdentValue.DISCLOSURE_OPEN) {
+            c.getOutputDevice().fill(disclosureOpenTriangle(x, y, marker.getDiameter()));
         }
 
         // restore the old AntiAliasing setting
         c.getOutputDevice().setRenderingHint(KEY_ANTIALIASING, requireNonNullElse(aa_key, VALUE_ANTIALIAS_DEFAULT));
+    }
+
+    /**
+     * Right-pointing triangle (▸) inscribed into the square {@code (x, y, size, size)}.
+     */
+    private static Polygon disclosureClosedTriangle(int x, int y, int size) {
+        return new Polygon(
+                new int[]{x, x + size, x},
+                new int[]{y, y + size / 2, y + size},
+                3);
+    }
+
+    /**
+     * Down-pointing triangle (▾) inscribed into the square {@code (x, y, size, size)}.
+     */
+    private static Polygon disclosureOpenTriangle(int x, int y, int size) {
+        return new Polygon(
+                new int[]{x, x + size, x + size / 2},
+                new int[]{y, y, y + size},
+                3);
     }
 
     private static int getListItemCenterBaseline(final RenderingContext c, final BlockBox box) {

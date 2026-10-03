@@ -65,6 +65,8 @@ import static org.xhtmlrenderer.css.constants.IdentValue.DECIMAL;
 import static org.xhtmlrenderer.css.constants.IdentValue.DECIMAL_LEADING_ZERO;
 import static org.xhtmlrenderer.css.constants.IdentValue.DEFAULT;
 import static org.xhtmlrenderer.css.constants.IdentValue.DISC;
+import static org.xhtmlrenderer.css.constants.IdentValue.DISCLOSURE_CLOSED;
+import static org.xhtmlrenderer.css.constants.IdentValue.DISCLOSURE_OPEN;
 import static org.xhtmlrenderer.css.constants.IdentValue.DOTTED;
 import static org.xhtmlrenderer.css.constants.IdentValue.DOUBLE;
 import static org.xhtmlrenderer.css.constants.IdentValue.DYNAMIC;
@@ -196,10 +198,12 @@ public class PrimitivePropertyBuilders {
     // disc | circle | square | decimal
     // | decimal-leading-zero | lower-roman | upper-roman
     // | lower-greek | lower-latin | upper-latin | armenian
-    // | georgian | lower-alpha | upper-alpha | none | inherit
+    // | georgian | lower-alpha | upper-alpha | disclosure-open | disclosure-closed
+    // | none | inherit
     public static final BitSet LIST_STYLE_TYPES = setFor(DISC, CIRCLE, SQUARE,
         DECIMAL, DECIMAL_LEADING_ZERO, LOWER_ROMAN, UPPER_ROMAN, LOWER_GREEK,
-        LOWER_LATIN, UPPER_LATIN, ARMENIAN, GEORGIAN, LOWER_ALPHA, UPPER_ALPHA, NONE);
+        LOWER_LATIN, UPPER_LATIN, ARMENIAN, GEORGIAN, LOWER_ALPHA, UPPER_ALPHA,
+        DISCLOSURE_OPEN, DISCLOSURE_CLOSED, NONE);
 
     // repeat | repeat-x | repeat-y | no-repeat | inherit
     public static final BitSet BACKGROUND_REPEATS = setFor(REPEAT, REPEAT_X, REPEAT_Y, NO_REPEAT);
