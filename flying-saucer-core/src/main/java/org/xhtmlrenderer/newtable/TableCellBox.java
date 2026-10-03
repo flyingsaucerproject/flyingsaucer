@@ -1033,10 +1033,37 @@ public class TableCellBox extends BlockBox {
     }
 
     private int fixedHeight;
+    @Nullable
+    private TableCellBox splitFrom;
+
     public void setFixedHeight(int fixedHeight) {
         this.fixedHeight = fixedHeight;
     }
-    
+
+    /**
+     * Creates a copy of this (rowspan) cell which continues it on the next page.
+     * Such a copy exists only during the current layout pass, and is removed on {@link TableRowBox#reset}.
+     */
+    TableCellBox splitContinuation() {
+        TableCellBox continuation = (TableCellBox) copyOf();
+        continuation.splitFrom = this;
+        return continuation;
+    }
+
+    /**
+     * @return the original cell, if this cell is a continuation of a split rowspan cell
+     */
+    @Nullable
+    TableCellBox splitFrom() {
+        return splitFrom;
+    }
+
+    @Override
+    public void reset(LayoutContext c) {
+        super.reset(c);
+        fixedHeight = 0;
+    }
+
     @Override
     public void setHeight(int height) {
         if (height != 0 && fixedHeight > 0) {
