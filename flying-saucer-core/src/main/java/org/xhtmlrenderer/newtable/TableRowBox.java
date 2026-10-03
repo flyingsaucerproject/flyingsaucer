@@ -111,7 +111,7 @@ public class TableRowBox extends BlockBox {
                             TableCellBox ccell = crow.get(i);
                             TableCellBox pcell = prow.get(i);
                             if (ccell != null && ccell != TableCellBox.SPANNING_CELL && ccell == pcell) {
-                                TableCellBox ncell = (TableCellBox) pcell.copyOf();
+                                TableCellBox ncell = pcell.splitContinuation();
                                 ncell.setParent(this);
                                 ncell.setRow(getIndex());
                                 ncell.setCol(i);
@@ -545,10 +545,28 @@ public class TableRowBox extends BlockBox {
 
     @Override
     public void reset(LayoutContext c) {
+        removeSplitContinuationCells(c);
         super.reset(c);
         setHaveBaseline(false);
         getSection().setNeedCellWidthCalc(true);
         setContentLimitContainer(null);
+    }
+
+    /**
+     * Cells added to this row by splitting a rowspan cell across pages are not part of the original box tree.
+     * Undo the split, otherwise the next layout pass would treat them as regular cells (see issue #379).
+     */
+    private void removeSplitContinuationCells(LayoutContext c) {
+        for (int i = getChildCount() - 1; i >= 0; i--) {
+            if (getChild(i) instanceof TableCellBox continuation && continuation.splitFrom() != null) {
+                TableCellBox original = continuation.splitFrom();
+                for (RowData row : getSection().getGrid()) {
+                    row.getRow().replaceAll(cell -> cell == continuation ? original : cell);
+                }
+                original.setFixedHeight(0);
+                continuation.detach(c);
+            }
+        }
     }
 
     public boolean isHaveBaseline() {
