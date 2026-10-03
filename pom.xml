@@ -161,6 +161,8 @@
           </includes>
           <systemPropertyVariables>
             <xr.test-config-from-system-property>from-system-property</xr.test-config-from-system-property>
+            <xr.test-config-constant-without-package>RenderingHints.VALUE_TEXT_ANTIALIAS_ON</xr.test-config-constant-without-package>
+            <xr.test-config-missing-constant>java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_HGRB</xr.test-config-missing-constant>
           </systemPropertyVariables>
         </configuration>
       </plugin>
