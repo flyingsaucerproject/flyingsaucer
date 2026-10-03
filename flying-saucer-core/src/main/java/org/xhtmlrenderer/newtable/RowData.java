@@ -51,10 +51,10 @@ public class RowData {
         _row.add(pos+1, current == null ? null : TableCellBox.SPANNING_CELL);
     }
 
+    @Override
     public String toString() {
-        return getClass().getSimpleName() + ": [" + _row.stream()
-                .map(box -> String.valueOf(box))
-                .collect(joining("; ")) +
-                "]";
+        return _row.stream()
+                .map(String::valueOf)
+                .collect(joining("; ", getClass().getSimpleName() + ": [", "]"));
     }
 }
