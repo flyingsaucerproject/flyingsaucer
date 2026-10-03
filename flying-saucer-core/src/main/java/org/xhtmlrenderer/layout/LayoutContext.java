@@ -147,7 +147,7 @@ public class LayoutContext implements CssContext {
 
     public LayoutState captureLayoutState() {
         return isPrint() ?
-                new LayoutState(_firstLines, _firstLetters, _currentMarkerData, _blockFormattingContexts, getPageName(), getExtraSpaceBottom(), getExtraSpaceTop(), getNoPageBreak()) :
+                new LayoutState(_firstLines, _firstLetters, _currentMarkerData, _blockFormattingContexts, getPageName(), getExtraSpaceTop(), getExtraSpaceBottom(), getNoPageBreak()) :
                 new LayoutState(_firstLines, _firstLetters, _currentMarkerData, _blockFormattingContexts);
     }
 
