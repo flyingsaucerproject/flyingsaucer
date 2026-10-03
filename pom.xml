@@ -159,6 +159,9 @@
           <includes>
             <include>org/**/*</include>
           </includes>
+          <systemPropertyVariables>
+            <xr.test-config-from-system-property>from-system-property</xr.test-config-from-system-property>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>
