@@ -57,4 +57,9 @@ public class ConfigurationTest {
         assertThat(Configuration.isTrue("xr.test-config-boolean", false)).isTrue();
         assertThat(Configuration.isTrue("xr.test-config-BOOLEAN", false)).isFalse();
     }
+
+    @Test
+    public void fractionalFontMetricsAreEnabledByDefault() {
+        assertThat(Configuration.isTrue("xr.text.fractional-font-metrics", false)).isTrue();
+    }
 }
