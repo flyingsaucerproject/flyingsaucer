@@ -12,6 +12,11 @@ public class ConfigurationTest {
     }
 
     @Test
+    public void valueOnlyDefinedInSystemProperties() {
+        assertThat(Configuration.valueFor("xr.test-config-from-system-property", "the-default")).isEqualTo("from-system-property");
+    }
+
+    @Test
     public void byteValue() {
         assertThat(Configuration.valueAsByte("xr.test-config-byte", (byte) 15)).isEqualTo(8);
         assertThat(Configuration.valueAsByte("xr.test-config-BYTE", (byte) 15)).isEqualTo(15);
