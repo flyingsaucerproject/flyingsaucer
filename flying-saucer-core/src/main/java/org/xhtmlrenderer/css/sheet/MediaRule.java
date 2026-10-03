@@ -19,15 +19,20 @@
  */
 package org.xhtmlrenderer.css.sheet;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Locale.ROOT;
 
 public class MediaRule implements RulesetContainer {
     private final List<String> _mediaTypes = new ArrayList<>();
     private final List<Ruleset> _contents = new ArrayList<>();
-    private final int _origin;
+    private final Origin _origin;
 
-    public MediaRule(int origin) {
+    public MediaRule(Origin origin) {
         _origin = origin;
     }
 
@@ -35,12 +40,10 @@ public class MediaRule implements RulesetContainer {
         _mediaTypes.add(medium);
     }
 
+    @CheckReturnValue
     public boolean matches(String medium) {
-        if (medium.equalsIgnoreCase("all") || _mediaTypes.contains("all")) {
-            return true;
-        } else {
-            return _mediaTypes.contains(medium.toLowerCase());
-        }
+        return medium.equalsIgnoreCase("all") || _mediaTypes.contains("all") ||
+                _mediaTypes.contains(medium.toLowerCase(ROOT));
     }
 
     @Override
@@ -53,7 +56,11 @@ public class MediaRule implements RulesetContainer {
     }
 
     @Override
-    public int getOrigin() {
+    public Origin getOrigin() {
         return _origin;
     }
-}
+
+    @Override
+    public String toString() {
+        return "%s{origin: %s}".formatted(getClass().getSimpleName(), _origin);
+    }}

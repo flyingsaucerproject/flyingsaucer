@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -30,10 +32,12 @@ import org.xhtmlrenderer.css.style.BackgroundSize;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.OutputDevice;
+import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.Uu;
 
@@ -45,8 +49,9 @@ import java.util.List;
  * An abstract implementation of an {@link OutputDevice}.  It provides complete
  * implementations for many {@code OutputDevice} methods.
  */
-public abstract class AbstractOutputDevice implements OutputDevice {
+public abstract class AbstractOutputDevice<T extends FSImage, FontType extends FSFont> implements OutputDevice<T, FontType> {
 
+    @Nullable
     private FontSpecification _fontSpec;
 
     protected abstract void drawLine(int x1, int y1, int x2, int y2);
@@ -58,22 +63,15 @@ public abstract class AbstractOutputDevice implements OutputDevice {
 
         if (text != null && !text.isEmpty()) {
             setColor(iB.getStyle().getColor());
-            setFont(iB.getStyle().getFSFont(c));
+            setFont((FontType) iB.getStyle().getFSFont(c));
             setFontSpecification(iB.getStyle().getFontSpecification());
-            if (inlineText.getParent().getStyle().isTextJustify()) {
-                JustificationInfo info = inlineText.getParent().getLineBox().getJustificationInfo();
-                if (info != null) {
-                    c.getTextRenderer().drawString(
-                            c.getOutputDevice(),
-                            text,
-                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline(),
-                            info);
-                } else {
-                    c.getTextRenderer().drawString(
-                            c.getOutputDevice(),
-                            text,
-                            iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline());
-                }
+            JustificationInfo info = justificationInfo(c, inlineText);
+            if (info != null) {
+                c.getTextRenderer().drawString(
+                        c.getOutputDevice(),
+                        text,
+                        iB.getAbsX() + inlineText.getX(), iB.getAbsY() + iB.getBaseline(),
+                        info);
             } else {
                 c.getTextRenderer().drawString(
                         c.getOutputDevice(),
@@ -87,6 +85,28 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
     }
 
+    /**
+     * The per-character adjustments to draw {@code inlineText} with: the line's
+     * justification (if any) plus the style's {@code letter-spacing} (if any),
+     * or {@code null} when neither applies.
+     */
+    @Nullable
+    @CheckReturnValue
+    protected JustificationInfo justificationInfo(RenderingContext c, InlineText inlineText) {
+        InlineLayoutBox iB = inlineText.getParent();
+        JustificationInfo info = iB.getStyle().isTextJustify() ?
+                iB.getLineBox().getJustificationInfo() :
+                null;
+
+        float letterSpacing = iB.getStyle().letterSpacing(c);
+        if (letterSpacing == 0.0f) {
+            return info;
+        }
+        return info == null ?
+                new JustificationInfo(letterSpacing, letterSpacing) :
+                new JustificationInfo(info.nonSpaceAdjust() + letterSpacing, info.spaceAdjust() + letterSpacing);
+    }
+
     private void drawFontMetrics(RenderingContext c, InlineText inlineText) {
         InlineLayoutBox iB = inlineText.getParent();
         String text = inlineText.getSubstring();
@@ -94,9 +114,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         setColor(new FSRGBColor(0xFF, 0x33, 0xFF));
 
         FSFontMetrics fm = iB.getStyle().getFSFontMetrics(null);
-        int width = c.getTextRenderer().getWidth(
-                c.getFontContext(),
-                iB.getStyle().getFSFont(c), text);
+        int width = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), text);
         int x = iB.getAbsX() + inlineText.getX();
         int y = iB.getAbsY() + iB.getBaseline();
 
@@ -117,8 +135,14 @@ public abstract class AbstractOutputDevice implements OutputDevice {
 
         Rectangle edge = iB.getContentAreaEdge(iB.getAbsX(), iB.getAbsY(), c);
 
+        // Justification is handed to the text renderers rather than baked into the box widths,
+        // so a justified box has to grow by the adjustment its own content received or the
+        // decoration stops short of the text it underlines.
+        int width = edge.width +
+                (iB.getLineBox().getJustificationInfo() != null ? iB.getJustificationAdjust() : 0);
+
         fillRect(edge.x, iB.getAbsY() + decoration.getOffset(),
-                    edge.width, decoration.getThickness());
+                    width, decoration.getThickness());
     }
 
     @Override
@@ -135,9 +159,12 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                         parent.getAbsX() + parent.getTx() + parent.getContentWidth() - lineBox.getAbsX(),
                         textDecoration.getThickness());
             } else {
+                // a justified line spans its block's content box, not its layout width
+                int width = lineBox.getJustificationInfo() != null ?
+                        lineBox.getJustifiedContentWidth() : lineBox.getContentWidth();
                 fillRect(
                         lineBox.getAbsX(), lineBox.getAbsY() + textDecoration.getOffset(),
-                        lineBox.getContentWidth(),
+                        width,
                         textDecoration.getThickness());
             }
         }
@@ -155,7 +182,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
     @Override
     public void paintCollapsedBorder(
             RenderingContext c, BorderPropertySet border, Rectangle bounds, int side) {
-        BorderPainter.paint(bounds, side, border, c, 0, false);
+        BorderPainter.paint(bounds, side, border, c, 0);
     }
 
     @Override
@@ -166,16 +193,17 @@ public abstract class AbstractOutputDevice implements OutputDevice {
 
         Rectangle borderBounds = box.getPaintingBorderEdge(c);
 
-        BorderPainter.paint(borderBounds, box.getBorderSides(), box.getBorder(c), c, 0, true);
+        BorderPainter.paint(borderBounds, box.getBorderSides(), box.getBorder(c), c, 0);
     }
 
     @Override
     public void paintBorder(RenderingContext c, CalculatedStyle style, Rectangle edge, int sides) {
-        BorderPainter.paint(edge, sides, style.getBorder(c), c, 0, true);
+        BorderPainter.paint(edge, sides, style.getBorder(c), c, 0);
     }
 
+    @Nullable
     private FSImage getBackgroundImage(RenderingContext c, CalculatedStyle style) {
-        if (! style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
+    	if (! style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
             String uri = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
             try {
                 return c.getUac().getImageResource(uri).getImage();
@@ -212,8 +240,22 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             return;
         }
 
+        setOpacity(style.getOpacity());
+
         FSColor backgroundColor = style.getBackgroundColor();
-        FSImage backgroundImage = getBackgroundImage(c, style);
+
+        FSLinearGradient backgroundLinearGradient = null;
+        T backgroundImage = null;
+
+        if (style.isLinearGradient())
+        {
+        	// TODO: Is this the correct width to use?
+        	backgroundLinearGradient = style.getLinearGradient(c, bgImageContainer.width, bgImageContainer.height);
+        }
+        else
+        {
+        	backgroundImage = (T) getBackgroundImage(c, style);
+        }
 
         // If the image width or height is zero, then there's nothing to draw.
         // Also prevents infinite loop when trying to tile an image with zero size.
@@ -222,7 +264,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
 
         if ( (backgroundColor == null || backgroundColor == FSRGBColor.TRANSPARENT) &&
-                backgroundImage == null) {
+                backgroundImage == null && backgroundLinearGradient == null) {
             return;
         }
 
@@ -239,9 +281,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
             fill(borderBounds);
         }
 
-        if (backgroundImage != null) {
+        if (backgroundImage != null || backgroundLinearGradient != null) {
             setClip(borderBounds);
-
             Rectangle localBGImageContainer = bgImageContainer;
             if (style.isFixedBackground()) {
                 localBGImageContainer = c.getViewportRectangle();
@@ -255,7 +296,20 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                 yoff += (int)border.top();
             }
 
-            scaleBackgroundImage(c, style, localBGImageContainer, backgroundImage);
+            clip(borderBounds);
+
+        	if (backgroundLinearGradient != null)
+        	{
+        		drawLinearGradient(backgroundLinearGradient,
+        		backgroundBounds.x, backgroundBounds.y, backgroundBounds.width, backgroundBounds.height);
+        		setClip(oldclip);
+        		return;
+        	}
+
+            if (backgroundImage != null)
+            {
+                backgroundImage = (T) scaleBackgroundImage(c, style, localBGImageContainer, backgroundImage);
+            }
 
             float imageWidth = backgroundImage.getWidth();
             float imageHeight = backgroundImage.getHeight();
@@ -271,8 +325,9 @@ public abstract class AbstractOutputDevice implements OutputDevice {
 
             if (! hrepeat && ! vrepeat) {
                 Rectangle imageBounds = new Rectangle(xoff, yoff, (int)imageWidth, (int)imageHeight);
-                if (imageBounds.intersects(backgroundBounds)) {
-                    drawImage(backgroundImage, xoff, yoff);
+                if (imageBounds.intersects(backgroundBounds))
+                {
+               		drawImage(backgroundImage, xoff, yoff);
                 }
             } else if (hrepeat && vrepeat) {
                 paintTiles(
@@ -324,7 +379,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         return result;
     }
 
-    private void paintTiles(FSImage image, int left, int top, int right, int bottom) {
+    private void paintTiles(T image, int left, int top, int right, int bottom) {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -335,7 +390,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
     }
 
-    private void paintVerticalBand(FSImage image, int left, int top, int bottom) {
+    private void paintVerticalBand(T image, int left, int top, int bottom) {
         int height = image.getHeight();
 
         for (int y = top; y < bottom; y+= height) {
@@ -343,7 +398,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
     }
 
-    private void paintHorizontalBand(FSImage image, int left, int top, int right) {
+    private void paintHorizontalBand(T image, int left, int top, int right) {
         int width = image.getWidth();
 
         for (int x = left; x < right; x+= width) {
@@ -367,7 +422,8 @@ public abstract class AbstractOutputDevice implements OutputDevice {
         }
     }
 
-    private void scaleBackgroundImage(CssContext c, CalculatedStyle style, Rectangle backgroundContainer, FSImage image) {
+    @CheckReturnValue
+    private FSImage scaleBackgroundImage(CssContext c, CalculatedStyle style, Rectangle backgroundContainer, FSImage image) {
         BackgroundSize backgroundSize = style.getBackgroundSize();
 
         if (! backgroundSize.isBothAuto()) {
@@ -375,24 +431,25 @@ public abstract class AbstractOutputDevice implements OutputDevice {
                 int testHeight = (int)((double)image.getHeight() * backgroundContainer.width / image.getWidth());
                 if (backgroundSize.isContain()) {
                     if (testHeight > backgroundContainer.height) {
-                        image.scale(-1, backgroundContainer.height);
+                        return image.scale(-1, backgroundContainer.height);
                     } else {
-                        image.scale(backgroundContainer.width, -1);
+                        return image.scale(backgroundContainer.width, -1);
                     }
                 } else if (backgroundSize.isCover()) {
                     if (testHeight > backgroundContainer.height) {
-                        image.scale(backgroundContainer.width, -1);
+                        return image.scale(backgroundContainer.width, -1);
                     } else {
-                        image.scale(-1, backgroundContainer.height);
+                        return image.scale(-1, backgroundContainer.height);
                     }
                 }
             } else {
                 int scaledWidth = calcBackgroundSizeLength(c, style, backgroundSize.getWidth(), backgroundContainer.width);
                 int scaledHeight = calcBackgroundSizeLength(c, style, backgroundSize.getHeight(), backgroundContainer.height);
 
-                image.scale(scaledWidth, scaledHeight);
+                return image.scale(scaledWidth, scaledHeight);
             }
         }
+        return image;
     }
 
     private int calcBackgroundSizeLength(CssContext c, CalculatedStyle style, PropertyValue value, float boundsDim) {
@@ -419,7 +476,7 @@ public abstract class AbstractOutputDevice implements OutputDevice {
      * @return current FontSpecification.
      */
     public FontSpecification getFontSpecification() {
-    return _fontSpec;
+        return _fontSpec;
     }
 
     /**
@@ -428,6 +485,6 @@ public abstract class AbstractOutputDevice implements OutputDevice {
      * @param fs current FontSpecification.
      */
     public void setFontSpecification(FontSpecification fs) {
-    _fontSpec = fs;
+        _fontSpec = fs;
     }
 }

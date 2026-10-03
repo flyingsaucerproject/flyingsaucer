@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -26,20 +27,21 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.xhtmlrenderer.css.constants.CSSName.QUOTES;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
 
 public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
 
     @Override
-    public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+    public List<PropertyDeclaration> buildDeclarations(CSSName cssName, List<? extends CSSPrimitiveValue> values,
+                                                       Origin origin, boolean important, boolean inheritAllowed) {
         if (values.size() == 1) {
             PropertyValue value = (PropertyValue) values.get(0);
             if (value.getCssValueType() == CSSValue.CSS_INHERIT) {
@@ -52,7 +54,7 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
                 }
             }
         }
-        
+
         if (values.size() % 2 == 1) {
             throw new CSSParseException(
                     "Mismatched quotes " + values, -1);
@@ -68,7 +70,6 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
         }
     }
 
-    @Nonnull
     @CheckReturnValue
     private List<String> getStringValues(List<? extends CSSPrimitiveValue> values) {
         return values.stream()
@@ -78,7 +79,7 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
                 .map(value -> value.getStringValue())
                 .collect(toList());
     }
-    
+
     private void assertNoOperator(PropertyValue cssPrimitiveValue) {
         if (cssPrimitiveValue.getOperator() != null) {
             throw new CSSParseException(
@@ -90,7 +91,7 @@ public class QuotesPropertyBuilder extends AbstractPropertyBuilder {
         short type = value.getPrimitiveType();
         if (type == CSSPrimitiveValue.CSS_URI) {
             throw new CSSParseException("URI is not allowed here", -1);
-        } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+        } else if (value.getPropertyValueType() == VALUE_TYPE_FUNCTION) {
             throw new CSSParseException("Function " + value.getFunction().getName() + " is not allowed here", -1);
         } else if (type == CSSPrimitiveValue.CSS_IDENT) {
             throw new CSSParseException("Identifier is not a valid value for the quotes property", -1);

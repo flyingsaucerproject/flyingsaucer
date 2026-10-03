@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.style;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.PropertyValue;
@@ -37,23 +38,24 @@ public class FontSizeHelper {
     static {
         // XXX Should come from (or be influenced by) the UA.  These sizes
         // correspond to the Firefox defaults
-        PROPORTIONAL_FONT_SIZES.put(IdentValue.XX_SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 9f, "9px"));
-        PROPORTIONAL_FONT_SIZES.put(IdentValue.X_SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 10f, "10px"));
-        PROPORTIONAL_FONT_SIZES.put(IdentValue.SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 13f, "13px"));
-        PROPORTIONAL_FONT_SIZES.put(IdentValue.MEDIUM, new PropertyValue(CSSPrimitiveValue.CSS_PX, 16f, "16px"));
-        PROPORTIONAL_FONT_SIZES.put(IdentValue.LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 18f, "18px"));
-        PROPORTIONAL_FONT_SIZES.put(IdentValue.X_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 24f, "24px"));
-        PROPORTIONAL_FONT_SIZES.put(IdentValue.XX_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 32f, "32px"));
+        PROPORTIONAL_FONT_SIZES.put(IdentValue.XX_SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 9.0f, "9px"));
+        PROPORTIONAL_FONT_SIZES.put(IdentValue.X_SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 10.0f, "10px"));
+        PROPORTIONAL_FONT_SIZES.put(IdentValue.SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 13.0f, "13px"));
+        PROPORTIONAL_FONT_SIZES.put(IdentValue.MEDIUM, new PropertyValue(CSSPrimitiveValue.CSS_PX, 16.0f, "16px"));
+        PROPORTIONAL_FONT_SIZES.put(IdentValue.LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 18.0f, "18px"));
+        PROPORTIONAL_FONT_SIZES.put(IdentValue.X_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 24.0f, "24px"));
+        PROPORTIONAL_FONT_SIZES.put(IdentValue.XX_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 32.0f, "32px"));
 
-        FIXED_FONT_SIZES.put(IdentValue.XX_SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 9f, "9px"));
-        FIXED_FONT_SIZES.put(IdentValue.X_SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 10f, "10px"));
-        FIXED_FONT_SIZES.put(IdentValue.SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 12f, "12px"));
-        FIXED_FONT_SIZES.put(IdentValue.MEDIUM, new PropertyValue(CSSPrimitiveValue.CSS_PX, 13f, "13px"));
-        FIXED_FONT_SIZES.put(IdentValue.LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 16f, "16px"));
-        FIXED_FONT_SIZES.put(IdentValue.X_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 20f, "20px"));
-        FIXED_FONT_SIZES.put(IdentValue.XX_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 26f, "26px"));
+        FIXED_FONT_SIZES.put(IdentValue.XX_SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 9.0f, "9px"));
+        FIXED_FONT_SIZES.put(IdentValue.X_SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 10.0f, "10px"));
+        FIXED_FONT_SIZES.put(IdentValue.SMALL, new PropertyValue(CSSPrimitiveValue.CSS_PX, 12.0f, "12px"));
+        FIXED_FONT_SIZES.put(IdentValue.MEDIUM, new PropertyValue(CSSPrimitiveValue.CSS_PX, 13.0f, "13px"));
+        FIXED_FONT_SIZES.put(IdentValue.LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 16.0f, "16px"));
+        FIXED_FONT_SIZES.put(IdentValue.X_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 20.0f, "20px"));
+        FIXED_FONT_SIZES.put(IdentValue.XX_LARGE, new PropertyValue(CSSPrimitiveValue.CSS_PX, 26.0f, "26px"));
     }
 
+    @Nullable
     public static IdentValue getNextSmaller(IdentValue absFontSize) {
         IdentValue prev = null;
         for (IdentValue ident : PROPORTIONAL_FONT_SIZES.keySet()) {
@@ -65,6 +67,7 @@ public class FontSizeHelper {
         return null;
     }
 
+    @Nullable
     public static IdentValue getNextLarger(IdentValue absFontSize) {
         for (Iterator<IdentValue> i = PROPORTIONAL_FONT_SIZES.keySet().iterator(); i.hasNext(); ) {
             IdentValue ident = i.next();

@@ -19,17 +19,13 @@
  */
 package org.xhtmlrenderer.resource;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xml.sax.InputSource;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 /**
- *
  * @author Patrick Wright
  */
-@ParametersAreNonnullByDefault
 public interface Resource {
     @Nullable
     @CheckReturnValue

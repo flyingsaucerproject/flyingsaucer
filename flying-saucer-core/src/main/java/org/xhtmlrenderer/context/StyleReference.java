@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.context;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,20 +41,24 @@ import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.util.XRLog;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
+
+import static org.xhtmlrenderer.css.constants.CSSName.cssProperty;
 
 
 /**
  * @author Torbjoern Gannholm
  */
 public class StyleReference {
+    @Nullable
     private NamespaceHandler _nsh;
+    @Nullable
     private Document _doc;
     private final StylesheetFactoryImpl _stylesheetFactory;
 
@@ -60,6 +66,7 @@ public class StyleReference {
      * Instance of our element-styles matching class. Will be null if new rules
      * have been added since last match.
      */
+    @Nullable
     private Matcher _matcher;
 
     private UserAgentCallback _uac;
@@ -96,11 +103,7 @@ public class StyleReference {
         List<Stylesheet> result = new ArrayList<>(infos.size() + 15);
         for (StylesheetInfo info : infos) {
             if (info.appliesToMedia(medium)) {
-                Stylesheet sheet = info.getStylesheet();
-
-                if (sheet == null) {
-                    sheet = _stylesheetFactory.getStylesheet(info);
-                }
+                Stylesheet sheet = _stylesheetFactory.getStylesheet(info);
 
                 if (sheet != null) {
                     if (!sheet.getImportRules().isEmpty()) {
@@ -140,7 +143,7 @@ public class StyleReference {
             PropertyDeclaration pd = i.next();
 
             String propName = pd.getPropertyName();
-            CSSName cssName = CSSName.getByPropertyName(propName);
+            CSSName cssName = cssProperty(propName);
             props.put(propName, cs.propertyByName(cssName).getValue());
         }
         return props;
@@ -149,6 +152,7 @@ public class StyleReference {
     /**
      * Gets the pseudoElementStyle attribute of the StyleReference object
      */
+    @Nullable
     public CascadedStyle getPseudoElementStyle(Node node, String pseudoElement) {
         Element e;
         if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -163,12 +167,13 @@ public class StyleReference {
      * Gets the CascadedStyle for an element. This must then be converted in the
      * current context to a CalculatedStyle (use getDerivedStyle)
      */
-    public CascadedStyle getCascadedStyle(Element e, boolean restyle) {
+    public CascadedStyle getCascadedStyle(@Nullable Element e, boolean restyle) {
         if (e == null) return CascadedStyle.emptyCascadedStyle;
         return _matcher.getCascadedStyle(e, restyle);
     }
 
-    public PageInfo getPageStyle(String pageName, String pseudoPage) {
+    @CheckReturnValue
+    public PageInfo getPageStyle(@Nullable String pageName, String pseudoPage) {
         return _matcher.getPageCascadedStyle(pageName, pseudoPage);
     }
 
@@ -177,15 +182,11 @@ public class StyleReference {
      */
     public void flushStyleSheets() {
         String uri = _uac.getBaseURL();
-        StylesheetInfo info = new StylesheetInfo();
-        info.setUri(uri);
-        info.setOrigin(StylesheetInfo.AUTHOR);
         if (_stylesheetFactory.containsStylesheet(uri)) {
             _stylesheetFactory.removeCachedStylesheet(uri);
             XRLog.cssParse("Removing stylesheet '" + uri + "' from cache by request.");
         } else {
             XRLog.cssParse("Requested removing stylesheet '" + uri + "', but it's not in cache.");
-
         }
     }
 
@@ -205,42 +206,14 @@ public class StyleReference {
         List<StylesheetInfo> infos = new ArrayList<>();
         long st = System.currentTimeMillis();
 
-        StylesheetInfo defaultStylesheet = _nsh.getDefaultStylesheet(_stylesheetFactory);
-        if (defaultStylesheet != null) {
-            infos.add(defaultStylesheet);
-        }
+        _nsh.getDefaultStylesheet().ifPresent(defaultStylesheet -> infos.add(defaultStylesheet));
 
-        List<StylesheetInfo> refs = _nsh.getStylesheets(_doc);
-        int inlineStyleCount = 0;
-
-        for (StylesheetInfo ref : refs) {
-            String uri;
-
-            if (!ref.isInline()) {
-                uri = _uac.resolveURI(ref.getUri());
-                ref.setUri(uri);
-            } else {
-                ref.setUri(_uac.getBaseURL() + "#inline_style_" + (++inlineStyleCount));
-                Stylesheet sheet = _stylesheetFactory.parse(
-                        new StringReader(ref.getContent()), ref);
-                ref.setStylesheet(sheet);
-                ref.setUri(null);
-            }
-        }
-        infos.addAll(refs);
+        infos.addAll(_nsh.getStylesheets(_doc));
 
         // TODO: here we should also get user stylesheet from userAgent
 
-        long el = System.currentTimeMillis() - st;
-        XRLog.load("TIME: parse stylesheets  " + el + "ms");
-
+        XRLog.load("TIME: parse stylesheets in " + (System.currentTimeMillis() - st) + " ms.");
         return infos;
-    }
-
-    public void removeStyle(Element e) {
-        if (_matcher != null) {
-            _matcher.removeStyle(e);
-        }
     }
 
     public List<FontFaceRule> getFontFaceRules() {
@@ -254,6 +227,10 @@ public class StyleReference {
 
     public void setSupportCMYKColors(boolean b) {
         _stylesheetFactory.setSupportCMYKColors(b);
+    }
+
+    public Set<String> getUnsupportedCssFeatures() {
+        return _stylesheetFactory.getUnsupportedCssFeatures();
     }
 }
 

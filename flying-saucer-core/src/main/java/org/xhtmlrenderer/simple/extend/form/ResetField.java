@@ -27,28 +27,16 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 
-class ResetField extends AbstractButtonField {
+class ResetField extends AbstractButtonField<JButton> {
     ResetField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JButton create() {
         JButton button = new JButton();
-
-        String value;
-        if (hasAttribute("value")) {
-            value = getAttribute("value");
-            if (value.isEmpty())
-                value = " ";    //otherwise we get a very short button
-        }
-        else {
-            value = "Reset";
-        }
-
         applyComponentStyle(button);
-
-        button.setText(value);
+        button.setText(getValueAttribute("Reset"));
 
         button.addActionListener(event -> {
             XRLog.layout("Reset pressed: Restore");
@@ -67,7 +55,7 @@ class ResetField extends AbstractButtonField {
     @Override
     protected String[] getFieldValues() {
         return new String[] {
-                hasAttribute("value") ? getAttribute("value") : "Reset" // TODO: Don't hardcode
+                getAttribute("value", "Reset") // TODO: Don't hardcode
         };
     }
 }

@@ -35,33 +35,41 @@ public class EmptyReplacedElement implements ReplacedElement {
         _height = height;
     }
 
+    @Override
     public void detach(LayoutContext c) {
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return _height;
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return _width;
     }
 
+    @Override
     public Point getLocation() {
         return _location;
     }
 
+    @Override
     public boolean isRequiresInteractivePaint() {
         return false;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         _location = new Point(0, 0);
     }
 
+    @Override
     public int getBaseline() {
         return 0;
     }
 
+    @Override
     public boolean hasBaseline() {
         return false;
     }

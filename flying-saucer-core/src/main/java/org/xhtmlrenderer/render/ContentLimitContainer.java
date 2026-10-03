@@ -19,21 +19,26 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.layout.LayoutContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContentLimitContainer {
-    private ContentLimitContainer _parent;
+    @Nullable
+    private final ContentLimitContainer _parent;
 
     private final int _initialPageNo;
     private final List<ContentLimit> _contentLimits = new ArrayList<>();
 
+    @Nullable
     private PageBox _lastPage;
 
-    public ContentLimitContainer(LayoutContext c, int startAbsY) {
+    public ContentLimitContainer(@Nullable ContentLimitContainer parent, LayoutContext c, int startAbsY) {
         _initialPageNo = getPage(c, startAbsY).getPageNo();
+        _parent = parent;
     }
 
     public int getInitialPageNo() {
@@ -44,13 +49,17 @@ public class ContentLimitContainer {
         return _initialPageNo + _contentLimits.size() - 1;
     }
 
+    @Nullable
+    @CheckReturnValue
     public ContentLimit getContentLimit(int pageNo) {
         return getContentLimit(pageNo, false);
     }
 
+    @Nullable
+    @CheckReturnValue
     private ContentLimit getContentLimit(int pageNo, boolean addAsNeeded) {
         if (addAsNeeded) {
-            while (_contentLimits.size() < (pageNo - _initialPageNo + 1)) {
+            while (_contentLimits.size() < pageNo - _initialPageNo + 1) {
                 _contentLimits.add(new ContentLimit());
             }
         }
@@ -97,6 +106,8 @@ public class ContentLimitContainer {
         return page;
     }
 
+    @Nullable
+    @CheckReturnValue
     private PageBox getLastPage() {
         ContentLimitContainer c = this;
         while (c.getParent() != null) {
@@ -113,18 +124,17 @@ public class ContentLimitContainer {
         c._lastPage = page;
     }
 
+    @Nullable
+    @CheckReturnValue
     public ContentLimitContainer getParent() {
         return _parent;
-    }
-
-    public void setParent(ContentLimitContainer parent) {
-        _parent = parent;
     }
 
     public boolean isContainsMultiplePages() {
         return _contentLimits.size() > 1;
     }
 
+    @Override
     public String toString() {
         return "[initialPageNo=" + _initialPageNo + ", limits=" + _contentLimits + "]";
     }

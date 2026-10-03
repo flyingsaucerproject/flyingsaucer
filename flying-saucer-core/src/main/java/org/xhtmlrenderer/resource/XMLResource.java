@@ -19,8 +19,11 @@
  */
 package org.xhtmlrenderer.resource;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.InputSources;
 import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xml.sax.EntityResolver;
@@ -33,10 +36,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.EntityResolver2;
 import org.xml.sax.helpers.XMLFilterImpl;
-import org.xml.sax.helpers.XMLReaderFactory;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -55,45 +55,39 @@ import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
-
 
 /**
  * @author Patrick Wright
  */
-@ParametersAreNonnullByDefault
-public class XMLResource extends AbstractResource {
-    private Document document;
-    private static final XMLResourceBuilder XML_RESOURCE_BUILDER;
-    private static boolean useConfiguredParser;
+public final class XMLResource extends AbstractResource {
+    private static final XMLResourceBuilder XML_RESOURCE_BUILDER = new XMLResourceBuilder();
+    private static final AtomicBoolean useConfiguredParser = new AtomicBoolean(true);
 
-    static {
-        XML_RESOURCE_BUILDER = new XMLResourceBuilder();
-        useConfiguredParser = true;
-    }
+    private final Document document;
+    private final long elapsedLoadTime;
 
-    private XMLResource(InputStream stream) {
-        super(stream);
-    }
-
-    private XMLResource(@Nullable InputSource source) {
+    private XMLResource(@Nullable InputSource source, Document document, long elapsedLoadTime) {
         super(source);
+        this.document = document;
+        this.elapsedLoadTime = elapsedLoadTime;
     }
 
     public static XMLResource load(URL source) {
-        return load(new InputSource(source.toString()));
+        return load(InputSources.fromURL(source));
     }
 
     public static XMLResource load(InputStream stream) {
-        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(stream));
+        return XML_RESOURCE_BUILDER.createXMLResource(InputSources.fromStream(stream));
     }
 
     public static XMLResource load(InputSource source) {
-        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(source));
+        return XML_RESOURCE_BUILDER.createXMLResource(source);
     }
 
     public static XMLResource load(Reader reader) {
-        return XML_RESOURCE_BUILDER.createXMLResource(new XMLResource(new InputSource(reader)));
+        return XML_RESOURCE_BUILDER.createXMLResource(new InputSource(reader));
     }
 
     public static XMLResource load(String xml) {
@@ -108,40 +102,39 @@ public class XMLResource extends AbstractResource {
         return document;
     }
 
-    /*package*/
-    void setDocument(Document document) {
-        this.document = document;
+    @CheckReturnValue
+    public long getElapsedLoadTime() {
+        return elapsedLoadTime;
     }
 
     public static XMLReader newXMLReader() {
         XMLReader xmlReader = null;
         String xmlReaderClass = Configuration.valueFor("xr.load.xml-reader");
 
-        //TODO: if it doesn't find the parser, note that in a static boolean--otherwise
+        //TODO: if it doesn't find the parser, note that in a static boolean - otherwise
         // you get exceptions on every load
-        try {
-            if (xmlReaderClass != null &&
-                    !xmlReaderClass.equalsIgnoreCase("default") &&
-                    XMLResource.useConfiguredParser) {
-                try {
-                    Class.forName(xmlReaderClass);
-                } catch (Exception ex) {
-                    XMLResource.useConfiguredParser = false;
-                    XRLog.load(Level.WARNING,
-                            "The XMLReader class you specified as a configuration property " +
-                            "could not be found. Class.forName() failed on "
-                            + xmlReaderClass + ". Please check classpath. Use value 'default' in " +
-                            "FS configuration if necessary. Will now try JDK default.");
+        if (useConfiguredParser.get()) {
+            try {
+                if (xmlReaderClass != null && !xmlReaderClass.equalsIgnoreCase("default")) {
+                    try {
+                        Class<?> readerClass = Class.forName(xmlReaderClass);
+                        xmlReader = (XMLReader) readerClass.getDeclaredConstructor().newInstance();
+                    } catch (Exception ex) {
+                        useConfiguredParser.set(false);
+                        XRLog.load(Level.SEVERE, """
+                                The XMLReader class could not be found: '%s'.
+                                Caused by: %s.
+                                Falling back to JDK default xml reader.
+                                Hint: Use value 'default' in FS configuration if necessary.
+                                """.formatted(xmlReaderClass, ex));
+                    }
                 }
-                if (XMLResource.useConfiguredParser) {
-                    xmlReader = XMLReaderFactory.createXMLReader(xmlReaderClass);
-                }
+            } catch (Exception ex) {
+                XRLog.load(Level.WARNING,
+                        "Could not instantiate custom XMLReader class for XML parsing: "
+                                + xmlReaderClass + ". Please check classpath. Use value 'default' in " +
+                                "FS configuration if necessary. Will now try JDK default.", ex);
             }
-        } catch (Exception ex) {
-            XRLog.load(Level.WARNING,
-                    "Could not instantiate custom XMLReader class for XML parsing: "
-                    + xmlReaderClass + ". Please check classpath. Use value 'default' in " +
-                    "FS configuration if necessary. Will now try JDK default.", ex);
         }
         if (xmlReader == null) {
             try {
@@ -154,7 +147,7 @@ public class XMLResource extends AbstractResource {
                             "No value for system property 'org.xml.sax.driver'.");
                 }
                 */
-                xmlReader = XMLReaderFactory.createXMLReader();
+                xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
             } catch (Exception ex) {
                 XRLog.general(ex.getMessage());
             }
@@ -165,7 +158,7 @@ public class XMLResource extends AbstractResource {
                 SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
                 xmlReader = parser.getXMLReader();
             } catch (Exception ex) {
-                XRLog.general(ex.getMessage());
+                XRLog.general(Level.WARNING, ex.getMessage(), ex);
             }
         }
         if (xmlReader == null) {
@@ -180,58 +173,62 @@ public class XMLResource extends AbstractResource {
     private static class XMLResourceBuilder {
 
         private final XMLReaderPool parserPool = new XMLReaderPool();
-        private final IdentityTransformerPool traxPool = new IdentityTransformerPool();
+        private final IdentityTransformerPool transformerPool = new IdentityTransformerPool();
 
-        private XMLResource createXMLResource(XMLResource target) {
+        private XMLResource createXMLResource(InputSource inputSource) {
             long start = System.currentTimeMillis();
-            Document document = parse(target);
-            long end = System.currentTimeMillis();
+            Document document = parse(inputSource);
+            long elapsedLoadTime = System.currentTimeMillis() - start;
+            XRLog.load("Loaded document in " + elapsedLoadTime + "ms");
 
-            target.setElapsedLoadTime(end - start);
-            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
-
-            target.setDocument(document);
-            return target;
+            return new XMLResource(inputSource, document, elapsedLoadTime);
         }
 
-        private Document parse(XMLResource target) {
+        private Document parse(InputSource inputSource) {
             XMLReader xmlReader = parserPool.get();
             try {
-                return transform(new SAXSource(xmlReader, target.getResourceInputSource()));
+                return transform(new SAXSource(xmlReader, inputSource));
             } finally {
                 parserPool.release(xmlReader);
             }
         }
 
         XMLResource createXMLResource(Source source) {
-            Document document;
-
-            long st = System.currentTimeMillis();
-
-            document = transform(source);
-
-            long end = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
+            Document document = transform(source);
+            long elapsedLoadTime = System.currentTimeMillis() - start;
 
             //HACK: should rather use a default constructor
-            XMLResource target = new XMLResource((InputSource) null);
-
-            target.setElapsedLoadTime(end - st);
-
-            XRLog.load("Loaded document in ~" + target.getElapsedLoadTime() + "ms");
-
-            target.setDocument(document);
+            XMLResource target = new XMLResource(null, document, elapsedLoadTime);
+            XRLog.load("Loaded document in " + elapsedLoadTime + " ms.");
             return target;
         }
 
+        /**
+         * Transforms the given XML {@link Source} into a {@link org.w3c.dom.Document} using a securely
+         * configured {@link TransformerFactory}. This method prevents XML External Entity (XXE) attacks
+         * by disabling access to external DTDs and stylesheets.
+         *
+         * <p>The transformer is obtained from a reusable pool and released after the transformation is complete.
+         * If the pooled transformer is not hardened, the factory ensures protection via feature and attribute settings.</p>
+         *
+         * @param source the XML input to transform
+         * @return a DOM {@link Document} representing the transformed XML
+         * @throws XRRuntimeException if the transformation fails
+         */
         private Document transform(Source source) {
             DOMResult result = new DOMResult();
-            Transformer idTransform = traxPool.get();
+            Transformer idTransform = transformerPool.get();
             try {
+                // Ensure the transformer is secure (required in case it wasn't pre-hardened in the pool)
+                idTransform.setParameter(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+                idTransform.setParameter(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
                 idTransform.transform(source, result);
             } catch (Exception ex) {
                 throw new XRRuntimeException("Can't load the XML resource (using TrAX transformer). " + ex.getMessage(), ex);
             } finally {
-                traxPool.release(idTransform);
+                transformerPool.release(idTransform);
             }
             return (Document) result.getNode();
         }
@@ -271,14 +268,17 @@ public class XMLResource extends AbstractResource {
             xmlReader.setEntityResolver(FSEntityResolver.instance());
             xmlReader.setErrorHandler(new ErrorHandler() {
 
+                @Override
                 public void error(SAXParseException ex) {
                     XRLog.load(ex.getMessage());
                 }
 
+                @Override
                 public void fatalError(SAXParseException ex) {
                     XRLog.load(ex.getMessage());
                 }
 
+                @Override
                 public void warning(SAXParseException ex) {
                     XRLog.load(ex.getMessage());
                 }
@@ -335,10 +335,10 @@ public class XMLResource extends AbstractResource {
                         " set to " +
                         xmlReader.getFeature(featureUri));
             } catch (SAXNotSupportedException ex) {
-                XRLog.load(Level.WARNING, "SAX feature not supported on this XMLReader: " + featureUri);
+                XRLog.load(Level.WARNING, "SAX feature not supported on this XMLReader: " + featureUri, ex);
             } catch (SAXNotRecognizedException ex) {
                 XRLog.load(Level.WARNING, "SAX feature not recognized on this XMLReader: " + featureUri +
-                        ". Feature may be properly named, but not recognized by this parser.");
+                        ". Feature may be properly named, but not recognized by this parser.", ex);
             }
         }
 
@@ -358,10 +358,11 @@ public class XMLResource extends AbstractResource {
         }
 
         @Override
+        @Nullable
         public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
             EntityResolver resolver = getEntityResolver();
-            if (resolver instanceof EntityResolver2) {
-                return ((EntityResolver2) resolver).getExternalSubset(name, baseURI);
+            if (resolver instanceof EntityResolver2 entityResolver) {
+                return entityResolver.getExternalSubset(name, baseURI);
             }
             return null;
         }
@@ -372,16 +373,15 @@ public class XMLResource extends AbstractResource {
                                          String baseURI,
                                          String systemId) throws SAXException, IOException {
             EntityResolver resolver = getEntityResolver();
-            if (resolver instanceof EntityResolver2) {
-                return ((EntityResolver2) resolver)
-                        .resolveEntity(name, publicId, baseURI, systemId);
+            if (resolver instanceof EntityResolver2 entityResolver) {
+                return entityResolver.resolveEntity(name, publicId, baseURI, systemId);
             }
             return resolveEntity(publicId, systemId);
         }
     }
 
-    private static class IdentityTransformerPool extends ObjectPool<Transformer> {
-        private final TransformerFactory traxFactory;
+    private static final class IdentityTransformerPool extends ObjectPool<Transformer> {
+        private final TransformerFactory transformerFactory;
         private IdentityTransformerPool(int capacity) {
             super(capacity);
             TransformerFactory tf = TransformerFactory.newInstance();
@@ -390,7 +390,7 @@ public class XMLResource extends AbstractResource {
             } catch (TransformerConfigurationException e) {
                 XRLog.init(Level.WARNING, "Problem configuring TrAX factory", e);
             }
-            this.traxFactory = tf;
+            this.transformerFactory = tf;
         }
 
         private IdentityTransformerPool() {
@@ -400,7 +400,7 @@ public class XMLResource extends AbstractResource {
         @Override
         protected Transformer newValue() {
             try {
-                return traxFactory.newTransformer();
+                return transformerFactory.newTransformer();
             } catch (TransformerConfigurationException ex) {
                 throw new XRRuntimeException("Failed on configuring TrAX transformer.", ex);
             }

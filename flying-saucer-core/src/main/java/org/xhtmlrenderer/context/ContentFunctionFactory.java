@@ -19,7 +19,8 @@
  */
 package org.xhtmlrenderer.context;
 
-import org.w3c.dom.css.CSSPrimitiveValue;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.parser.FSFunction;
@@ -27,6 +28,7 @@ import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.layout.CounterFunction;
 import org.xhtmlrenderer.layout.InlineBoxing;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
@@ -35,17 +37,22 @@ import org.xhtmlrenderer.render.RenderingContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_IDENT;
+import static org.w3c.dom.css.CSSPrimitiveValue.CSS_STRING;
 
 public class ContentFunctionFactory {
     private final List<ContentFunction> _functions = new ArrayList<>();
 
-    {
+    public ContentFunctionFactory() {
         _functions.add(new PageCounterFunction());
         _functions.add(new PagesCounterFunction());
         _functions.add(new TargetCounterFunction());
         _functions.add(new LeaderFunction());
     }
 
+    @Nullable
     public ContentFunction lookupFunction(LayoutContext c, FSFunction function) {
         for (ContentFunction f : _functions) {
             if (f.canHandle(c, function)) {
@@ -65,6 +72,7 @@ public class ContentFunctionFactory {
             return false;
         }
 
+        @Nullable
         @Override
         public String calculate(LayoutContext c, FSFunction function) {
             return null;
@@ -91,18 +99,18 @@ public class ContentFunctionFactory {
         }
 
         protected boolean isCounter(FSFunction function, String counterName) {
-            if (function.getName().equals("counter")) {
+            if (function.is("counter")) {
                 List<PropertyValue> parameters = function.getParameters();
                 if (parameters.size() == 1 || parameters.size() == 2) {
                     PropertyValue param = parameters.get(0);
-                    if (param.getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
-                            ! param.getStringValue().equals(counterName)) {
+                    if (param.getPrimitiveType() != CSS_IDENT ||
+                            !Objects.equals(param.getStringValue(), counterName)) {
                         return false;
                     }
 
                     if (parameters.size() == 2) {
                         param = parameters.get(1);
-                        return param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT;
+                        return param.getPrimitiveType() == CSS_IDENT;
                     }
 
                     return true;
@@ -163,6 +171,7 @@ public class ContentFunctionFactory {
             return "";
         }
 
+        @Nullable
         @Override
         public String calculate(LayoutContext c, FSFunction function) {
             return null;
@@ -175,20 +184,20 @@ public class ContentFunctionFactory {
 
         @Override
         public boolean canHandle(LayoutContext c, FSFunction function) {
-            if (c.isPrint() && function.getName().equals("target-counter")) {
+            if (c.isPrint() && function.is("target-counter")) {
                 List<PropertyValue> parameters = function.getParameters();
                 if (parameters.size() == 2 || parameters.size() == 3) {
                     FSFunction f = parameters.get(0).getFunction();
                     if (f == null ||
                             f.getParameters().size() != 1 ||
-                            f.getParameters().get(0).getPrimitiveType() != CSSPrimitiveValue.CSS_IDENT ||
-                            ! f.getParameters().get(0).getStringValue().equals("href")) {
+                            f.getParameters().get(0).getPrimitiveType() != CSS_IDENT ||
+                            !"href".equals(f.getParameters().get(0).getStringValue())) {
                         return false;
                     }
 
                     PropertyValue param = parameters.get(1);
-                    return param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT &&
-                            param.getStringValue().equals("page");
+                    return param.getPrimitiveType() == CSS_IDENT &&
+                            Objects.equals(param.getStringValue(), "page");
                 }
             }
 
@@ -218,8 +227,8 @@ public class ContentFunctionFactory {
             for (Box child : lineBox.getChildren()) {
                 if (child == iB) {
                     dynamic = true;
-                } else if (dynamic && child instanceof InlineLayoutBox) {
-                    ((InlineLayoutBox) child).lookForDynamicFunctions(c);
+                } else if (dynamic && child instanceof InlineLayoutBox inlineLayoutBox) {
+                    inlineLayoutBox.lookForDynamicFunctions(c);
                 }
             }
             if (dynamic) {
@@ -234,29 +243,28 @@ public class ContentFunctionFactory {
             // Otherwise, there might be a small gap on the right side. This is
             // necessary because a TextRenderer usually use double/float for width.
             String tmp = value.repeat(100);
-            float valueWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), tmp) / 100.0f;
-            int spaceWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), " ");
+            float valueWidth = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), tmp) / 100.0f;
+            int spaceWidth = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), " ");
 
             // compute leader width and necessary count of values
             int leaderWidth = iB.getContainingBlockWidth() - iB.getLineBox().getWidth() + text.getWidth();
-            int count = (int) ((leaderWidth - (2 * spaceWidth)) / valueWidth);
+            int count = (int) ((leaderWidth - 2 * spaceWidth) / valueWidth);
 
             String leaderString = ' ' + value.repeat(Math.max(0, count)) + ' ';
 
             // set left margin to ensure that the leader is right aligned (for TOC)
-            int leaderStringWidth = c.getTextRenderer().getWidth(c.getFontContext(),
-                    iB.getStyle().getFSFont(c), leaderString);
+            int leaderStringWidth = TextUtil.textWidth(c, iB.getStyle(), iB.getStyle().getFSFont(c), leaderString);
             iB.setMarginLeft(c, leaderWidth - leaderStringWidth);
 
             return leaderString;
         }
 
+        @Nullable
+        @CheckReturnValue
         private String getLeaderValue(FSFunction function) {
             final PropertyValue param = function.getParameters().get(0);
             final String value = param.getStringValue();
-            if (param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+            if (param.getPrimitiveType() == CSS_IDENT) {
                 return switch (value) {
                     case "dotted" -> ". ";
                     case "solid" -> "_";
@@ -267,27 +275,30 @@ public class ContentFunctionFactory {
             return value;
         }
 
+        @Nullable
         @Override
         public String calculate(LayoutContext c, FSFunction function) {
             return null;
         }
 
         @Override
+        @CheckReturnValue
         public String getLayoutReplacementText() {
             return " . ";
         }
 
         @Override
+        @CheckReturnValue
         public boolean canHandle(LayoutContext c, FSFunction function) {
-            if (c.isPrint() && function.getName().equals("leader")) {
+            if (c.isPrint() && function.is("leader")) {
                 List<PropertyValue> parameters = function.getParameters();
                 if (parameters.size() == 1) {
                     PropertyValue param = parameters.get(0);
-                    return param.getPrimitiveType() == CSSPrimitiveValue.CSS_STRING ||
-                            (param.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT &&
-                                    (param.getStringValue().equals("dotted") ||
-                                            param.getStringValue().equals("solid") ||
-                                            param.getStringValue().equals("space")));
+                    return param.getPrimitiveType() == CSS_STRING ||
+                        param.getPrimitiveType() == CSS_IDENT &&
+                                ("dotted".equals(param.getStringValue()) ||
+                                        "solid".equals(param.getStringValue()) ||
+                                        "space".equals(param.getStringValue()));
                 }
             }
 

@@ -30,6 +30,7 @@ public class ITextFSFont implements FSFont {
         _size = size;
     }
 
+    @Override
     public float getSize2D() {
         return _size;
     }

@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.css.constants;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,24 +71,29 @@ public class MarginBoxName {
         return val;
     }
 
+    @Override
     public String toString() {
         return _ident;
     }
 
+    @Nullable
+    @CheckReturnValue
     public static MarginBoxName valueOf(String ident) {
         return ALL.get(ident);
     }
 
+    @Override
     public int hashCode() {
         return FS_ID;
     }
 
+    @Override
     public boolean equals(Object o) {
-        if (!(o instanceof MarginBoxName)) {
+        if (!(o instanceof MarginBoxName marginBoxName)) {
             return false;
         }
 
-        return FS_ID == ((MarginBoxName)o).FS_ID;
+        return FS_ID == marginBoxName.FS_ID;
     }
 
     public IdentValue getInitialTextAlign() {

@@ -1,5 +1,7 @@
-# Flying Saucer [![Download](https://api.bintray.com/packages/flyingsaucerproject/maven/org.xhtmlrenderer%3Aflying-saucer/images/download.svg)](https://bintray.com/flyingsaucerproject/maven/org.xhtmlrenderer%3Aflying-saucer/_latestVersion) [![License: LGPL v2.1](https://img.shields.io/badge/license-LGPL--2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
-
+# Flying Saucer
+[![Maven Central](https://img.shields.io/maven-central/v/org.xhtmlrenderer/flying-saucer-pdf)](https://central.sonatype.com/artifact/org.xhtmlrenderer/flying-saucer-pdf)
+[![License: LGPL v2.1](https://img.shields.io/badge/license-LGPL--2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
+[![CI](https://github.com/flyingsaucerproject/flyingsaucer/actions/workflows/maven.yml/badge.svg)](https://github.com/flyingsaucerproject/flyingsaucer/actions/workflows/maven.yml)
 
 ## OVERVIEW
 
@@ -34,11 +36,13 @@ New releases of Flying Saucer are distributed through Maven. The available artif
 * `org.xhtmlrenderer:flying-saucer-core` - Core library and Java2D rendering
 * `org.xhtmlrenderer:flying-saucer-pdf` - PDF output using OpenPDF (ex. iText 2.x)
 * `org.xhtmlrenderer:flying-saucer-pdf-openpdf` - not supported anymore (replaced by `flying-saucer-pdf`)
+* `org.xhtmlrenderer:flying-saucer-chrome-pdf` - PDF output by delegating to `chrome-headless-shell` (supports modern HTML5/CSS3)
 * `org.xhtmlrenderer:flying-saucer-swt` - SWT output
 * `org.xhtmlrenderer:flying-saucer-log4j` - Logging plugin for log4j
 
 Flying Saucer from version 9.5.0, requires Java 11 or later.
 Flying Saucer from version 9.6.0, requires Java 17 or later.
+Flying Saucer from version 10.0.0, requires Java 21 or later.
 
 ## GETTING STARTED
 
@@ -76,6 +80,5 @@ This is also the reason why Issues are currently deactivated on GitHub.
 
 ### HISTORIC LINKS
 
-* [Website](https://code.google.com/archive/p/flying-saucer/)
+* [Website](https://github.com/flyingsaucerproject/flyingsaucer)
 * [Google Code project page (archived/read-only)](https://code.google.com/archive/p/flying-saucer/)
-* [Google Code Issues (archived/read-only)](https://code.google.com/archive/p/flying-saucer/issues)

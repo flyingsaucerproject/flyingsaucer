@@ -20,76 +20,57 @@
 package org.xhtmlrenderer.layout;
 
 /**
- * A bean which tracks various charactistics of an inline box.  It is used
+ * A bean which tracks various characteristics of an inline box.  It is used
  * when calculating the vertical position of boxes in a line.
  */
 public class InlineBoxMeasurements {
-    private int _textTop;
-    private int _textBottom;
-    private int _baseline;
-    private int _inlineTop;
-    private int _inlineBottom;
+    private final int _textTop;
+    private final int _textBottom;
+    private final int _baseline;
+    private final int _inlineTop;
+    private final int _inlineBottom;
 
-    private int _paintingTop;
-    private int _paintingBottom;
+    private final int _paintingTop;
+    private final int _paintingBottom;
 
-    public InlineBoxMeasurements() {
-
+    public InlineBoxMeasurements(int baseline,
+                                 int textTop, int textBottom,
+                                 int inlineTop, int inlineBottom,
+                                 int paintingTop, int paintingBottom) {
+        _textTop = textTop;
+        _textBottom = textBottom;
+        _baseline = baseline;
+        _inlineTop = inlineTop;
+        _inlineBottom = inlineBottom;
+        _paintingTop = paintingTop;
+        _paintingBottom = paintingBottom;
     }
 
     public int getBaseline() {
         return _baseline;
     }
 
-    public void setBaseline(int baseline) {
-        _baseline = baseline;
-    }
-
     public int getInlineBottom() {
         return _inlineBottom;
-    }
-
-    public void setInlineBottom(int inlineBottom) {
-        _inlineBottom = inlineBottom;
     }
 
     public int getInlineTop() {
         return _inlineTop;
     }
 
-    public void setInlineTop(int inlineTop) {
-        _inlineTop = inlineTop;
-    }
-
     public int getTextBottom() {
         return _textBottom;
-    }
-
-    public void setTextBottom(int textBottom) {
-        _textBottom = textBottom;
     }
 
     public int getTextTop() {
         return _textTop;
     }
 
-    public void setTextTop(int textTop) {
-        _textTop = textTop;
-    }
-
     public int getPaintingBottom() {
         return _paintingBottom;
     }
 
-    public void setPaintingBottom(int paintingBottom) {
-        _paintingBottom = paintingBottom;
-    }
-
     public int getPaintingTop() {
         return _paintingTop;
-    }
-
-    public void setPaintingTop(int paintingTop) {
-        _paintingTop = paintingTop;
     }
 }

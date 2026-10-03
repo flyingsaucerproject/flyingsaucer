@@ -20,6 +20,9 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.MarginBoxName;
@@ -40,7 +43,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +51,9 @@ import java.util.TreeMap;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Collections.synchronizedSet;
 import static java.util.Comparator.comparingLong;
+import static java.util.Objects.requireNonNullElseGet;
+import static org.xhtmlrenderer.css.newmatch.Selector.Axis.IMMEDIATE_SIBLING_AXIS;
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
 
 
 /**
@@ -60,16 +65,14 @@ public class Matcher {
     private final AttributeResolver _attRes;
     private final TreeResolver _treeRes;
     private final StylesheetFactory _styleFactory;
+    private final Object lock = new Object();
 
     private final Map<Node, Mapper> _map = synchronizedMap(new HashMap<>());
 
     //handle dynamic
-    private final Set<Node> _hoverElements = synchronizedSet(new HashSet<>());
-    private final Set<Node> _activeElements = synchronizedSet(new HashSet<>());
-    private final Set<Node> _focusElements = synchronizedSet(new HashSet<>());
-    private final Set<Node> _visitElements = synchronizedSet(new HashSet<>());
-    private final List<PageRule> _pageRules = new ArrayList<>();
-    private final List<FontFaceRule> _fontFaceRules = new ArrayList<>();
+    private final Set<Node> _hoverElements = synchronizedSet(new HashSet<>(0));
+    private final List<PageRule> _pageRules = new ArrayList<>(0);
+    private final List<FontFaceRule> _fontFaceRules = new ArrayList<>(0);
 
     public Matcher(TreeResolver tr, AttributeResolver ar,
                    StylesheetFactory factory, List<Stylesheet> stylesheets, String medium) {
@@ -79,12 +82,8 @@ public class Matcher {
         docMapper = createDocumentMapper(stylesheets, medium);
     }
 
-    public void removeStyle(Element e) {
-        _map.remove(e);
-    }
-
     public CascadedStyle getCascadedStyle(Element e, boolean restyle) {
-        synchronized (e) {
+        synchronized (lock) {
             Mapper em = restyle ? matchElement(e) : getMapper(e);
             return em.getCascadedStyle(e);
         }
@@ -94,14 +93,17 @@ public class Matcher {
      * May return null.
      * We assume that restyle has already been done by a getCascadedStyle if necessary.
      */
+    @Nullable
     public CascadedStyle getPECascadedStyle(Element e, String pseudoElement) {
-        synchronized (e) {
+        synchronized (lock) {
             Mapper em = getMapper(e);
-            return em.getPECascadedStyle(e, pseudoElement);
+            return em.getPECascadedStyle(pseudoElement);
         }
     }
 
-    public PageInfo getPageCascadedStyle(String pageName, String pseudoPage) {
+    @NonNull
+    @CheckReturnValue
+    public PageInfo getPageCascadedStyle(@Nullable String pageName, String pseudoPage) {
         List<PropertyDeclaration> props = new ArrayList<>();
         Map<MarginBoxName, List<PropertyDeclaration>> marginBoxes = new HashMap<>();
 
@@ -120,33 +122,19 @@ public class Matcher {
         return _fontFaceRules;
     }
 
-    public boolean isVisitedStyled(Node e) {
-        return _visitElements.contains(e);
-    }
-
     public boolean isHoverStyled(Node e) {
         return _hoverElements.contains(e);
     }
 
-    public boolean isActiveStyled(Node e) {
-        return _activeElements.contains(e);
-    }
-
-    public boolean isFocusStyled(Node e) {
-        return _focusElements.contains(e);
-    }
-
     private Mapper matchElement(Node e) {
-        synchronized (e) {
+        synchronized (lock) {
             Node parent = _treeRes.getParentElement(e);
-            Mapper child;
+
             if (parent != null) {
-                Mapper m = getMapper(parent);
-                child = m.mapChild(e);
-            } else {//has to be document or fragment node
-                child = docMapper.mapChild(e);
+                return getMapper(parent).mapChild(e);
+            } else { // has to be a document or a fragment node
+                return docMapper.mapChild(e);
             }
-            return child;
         }
     }
 
@@ -162,8 +150,8 @@ public class Matcher {
         int pCount = 0;
         for (Stylesheet stylesheet : stylesheets) {
             for (Object obj : stylesheet.getContents()) {
-                if (obj instanceof Ruleset) {
-                    for (Selector selector : ((Ruleset) obj).getFSSelectors()) {
+                if (obj instanceof Ruleset ruleSet) {
+                    for (Selector selector : ruleSet.getFSSelectors()) {
                         selector.setPos(++count);
                         sorter.put(selector.getOrder(), selector);
                     }
@@ -193,16 +181,12 @@ public class Matcher {
     }
 
     private Mapper getMapper(Node e) {
-        Mapper m = _map.get(e);
-        if (m != null) {
-            return m;
-        }
-        m = matchElement(e);
-        return m;
+        return requireNonNullElseGet(_map.get(e),
+                () -> matchElement(e));
     }
 
     private Ruleset getElementStyle(Node e) {
-        synchronized (e) {
+        synchronized (lock) {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
@@ -212,12 +196,12 @@ public class Matcher {
                 return null;
             }
 
-            return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
+            return _styleFactory.parseStyleDeclaration(AUTHOR, style);
         }
     }
 
     private Ruleset getNonCssStyle(Node e) {
-        synchronized (e) {
+        synchronized (lock) {
             if (_attRes == null || _styleFactory == null) {
                 return null;
             }
@@ -225,7 +209,7 @@ public class Matcher {
             if (Util.isNullOrEmpty(style)) {
                 return null;
             }
-            return _styleFactory.parseStyleDeclaration(org.xhtmlrenderer.css.sheet.StylesheetInfo.AUTHOR, style);
+            return _styleFactory.parseStyleDeclaration(AUTHOR, style);
         }
     }
 
@@ -239,7 +223,7 @@ public class Matcher {
         private final List<Selector> axes;
         private final Map<String, List<Selector>> pseudoSelectors;
         private final List<Selector> mappedSelectors;
-        private Map<String, Mapper> children;
+        private Map<List<Integer>, Mapper> children;
 
         Mapper(Collection<Selector> selectors) {
             this(new ArrayList<>(selectors), null, null);
@@ -260,60 +244,56 @@ public class Matcher {
         Mapper mapChild(Node e) {
             List<Selector> childAxes = new ArrayList<>(axes.size() + 10);
             Map<String, List<Selector>> pseudoSelectors = new HashMap<>();
-            List<Selector> mappedSelectors = new LinkedList<>();
-            StringBuilder key = new StringBuilder();
+            List<Selector> mappedSelectors = new ArrayList<>();
+            List<Integer> key = new ArrayList<>();
             for (Selector axe : axes) {
-                if (axe.getAxis() == Selector.DESCENDANT_AXIS) {
-                    //carry it forward to other descendants
-                    childAxes.add(axe);
-                } else if (axe.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
-                    throw new RuntimeException("Selector axis==" + Selector.IMMEDIATE_SIBLING_AXIS);
+                switch (axe.getAxis()) {
+                    case DESCENDANT_AXIS -> childAxes.add(axe); // carry it forward to other descendants
+                    case IMMEDIATE_SIBLING_AXIS ->
+                            throw new RuntimeException("Selector axis: " + IMMEDIATE_SIBLING_AXIS);
+                    case CHILD_AXIS -> {
+                    }
                 }
+
                 if (!axe.matches(e, _attRes, _treeRes)) {
                     continue;
                 }
                 //Assumption: if it is a pseudo-element, it does not also have dynamic pseudo-class
                 String pseudoElement = axe.getPseudoElement();
                 if (pseudoElement != null) {
-                    List<Selector> l = pseudoSelectors.computeIfAbsent(pseudoElement, k -> new LinkedList<>());
+                    List<Selector> l = pseudoSelectors.computeIfAbsent(pseudoElement, k -> new ArrayList<>());
                     l.add(axe);
-                    key.append(axe.getSelectorID()).append(":");
+                    key.add(axe.getSelectorID());
                     continue;
-                }
-                if (axe.isPseudoClass(Selector.VISITED_PSEUDOCLASS)) {
-                    _visitElements.add(e);
-                }
-                if (axe.isPseudoClass(Selector.ACTIVE_PSEUDOCLASS)) {
-                    _activeElements.add(e);
                 }
                 if (axe.isPseudoClass(Selector.HOVER_PSEUDOCLASS)) {
                     _hoverElements.add(e);
                 }
-                if (axe.isPseudoClass(Selector.FOCUS_PSEUDOCLASS)) {
-                    _focusElements.add(e);
-                }
                 if (!axe.matchesDynamic(e, _attRes, _treeRes)) {
                     continue;
                 }
-                key.append(axe.getSelectorID()).append(":");
+                key.add(axe.getSelectorID());
                 Selector chain = axe.getChainedSelector();
                 if (chain == null) {
                     mappedSelectors.add(axe);
-                } else if (chain.getAxis() == Selector.IMMEDIATE_SIBLING_AXIS) {
-                    throw new RuntimeException("Selector axis==" + Selector.IMMEDIATE_SIBLING_AXIS);
                 } else {
-                    childAxes.add(chain);
+                    switch (chain.getAxis()) {
+                        case IMMEDIATE_SIBLING_AXIS ->
+                                throw new RuntimeException("Selector axis: " + IMMEDIATE_SIBLING_AXIS);
+                        case CHILD_AXIS,
+                             DESCENDANT_AXIS -> childAxes.add(chain);
+                    }
                 }
             }
             if (children == null) children = new HashMap<>();
-            Mapper childMapper = children.computeIfAbsent(key.toString(), k ->
+            Mapper childMapper = children.computeIfAbsent(key, k ->
                     new Mapper(childAxes, pseudoSelectors, mappedSelectors));
             link(e, childMapper);
             return childMapper;
         }
 
         CascadedStyle getCascadedStyle(Node e) {
-            synchronized (e) {
+            synchronized (lock) {
                 Ruleset elementStyling = getElementStyle(e);
                 Ruleset nonCssStyling = getNonCssStyle(e);
                 List<PropertyDeclaration> propList = new ArrayList<>();
@@ -337,7 +317,8 @@ public class Matcher {
          * May return null.
          * We assume that restyle has already been done by a getCascadedStyle if necessary.
          */
-        public CascadedStyle getPECascadedStyle(Node e, String pseudoElement) {
+        @Nullable
+        public CascadedStyle getPECascadedStyle(String pseudoElement) {
             Iterator<Map.Entry<String, List<Selector>>> si = pseudoSelectors.entrySet().iterator();
             if (!si.hasNext()) {
                 return null;

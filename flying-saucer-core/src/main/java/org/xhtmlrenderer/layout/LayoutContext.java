@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.context.ContentFunctionFactory;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -39,13 +42,15 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.MarkerData;
 import org.xhtmlrenderer.render.PageBox;
 
-import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Rectangle;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.emptyList;
 
 /**
  * This class tracks state which changes over the course of a layout run.
@@ -53,19 +58,22 @@ import java.util.Map;
  * tree and not here.  It also provides pass-though calls to many methods in
  * {@link SharedContext}.
  */
+@CheckReturnValue
 public class LayoutContext implements CssContext {
     private final SharedContext _sharedContext;
 
+    @Nullable
     private Layer _rootLayer;
 
     private StyleTracker _firstLines;
     private StyleTracker _firstLetters;
+    @Nullable
     private MarkerData _currentMarkerData;
 
-    private LinkedList<BlockFormattingContext> _bfcs;
-    private LinkedList<Layer> _layers;
+    private final Deque<BlockFormattingContext> _blockFormattingContexts = new ArrayDeque<>();
+    private final Deque<Layer> _layers = new ArrayDeque<>();
 
-    private FontContext _fontContext;
+    private final FontContext _fontContext;
 
     private final ContentFunctionFactory _contentFunctionFactory = new ContentFunctionFactory();
 
@@ -74,18 +82,24 @@ public class LayoutContext implements CssContext {
 
     private final Map<CalculatedStyle, CounterContext> _counterContextMap = new HashMap<>();
 
+    @Nullable
     private String _pendingPageName;
+    @Nullable
     private String _pageName;
 
     private int _noPageBreak;
 
+    @Nullable
     private Layer _rootDocumentLayer;
+    @Nullable
     private PageBox _page;
 
     private boolean _mayCheckKeepTogether = true;
 
+    @Nullable
     private BreakAtLineContext _breakAtLineContext;
 
+    @Override
     public TextRenderer getTextRenderer() {
         return _sharedContext.getTextRenderer();
     }
@@ -108,13 +122,11 @@ public class LayoutContext implements CssContext {
     }
 
     //the stuff that needs to have a separate instance for each run.
-    LayoutContext(SharedContext sharedContext) {
+    LayoutContext(SharedContext sharedContext, FontContext fontContext) {
         _sharedContext = sharedContext;
-        _bfcs = new LinkedList<>();
-        _layers = new LinkedList<>();
-
         _firstLines = new StyleTracker();
         _firstLetters = new StyleTracker();
+        this._fontContext = fontContext;
     }
 
     public void reInit(boolean keepLayers) {
@@ -122,11 +134,11 @@ public class LayoutContext implements CssContext {
         _firstLetters = new StyleTracker();
         _currentMarkerData = null;
 
-        _bfcs = new LinkedList<>();
+        _blockFormattingContexts.clear();
 
         if (! keepLayers) {
             _rootLayer = null;
-            _layers = new LinkedList<>();
+            _layers.clear();
         }
 
         _extraSpaceTop = 0;
@@ -134,22 +146,9 @@ public class LayoutContext implements CssContext {
     }
 
     public LayoutState captureLayoutState() {
-        LayoutState result = new LayoutState();
-
-        result.setFirstLines(_firstLines);
-        result.setFirstLetters(_firstLetters);
-        result.setCurrentMarkerData(_currentMarkerData);
-
-        result.setBFCs(_bfcs);
-
-        if (isPrint()) {
-            result.setPageName(getPageName());
-            result.setExtraSpaceBottom(getExtraSpaceBottom());
-            result.setExtraSpaceTop(getExtraSpaceTop());
-            result.setNoPageBreak(getNoPageBreak());
-        }
-
-        return result;
+        return isPrint() ?
+                new LayoutState(_firstLines, _firstLetters, _currentMarkerData, _blockFormattingContexts, getPageName(), getExtraSpaceTop(), getExtraSpaceBottom(), getNoPageBreak()) :
+                new LayoutState(_firstLines, _firstLetters, _currentMarkerData, _blockFormattingContexts);
     }
 
     public void restoreLayoutState(LayoutState layoutState) {
@@ -158,7 +157,8 @@ public class LayoutContext implements CssContext {
 
         _currentMarkerData = layoutState.getCurrentMarkerData();
 
-        _bfcs = layoutState.getBFCs();
+        _blockFormattingContexts.clear();
+        _blockFormattingContexts.addAll(layoutState.getBFCs());
 
         if (isPrint()) {
             setPageName(layoutState.getPageName());
@@ -169,17 +169,9 @@ public class LayoutContext implements CssContext {
     }
 
     public LayoutState copyStateForRelayout() {
-        LayoutState result = new LayoutState();
-
-        result.setFirstLetters(_firstLetters.copyOf());
-        result.setFirstLines(_firstLines.copyOf());
-        result.setCurrentMarkerData(_currentMarkerData);
-
-        if (isPrint()) {
-            result.setPageName(getPageName());
-        }
-
-        return result;
+        return isPrint() ?
+                new LayoutState(_firstLines.copyOf(), _firstLetters.copyOf(), _currentMarkerData, emptyList(), getPageName(), 0, 0, 0) :
+                new LayoutState(_firstLines.copyOf(), _firstLetters.copyOf(), _currentMarkerData, emptyList());
     }
 
     public void restoreStateForRelayout(LayoutState layoutState) {
@@ -194,15 +186,15 @@ public class LayoutContext implements CssContext {
     }
 
     public BlockFormattingContext getBlockFormattingContext() {
-        return _bfcs.getLast();
+        return _blockFormattingContexts.getLast();
     }
 
     public void pushBFC(BlockFormattingContext bfc) {
-        _bfcs.add(bfc);
+        _blockFormattingContexts.add(bfc);
     }
 
     public void popBFC() {
-        _bfcs.removeLast();
+        _blockFormattingContexts.removeLast();
     }
 
     public void pushLayer(Box master) {
@@ -236,6 +228,7 @@ public class LayoutContext implements CssContext {
         return _layers.getLast();
     }
 
+    @Nullable
     public Layer getRootLayer() {
         return _rootLayer;
     }
@@ -277,6 +270,7 @@ public class LayoutContext implements CssContext {
         return _sharedContext.getXHeight(getFontContext(), parentFont);
     }
 
+    @Nullable
     @Override
     public FSFont getFont(FontSpecification font) {
         return _sharedContext.getFont(font);
@@ -298,11 +292,12 @@ public class LayoutContext implements CssContext {
         return _firstLetters;
     }
 
+    @Nullable
     public MarkerData getCurrentMarkerData() {
         return _currentMarkerData;
     }
 
-    public void setCurrentMarkerData(MarkerData currentMarkerData) {
+    public void setCurrentMarkerData(@Nullable MarkerData currentMarkerData) {
         _currentMarkerData = currentMarkerData;
     }
 
@@ -310,12 +305,9 @@ public class LayoutContext implements CssContext {
         return _sharedContext.getReplacedElementFactory();
     }
 
+    @Override
     public FontContext getFontContext() {
         return _fontContext;
-    }
-
-    public void setFontContext(FontContext fontContext) {
-        _fontContext = fontContext;
     }
 
     public ContentFunctionFactory getContentFunctionFactory() {
@@ -342,7 +334,7 @@ public class LayoutContext implements CssContext {
         _extraSpaceTop = extraSpaceTop;
     }
 
-    public void resolveCounters(CalculatedStyle style, Integer startIndex) {
+    public void resolveCounters(CalculatedStyle style, @Nullable Integer startIndex) {
         //new context for child elements
         CounterContext cc = new CounterContext(style, startIndex);
         _counterContextMap.put(style, cc);
@@ -367,6 +359,7 @@ public class LayoutContext implements CssContext {
          * This is different because it needs to work even when the counter-properties cascade,
          * and it should also logically be redefined on each level (think list-items within list-items)
          */
+        @Nullable
         private CounterContext _parent;
 
         /**
@@ -415,6 +408,7 @@ public class LayoutContext implements CssContext {
         /**
          * @return true if a counter was found and incremented
          */
+        @CanIgnoreReturnValue
         private boolean incrementCounter(CounterData cd) {
             if ("list-item".equals(cd.getName())) {//reserved name for list-item counter in CSS3
                 incrementListItemCounter(cd.getValue());
@@ -455,6 +449,7 @@ public class LayoutContext implements CssContext {
             }
         }
 
+        @Nullable
         private Integer getCounter(String name) {
             Integer value = _counters.get(name);
             if (value != null) return value;
@@ -481,11 +476,12 @@ public class LayoutContext implements CssContext {
         }
     }
 
+    @Nullable
     public String getPageName() {
         return _pageName;
     }
 
-    public void setPageName(String currentPageName) {
+    public void setPageName(@Nullable String currentPageName) {
         _pageName = currentPageName;
     }
 
@@ -501,14 +497,16 @@ public class LayoutContext implements CssContext {
         return _noPageBreak == 0;
     }
 
+    @Nullable
     public String getPendingPageName() {
         return _pendingPageName;
     }
 
-    public void setPendingPageName(String pendingPageName) {
+    public void setPendingPageName(@Nullable String pendingPageName) {
         _pendingPageName = pendingPageName;
     }
 
+    @Nullable
     public Layer getRootDocumentLayer() {
         return _rootDocumentLayer;
     }
@@ -517,6 +515,7 @@ public class LayoutContext implements CssContext {
         _rootDocumentLayer = rootDocumentLayer;
     }
 
+    @Nullable
     public PageBox getPage() {
         return _page;
     }
@@ -533,11 +532,12 @@ public class LayoutContext implements CssContext {
         _mayCheckKeepTogether = mayKeepTogether;
     }
 
+    @Nullable
     public BreakAtLineContext getBreakAtLineContext() {
         return _breakAtLineContext;
     }
 
-    public void setBreakAtLineContext(BreakAtLineContext breakAtLineContext) {
+    public void setBreakAtLineContext(@Nullable BreakAtLineContext breakAtLineContext) {
         _breakAtLineContext = breakAtLineContext;
     }
 }

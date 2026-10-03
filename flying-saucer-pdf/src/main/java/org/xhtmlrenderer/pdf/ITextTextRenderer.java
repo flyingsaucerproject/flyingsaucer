@@ -19,55 +19,87 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.pdf.BaseFont;
+import org.openpdf.text.pdf.BaseFont;
 import org.xhtmlrenderer.extend.FSGlyphVector;
-import org.xhtmlrenderer.extend.FontContext;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 
 import java.awt.*;
 
-public class ITextTextRenderer implements TextRenderer {
+public class ITextTextRenderer implements TextRenderer<ITextOutputDevice, ITextFontContext, ITextFSFont> {
     private static final float TEXT_MEASURING_DELTA = 0.01f;
 
-    public void setup(FontContext context) {
+    @Override
+    public void setup(ITextFontContext context) {
     }
 
-    public void drawString(OutputDevice outputDevice, String string, float x, float y) {
-        ((ITextOutputDevice)outputDevice).drawString(string, x, y, null);
+    @Override
+    public void drawString(ITextOutputDevice outputDevice, String string, float x, float y) {
+        outputDevice.drawString(string, x, y, null);
     }
 
-    public void drawString(
-            OutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
-        ((ITextOutputDevice)outputDevice).drawString(string, x, y, info);
+    @Override
+    public void drawString(ITextOutputDevice outputDevice, String string, float x, float y, JustificationInfo info) {
+        outputDevice.drawString(string, x, y, info);
     }
 
-    public FSFontMetrics getFSFontMetrics(FontContext context, FSFont font, String string) {
-        FontDescription description = ((ITextFSFont)font).getFontDescription();
+    @Override
+    public FSFontMetrics getFSFontMetrics(ITextFontContext context, ITextFSFont font, String string) {
+        FontDescription description = font.getFontDescription();
         BaseFont bf = description.getFont();
         float size = font.getSize2D();
-        ITextFSFontMetrics result = new ITextFSFontMetrics();
-        result.setAscent(bf.getFontDescriptor(BaseFont.BBOXURY, size));
-        result.setDescent(-bf.getFontDescriptor(BaseFont.BBOXLLY, size));
-
-        result.setStrikethroughOffset(-description.getYStrikeoutPosition() / 1000f * size);
-        if (description.getYStrikeoutSize() != 0) {
-            result.setStrikethroughThickness(description.getYStrikeoutSize() / 1000f * size);
-        } else {
-            result.setStrikethroughThickness(size / 12.0f);
-        }
-
-        result.setUnderlineOffset(-description.getUnderlinePosition() / 1000f * size);
-        result.setUnderlineThickness(description.getUnderlineThickness() / 1000f * size);
-
-        return result;
+        return isTrueType(bf) ?
+                trueTypeFontMetrics(bf, size) :
+                fontMetrics(description, bf, size);
     }
 
-    public int getWidth(FontContext context, FSFont font, String string) {
-        BaseFont bf = ((ITextFSFont)font).getFontDescription().getFont();
+    private static boolean isTrueType(BaseFont bf) {
+        int type = bf.getFontType();
+        return type == BaseFont.FONT_TYPE_TT || type == BaseFont.FONT_TYPE_TTUNI;
+    }
+
+    /**
+     * OpenPDF scales the decoration values of TrueType fonts by the font's own {@code unitsPerEm},
+     * which is not necessarily 1000 (e.g. 2048 for many fonts).
+     */
+    private static FSFontMetrics trueTypeFontMetrics(BaseFont bf, float size) {
+        float strikethroughThickness = bf.getFontDescriptor(BaseFont.STRIKETHROUGH_THICKNESS, size);
+        float underlineThickness = bf.getFontDescriptor(BaseFont.UNDERLINE_THICKNESS, size);
+        // OpenPDF returns the middle of the underline stroke, but we need its top
+        float underlinePosition = bf.getFontDescriptor(BaseFont.UNDERLINE_POSITION, size) + underlineThickness / 2;
+
+        return new ITextFSFontMetrics(
+                bf.getFontDescriptor(BaseFont.BBOXURY, size),
+                -bf.getFontDescriptor(BaseFont.BBOXLLY, size),
+                -bf.getFontDescriptor(BaseFont.STRIKETHROUGH_POSITION, size),
+                strikethroughThickness != 0 ? strikethroughThickness : size / 12.0f,
+                -underlinePosition,
+                underlineThickness
+        );
+    }
+
+    /**
+     * Type 1 and CJK fonts are designed on a 1000-unit em, and OpenPDF does not provide strikethrough values for them.
+     */
+    private static FSFontMetrics fontMetrics(FontDescription description, BaseFont bf, float size) {
+        float strikethroughThickness = description.getYStrikeoutSize() != 0 ?
+                description.getYStrikeoutSize() / 1000.0f * size :
+                size / 12.0f;
+
+        return new ITextFSFontMetrics(
+                bf.getFontDescriptor(BaseFont.BBOXURY, size),
+                -bf.getFontDescriptor(BaseFont.BBOXLLY, size),
+                -description.getYStrikeoutPosition() / 1000.0f * size,
+                strikethroughThickness,
+                -description.getUnderlinePosition() / 1000.0f * size,
+                description.getUnderlineThickness() / 1000.0f * size
+        );
+    }
+
+    @Override
+    public int getWidth(ITextFontContext context, ITextFSFont font, String string) {
+        BaseFont bf = font.getFontDescription().getFont();
         float result = bf.getWidthPoint(string, font.getSize2D());
         if (result - Math.floor(result) < TEXT_MEASURING_DELTA) {
             return (int)result;
@@ -76,29 +108,36 @@ public class ITextTextRenderer implements TextRenderer {
         }
     }
 
+    @Override
     public void setFontScale(float scale) {
     }
 
+    @Override
     public float getFontScale() {
         return 1.0f;
     }
 
+    @Override
     public void setSmoothingThreshold(float fontsize) {
     }
 
-    public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
+    @Override
+    public Rectangle getGlyphBounds(ITextOutputDevice outputDevice, ITextFSFont font, FSGlyphVector fsGlyphVector, int index, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
-    public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font, FSGlyphVector fsGlyphVector) {
+    @Override
+    public float[] getGlyphPositions(ITextOutputDevice outputDevice, ITextFSFont font, FSGlyphVector fsGlyphVector) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
-    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
+    @Override
+    public FSGlyphVector getGlyphVector(ITextOutputDevice outputDevice, ITextFSFont font, String string) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }
 
-    public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
+    @Override
+    public void drawGlyphVector(ITextOutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: drawGlyphVector");
     }
 }

@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.layout.FloatManager;
 import org.xhtmlrenderer.layout.Layer;
 
@@ -29,10 +31,14 @@ import org.xhtmlrenderer.layout.Layer;
  * correctly position the box when collapsing vertical margins.
  */
 public class FloatedBoxData {
+    @Nullable
     private Layer _drawingLayer;
+    @Nullable
     private FloatManager _manager;
     private int _marginFromSibling;
 
+    @Nullable
+    @CheckReturnValue
     public Layer getDrawingLayer() {
         return _drawingLayer;
     }
@@ -41,11 +47,13 @@ public class FloatedBoxData {
         _drawingLayer = drawingLayer;
     }
 
+    @Nullable
+    @CheckReturnValue
     public FloatManager getManager() {
         return _manager;
     }
 
-    public void setManager(FloatManager manager) {
+    public void setManager(@Nullable FloatManager manager) {
         _manager = manager;
     }
 

@@ -19,24 +19,22 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.BaseField;
-import com.lowagie.text.pdf.PdfBorderDictionary;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfFormField;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.RadioCheckField;
+import org.openpdf.text.DocumentException;
+import org.openpdf.text.Rectangle;
+import org.openpdf.text.pdf.BaseField;
+import org.openpdf.text.pdf.PdfBorderDictionary;
+import org.openpdf.text.pdf.PdfFormField;
+import org.openpdf.text.pdf.PdfWriter;
+import org.openpdf.text.pdf.RadioCheckField;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.io.IOException;
 
-@ParametersAreNonnullByDefault
 public class CheckboxFormField extends AbstractFormField {
   private static final String FIELD_TYPE = "Checkbox";
 
@@ -44,22 +42,22 @@ public class CheckboxFormField extends AbstractFormField {
     initDimensions(c, box, cssWidth, cssHeight);
   }
 
+  @Override
   protected String getFieldType()
   {
     return FIELD_TYPE;
   }
 
+  @Override
   public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
-    PdfContentByte cb = outputDevice.getCurrentPage();
-
     PdfWriter writer = outputDevice.getWriter();
     Element elm = box.getElement();
 
     Rectangle targetArea = outputDevice.createLocalTargetArea(c, box);
     String onValue = getValue(elm);
 
-    RadioCheckField field = new RadioCheckField(writer, targetArea, getFieldName(outputDevice, elm), onValue);
-
+    String fieldName = getFieldName(outputDevice, elm);
+    RadioCheckField field = new RadioCheckField(writer, targetArea, fieldName, onValue);
 
     field.setChecked(isChecked(elm));
     field.setCheckType(RadioCheckField.TYPE_CHECK);
@@ -76,14 +74,16 @@ public class CheckboxFormField extends AbstractFormField {
       }
       writer.addAnnotation(formField);
     } catch (IOException | DocumentException ioe) {
-      System.out.println(ioe);
+      throw new XRRuntimeException("Failed to paint field %s".formatted(fieldName), ioe);
     }
   }
 
+  @Override
   public int getBaseline() {
     return 0;
   }
 
+  @Override
   public boolean hasBaseline() {
     return false;
   }

@@ -19,12 +19,13 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.pdf.PdfAnnotation;
-import com.lowagie.text.pdf.PdfAppearance;
-import com.lowagie.text.pdf.PdfBorderDictionary;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfFormField;
-import com.lowagie.text.pdf.PdfWriter;
+import org.openpdf.text.pdf.PdfAnnotation;
+import org.openpdf.text.pdf.PdfAppearance;
+import org.openpdf.text.pdf.PdfBorderDictionary;
+import org.openpdf.text.pdf.PdfContentByte;
+import org.openpdf.text.pdf.PdfFormField;
+import org.openpdf.text.pdf.PdfWriter;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
@@ -34,11 +35,9 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.util.List;
 
-@ParametersAreNonnullByDefault
 public final class RadioButtonFormField extends AbstractFormField {
     private static final String FIELD_TYPE = "RadioButton";
 
@@ -90,6 +89,7 @@ public final class RadioButtonFormField extends AbstractFormField {
         _factory.remove(fieldName);
     }
 
+    @Nullable
     private RadioButtonFormField getChecked(List<RadioButtonFormField> fields) {
         for (RadioButtonFormField f : fields) {
             if (isChecked(f.getBox().getElement())) {

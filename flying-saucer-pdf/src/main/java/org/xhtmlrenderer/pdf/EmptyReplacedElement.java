@@ -1,19 +1,17 @@
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.pdf.PdfAcroForm;
-import com.lowagie.text.pdf.PdfWriter;
+import org.openpdf.text.pdf.PdfAcroForm;
+import org.openpdf.text.pdf.PdfWriter;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.RenderingContext;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 
 /**
  * User: beck
  * Date: 11/4/11
  */
-@ParametersAreNonnullByDefault
 public class EmptyReplacedElement extends AbstractFormField {
   private static final String FIELD_TYPE = "Hidden";
 
@@ -27,6 +25,7 @@ public class EmptyReplacedElement extends AbstractFormField {
     _height = height;
   }
 
+  @Override
   public void paint(RenderingContext c, ITextOutputDevice outputDevice, BlockBox box) {
     PdfWriter writer = outputDevice.getWriter();
 
@@ -45,38 +44,38 @@ public class EmptyReplacedElement extends AbstractFormField {
     acroForm.addHiddenField(name, value);
   }
 
-  public int getIntrinsicWidth()
-  {
+  @Override
+  public int getIntrinsicWidth() {
     return _width;
   }
 
-  public int getIntrinsicHeight()
-  {
+  @Override
+  public int getIntrinsicHeight() {
     return _height;
   }
 
-  public Point getLocation()
-  {
+  @Override
+  public Point getLocation() {
     return _location;
   }
 
-  public void setLocation(int x, int y)
-  {
+  @Override
+  public void setLocation(int x, int y) {
     _location = new Point(0, 0);
   }
 
-  protected String getFieldType()
-  {
+  @Override
+  protected String getFieldType() {
     return FIELD_TYPE;
   }
 
-  public boolean hasBaseline()
-  {
+  @Override
+  public boolean hasBaseline() {
     return false;
   }
 
-  public int getBaseline()
-  {
+  @Override
+  public int getBaseline() {
     return 0;
   }
 }

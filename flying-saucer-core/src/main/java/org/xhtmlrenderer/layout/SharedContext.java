@@ -19,10 +19,11 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.context.AWTFontResolver;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -32,6 +33,7 @@ import org.xhtmlrenderer.extend.FSCanvas;
 import org.xhtmlrenderer.extend.FontContext;
 import org.xhtmlrenderer.extend.FontResolver;
 import org.xhtmlrenderer.extend.NamespaceHandler;
+import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
 import org.xhtmlrenderer.extend.TextRenderer;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -43,26 +45,30 @@ import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 import org.xhtmlrenderer.swing.Java2DTextRenderer;
+import org.xhtmlrenderer.swing.NaiveUserAgent;
 import org.xhtmlrenderer.swing.SwingReplacedElementFactory;
+import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.HeadlessException;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
+import static java.util.Objects.requireNonNull;
 
 /**
  * The SharedContext is that which is kept between successive layout and render runs.
  *
  * @author empty
  */
+@CheckReturnValue
 public final class SharedContext {
-    private static final Set<String> PAGED_MEDIA_TYPES =
-            new HashSet<>(asList("print", "projection", "embossed", "handheld", "tv"));
+    private static final Set<String> PAGED_MEDIA_TYPES = Set.of("print", "projection", "embossed", "handheld", "tv");
 
     private TextRenderer textRenderer;
     private String media;
@@ -86,24 +92,50 @@ public final class SharedContext {
 
     private int dotsPerPixel = 1;
 
+    @Nullable
     private Map<Element, CalculatedStyle> styleMap;
 
     private ReplacedElementFactory replacedElementFactory;
+    @Nullable
     private Rectangle temporaryCanvas;
-
     private LineBreakingStrategy lineBreakingStrategy = new DefaultLineBreakingStrategy();
 
+    private final Set<String> unsupportedTags = new LinkedHashSet<>();
+
     public SharedContext() {
+        this(new NaiveUserAgent());
+    }
+
+    public SharedContext(UserAgentCallback userAgent, FontResolver fontResolver,
+                         ReplacedElementFactory replacedElementFactory,
+                         TextRenderer textRenderer,
+                         float dpi, int dotsPerPixel) {
+        uac = requireNonNull(userAgent);
+        this.css = new StyleReference(userAgent);
+        this.fontResolver = requireNonNull(fontResolver);
+        this.replacedElementFactory = replacedElementFactory;
+        this.textRenderer = requireNonNull(textRenderer);
+        media = "screen";
+        setDPI(dpi);
+        setDotsPerPixel(dotsPerPixel);
+        setPrint(true);
+        setInteractive(false);
+    }
+
+    public SharedContext(UserAgentCallback uac, float dpi, int pixelsPerDot) {
+        this(uac);
+        setDPI(dpi);
+        setDotsPerPixel(pixelsPerDot);
     }
 
     public SharedContext(UserAgentCallback uac) {
         fontResolver = new AWTFontResolver();
         replacedElementFactory = new SwingReplacedElementFactory();
-        setMedia("screen");
-        this.uac = uac;
-        setCss(new StyleReference(uac));
+        this.media = "screen";
+        this.uac = requireNonNull(uac);
+        this.css = new StyleReference(uac);
         XRLog.render("Using CSS implementation from: " + getCss().getClass().getName());
-        setTextRenderer(new Java2DTextRenderer());
+        this.textRenderer = new Java2DTextRenderer();
         try {
             setDPI(Toolkit.getDefaultToolkit().getScreenResolution());
         } catch (HeadlessException e) {
@@ -113,26 +145,32 @@ public final class SharedContext {
 
 
     public SharedContext(UserAgentCallback uac, FontResolver fr, ReplacedElementFactory ref, TextRenderer tr, float dpi) {
-        fontResolver = fr;
+        fontResolver = requireNonNull(fr);
         replacedElementFactory = ref;
-        setMedia("screen");
+        this.media = "screen";
         this.uac = uac;
-        setCss(new StyleReference(uac));
+        this.css = new StyleReference(uac);
         XRLog.render("Using CSS implementation from: " + getCss().getClass().getName());
-        setTextRenderer(tr);
+        this.textRenderer = requireNonNull(tr);
         setDPI(dpi);
+        setPrint(true);
+        setInteractive(false);
     }
 
     public void setFormSubmissionListener(FormSubmissionListener fsl) {
         replacedElementFactory.setFormSubmissionListener(fsl);
     }
 
-    public LayoutContext newLayoutContextInstance() {
-        return new LayoutContext(this);
+    public LayoutContext newLayoutContextInstance(FontContext fontContext) {
+        return new LayoutContext(this, fontContext);
     }
 
-    public RenderingContext newRenderingContextInstance() {
-        return new RenderingContext(this);
+    public RenderingContext newRenderingContextInstance(OutputDevice outputDevice, FontContext fontContext) {
+        return newRenderingContextInstance(outputDevice, fontContext, null, 0);
+    }
+
+    public RenderingContext newRenderingContextInstance(OutputDevice outputDevice, FontContext fontContext, @Nullable Layer rootLayer, int initialPageNo) {
+        return new RenderingContext(this, outputDevice, fontContext, rootLayer, initialPageNo);
     }
 
     /*
@@ -166,6 +204,7 @@ public final class SharedContext {
     private boolean debug_draw_inline_boxes;
     private boolean debug_draw_font_metrics;
 
+    @Nullable
     private FSCanvas canvas;
 
     public TextRenderer getTextRenderer() {
@@ -213,10 +252,12 @@ public final class SharedContext {
         return css;
     }
 
+    @Deprecated
     public void setCss(StyleReference css) {
         this.css = css;
     }
 
+    @Nullable
     public FSCanvas getCanvas() {
         return canvas;
     }
@@ -230,6 +271,7 @@ public final class SharedContext {
     }
 
 
+    @Nullable
     public Rectangle getFixedRectangle() {
         if (getCanvas() == null) {
             return temporaryCanvas;
@@ -240,12 +282,14 @@ public final class SharedContext {
         }
     }
 
+    @Nullable
     private NamespaceHandler namespaceHandler;
 
     public void setNamespaceHandler(NamespaceHandler nh) {
         namespaceHandler = nh;
     }
 
+    @Nullable
     public NamespaceHandler getNamespaceHandler() {
         return namespaceHandler;
     }
@@ -254,6 +298,7 @@ public final class SharedContext {
         idMap.put(id, box);
     }
 
+    @Nullable
     public Box getBoxById(String id) {
         return idMap.get(id);
     }
@@ -271,9 +316,11 @@ public final class SharedContext {
      * Sets the textRenderer attribute of the RenderingContext object
      *
      * @param textRenderer The new textRenderer value
+     * @deprecated pass textRenderer to a constructor instead of using setter
      */
+    @Deprecated(forRemoval = true)
     public void setTextRenderer(TextRenderer textRenderer) {
-        this.textRenderer = textRenderer;
+        this.textRenderer = requireNonNull(textRenderer);
     }
 
     /**
@@ -286,7 +333,7 @@ public final class SharedContext {
      * @param media The new media value
      */
     public void setMedia(String media) {
-        this.media = media;
+        this.media = requireNonNull(media);
     }
 
     /**
@@ -303,11 +350,8 @@ public final class SharedContext {
     }
 
     public void setUserAgentCallback(UserAgentCallback userAgentCallback) {
-        StyleReference styleReference = getCss();
-        if (styleReference != null) {
-            styleReference.setUserAgentCallback(userAgentCallback);
-        }
-        uac = userAgentCallback;
+        getCss().setUserAgentCallback(userAgentCallback);
+        uac = requireNonNull(userAgentCallback);
     }
 
     /**
@@ -331,7 +375,7 @@ public final class SharedContext {
      */
     public void setDPI(float dpi) {
         this.dpi = dpi;
-        mm_per_dot = (CM__PER__IN * MM__PER__CM) / dpi;
+        mm_per_dot = CM__PER__IN * MM__PER__CM / dpi;
     }
 
     /**
@@ -343,14 +387,15 @@ public final class SharedContext {
         return mm_per_dot;
     }
 
+    @Nullable
     public FSFont getFont(FontSpecification spec) {
-        return getFontResolver().resolveFont(this, spec);
+        return fontResolver.resolveFont(this, spec);
     }
 
     //strike-through offset should always be half of the height of lowercase x...
     //and it is defined even for fonts without 'x'!
     public float getXHeight(FontContext fontContext, FontSpecification fs) {
-        FSFont font = getFontResolver().resolveFont(this, fs);
+        FSFont font = fontResolver.resolveFont(this, fs);
         FSFontMetrics fm = getTextRenderer().getFSFontMetrics(fontContext, font, " ");
         float sto = fm.getStrikethroughOffset();
         return fm.getAscent() - 2 * Math.abs(sto) + fm.getStrikethroughThickness();
@@ -401,11 +446,7 @@ public final class SharedContext {
 
     public void setPrint(boolean print) {
         this.print = print;
-        if (print) {
-            setMedia("print");
-        } else {
-            setMedia("screen");
-        }
+        setMedia(print ? "print" : "screen");
     }
 
     /**
@@ -414,7 +455,7 @@ public final class SharedContext {
      * font with a particular string. For example, the following would load a
      * font out of the cool.ttf file and associate it with the name <i>CoolFont
      * </i>:</p>
-     * 
+     *
      * <pre>
      *   Font font = Font.createFont(Font.TRUETYPE_FONT,
      *   new FileInputStream("cool.ttf");
@@ -435,14 +476,17 @@ public final class SharedContext {
      * add a new font mapping, or replace an existing one
      */
     public void setFontMapping(String name, Font font) {
-        FontResolver resolver = getFontResolver();
-        if (resolver instanceof AWTFontResolver) {
-            ((AWTFontResolver)resolver).setFontMapping(name, font);
+        if (fontResolver instanceof AWTFontResolver awtFontResolver) {
+            awtFontResolver.setFontMapping(name, font);
         }
     }
 
+    /**
+     * @deprecated pass resolver to a constructor instead of using setter
+     */
+    @Deprecated(forRemoval = true)
     public void setFontResolver(FontResolver resolver) {
-        fontResolver = resolver;
+        fontResolver = requireNonNull(resolver);
     }
 
     public int getDotsPerPixel() {
@@ -459,7 +503,7 @@ public final class SharedContext {
 
     public CalculatedStyle getStyle(Element e, boolean restyle) {
         Map<Element, CalculatedStyle> localMap = styleMap;
-	    
+
         if (localMap == null) {
             localMap = new HashMap<>(1024, 0.75f);
         }
@@ -473,8 +517,10 @@ public final class SharedContext {
             CalculatedStyle parentCalculatedStyle;
             if (parent instanceof Document) {
                 parentCalculatedStyle = new EmptyStyle();
+            } else if (parent instanceof Element element) {
+                parentCalculatedStyle = getStyle(element, false);
             } else {
-                parentCalculatedStyle = getStyle((Element)parent, false);
+                throw new IllegalStateException("Unexpected parent: " + parent.getClass().getName());
             }
 
             result = parentCalculatedStyle.deriveStyle(getCss().getCascadedStyle(e, restyle));
@@ -488,9 +534,16 @@ public final class SharedContext {
     }
 
     public void reset() {
-       styleMap = null;
-       idMap.clear();
-       replacedElementFactory.reset();
+        //have to do this first
+        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
+            css.flushStyleSheets();
+        } else {
+            css.flushAllStyleSheets();
+        }
+        styleMap = null;
+        idMap.clear();
+        replacedElementFactory.reset();
+        unsupportedTags.clear();
     }
 
     public ReplacedElementFactory getReplacedElementFactory() {
@@ -502,34 +555,8 @@ public final class SharedContext {
             throw new NullPointerException("replacedElementFactory may not be null");
         }
 
-        if (this.replacedElementFactory != null) {
-            this.replacedElementFactory.reset();
-        }
+        this.replacedElementFactory.reset();
         this.replacedElementFactory = ref;
-    }
-
-    public void removeElementReferences(Element e) {
-        String id = namespaceHandler.getID(e);
-        if (id != null && !id.isEmpty()) {
-            removeBoxId(id);
-        }
-
-        if (styleMap != null) {
-            styleMap.remove(e);
-        }
-
-        getCss().removeStyle(e);
-        getReplacedElementFactory().remove(e);
-
-        if (e.hasChildNodes()) {
-            NodeList children = e.getChildNodes();
-            for (int i = 0; i < children.getLength(); i++) {
-                Node child = children.item(i);
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    removeElementReferences((Element)child);
-                }
-            }
-        }
     }
 
     public LineBreakingStrategy getLineBreakingStrategy() {
@@ -538,5 +565,17 @@ public final class SharedContext {
 
     public void setLineBreakingStrategy(LineBreakingStrategy lineBreakingStrategy) {
         this.lineBreakingStrategy = lineBreakingStrategy;
+    }
+
+    public void addUnsupportedTag(String tagName) {
+        unsupportedTags.add(tagName);
+    }
+
+    public Set<String> getUnsupportedTags() {
+        return unsupportedTags;
+    }
+
+    public void logUnsupportedFeatures() {
+        Html5Support.logUnsupportedFeatures(unsupportedTags, getCss().getUnsupportedCssFeatures());
     }
 }

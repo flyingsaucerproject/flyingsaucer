@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.extend;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
@@ -36,6 +37,7 @@ public interface ReplacedElementFactory {
      * @return The {@code ReplacedElement} or {@code null} if no
      * {@code ReplacedElement} applies
      */
+    @Nullable
     ReplacedElement createReplacedElement(
             LayoutContext c, BlockBox box,
             UserAgentCallback uac, int cssWidth, int cssHeight);

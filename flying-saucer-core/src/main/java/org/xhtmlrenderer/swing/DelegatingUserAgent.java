@@ -19,18 +19,17 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.util.IOUtil;
-import org.xhtmlrenderer.util.StreamResource;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -52,19 +51,27 @@ import java.io.InputStream;
  *
  * @author Torbjoern Gannholm
  */
-@ParametersAreNonnullByDefault
 public class DelegatingUserAgent implements UserAgentCallback, DocumentListener {
-    private final UriResolver _uriResolver;
-    private ImageResourceLoader _imageResourceLoader;
+    private static final Logger log = LoggerFactory.getLogger(DelegatingUserAgent.class);
 
+    private final UriResolver _uriResolver = new UriResolver();
+    private ImageResourceLoader _imageResourceLoader;
 
     /**
      * Creates a new instance of NaiveUserAgent with a max image cache of 16 images.
      */
     public DelegatingUserAgent() {
-        this._uriResolver = new UriResolver();
+        this(new ImageResourceLoader());
     }
 
+    public DelegatingUserAgent(ImageResourceLoader imageResourceLoader) {
+        _imageResourceLoader = imageResourceLoader;
+    }
+
+    /**
+     * @deprecated Pass loader right to the constructor (instead of using setter)
+     */
+    @Deprecated
     public void setImageResourceLoader(ImageResourceLoader loader) {
         _imageResourceLoader = loader;
     }
@@ -87,6 +94,8 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
     /**
      * Gets a Reader for the resource identified
      */
+    @CheckReturnValue
+    @Nullable
     protected InputStream resolveAndOpenStream(String uri) {
         return IOUtil.openStreamAtUrl(_uriResolver.resolve(uri));
     }
@@ -99,6 +108,8 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri Location of the CSS source.
      * @return A CSSResource containing the parsed CSS.
      */
+    @Override
+    @CheckReturnValue
     public CSSResource getCSSResource(String uri) {
         return new CSSResource(resolveAndOpenStream(uri));
     }
@@ -111,6 +122,8 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri Location of the image source.
      * @return An ImageResource containing the image.
      */
+    @Override
+    @CheckReturnValue
     public ImageResource getImageResource(String uri) {
         return _imageResourceLoader.get(resolveURI(uri));
     }
@@ -123,27 +136,24 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri Location of the XML source.
      * @return An XMLResource containing the image.
      */
+    @CheckReturnValue
+    @Nullable
+    @Override
     public XMLResource getXMLResource(String uri) {
-        String ruri = _uriResolver.resolve(uri);
-        try (StreamResource sr = new StreamResource(ruri)) {
-            sr.connect();
-            BufferedInputStream bis = sr.bufferedStream();
-            return XMLResource.load(bis);
+        String resolvedUri = _uriResolver.resolve(uri);
+        try (InputStream in = IOUtil.getInputStream(resolvedUri)) {
+            return XMLResource.load(in);
         } catch (IOException e) {
+            log.warn("Failed to load XML resource from {}", resolvedUri, e);
             return null;
         }
     }
 
-    @Nullable
     @CheckReturnValue
-    public byte[] getBinaryResource(String uri) {
-        String ruri = _uriResolver.resolve(uri);
-        try (StreamResource sr = new StreamResource(ruri)) {
-            sr.connect();
-            return IOUtil.readBytes(sr.bufferedStream());
-        } catch (IOException e) {
-            return null;
-        }
+    @Override
+    public byte @Nullable [] getBinaryResource(String uri) {
+        String resolvedUri = _uriResolver.resolve(uri);
+        return IOUtil.readBytes(resolvedUri);
     }
 
 
@@ -153,7 +163,8 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      * @param uri A URI which might have been visited.
      * @return Always false; visits are not tracked in the NaiveUserAgent.
      */
-    public boolean isVisited(String uri) {
+    @Override
+    public boolean isVisited(@Nullable String uri) {
         return false;
     }
 
@@ -162,7 +173,8 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      *
      * @param uri A URI which anchors other, possibly relative URIs.
      */
-    public void setBaseURL(String uri) {
+    @Override
+    public void setBaseURL(@Nullable String uri) {
         _uriResolver.setBaseUri(uri);
     }
 
@@ -175,6 +187,7 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
      */
     @Nullable
     @CheckReturnValue
+    @Override
     public String resolveURI(@Nullable String uri) {
         return _uriResolver.resolve(uri);
     }
@@ -182,19 +195,26 @@ public class DelegatingUserAgent implements UserAgentCallback, DocumentListener 
     /**
      * Returns the current baseUrl for this class.
      */
+    @CheckReturnValue
+    @Nullable
+    @Override
     public String getBaseURL() {
         return _uriResolver.getBaseUri();
     }
 
+    @Override
     public void documentStarted() {
         _imageResourceLoader.stopLoading();
         shrinkImageCache();
     }
 
+    @Override
     public void documentLoaded() { /* ignore*/ }
 
+    @Override
     public void onLayoutException(Throwable t) { /* ignore*/ }
 
+    @Override
     public void onRenderException(Throwable t) { /* ignore*/ }
 
     public void setRepaintListener(RepaintListener listener) {

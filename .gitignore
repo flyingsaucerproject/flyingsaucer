@@ -16,3 +16,4 @@ release.properties
 .project
 .settings
 tags
+/.claude/settings.local.json

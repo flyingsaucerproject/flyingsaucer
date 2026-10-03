@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>justified underline of single character lines</title>
+    <style>
+        @page { margin: 0; }
+        body { margin: 0; font-size: 36px; }
+        /* Too narrow for two digits, so every line holds a single one: there is no gap between
+           characters to spread the extra space over. */
+        p { width: 30px; text-align: justify; margin: 0; word-wrap: break-word; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <p>1234</p>
+</body>
+</html>

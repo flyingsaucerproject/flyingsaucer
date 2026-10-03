@@ -19,11 +19,14 @@
  */
 package org.xhtmlrenderer.simple;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.layout.SharedContext;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
 
 
 /**
@@ -32,35 +35,33 @@ import java.awt.image.BufferedImage;
  * for rendering documents directly to images.</p>
  * <p>
  * <p>Graphics2DRenderer supports the {@link XHTMLPanel#setDocument(Document)},
- * {@link XHTMLPanel#doLayout()}, and {@link XHTMLPanel#render()} methods from
+ * {@link XHTMLPanel#doLayout()} method from
  * {@link XHTMLPanel}, as well as easy-to-use static utility methods.
  * For example, to render a document in an image that is 600 pixels wide use the
  * {@link #renderToImageAutoSize(String,int,int)} method like this:</p>
- * 
+ *
  * <pre>{@code
  * BufferedImage img = Graphics2DRenderer.renderToImage( "test.xhtml", width);
  * }</pre>
  *
  * @author Joshua Marinacci
  */
-
-public class Graphics2DRenderer {
+public final class Graphics2DRenderer {
     /**
      * The panel we are using to render the document.
      */
     private final XHTMLPanel panel;
 
-    /**
-     * Dimensions of the image to render, in pixels.
-     */
-    protected Dimension dim;
-
-    /**
-     * Creates a new renderer with no document specified.
-     */
-    public Graphics2DRenderer() {
+    public Graphics2DRenderer(String url) {
         panel = new XHTMLPanel();
         panel.setInteractive(false);
+        panel.setDocument(url);
+    }
+
+    public Graphics2DRenderer(Document doc, String base_url) {
+        panel = new XHTMLPanel();
+        panel.setInteractive(false);
+        panel.setDocument(doc, base_url);
     }
 
     // ASK maybe we could change the graphics2d to be a font rendering context?
@@ -71,8 +72,7 @@ public class Graphics2DRenderer {
      * @param g2  the canvas to layout on.
      * @param dim dimensions of the container for the document
      */
-    public void layout(Graphics2D g2, Dimension dim) {
-        this.dim = dim;
+    public void layout(Graphics2D g2, @Nullable Dimension dim) {
         if (dim != null) {
             panel.setSize(dim);
         }
@@ -90,36 +90,6 @@ public class Graphics2DRenderer {
             g2.setClip(getMinimumSize());
         }
         panel.paintComponent(g2);
-    }
-
-
-    /**
-     * Set the document to be rendered, lays it out, and
-     * renders it.
-     *
-     * @param url the URL for the document to render.
-     */
-    public void setDocument(String url) {
-        panel.setDocument(url);
-    }
-
-    /**
-     * Sets the document to render, lays it out, and renders it.
-     *
-     * @param doc      the Document to render
-     * @param base_url base URL for relative links within the Document.
-     */
-    public void setDocument(Document doc, String base_url) {
-        panel.setDocument(doc, base_url);
-    }
-
-    /**
-     * Sets the SharedContext for rendering.
-     *
-     * @param ctx The new renderingContext value
-     */
-    public void setSharedContext(SharedContext ctx) {
-        panel.setSharedContext(ctx);
     }
 
     /**
@@ -179,22 +149,22 @@ public class Graphics2DRenderer {
      * @return Returns an Image containing the rendered document.
      */
     public static BufferedImage renderToImage(String url, int width, int height, int bufferedImageType) {
-        Graphics2DRenderer g2r = new Graphics2DRenderer();
-        g2r.setDocument(url);
+        Graphics2DRenderer g2r = new Graphics2DRenderer(url);
+
         Dimension dim = new Dimension(width, height);
         BufferedImage buff = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), bufferedImageType);
-        Graphics2D g = (Graphics2D) buff.getGraphics();
-        g2r.layout(g, dim);
-        g2r.render(g);
-        g.dispose();
+        withGraphics(buff, g -> {
+            g2r.layout(g, dim);
+            g2r.render(g);
+        });
         return buff;
     }
 
         /**
      * A static utility method to automatically create an image from a
      * document, where height is determined based on document content.
-     * To estimate a size before rendering, use {@link #setDocument(String)}
-     * and then {@link #getMinimumSize()}. The rendered image supports transparency.
+     * To estimate a size before rendering, use {@link #getMinimumSize()}.
+     * The rendered image supports transparency.
      *
      * @param url    java.net.URL for the document to render.
      * @param width  Width in pixels of the layout container
@@ -207,8 +177,7 @@ public class Graphics2DRenderer {
     /**
      * A static utility method to automatically create an image from a
      * document, where height is determined based on document content.
-     * To estimate a size before rendering, use {@link #setDocument(String)}
-     * and then {@link #getMinimumSize()}.
+     * To estimate a size before rendering, use {@link #getMinimumSize()}.
      *
      * @param url    java.net.URL for the document to render.
      * @param width  Width in pixels of the layout container
@@ -217,24 +186,19 @@ public class Graphics2DRenderer {
      * @return Returns java.awt.Image containing the rendered document.
      */
     public static BufferedImage renderToImageAutoSize(String url, int width, int bufferedImageType) {
-        Graphics2DRenderer g2r = new Graphics2DRenderer();
-        g2r.setDocument(url);
+        Graphics2DRenderer g2r = new Graphics2DRenderer(url);
         Dimension dim = new Dimension(width, 1000);
 
         // do layout with temp buffer
-        BufferedImage buff = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), bufferedImageType);
-        Graphics2D g = (Graphics2D) buff.getGraphics();
-        g2r.layout(g, new Dimension(width, 1000));
-        g.dispose();
+        BufferedImage tempBuffer = new BufferedImage((int) dim.getWidth(), (int) dim.getHeight(), bufferedImageType);
+        withGraphics(tempBuffer, g -> g2r.layout(g, new Dimension(width, 1000)));
 
         // get size
         Rectangle rect = g2r.getMinimumSize();
 
         // render into real buffer
-        buff = new BufferedImage((int) rect.getWidth(), (int) rect.getHeight(), bufferedImageType);
-        g = (Graphics2D) buff.getGraphics();
-        g2r.render(g);
-        g.dispose();
+        BufferedImage buff = new BufferedImage((int) rect.getWidth(), (int) rect.getHeight(), bufferedImageType);
+        withGraphics(buff, g -> g2r.render(g));
 
         // return real buffer
         return buff;

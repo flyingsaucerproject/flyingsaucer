@@ -81,7 +81,7 @@ keycap {
 	font-size: smaller;
 }
 keycombo>keycap+keycap {
-	border-left-width: 0px;
+	border-left-width: 0;
 }
 keycap:before {
 	content:"\A0";
@@ -189,8 +189,8 @@ footnote>*:first-child {
 	border-top: 1px solid black;
 	background-color: #ffffe1;
 	padding: .5em;
-	left: 0px;
-	bottom: 0px;
+	left: 0;
+	bottom: 0;
 	font: sans-serif medium;
 	font-weight: normal;
 	font-style: normal;

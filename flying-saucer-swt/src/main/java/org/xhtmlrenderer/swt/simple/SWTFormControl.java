@@ -20,16 +20,11 @@
 package org.xhtmlrenderer.swt.simple;
 
 import org.eclipse.swt.widgets.Control;
-import org.xhtmlrenderer.simple.xhtml.FormControl;
 
 public interface SWTFormControl {
-    FormControl getFormControl();
-
     Control getSWTControl();
 
     int getIdealWidth();
 
     int getIdealHeight();
-
-    void dispose();
 }

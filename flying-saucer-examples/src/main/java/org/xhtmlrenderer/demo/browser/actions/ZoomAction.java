@@ -3,7 +3,6 @@ package org.xhtmlrenderer.demo.browser.actions;
 import org.xhtmlrenderer.demo.browser.ScaleFactor;
 import org.xhtmlrenderer.swing.ScalableXHTMLPanel;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
@@ -13,7 +12,6 @@ import static javax.swing.JOptionPane.showMessageDialog;
 /**
  * Implements zooming of the browser panel.
  */
-@ParametersAreNonnullByDefault
 public class ZoomAction extends AbstractAction {
     private static boolean needsWarning = true;
 

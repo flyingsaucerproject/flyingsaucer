@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style type="text/css">
+        body { margin: 20pt; font-size: 10pt; font-family: serif; }
+        table { border-collapse: collapse; width: 400pt; }
+        td { border: 1px solid black; padding: 2pt; vertical-align: top; }
+    </style>
+</head>
+<body>
+
+<!--
+    Regression fixture: colspan > 1 <td> with max-width in table-layout:auto.
+
+    Page geometry: 400pt table, 2 equal columns ~200pt each.
+    The colspan=2 cell is allocated ~388pt content width (400pt minus borders/padding).
+
+    Bug (missing colspan guard): applyCSSMinMaxWidth is called for table-layout:auto
+    regardless of colspan, shrinking the cell to max-width:80pt (~16 chars/line).
+    "Alpha" and "Beta" land on different lines.
+
+    Fix (isFixedWidthAdvisoryOnly() && getColSpan() <= 1): the call is skipped for
+    colspan > 1 cells. The cell uses the full ~388pt allocated width.
+    "Alpha" and "Beta" appear on the SAME first line.
+    "Alpha" and "Omega" (24th word) land on DIFFERENT lines, proving wrapping
+    still occurs at the allocated column width and not at an infinite width.
+-->
+<table style="table-layout: auto;">
+    <tbody>
+    <tr>
+        <td>Column A</td>
+        <td>Column B</td>
+    </tr>
+    <tr>
+        <td colspan="2" style="max-width: 80pt;">
+            Alpha Beta Gamma Delta Epsilon Zeta Eta Theta Iota Kappa
+            Lambda Mu Nu Xi Omicron Pi Rho Sigma Tau Upsilon Phi Chi Psi Omega
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -19,12 +19,12 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
-import org.xhtmlrenderer.util.GeneralUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -35,7 +35,9 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 
-class SelectField extends FormField {
+import static org.xhtmlrenderer.util.GeneralUtil.parseIntRelaxed;
+
+class SelectField extends FormField<JComponent> {
     SelectField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
@@ -52,17 +54,13 @@ class SelectField extends FormField {
             select.setCellRenderer(new CellRenderer());
             select.addListSelectionListener(new HeadingItemListener());
 
-            if (hasAttribute("multiple") && getAttribute("multiple").equalsIgnoreCase("true")) {
+            if (getAttribute("multiple").equalsIgnoreCase("true")) {
                 select.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
             } else {
                 select.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             }
 
-            int size = 0;
-
-            if (hasAttribute("size")) {
-                size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
-            }
+            int size = parseIntRelaxed(getAttribute("size"));
 
             if (size == 0) {
                 // Default to the number of items in the list or 20 - whichever is less
@@ -104,11 +102,12 @@ class SelectField extends FormField {
     @Override
     protected void applyOriginalState() {
         if (shouldRenderAsList()) {
-            JList<?> select = (JList<?>) ((JScrollPane) getComponent()).getViewport().getView();
+            JScrollPane scrollPane = component();
+            JList<?> select = (JList<?>) scrollPane.getViewport().getView();
 
             select.setSelectedIndices(getOriginalState().getSelectedIndices());
         } else {
-            JComboBox<?> select = (JComboBox<?>) getComponent();
+            JComboBox<?> select = component();
 
             // This looks strange, but basically since this is a single select, and
             // someone might have put selected="selected" on more than a single option
@@ -125,10 +124,11 @@ class SelectField extends FormField {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected String[] getFieldValues() {
         if (shouldRenderAsList()) {
-            @SuppressWarnings("unchecked")
-            JList<NameValuePair> select = (JList<NameValuePair>) ((JScrollPane) getComponent()).getViewport().getView();
+            JScrollPane scrollPane = component();
+            JList<NameValuePair> select = (JList<NameValuePair>) scrollPane.getViewport().getView();
 
             List<NameValuePair> selectedValues = select.getSelectedValuesList();
             String[] submitValues = new String[selectedValues.size()];
@@ -141,9 +141,7 @@ class SelectField extends FormField {
 
             return submitValues;
         } else {
-            @SuppressWarnings("unchecked")
-            JComboBox<NameValuePair> select = (JComboBox<NameValuePair>) getComponent();
-
+            JComboBox<NameValuePair> select = component();
             NameValuePair selectedValue = (NameValuePair) select.getSelectedItem();
 
             if (selectedValue != null) {
@@ -188,19 +186,12 @@ class SelectField extends FormField {
     }
 
     private boolean shouldRenderAsList() {
-        boolean result = false;
-
-        if (hasAttribute("multiple") && getAttribute("multiple").equalsIgnoreCase("true")) {
-            result = true;
-        } else if (hasAttribute("size")) {
-            int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
-
-            if (size > 0) {
-                result = true;
-            }
+        if (getAttribute("multiple").equalsIgnoreCase("true")) {
+            return true;
+        } else {
+            int size = parseIntRelaxed(getAttribute("size"));
+            return size > 0;
         }
-
-        return result;
     }
 
     /**
@@ -213,7 +204,7 @@ class SelectField extends FormField {
      * The indent property was added to support indentation of items as
      * children below headings.
      */
-    private record NameValuePair(String name, String value, int indent) {
+    private record NameValuePair(String name, @Nullable String value, int indent) {
         @Override
         public String toString() {
             StringBuilder txt = new StringBuilder(name);
@@ -229,7 +220,7 @@ class SelectField extends FormField {
      */
     private static class CellRenderer extends DefaultListCellRenderer {
         @Override
-        public Component getListCellRendererComponent(JList list, Object value,
+        public Component getListCellRendererComponent(JList list, @Nullable Object value,
                                                       int index, boolean isSelected, boolean cellHasFocus) {
             NameValuePair pair = (NameValuePair)value;
 
@@ -256,6 +247,7 @@ class SelectField extends FormField {
      */
     private static class HeadingItemListener implements ItemListener, ListSelectionListener {
 
+        @Nullable
         private Object oldSelection;
         private int[] oldSelections = new int[0];
 
@@ -290,7 +282,7 @@ class SelectField extends FormField {
             for (int i = e.getFirstIndex(); i <= e.getLastIndex(); i++) {
                 if (!list.isSelectedIndex(i)) continue;
                 NameValuePair pair = model.getElementAt(i);
-                if ( pair!=null && pair.value() == null) {
+                if (pair != null && pair.value() == null) {
                     // We have a heading, remove it. As this handler is called
                     // as a result of the resulting removal, and we do process
                     // the events while the value is adjusting, we don't need

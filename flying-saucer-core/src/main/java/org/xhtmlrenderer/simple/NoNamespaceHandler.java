@@ -21,6 +21,8 @@
 
 package org.xhtmlrenderer.simple;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -28,46 +30,42 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
-import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.extend.TreeResolver;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.AUTHOR;
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.mediaTypes;
 
 /**
  * Handles a general XML document
  *
  * @author Torbjoern Gannholm
  */
-@ParametersAreNonnullByDefault
 public class NoNamespaceHandler implements NamespaceHandler {
 
     private static final String _namespace = "http://www.w3.org/XML/1998/namespace";
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getNamespace() {
         return _namespace;
     }
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getAttributeValue(Element e, String attrName) {
         return e.getAttribute(attrName);
     }
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getAttributeValue(Element e, @Nullable String namespaceURI, String attrName) {
         if (namespaceURI == TreeResolver.NO_NAMESPACE) {
@@ -107,7 +105,6 @@ public class NoNamespaceHandler implements NamespaceHandler {
     }
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public String getLang(Element e) {
         return e.getAttribute("lang");
@@ -169,12 +166,10 @@ public class NoNamespaceHandler implements NamespaceHandler {
 
     private static final Pattern _typePattern = Pattern.compile("type\\s?=\\s?");
     private static final Pattern _hrefPattern = Pattern.compile("href\\s?=\\s?");
-    private static final Pattern _titlePattern = Pattern.compile("title\\s?=\\s?");
     private static final Pattern _alternatePattern = Pattern.compile("alternate\\s?=\\s?");
     private static final Pattern _mediaPattern = Pattern.compile("media\\s?=\\s?");
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public List<StylesheetInfo> getStylesheets(Document doc) {
         List<StylesheetInfo> list = new ArrayList<>();
@@ -185,9 +180,10 @@ public class NoNamespaceHandler implements NamespaceHandler {
             Node node = nl.item(i);
             if (node.getNodeType() != Node.PROCESSING_INSTRUCTION_NODE) continue;
             ProcessingInstruction piNode = (ProcessingInstruction) node;
-            if (!piNode.getTarget().equals("xml-stylesheet")) continue;
-            StylesheetInfo info = new StylesheetInfo();
-            info.setOrigin(StylesheetInfo.AUTHOR);
+            if (!piNode.getTarget().equals("xml-stylesheet")) {
+                continue;
+            }
+
             String pi = piNode.getData();
             Matcher m = _alternatePattern.matcher(pi);
             if (m.matches()) {
@@ -196,44 +192,54 @@ public class NoNamespaceHandler implements NamespaceHandler {
                 //TODO: handle alternate stylesheets
                 if (alternate.equals("yes")) continue;//DON'T get alternate stylesheets for now
             }
-            m = _typePattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String type = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                //TODO: handle other stylesheet types
-                if (!type.equals("text/css")) continue;//for now
-                info.setType(type);
-            }
-            m = _hrefPattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String href = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                info.setUri(href);
-            }
-            m = _titlePattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String title = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                info.setTitle(title);
-            }
-            m = _mediaPattern.matcher(pi);
-            if (m.find()) {
-                int start = m.end();
-                String media = pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
-                info.setMedia(media);
-            } else {
-                info.addMedium("screen");
-            }
+            String type = detectType(pi);
+            //TODO: handle other stylesheet types
+            if (!Objects.equals(type, "text/css")) continue; // for now
+
+            StylesheetInfo info = new StylesheetInfo(AUTHOR, detectUri(pi), mediaTypes(detectMediaTypes(pi)), null);
             list.add(info);
         }
 
         return list;
     }
 
-    @Override
     @Nullable
-    public StylesheetInfo getDefaultStylesheet(StylesheetFactory factory) {
+    @CheckReturnValue
+    private String detectType(String pi) {
+        Matcher m = _typePattern.matcher(pi);
+        if (m.find()) {
+            int start = m.end();
+            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+        }
         return null;
+    }
+
+    @Nullable
+    @CheckReturnValue
+    private String detectUri(String pi) {
+        Matcher m = _hrefPattern.matcher(pi);
+        if (m.find()) {
+            int start = m.end();
+            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+        }
+        return null;
+    }
+
+    @CheckReturnValue
+    private String detectMediaTypes(String pi) {
+        Matcher m = _mediaPattern.matcher(pi);
+        if (m.find()) {
+            int start = m.end();
+            return pi.substring(start + 1, pi.indexOf(pi.charAt(start), start + 1));
+        } else {
+            return "screen";
+        }
+    }
+
+    @Override
+    @CheckReturnValue
+    public Optional<StylesheetInfo> getDefaultStylesheet() {
+        return Optional.empty();
     }
 
 }

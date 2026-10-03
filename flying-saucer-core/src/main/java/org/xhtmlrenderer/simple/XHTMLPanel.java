@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.simple;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -30,8 +31,6 @@ import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -43,22 +42,19 @@ import java.net.URL;
  * Java program. It is scrolling aware so you can safely drop it into a
  * {@link javax.swing.JScrollPane}. The most common usage is to stuff a {@link URL}
  * into it and then add it to your JFrame. Ex:</p>
- * 
+ *
  * <pre>{@code
  * import org.xhtmlrenderer.simple.*;
- * 
- * public static void main(String[] args) {
- * 
+ *
  * // set up the xhtml panel XHTMLPanel xhtml = new XHTMLPanel();
  * xhtml.setDocument(new URL("http://myserver.com/page.xhtml"));
- * 
+ *
  * JScrollPane scroll = new JScrollPane(xhtml);
  * JFrame frame = new JFrame("Demo");
  * frame.getContentPane().add(scroll);
  * frame.pack();
  * frame.setSize(500,600);
  * frame.show();
- * }
  * }</pre>
  * <p>
  * <p>XHTMLPanel renders XHTML and XML which can be loaded as valid {@link Document}
@@ -70,22 +66,21 @@ import java.net.URL;
  * documents from a uri ({@link #setDocument(String uri)}),
  * from a Document instance ({@link #setDocument(Document)}) or from an InputStream
  * ({@link org.xhtmlrenderer.swing.BasicPanel#setDocument(java.io.InputStream,String)}).</p>
- * 
+ *
  * <p>
  * XHTMLPanel also lets you make simple changes with simple methods like
  * {@link #setFontScalingFactor(float)}. If you want to make other changes you will
  * need to get the rendering context ({@link #getSharedContext()}) and call methods on
- * that. Ex: {@code </p>} @{code <p/>}
- * <p>
+ * that. Ex: {@code
  * <pre>
  * XHTMLPanel xhtml = new XHTMLPanel();
  * RenderingContext ctx = xhtml.getRenderingContext();
  * ctx.setLogging(true); // turn on logging
  * ctx.setValidating(true); // turn on doctype validation
  * ctx.addFont(fnt,"Arial"); // redefine a font
- * ctx.setDomImplementation("com.cooldom.DomImpl");
+ * ctx.setDomImplementation("com.cool.dom.DomImpl");
  * </pre>
- * <p>
+ * }
  * <p>XHTMLPanel comes with a pre-installed MouseListener which handles :hover events used for rollovers
  * ( @see org.xhtmlrenderer.swing.HoverListener ). XHTMLPanel also comes with a pre-installed LinkListener
  * used to follow links.  ( @see org.xhtmlrenderer.swing.LinkListener )
@@ -97,10 +92,7 @@ import java.net.URL;
  * @see <a href="http://xhtmlrenderer.dev.java.net">The Flying Saucer Home Page</a>
  * @see RenderingContext
  */
-@ParametersAreNonnullByDefault
 public class XHTMLPanel extends BasicPanel {
-    private static final long serialVersionUID = 1L;
-
     private float fontScalingFactor = 1.2F;
     private float minFontScale = 0.50F;
     private float maxFontScale = 3.0F;
@@ -136,15 +128,6 @@ public class XHTMLPanel extends BasicPanel {
         if (Configuration.isTrue("xr.use.listeners", true)) {
             resetMouseTracker();
         }
-    }
-
-    /**
-     * Lays out the current document again, and re-renders.
-     */
-    @Override
-    public void relayout() {
-        sharedContext.flushFonts();
-        super.relayout();
     }
 
     /**
@@ -204,25 +187,11 @@ public class XHTMLPanel extends BasicPanel {
     public void setDocument(File file) throws MalformedURLException {
         resetListeners();
         File parent = file.getAbsoluteFile().getParentFile();
-        String parentURL = ( parent == null ? "" : parent.toURI().toURL().toExternalForm());
+        String parentURL = parent == null ? "" : parent.toURI().toURL().toExternalForm();
         setDocument(
                 loadDocument(file.toURI().toURL().toExternalForm()),
                 parentURL
         );
-    }
-
-    /**
-     * Sets the {@link RenderingContext} attribute of the XHTMLPanel object. Generally
-     * you should not use this unless you have a heavily customized context to
-     * use. To modify just some rendering behavior, consider using
-     * {@link #getSharedContext()} to retrieve the current context, and using
-     * mutators to change its behavior.
-     *
-     * @param ctx A new RenderingContext to use for rendering.
-     */
-    @Override
-    public void setSharedContext(SharedContext ctx) {
-        super.setSharedContext(ctx);
     }
 
     /**

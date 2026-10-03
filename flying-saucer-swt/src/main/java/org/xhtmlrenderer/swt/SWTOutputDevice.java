@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -26,21 +27,25 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
-import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.render.AbstractOutputDevice;
 import org.xhtmlrenderer.render.BlockBox;
-import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.swt.simple.SWTFormControl;
 
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.awt.RenderingHints.Key;
+import java.awt.BasicStroke;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
@@ -51,7 +56,8 @@ import java.awt.geom.PathIterator;
  * @author Vianney le Clément
  *
  */
-public class SWTOutputDevice extends AbstractOutputDevice {
+@NullUnmarked
+public class SWTOutputDevice extends AbstractOutputDevice<SWTFSImage, SWTFSFont> {
 
     private final GC _gc;
     private Path _clippingPath = null;
@@ -92,6 +98,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         }
     }
 
+    @Override
     public void clip(Shape s) {
         if (s == null) {
             return;
@@ -105,6 +112,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         }
     }
 
+    @Override
     public void setClip(Shape s) {
         Path path = convertToPath(s);
         if (path == null) {
@@ -116,9 +124,12 @@ public class SWTOutputDevice extends AbstractOutputDevice {
             _clippingPath.dispose();
         }
         _clippingPath = path;
-        _clippingArea = (s == null ? null : new Area(s));
+        _clippingArea = s == null ? null : new Area(s);
     }
 
+    @Nullable
+    @CheckReturnValue
+    @Override
     public Shape getClip() {
         return _clippingArea;
     }
@@ -128,8 +139,9 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         _gc.drawLine(x1, y1, x2, y2);
     }
 
+    @Override
     public void drawBorderLine(Shape bounds, int side,
-            int lineWidth, boolean solid) {
+                               int lineWidth, boolean solid) {
         /*int x = bounds.x;
         int y = bounds.y;
         int w = bounds.width;
@@ -157,8 +169,9 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         draw(bounds);
     }
 
-    public void drawImage(FSImage image, int x, int y) {
-        Image img = ((SWTFSImage) image).getImage();
+    @Override
+    public void drawImage(SWTFSImage image, int x, int y) {
+        Image img = image.getImage();
         if (img == null) {
             int width = image.getWidth();
             int height = image.getHeight();
@@ -179,50 +192,63 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         }
     }
 
+    @Override
+    public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height) {
+        // TODO: implement
+    }
+
+    @Override
     public void drawOval(int x, int y, int width, int height) {
         _gc.drawOval(x, y, width, height);
     }
 
+    @Override
     public void drawRect(int x, int y, int width, int height) {
         _gc.drawRectangle(x, y, width, height);
     }
 
-
-
+    @Override
     public void draw(Shape s) {
         Path p = convertToPath(s);
         _gc.drawPath(p);
         p.dispose();
     }
 
+    @Override
     public void fill(Shape s) {
         Path p = convertToPath(s);
         _gc.fillPath(p);
         p.dispose();
     }
 
+    @Override
     public void fillOval(int x, int y, int width, int height) {
         _gc.fillOval(x, y, width, height);
     }
 
+    @Override
     public void fillRect(int x, int y, int width, int height) {
         _gc.fillRectangle(x, y, width, height);
     }
 
+    @Override
     public void paintReplacedElement(RenderingContext c, BlockBox box) {
         ReplacedElement replaced = box.getReplacedElement();
         java.awt.Point location = replaced.getLocation();
-        if (replaced instanceof ImageReplacedElement) {
-            drawImage(((ImageReplacedElement) replaced).getImage(), location.x,
-                location.y);
-        } else if (replaced instanceof FormControlReplacementElement) {
-            SWTFormControl swtControl = ((FormControlReplacementElement) replaced)
-                .getControl();
+        if (replaced instanceof ImageReplacedElement imageReplacedElement) {
+            drawImage(imageReplacedElement.getImage(), location.x, location.y);
+        } else if (replaced instanceof FormControlReplacementElement replacedElement) {
+            SWTFormControl swtControl = replacedElement.getControl();
             swtControl.getSWTControl().setVisible(true);
         }
     }
 
-    public void setColor(java.awt.Color color) {
+    @Override
+    public void setOpacity(float opacity) {
+    	// TODO: implement opacity settings
+    }
+
+    private void setColor(java.awt.Color color) {
         if (color.equals(_awt_color)) {
             return;
         }
@@ -239,23 +265,26 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         _awt_color = color;
     }
 
-    public void setFont(FSFont font) {
-        _gc.setFont(((SWTFSFont) font).getSWTFont());
+    @Override
+    public void setFont(SWTFSFont font) {
+        _gc.setFont(font.getSWTFont());
     }
 
+    @Override
     public void setColor(FSColor color) {
-        if (color instanceof FSRGBColor rgb) {
-            setColor(new java.awt.Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
-        } else {
-            throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
+        switch (color) {
+            case FSRGBColor rgb -> setColor(new java.awt.Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue()));
+            default ->
+                throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
         }
-
     }
 
+    @Override
     public Stroke getStroke() {
         return _stroke;
     }
 
+    @Override
     public void setStroke(Stroke s) {
         _stroke = s;
 
@@ -282,7 +311,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
             case BasicStroke.CAP_BUTT -> SWT.CAP_FLAT;
             case BasicStroke.CAP_ROUND -> SWT.CAP_ROUND;
             case BasicStroke.CAP_SQUARE -> SWT.CAP_SQUARE;
-            default -> SWT.CAP_SQUARE;
+            default -> throw new IllegalArgumentException("Unsupported CAP value: " + bs.getEndCap());
         };
         _gc.setLineCap(gcCap);
 
@@ -291,7 +320,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
             case BasicStroke.JOIN_BEVEL -> SWT.JOIN_BEVEL;
             case BasicStroke.JOIN_MITER -> SWT.JOIN_MITER;
             case BasicStroke.JOIN_ROUND -> SWT.JOIN_ROUND;
-            default -> SWT.JOIN_MITER;
+            default -> throw new IllegalArgumentException("Unsupported line join: " + bs.getLineJoin());
         };
         _gc.setLineJoin(gcJoin);
 
@@ -306,6 +335,7 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         _gc.setLineDash(dashes);
     }
 
+    @Override
     public void translate(double tx, double ty) {
         if (_transform == null) {
             _transform = new Transform(_gc.getDevice());
@@ -319,7 +349,10 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         }
     }
 
-    public Object getRenderingHint(Key key) {
+    @Nullable
+    @CheckReturnValue
+    @Override
+    public Object getRenderingHint(RenderingHints.@NonNull Key key) {
         if (RenderingHints.KEY_ANTIALIASING.equals(key)) {
             switch (_gc.getAntialias()) {
             case SWT.DEFAULT:
@@ -333,7 +366,9 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         return null;
     }
 
-    public void setRenderingHint(Key key, Object value) {
+    @NullMarked
+    @Override
+    public void setRenderingHint(RenderingHints.Key key, Object value) {
         if (RenderingHints.KEY_ANTIALIASING.equals(key)) {
             int antialias = SWT.DEFAULT;
             if (RenderingHints.VALUE_ANTIALIAS_OFF.equals(value)) {
@@ -382,17 +417,19 @@ public class SWTOutputDevice extends AbstractOutputDevice {
         return path;
     }
 
+    @Override
     public void drawSelection(RenderingContext c, InlineText inlineText) {
         // TODO support selection drawing
     }
 
+    @Override
     public boolean isSupportsSelection() {
         // TODO support selection drawing
         return false;
     }
 
+    @Override
     public boolean isSupportsCMYKColors() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
-
 }

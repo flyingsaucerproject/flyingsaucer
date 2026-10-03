@@ -26,11 +26,10 @@ import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Arrays.asList;
 
 public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
     // [<'background-color'> || <'background-image'> || <'background-repeat'> ||
@@ -55,7 +54,7 @@ public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
 
     @Override
     public List<PropertyDeclaration> buildDeclarations(
-            CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+            CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
         final List<PropertyDeclaration> result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
         if (result != null) {
             return result;
@@ -135,7 +134,7 @@ public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
 
                 backgroundColor = new PropertyDeclaration(
                         CSSName.BACKGROUND_COLOR, value, important, origin);
-            } else if (type == CSSPrimitiveValue.CSS_URI) {
+            } else if (type == CSSPrimitiveValue.CSS_URI || value.toString().startsWith(IdentValue.LINEAR_GRADIENT.asString())) {
                 if (backgroundImage != null) {
                     throw new CSSParseException("A background-image value cannot be set twice", -1);
                 }
@@ -194,6 +193,6 @@ public class BackgroundPropertyBuilder extends AbstractPropertyBuilder {
                     CSSName.BACKGROUND_POSITION, new PropertyValue(v), important, origin);
         }
 
-        return asList(backgroundColor, backgroundImage, backgroundRepeat, backgroundAttachment, backgroundPosition);
+        return List.of(backgroundColor, backgroundImage, backgroundRepeat, backgroundAttachment, backgroundPosition);
     }
 }

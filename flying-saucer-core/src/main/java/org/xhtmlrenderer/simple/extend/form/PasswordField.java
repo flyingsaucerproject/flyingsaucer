@@ -23,59 +23,30 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
-import org.xhtmlrenderer.util.GeneralUtil;
 
 import javax.swing.*;
 
-class PasswordField extends InputField {
+class PasswordField extends InputField<JPasswordField> {
     PasswordField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JPasswordField create() {
         JPasswordField password = new JPasswordField();
-
-        if (hasAttribute("size")) {
-            int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
-
-            // Size of 0 doesn't make any sense, so use default value
-            if (size == 0) {
-                password.setColumns(15);
-            } else {
-                password.setColumns(size);
-            }
-        } else {
-            password.setColumns(15);
-        }
-
-        if (hasAttribute("maxlength")) {
-            password.setDocument(
-                    new SizeLimitedDocument(
-                            GeneralUtil.parseIntRelaxed(getAttribute("maxlength"))));
-        }
-
-        if (hasAttribute("readonly") &&
-                getAttribute("readonly").equalsIgnoreCase("readonly")) {
-            password.setEditable(false);
-        }
-
+        prepareTextField(password);
         return password;
     }
 
     @Override
     protected void applyOriginalState() {
-        JPasswordField password = (JPasswordField) getComponent();
-
+        JPasswordField password = component();
         password.setText(getOriginalState().getValue());
     }
 
     @Override
     protected String[] getFieldValues() {
-        JPasswordField textfield = (JPasswordField) getComponent();
-
-        return new String [] {
-                new String(textfield.getPassword())
-        };
+        String password = new String(component().getPassword());
+        return new String[]{password};
     }
 }

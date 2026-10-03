@@ -34,7 +34,7 @@ public class ListBreakPointsProvider implements BreakPointsProvider {
 
     @Override
     public BreakPoint next() {
-        if (!breakPoints.hasNext()) return BreakPoint.getDonePoint();
+        if (!breakPoints.hasNext()) return BreakPoint.DONE;
         return breakPoints.next();
     }
 

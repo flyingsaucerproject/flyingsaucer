@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.util.GeneralUtil;
 import org.xhtmlrenderer.util.XRLog;
@@ -26,66 +27,45 @@ import org.xhtmlrenderer.util.XRLog;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.util.Objects.requireNonNull;
+
 public class BrowserStartup {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(BrowserStartup.class);
-    
-    public BrowserPanel panel;
-    protected BrowserMenuBar menu;
-    protected JFrame frame;
-    protected JFrame validation_console = null;
-    protected BrowserActions actions;
-    protected final String startPage;
-    protected final ValidationHandler error_handler = new ValidationHandler();
     private static final Logger logger = Logger.getLogger("app.browser");
 
+    public final BrowserPanel panel;
+    final JFrame frame;
+    @Nullable
+    JFrame validation_console = null;
+    final BrowserActions actions;
+    private final String startPage;
+    final ValidationHandler error_handler = new ValidationHandler();
+
     public BrowserStartup() {
-        this("demo:demos/splash/splash.html");
+        this("/demos/splash/splash.html");
     }
 
     public BrowserStartup(String startPage) {
         logger.info("starting up");
-        this.startPage = startPage;
-    }
+        URL url = requireNonNull(getClass().getResource(startPage),
+                () -> "Start page not found in classpath: " + startPage);
+        this.startPage = url.toExternalForm();
 
-    /**
-     * Initializes all UI components but does not display frame and does not load any pages.
-     */
-    public void initUI() {
-        if (GeneralUtil.isMacOSX()) {
-            try {
-                System.setProperty("apple.laf.useScreenMenuBar", "true");
-                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FS Browser");
-            } catch (Exception ex) {
-                try {
-                    logger.log(Level.SEVERE, "error initializing the mac properties", ex);
-                } catch (Exception ex2) {
-                    log.error("error writing to the log file", ex2);
-                }
-            }
-        } else {
-            setLookAndFeel();
-        }
+        setLookAndFeel();
 
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame = frame;
         logger.info("creating UI");
-        actions = new BrowserActions(this);
-        actions.init();
+        actions = new BrowserActions(this, startPage);
 
         panel = new BrowserPanel(this, new FrameBrowserPanelListener());
-        panel.init();
-        panel.createActions();
 
-        menu = new BrowserMenuBar(this);
-        menu.init();
-        menu.createLayout();
-        menu.createActions();
-
-        frame.setJMenuBar(menu);
+        frame.setJMenuBar(new BrowserMenuBar(this));
 
         frame.getContentPane().add(panel.toolbar, BorderLayout.PAGE_START);
         frame.getContentPane().add(panel, BorderLayout.CENTER);
@@ -102,8 +82,7 @@ public class BrowserStartup {
      */
     public static void main(final String[] args) {
         EventQueue.invokeLater(() -> {
-            final BrowserStartup bs = new BrowserStartup();
-            bs.initUI();
+            BrowserStartup bs = new BrowserStartup();
             bs.launch();
         });
     }
@@ -122,18 +101,36 @@ public class BrowserStartup {
     }
 
     private static void setLookAndFeel() {
-        boolean lnfSet = false;
+        if (GeneralUtil.isMacOSX()) {
+            setLookAndFeel_mac();
+        } else {
+            setLookAndFeel_nonMac();
+        }
+    }
+
+    private static void setLookAndFeel_mac() {
+        try {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FS Browser");
+        } catch (Exception e) {
+            try {
+                logger.log(Level.SEVERE, "error initializing the mac properties", e);
+            } catch (Exception ex2) {
+                log.error("error writing to the log file", ex2);
+            }
+        }
+    }
+
+    private static void setLookAndFeel_nonMac() {
         try {
             UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
-            lnfSet = true;
-        } catch (Throwable ignore) {
-        }
-        if (!lnfSet) {
+        } catch (Throwable e) {
+            log.debug("Failed to use JGoodies look and feel", e);
+
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                lnfSet = true;
-            } catch (Throwable th) {
-                log.error(th.toString(), th);
+            } catch (Throwable ex) {
+                log.error("Failed to use system look and feel", ex);
             }
         }
     }

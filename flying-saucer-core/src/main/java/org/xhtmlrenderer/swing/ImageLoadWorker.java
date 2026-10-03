@@ -26,6 +26,7 @@ import org.xhtmlrenderer.util.XRLog;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 
@@ -37,16 +38,17 @@ import java.util.logging.Level;
  * will be returned instead and the problem will be logged.
  */
 class ImageLoadWorker extends Thread {
-    private static volatile int counter = 0;
+    private static final AtomicInteger counter = new AtomicInteger(0);
     private final ImageLoadQueue queue;
 
     public ImageLoadWorker(ImageLoadQueue queue) {
         this.queue = queue;
         setDaemon(true);
         setPriority(Thread.MIN_PRIORITY);
-        setName("ImageLoadWorker(" + counter++ + ")");
+        setName("ImageLoadWorker(" + counter.incrementAndGet() + ")");
     }
 
+    @Override
     public void run() {
         try {
             while (true) {
@@ -65,7 +67,7 @@ class ImageLoadWorker extends Thread {
                 if (loadItem.haveTargetDimensions() && !ir.hasDimensions(loadItem._targetWidth, loadItem._targetHeight)) {
                     XRLog.load(Level.FINE, this + ", scaling " + loadItem._uri + " to " + loadItem._targetWidth + ", " + loadItem._targetHeight);
                     newImg = ImageUtil.getScaledInstance(newImg, loadItem._targetWidth, loadItem._targetHeight);
-                    ImageResource sir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
+                    ImageResource sir = new ImageResource(ir.getImageUri(), AWTFSImageFactory.createImage(newImg));
                     loadItem._imageResourceLoader.loaded(sir, newImg.getWidth(), newImg.getHeight());
                     wasScaled = true;
                 } else {

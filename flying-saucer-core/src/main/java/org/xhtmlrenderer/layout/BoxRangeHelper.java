@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.util.XRRuntimeException;
@@ -32,7 +33,8 @@ public class BoxRangeHelper {
     private final OutputDevice _outputDevice;
     private final List<BoxRangeData> _rangeList;
 
-    private int _rangeIndex;
+    private int _rangeIndex = 0;
+    @Nullable
     private BoxRangeData _current;
 
     public BoxRangeHelper(OutputDevice outputDevice, List<BoxRangeData> rangeList) {
@@ -40,7 +42,7 @@ public class BoxRangeHelper {
         _rangeList = rangeList;
 
         if (!rangeList.isEmpty()) {
-            _current = rangeList.get(0);
+            _current = rangeList.getFirst();
         }
     }
 
@@ -65,7 +67,7 @@ public class BoxRangeHelper {
         }
     }
 
-    public void popClipRegions(RenderingContext c, int contentIndex) {
+    public void popClipRegions(int contentIndex) {
         while (!_clipRegionStack.isEmpty()) {
             BoxRangeData data = _clipRegionStack.getLast();
             if (data.getRange().getEnd() == contentIndex) {

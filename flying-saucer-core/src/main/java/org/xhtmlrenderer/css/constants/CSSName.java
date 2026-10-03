@@ -20,11 +20,14 @@
  */
 package org.xhtmlrenderer.css.constants;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.CSSParser;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.property.BackgroundPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.BorderPropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.BorderSpacingPropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.ColumnsPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.ContentPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.CounterPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.FontPropertyBuilder;
@@ -34,17 +37,20 @@ import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 import org.xhtmlrenderer.css.parser.property.PropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.QuotesPropertyBuilder;
 import org.xhtmlrenderer.css.parser.property.SizePropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.TransformOriginPropertyBuilder;
+import org.xhtmlrenderer.css.parser.property.TransformPropertyBuilder;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.style.derived.DerivedValueFactory;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.util.Objects.requireNonNull;
 
 
 /**
@@ -57,8 +63,6 @@ import java.util.TreeMap;
  *
  * @author Patrick Wright
  */
-@ParametersAreNonnullByDefault
-@CheckReturnValue
 public final class CSSName implements Comparable<CSSName> {
     /**
      * marker var, used for initialization
@@ -83,7 +87,7 @@ public final class CSSName implements Comparable<CSSName> {
     /**
      * Used to assign unique int id values to new CSSNames created in this class
      */
-    private static int maxAssigned;
+    private static final AtomicInteger maxAssigned = new AtomicInteger(0);
 
     /**
      * The CSS 2 property name, e.g. "border"
@@ -104,6 +108,7 @@ public final class CSSName implements Comparable<CSSName> {
 
     private final boolean implemented;
 
+    @Nullable
     private final PropertyBuilder builder;
 
     /**
@@ -434,6 +439,33 @@ public final class CSSName implements Comparable<CSSName> {
                     "none",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.Clear()
+            );
+
+    public static final CSSName COLUMN_COUNT =
+            addProperty(
+                    "column-count",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.ColumnCount()
+            );
+
+    public static final CSSName COLUMN_GAP =
+            addProperty(
+                    "column-gap",
+                    PRIMITIVE,
+                    "normal",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.ColumnGap()
+            );
+
+    public static final CSSName COLUMN_WIDTH =
+            addProperty(
+                    "column-width",
+                    PRIMITIVE,
+                    "auto",
+                    NOT_INHERITED,
+                    new PrimitivePropertyBuilders.ColumnWidth()
             );
 
     /**
@@ -781,6 +813,16 @@ public final class CSSName implements Comparable<CSSName> {
                     new PrimitivePropertyBuilders.Orphans()
             );
 
+    public final static CSSName OPACITY =
+    		addProperty(
+    				"opacity",
+    				PRIMITIVE,
+    				"1",
+                    NOT_INHERITED, // PR22 - INHERITS
+    				true,
+    				new PrimitivePropertyBuilders.Opacity()
+    		);
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -979,6 +1021,30 @@ public final class CSSName implements Comparable<CSSName> {
             );
 
     /**
+     * CSS text-underline-position property.
+     */
+    public static final CSSName TEXT_UNDERLINE_POSITION =
+            addProperty(
+                    "text-underline-position",
+                    PRIMITIVE,
+                    "auto",
+                    INHERITS,
+                    new PrimitivePropertyBuilders.TextUnderlinePosition()
+            );
+
+    /**
+     * CSS text-underline-offset property.
+     */
+    public static final CSSName TEXT_UNDERLINE_OFFSET =
+            addProperty(
+                    "text-underline-offset",
+                    PRIMITIVE,
+                    "auto",
+                    INHERITS,
+                    new PrimitivePropertyBuilders.TextUnderlineOffset()
+            );
+
+    /**
      * Unique CSSName instance for CSS2 property.
      */
     public static final CSSName TEXT_INDENT =
@@ -1012,6 +1078,24 @@ public final class CSSName implements Comparable<CSSName> {
                     "auto",
                     NOT_INHERITED,
                     new PrimitivePropertyBuilders.Top()
+            );
+
+    public static final CSSName TRANSFORM =
+            addProperty(
+                    "transform",
+                    PRIMITIVE,
+                    "none",
+                    NOT_INHERITED,
+                    new TransformPropertyBuilder()
+            );
+
+    public static final CSSName TRANSFORM_ORIGIN =
+            addProperty(
+                    "transform-origin",
+                    PRIMITIVE,
+                    "50% 50%",
+                    NOT_INHERITED,
+                    new TransformOriginPropertyBuilder()
             );
 
     /**
@@ -1061,6 +1145,18 @@ public final class CSSName implements Comparable<CSSName> {
                     "normal",
                     INHERITS,
                     new PrimitivePropertyBuilders.WhiteSpace()
+            );
+
+    /**
+     * Unique CSSName instance for CSS3 property.
+     */
+    public static final CSSName WORD_BREAK =
+            addProperty(
+                    "word-break",
+                    PRIMITIVE,
+                    "normal",
+                    INHERITS,
+                    new PrimitivePropertyBuilders.WordBreak()
             );
 
     /**
@@ -1544,6 +1640,15 @@ public final class CSSName implements Comparable<CSSName> {
                     new BorderSpacingPropertyBuilder()
             );
 
+    public static final CSSName COLUMNS_SHORTHAND =
+            addProperty(
+                    "columns",
+                    SHORTHAND,
+                    "auto auto",
+                    NOT_INHERITED,
+                    new ColumnsPropertyBuilder()
+            );
+
     /**
      * Unique CSSName instance for CSS2 property.
      */
@@ -1667,9 +1772,9 @@ public final class CSSName implements Comparable<CSSName> {
 
     private CSSName(
             String propName, String initialValue, boolean inherits,
-            boolean implemented, PropertyBuilder builder) {
+            boolean implemented, @Nullable PropertyBuilder builder) {
         this.propName = propName;
-        this.FS_ID = CSSName.maxAssigned++;
+        this.FS_ID = maxAssigned.getAndIncrement();
         this.initialValue = initialValue;
         this.propertyInherits = inherits;
         this.implemented = implemented;
@@ -1682,6 +1787,7 @@ public final class CSSName implements Comparable<CSSName> {
      *
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         return this.propName;
     }
@@ -1690,7 +1796,7 @@ public final class CSSName implements Comparable<CSSName> {
      * Returns a count of all CSS properties known to this class, shorthand and primitive.
      */
     public static int countCSSNames() {
-        return CSSName.maxAssigned;
+        return maxAssigned.get();
     }
 
     /**
@@ -1733,14 +1839,15 @@ public final class CSSName implements Comparable<CSSName> {
         return cssName.initialValue;
     }
 
-    public static FSDerivedValue initialDerivedValue(CSSName cssName) {
-        return cssName.initialDerivedValue;
+    public FSDerivedValue initialDerivedValue() {
+        return initialDerivedValue;
     }
 
     public static boolean isImplemented(CSSName cssName) {
         return cssName.implemented;
     }
 
+    @Nullable
     public static PropertyBuilder getPropertyBuilder(CSSName cssName) {
         return cssName.builder;
     }
@@ -1748,8 +1855,15 @@ public final class CSSName implements Comparable<CSSName> {
     /**
      * Gets the byPropertyName attribute of the CSSName class
      */
+    @Nullable
+    @CheckReturnValue
     public static CSSName getByPropertyName(String propName) {
         return ALL_PROPERTY_NAMES.get(propName);
+    }
+
+    @CheckReturnValue
+    public static CSSName cssProperty(String propName) {
+        return requireNonNull(getByPropertyName(propName), () -> "Unknown CSS property: " + propName);
     }
 
     public static CSSName getByID(int id) {
@@ -1777,10 +1891,10 @@ public final class CSSName implements Comparable<CSSName> {
             String initialValue,
             Object inherit,
             boolean implemented,
-            PropertyBuilder builder
+            @Nullable PropertyBuilder builder
     ) {
         CSSName cssName = new CSSName(
-                propName, initialValue, (inherit == INHERITS), implemented, builder);
+                propName, initialValue, inherit == INHERITS, implemented, builder);
 
         ALL_PROPERTY_NAMES.put(propName, cssName);
 
@@ -1803,7 +1917,7 @@ public final class CSSName implements Comparable<CSSName> {
         for (CSSName cssName : ALL_PRIMITIVE_PROPERTY_NAMES.values()) {
             if (cssName.initialValue.charAt(0) != '=' && cssName.implemented) {
                 PropertyValue value = parser.parsePropertyValue(
-                        cssName, StylesheetInfo.USER_AGENT, cssName.initialValue);
+                        cssName, StylesheetInfo.Origin.USER_AGENT, cssName.initialValue);
 
                 if (value == null) {
                     XRLog.exception("Unable to derive initial value for " + cssName);
@@ -1819,13 +1933,13 @@ public final class CSSName implements Comparable<CSSName> {
 
     //Assumed to be consistent with equals because CSSName is in essence an enum
     @Override
-    public int compareTo(@Nullable CSSName object) {
+    public int compareTo(CSSName object) {
         if (object == null) throw new NullPointerException("Cannot compare " + this + " to null");
         return FS_ID - object.FS_ID;//will throw ClassCastException according to Comparable if not a CSSName
     }
 
     // FIXME equals, hashcode
-
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CSSName cssName)) return false;
@@ -1833,10 +1947,41 @@ public final class CSSName implements Comparable<CSSName> {
         return FS_ID == cssName.FS_ID;
     }
 
+    @Override
     public int hashCode() {
         return FS_ID;
     }
 
     public record CSSSideProperties(CSSName top, CSSName right, CSSName bottom, CSSName left) {
     }
+
+    /**
+     * Known CSS3 property names not supported by FlyingSaucer (HTML4/CSS2 only).
+     * Used to give a targeted warning instead of a generic "unrecognized property" message.
+     */
+    public static final Set<String> UNSUPPORTED_CSS3_PROPERTIES = Set.of(
+            // Flexbox
+            "flex", "flex-direction", "flex-wrap", "flex-flow", "flex-grow", "flex-shrink", "flex-basis",
+            "justify-content", "align-items", "align-content", "align-self", "order",
+            // CSS Grid
+            "grid", "grid-template", "grid-template-columns", "grid-template-rows", "grid-template-areas",
+            "grid-column", "grid-row", "grid-area", "gap", "column-gap", "row-gap",
+            "grid-auto-columns", "grid-auto-rows", "grid-auto-flow",
+            // Transitions
+            "transition", "transition-property", "transition-duration", "transition-timing-function", "transition-delay",
+            // Animations
+            "animation", "animation-name", "animation-duration", "animation-timing-function", "animation-delay",
+            "animation-iteration-count", "animation-direction", "animation-fill-mode", "animation-play-state",
+            // Transforms (3D only; 2D transform/transform-origin are supported)
+            "transform-style",
+            // Visual effects
+            "box-shadow", "text-shadow", "filter", "backdrop-filter",
+            // Other common CSS3 properties
+            "user-select", "pointer-events", "resize", "will-change", "object-fit", "object-position", "appearance"
+    );
+
+    /**
+     * CSS3 values for the {@code display} property (flexbox and grid layouts) not supported by FlyingSaucer.
+     */
+    public static final Set<String> UNSUPPORTED_CSS3_DISPLAY_VALUES = Set.of("flex", "inline-flex", "grid", "inline-grid");
 }

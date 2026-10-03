@@ -19,24 +19,28 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
-import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
-import org.xhtmlrenderer.util.GeneralUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTextAreaUI;
 import javax.swing.plaf.basic.BasicTextUI;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Insets;
 
-class TextAreaField extends FormField {
+import static org.xhtmlrenderer.util.GeneralUtil.parseIntRelaxed;
+
+class TextAreaField extends FormField<JScrollPane> {
+    @Nullable
     private TextAreaFieldJTextArea _textarea;
 
     TextAreaField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
@@ -44,82 +48,51 @@ class TextAreaField extends FormField {
     }
 
     @Override
-    public JComponent create() {
-        int rows = 4;
-        int cols = 10;
-
-        if (hasAttribute("rows")) {
-            int parsedRows = GeneralUtil.parseIntRelaxed(getAttribute("rows"));
-
-            if (parsedRows > 0) {
-                rows = parsedRows;
-            }
-        }
-
-        if (hasAttribute("cols")) {
-            int parsedCols = GeneralUtil.parseIntRelaxed(getAttribute("cols"));
-
-            if (parsedCols > 0) {
-                cols = parsedCols;
-            }
-        }
+    public JScrollPane create() {
+        int rows = parseIntRelaxed(getAttribute("rows"), 4);
+        int cols = parseIntRelaxed(getAttribute("cols"), 10);
 
         _textarea = new TextAreaFieldJTextArea(rows, cols);
 
         _textarea.setWrapStyleWord(true);
         _textarea.setLineWrap(true);
 
-        JScrollPane scrollpane = new JScrollPane(_textarea);
-        scrollpane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollpane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane scrollPane = new JScrollPane(_textarea);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        applyComponentStyle(_textarea, scrollpane);
+        applyComponentStyle(_textarea, scrollPane);
 
-        return scrollpane;
+        return scrollPane;
     }
 
-    protected void applyComponentStyle(TextAreaFieldJTextArea textArea, JScrollPane scrollpane) {
+    private void applyComponentStyle(TextAreaFieldJTextArea textArea, JScrollPane scrollPane) {
         applyComponentStyle(textArea);
 
         CalculatedStyle style = getBox().getStyle();
-        BorderPropertySet border = style.getBorder(null);
-        boolean disableOSBorder = (border.leftStyle() != null && border.rightStyle() != null || border.topStyle() != null || border.bottomStyle() != null);
-
         RectPropertySet padding = style.getCachedPadding();
-
-        Integer paddingTop = getLengthValue(style, CSSName.PADDING_TOP);
-        Integer paddingLeft = getLengthValue(style, CSSName.PADDING_LEFT);
-        Integer paddingBottom = getLengthValue(style, CSSName.PADDING_BOTTOM);
-        Integer paddingRight = getLengthValue(style, CSSName.PADDING_RIGHT);
-
-        int top = paddingTop == null ? 2 : Math.max(2, paddingTop);
-        int left = paddingLeft == null ? 3 : Math.max(3, paddingLeft);
-        int bottom = paddingBottom == null ? 2 : Math.max(2, paddingBottom);
-        int right = paddingRight == null ? 3 : Math.max(3, paddingRight);
+        Insets margin = style.padding().withDefaults(new Insets(2, 3, 2, 3));
 
         //if a border is set or a background color is set, then use a special JButton with the BasicButtonUI.
-        if (disableOSBorder) {
+        if (style.disableOSBorder()) {
             //when background color is set, need to use the BasicButtonUI, certainly when using XP l&f
             BasicTextUI ui = new BasicTextAreaUI();
             textArea.setUI(ui);
-            scrollpane.setBorder(null);
+            scrollPane.setBorder(null);
         }
 
-        textArea.setMargin(new Insets(top, left, bottom, right));
+        textArea.setMargin(margin);
 
-        padding.setRight(0);
-        padding.setLeft(0);
-        padding.setTop(0);
-        padding.setBottom(0);
+        padding.reset();
 
         FSDerivedValue widthValue = style.valueByName(CSSName.WIDTH);
         if (widthValue instanceof LengthValue) {
-            intrinsicWidth = getBox().getContentWidth() + left + right;
+            intrinsicWidth = getBox().getContentWidth() + margin.left + margin.right;
         }
 
         FSDerivedValue heightValue = style.valueByName(CSSName.HEIGHT);
         if (heightValue instanceof LengthValue) {
-            intrinsicHeight = getBox().getHeight() + top + bottom;
+            intrinsicHeight = getBox().getHeight() + margin.top + margin.bottom;
         }
     }
 
@@ -137,7 +110,7 @@ class TextAreaField extends FormField {
 
     @Override
     protected String[] getFieldValues() {
-        JTextArea textarea = (JTextArea) ((JScrollPane) getComponent()).getViewport().getView();
+        JTextArea textarea = (JTextArea) component().getViewport().getView();
 
         return new String[] {
                 textarea.getText()
@@ -165,11 +138,11 @@ class TextAreaField extends FormField {
         @Override
         public Dimension getPreferredScrollableViewportSize() {
             Dimension size = super.getPreferredScrollableViewportSize();
-            size = (size == null) ? new Dimension(400,400) : size;
+            size = size == null ? new Dimension(400,400) : size;
             Insets insets = getInsets();
 
-            size.width = (getColumns() == 0) ? size.width : getColumns() * getColumnWidth() + insets.left + insets.right;
-            size.height = (getRows() == 0) ? size.height : getRows() * getRowHeight() + insets.top + insets.bottom;
+            size.width = getColumns() == 0 ? size.width : getColumns() * getColumnWidth() + insets.left + insets.right;
+            size.height = getRows() == 0 ? size.height : getRows() * getRowHeight() + insets.top + insets.bottom;
             return size;
         }
     }

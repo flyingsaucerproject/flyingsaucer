@@ -36,8 +36,14 @@
 Wiki</a></li>
 </ul>
 </li>
-<li id="newsfeed"><b><a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS" border="0">News Feed<img src="https://java-net.dev.java.net/branding/images/xml.gif" border="0"></a></b>
-</li>
+    <li id="newsfeed">
+        <b>
+            <a href="http://xhtmlrenderer.dev.java.net/servlets/ProjectNewsRSS">
+                News Feed
+                <img src="https://java-net.dev.java.net/branding/images/xml.gif" border="0" alt="News">
+            </a>
+        </b>
+    </li>
 </ul>
 
 <h1>Getting Started with Flying Saucer</h1>
@@ -63,23 +69,23 @@ However, the simple use of <code>BasicPanel</code> and <code>XHTMLPanel</code> s
 import org.xhtmlrenderer.simple.XHTMLPanel;
 public class test {
    public static void main(String[] args) throws Exception {
-       
+
       XHTMLPanel panel = new XHTMLPanel();
       panel.setDocument("test.xhtml");
-   
+
       JScrollPane scroll = new JScrollPane(panel);
-   
+
       JFrame frame = new JFrame();
       frame.getContentPane().add(scroll);
       frame.pack();
       frame.setSize(400,400);
       frame.setVisible(true);
-   }   
+   }
 }
 </pre>
 <p><br>
     First create an XHTMLPanel and set it's preferred size. Call <code>setDocument()</code>  to set the path of
-    the xhtml file that should be displayed (relative to the current working directory). Then drop it into a 
+    the xhtml file that should be displayed (relative to the current working directory). Then drop it into a
     <code>JScrollPane</code> and add the pane to a <code>JFrame</code>.</p>
 
 
@@ -106,7 +112,7 @@ about.addActionListener(new ActionListener() {
     in the browser application. Depending on your needs you can probably modify
   that code. Take a look at <code>org.xhtmlrenderer.demo.browser.SubmitAction.</code></p>
 
-  
+
 <h2><a name="formaccess"></a>Getting Access to Form Components</h2>
 <p>  If you want to access the Swing components for each form input field you
     can use the accessors on the <code>Context </code>object. <code>HTMLPanel.getContext().getFormFieldComponents()</code>.
@@ -114,8 +120,8 @@ about.addActionListener(new ActionListener() {
   an example of pulling out each reset button and adding a standard AWT <code>ActionListener</code>  to them.</p>
 <p>If you want to access the actual DOM elements that make up the form you'll
   have to paw through your document tree (start with <code>HTMLPanel.getDocument()</code>).</p>
-  
-  
+
+
 <h2><a name="hyperlinks"></a>Following Hyperlinks</h2>
 <p>By default, the XHTMLPanel has a pre-fab mouse listener to follow hyperlinks. You can override this <code>MouseListener </code> to change it's behavior if you want. See <code>org.xhtmlrenderer.swing.LinkListener</code>  for the complete code.</p>
 

@@ -113,8 +113,8 @@ public class WhitespaceStripper {
 
         text = collapseWhitespace(iB, whitespace, text, collapseLeading);
 
-        boolean collapseNext = (text.endsWith(SPACE) &&
-                (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE));
+        boolean collapseNext = text.endsWith(SPACE) &&
+                (whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE);
 
         iB.setText(text);
         if (text.trim().isEmpty()) {

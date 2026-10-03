@@ -25,6 +25,7 @@ import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 import java.text.BreakIterator;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +47,7 @@ public class NonBreakPointsTest {
 
     private void test(String text, int ... expected) {
         BreakIterator breakIt = new UrlAwareLineBreakIterator(text);
-        TreeSet<BreakPoint> points = new TreeSet<>();
+        Set<BreakPoint> points = new TreeSet<>();
         int p;
         while ((p = breakIt.next()) != BreakIterator.DONE) {
             points.add(new BreakPoint(p));
@@ -59,7 +60,7 @@ public class NonBreakPointsTest {
 
         Iterator<BreakPoint> it = calculated.iterator();
         for (int point : expected) {
-            assertThat(it.next().getPosition()).isEqualTo(point);
+            assertThat(it.next().position()).isEqualTo(point);
         }
     }
 

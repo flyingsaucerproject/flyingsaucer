@@ -20,7 +20,6 @@
 
 package org.xhtmlrenderer.simple.extend;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * FormSubmissionListener is used to receive callbacks when an XhtmlForm has its submit action called. The entire
@@ -30,7 +29,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  *
  * @author Christophe Marchand
  */
-@ParametersAreNonnullByDefault
 public interface FormSubmissionListener {
     /**
      * Called by XhtmlForm when a form is submitted.

@@ -3,30 +3,60 @@ name: Build
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '.idea/**'
+      - '.run/**'
+      - '**/*.iml'
+      - '**/*.md'
+      - 'notes/**/*'
+      - '**/.editorconfig'
+      - '**/.gitattributes'
+      - '**/.gitignore'
+      - 'LICENSE*'
+      - '.keepalive'
+
   pull_request:
+    paths-ignore:
+      - '.idea/**'
+      - '.run/**'
+      - '**/*.iml'
+      - '**/*.md'
+      - 'notes/**/*'
+      - '**/.editorconfig'
+      - '**/.gitattributes'
+      - '**/.gitignore'
+      - 'LICENSE*'
+      - '.keepalive'
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
     strategy:
         matrix:
-            # The last 2 LTS releases + latest version
-            java: [ 17, 21, 22 ]
-    name: Java ${{matrix.java}}
+            os: [ ubuntu-latest, windows-latest ]
+            # The last 2 LTS releases + latest Java
+            java: [ 21, 25, 27 ]
+    name: Java ${{matrix.java}} (${{matrix.os}})
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Setup java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{matrix.java}}
+          cache: maven
+      - name: Cache chrome-headless-shell
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/flying-saucer
+          key: chrome-headless-shell-${{ runner.os }}
       - name: Build with Maven
         run: mvn -B package
       - name: 'Upload test results'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: test-report-${{matrix.java}}
+          name: test-report-${{matrix.java}}-${{matrix.os}}
           retention-days: 14
           path: |
             **/target/site

@@ -20,10 +20,13 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Text;
 import org.xhtmlrenderer.extend.FSGlyphVector;
 import org.xhtmlrenderer.layout.FunctionData;
 import org.xhtmlrenderer.layout.LayoutContext;
+import org.xhtmlrenderer.layout.TextUtil;
 import org.xhtmlrenderer.layout.WhitespaceStripper;
 import org.xhtmlrenderer.util.Uu;
 
@@ -34,7 +37,8 @@ import java.awt.*;
  * It will never extend across a line break nor will it extend across an element
  * nested within its inline element.
  */
-public class InlineText {
+public class InlineText implements InlineChild {
+    @Nullable
     private InlineLayoutBox _parent;
 
     private int _x;
@@ -45,6 +49,7 @@ public class InlineText {
 
     private int _width;
 
+    @Nullable
     private FunctionData _functionData;
 
     private boolean _containedLF = false;
@@ -52,15 +57,16 @@ public class InlineText {
     private short _selectionStart;
     private short _selectionEnd;
 
-    private float[] _glyphPositions;
+    private float @Nullable [] _glyphPositions;
 
     private boolean _trimmedLeadingSpace;
     private boolean _trimmedTrailingSpace;
-    private Text _textNode;
+    private final Text _textNode;
+
     public void trimTrailingSpace(LayoutContext c) {
         if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
-            setWidth(c.getTextRenderer().getWidth(c.getFontContext(),
+            setWidth(TextUtil.textWidth(c, getParent().getStyle(),
                     getParent().getStyle().getFSFont(c),
                     getSubstring()));
             setTrimmedTrailingSpace();
@@ -71,26 +77,31 @@ public class InlineText {
         return _start == _end && ! _containedLF;
     }
 
+    @CheckReturnValue
     public String getSubstring() {
         if (getMasterText() != null) {
             if (_start == -1 || _end == -1) {
-                throw new RuntimeException("negative index in InlineBox");
+                throw new RuntimeException("negative index in InlineBox (start: %s, end: %s) for element %s".formatted(_start, _end, this));
             }
             if (_end < _start) {
-                throw new RuntimeException("end is less than setStartStyle");
+                throw new RuntimeException("end is less than start (%s < %s) for element %s".formatted(_end, _start, this));
             }
             return getMasterText().substring(_start, _end);
         } else {
-            throw new RuntimeException("No master text set!");
+            throw new RuntimeException("No master text set for element " + this);
         }
     }
 
-    public void setSubstring(int start, int end) {
+    public InlineText(String masterText, Text textNode, int start, int end, int width) {
+        _masterText = masterText;
+        _textNode = textNode;
+        _width = width;
+
         if (end < start) {
             Uu.p("setting substring to: " + start + " " + end);
-            throw new RuntimeException("set substring length too long: " + this);
+            throw new RuntimeException("end is less than start (%s < %s) for element %s".formatted(end, start, this));
         } else if (end < 0 || start < 0) {
-            throw new RuntimeException("Trying to set negative index to inline box");
+            throw new RuntimeException("Trying to set negative index to inline box (start: %s, end: %s)".formatted(start, end));
         }
         _start = start;
         _end = end;
@@ -105,10 +116,6 @@ public class InlineText {
         return _masterText;
     }
 
-    public void setMasterText(String masterText) {
-        _masterText = masterText;
-    }
-
     public int getX() {
         return _x;
     }
@@ -121,7 +128,7 @@ public class InlineText {
         return _width;
     }
 
-    public void setWidth(int width) {
+    public final void setWidth(int width) {
         _width = width;
     }
 
@@ -133,6 +140,7 @@ public class InlineText {
         c.getOutputDevice().drawSelection(c, this);
     }
 
+    @Nullable
     public InlineLayoutBox getParent() {
         return _parent;
     }
@@ -159,11 +167,11 @@ public class InlineText {
         _start = 0;
         _end = value.length();
         _masterText = value;
-        _width = c.getTextRenderer().getWidth(
-                c.getFontContext(), getParent().getStyle().getFSFont(c),
-                value);
+        _width = TextUtil.textWidth(c, getParent().getStyle(),
+                getParent().getStyle().getFSFont(c), value);
     }
 
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("InlineText: ");
@@ -299,8 +307,7 @@ public class InlineText {
         int other = 0;
 
         for (int i = 0; i < len; i++) {
-            char c = s.charAt(i);
-            if (c == ' ' || c == '\u00a0' || c == '\u3000') {
+            if (isSpace(s.charAt(i))) {
                 spaces++;
             } else {
                 other++;
@@ -317,15 +324,37 @@ public class InlineText {
 
         float result = 0.0f;
         for (int i = 0; i < len; i++) {
-            char c = s.charAt(i);
-            if (c == ' ' || c == '\u00a0' || c == '\u3000') {
-                result += info.getSpaceAdjust();
-            } else {
-                result += info.getNonSpaceAdjust();
-            }
+            result += adjustment(s.charAt(i), info);
         }
 
         return result;
+    }
+
+    /**
+     * The adjustment {@link #calcTotalAdjustment} counts for the final character of this run,
+     * or zero if the run is empty. When that character ends a justified line, there is no gap
+     * after it to receive the adjustment.
+     */
+    public float calcTrailingAdjustment(JustificationInfo info) {
+        String s = getSubstring();
+        return s.isEmpty() ? 0.0f : adjustment(s.charAt(s.length() - 1), info);
+    }
+
+    /**
+     * Whether the final character of this run is one that {@link #countJustifiableChars} counts
+     * as a space. False if the run is empty.
+     */
+    public boolean endsWithSpace() {
+        String s = getSubstring();
+        return !s.isEmpty() && isSpace(s.charAt(s.length() - 1));
+    }
+
+    private static float adjustment(char c, JustificationInfo info) {
+        return isSpace(c) ? info.spaceAdjust() : info.nonSpaceAdjust();
+    }
+
+    private static boolean isSpace(char c) {
+        return c == ' ' || c == '\u00a0' || c == '\u3000';
     }
     public int getStart(){
         return _start;
@@ -342,10 +371,6 @@ public class InlineText {
 
     public Text getTextNode() {
         return this._textNode;
-    }
-
-    public void setTextNode(Text node) {
-        this._textNode = node;
     }
 }
 

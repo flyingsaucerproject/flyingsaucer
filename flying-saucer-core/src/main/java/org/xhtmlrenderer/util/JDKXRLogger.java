@@ -21,6 +21,9 @@
  */
 package org.xhtmlrenderer.util;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,23 +43,13 @@ import static java.lang.Boolean.parseBoolean;
  */
 public class JDKXRLogger implements XRLogger {
 
-    private static boolean initPending = true;
-
     @Override
     public void log(String where, Level level, String msg) {
-        if (initPending) {
-            init();
-        }
-
         getLogger(where).log(level, msg);
     }
 
     @Override
-    public void log(String where, Level level, String msg, Throwable th) {
-        if (initPending) {
-            init();
-        }
-
+    public void log(String where, Level level, String msg, @Nullable Throwable th) {
         getLogger(where).log(level, msg, th);
     }
 
@@ -70,33 +63,24 @@ public class JDKXRLogger implements XRLogger {
      * for XRLog will initialize the LogManager with logging levels and other
      * configuration. Use this instead of Logger.getLogger()
      */
+    @CheckReturnValue
     private static Logger getLogger(String log) {
         return Logger.getLogger(log);
     }
 
-    private static void init() {
-        synchronized (JDKXRLogger.class) {
-            if (!initPending) {
-                return;
-            }
-            //now change this immediately, in case something fails
-            initPending = false;
-            try {
-                Properties props = retrieveLoggingProperties();
+    public JDKXRLogger() {
+        Properties props = retrieveLoggingProperties();
 
-                if (!XRLog.isLoggingEnabled()) {
-                    Configuration.setConfigLogger(Logger.getLogger(XRLog.CONFIG));
-                    return;
-                }
-                initializeJDKLogManager(props);
-
-                Configuration.setConfigLogger(Logger.getLogger(XRLog.CONFIG));
-            } catch (SecurityException e) {
-                // may happen in a sandbox environment
-            }
+        if (!XRLog.isLoggingEnabled()) {
+            Configuration.setConfigLogger(Logger.getLogger(XRLog.CONFIG));
+            return;
         }
+        initializeJDKLogManager(props);
+
+        Configuration.setConfigLogger(Logger.getLogger(XRLog.CONFIG));
     }
 
+    @CheckReturnValue
     private static Properties retrieveLoggingProperties() {
         // pull logging properties from configuration
         // they are all prefixed as shown
@@ -171,6 +155,7 @@ public class JDKXRLogger implements XRLogger {
      * Returns a List of all Logger instances used by Flying Saucer from the JDK LogManager; these will
      * be automatically created if they aren't already available.
      */
+    @CheckReturnValue
     private static List<Logger> retrieveLoggers() {
         List<String> loggerNames = XRLog.listRegisteredLoggers();
         List<Logger> loggers = new ArrayList<>(loggerNames.size());
@@ -191,6 +176,7 @@ public class JDKXRLogger implements XRLogger {
      *                         configuration files, for handlers) of FQN of log handlers.
      * @return Map of handler class names to handler instances.
      */
+    @CheckReturnValue
     private static Map<String, Handler> configureLogHandlers(List<Logger> loggers, final String handlerClassList) {
         final String[] names = handlerClassList.split(" ");
         final Map<String, Handler> handlers = new HashMap<>(names.length);

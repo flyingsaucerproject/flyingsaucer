@@ -20,16 +20,23 @@
 package org.xhtmlrenderer.css.sheet;
 
 import org.xhtmlrenderer.css.newmatch.CascadedStyle;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.EmptyStyle;
+import org.xhtmlrenderer.util.LazyEvaluated;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
-public class FontFaceRule implements RulesetContainer {
-    private int _origin;
-    private Ruleset _ruleset;
-    private CalculatedStyle _calculatedStyle;
+import static org.xhtmlrenderer.util.LazyEvaluated.lazy;
 
-    public FontFaceRule(int origin) {
+public class FontFaceRule implements RulesetContainer {
+    private final Origin _origin;
+    private Ruleset _ruleset;
+    private final LazyEvaluated<CalculatedStyle> _calculatedStyle = lazy(() ->
+        new EmptyStyle().deriveStyle(
+            CascadedStyle.createLayoutStyle(_ruleset.getPropertyDeclarations()))
+    );
+
+    public FontFaceRule(Origin origin) {
         _origin = origin;
     }
 
@@ -42,50 +49,33 @@ public class FontFaceRule implements RulesetContainer {
     }
 
     @Override
-    public int getOrigin() {
+    public Origin getOrigin() {
         return _origin;
     }
 
-    public void setOrigin(int origin) {
-        _origin = origin;
-    }
-
     public CalculatedStyle getCalculatedStyle() {
-        if (_calculatedStyle == null) {
-            _calculatedStyle = new EmptyStyle().deriveStyle(
-                    CascadedStyle.createLayoutStyle(_ruleset.getPropertyDeclarations()));
-        }
-
-        return _calculatedStyle;
+        return _calculatedStyle.get();
     }
 
     public boolean hasFontFamily() {
-        for (PropertyDeclaration decl : _ruleset.getPropertyDeclarations()) {
-            if (decl.getPropertyName().equals("font-family")) {
-                return true;
-            }
-        }
-
-        return false;
+        return has("font-family");
     }
 
     public boolean hasFontWeight() {
-        for (PropertyDeclaration decl : _ruleset.getPropertyDeclarations()) {
-            if (decl.getPropertyName().equals("font-weight")) {
-                return true;
-            }
-        }
-
-        return false;
+        return has("font-weight");
     }
 
     public boolean hasFontStyle() {
-        for (PropertyDeclaration decl : _ruleset.getPropertyDeclarations()) {
-            if (decl.getPropertyName().equals("font-style")) {
-                return true;
-            }
-        }
+        return has("font-style");
+    }
 
-        return false;
+    private boolean has(String property) {
+        return _ruleset.getPropertyDeclarations().stream()
+            .anyMatch(declaration -> property.equals(declaration.getPropertyName()));
+    }
+
+    @Override
+    public String toString() {
+        return "%s{origin: %s, %s}".formatted(getClass().getSimpleName(), _origin, _ruleset);
     }
 }

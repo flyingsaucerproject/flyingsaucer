@@ -19,13 +19,12 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.style.FSDerivedValue;
-import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
@@ -41,17 +40,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
 
-public abstract class FormField {
+public abstract class FormField<T extends JComponent> {
     private final XhtmlForm _parentForm;
     private final Element _element;
+    @Nullable
     private FormFieldState _originalState;
-    private JComponent _component;
+    @Nullable
+    private T _component;
     private final LayoutContext context;
     private final BlockBox box;
+    @Nullable
     protected Integer intrinsicWidth;
+    @Nullable
     protected Integer intrinsicHeight;
-    
+
     protected FormField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         _element = e;
         _parentForm = form;
@@ -65,14 +69,21 @@ public abstract class FormField {
         return _element;
     }
 
-    public JComponent getComponent() {
+    @Nullable
+    public T getComponent() {
         return _component;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <Subtype extends T> Subtype component() {
+        return (Subtype) requireNonNull(_component);
     }
 
     public XhtmlForm getParentForm() {
         return _parentForm;
     }
 
+    @CheckReturnValue
     public Dimension getIntrinsicSize(){
 
         int width = intrinsicWidth == null ? 0 : intrinsicWidth;
@@ -98,12 +109,21 @@ public abstract class FormField {
         return _originalState;
     }
 
+    protected String getValueAttribute(String defaultValue) {
+        String value = getAttribute("value");
+        return value.isEmpty() ? defaultValue : value;
+    }
+
     protected boolean hasAttribute(String attributeName) {
         return !getElement().getAttribute(attributeName).isEmpty();
     }
 
     protected String getAttribute(String attributeName) {
         return getElement().getAttribute(attributeName);
+    }
+
+    protected String getAttribute(String attributeName, String defaultValue) {
+        return hasAttribute(attributeName) ? getAttribute(attributeName) : defaultValue;
     }
 
     private void initialize() {
@@ -126,7 +146,8 @@ public abstract class FormField {
         applyOriginalState();
     }
 
-    public abstract JComponent create();
+    @Nullable
+    public abstract T create();
 
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromString("");
@@ -177,6 +198,7 @@ public abstract class FormField {
         return context;
     }
 
+    @Nullable
     public CalculatedStyle getStyle() {
         return getBox().getStyle();
     }
@@ -187,7 +209,7 @@ public abstract class FormField {
             comp.setFont(font);
         }
 
-        CalculatedStyle style = getStyle();
+        CalculatedStyle style = requireNonNull(getStyle());
 
         FSColor foreground = style.getColor();
         if (foreground != null) {
@@ -208,20 +230,13 @@ public abstract class FormField {
         throw new RuntimeException("internal error: unsupported color class " + color.getClass().getName());
     }
 
+    @Nullable
+    @CheckReturnValue
     public Font getFont() {
         FSFont font = getStyle().getFSFont(getContext());
-        if (font instanceof AWTFSFont) {
-            return ((AWTFSFont) font).getAWTFont();
+        if (font instanceof AWTFSFont awsFont) {
+            return awsFont.font();
         }
-        return null;
-    }
-
-    protected static Integer getLengthValue(CalculatedStyle style, CSSName cssName) {
-        FSDerivedValue widthValue = style.valueByName(cssName);
-        if (widthValue instanceof LengthValue) {
-            return (int) widthValue.asFloat();
-        }
-
         return null;
     }
 }

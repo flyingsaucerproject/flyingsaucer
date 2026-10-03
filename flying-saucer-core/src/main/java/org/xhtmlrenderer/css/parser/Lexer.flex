@@ -24,16 +24,16 @@ package org.xhtmlrenderer.css.parser;
 %class Lexer
 
 %unicode
-%ignorecase 
+%ignorecase
 %line
 %type Token
 
 %{
-    public int yyline() {
+    public int yyLine() {
     	return this.yyline;
     }
-    
-    public void setyyline(int i) {
+
+    public void setYyLine(int i) {
     	this.yyline = i;
 	}
 %}
@@ -140,10 +140,10 @@ Z             = z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z
 
 "}"				{return Token.TK_RBRACE;}
 ";"				{return Token.TK_SEMICOLON;}
-"/"             {return Token.TK_VIRGULE;} 
-":"             {return Token.TK_COLON;} 
+"/"             {return Token.TK_VIRGULE;}
+":"             {return Token.TK_COLON;}
 "-"             {return Token.TK_MINUS;}
-")"             {return Token.TK_RPAREN;} 
+")"             {return Token.TK_RPAREN;}
 "["				{return Token.TK_LBRACKET;}
 "]"				{return Token.TK_RBRACKET;}
 "."				{return Token.TK_PERIOD;}

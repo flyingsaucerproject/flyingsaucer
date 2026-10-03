@@ -29,10 +29,6 @@ public class ContentLimit {
         return _top;
     }
 
-    public void setTop(int top) {
-        _top = top;
-    }
-
     public void updateTop(int top) {
         if (_top == UNDEFINED || top < _top) {
             _top = top;
@@ -43,16 +39,13 @@ public class ContentLimit {
         return _bottom;
     }
 
-    public void setBottom(int bottom) {
-        _bottom = bottom;
-    }
-
     public void updateBottom(int bottom) {
         if (_bottom == UNDEFINED || bottom > _bottom) {
             _bottom = bottom;
         }
     }
 
+    @Override
     public String toString() {
         return "[top=" + _top + ", bottom=" + _bottom + "]";
     }

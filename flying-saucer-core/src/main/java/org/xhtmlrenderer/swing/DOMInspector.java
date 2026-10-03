@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -26,7 +28,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.constants.ValueConstants;
-import org.xhtmlrenderer.layout.SharedContext;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelListener;
@@ -41,51 +42,49 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class DOMInspector extends JPanel {
-    private static final long serialVersionUID = 1L;
+import static java.util.Objects.requireNonNull;
+import static org.xhtmlrenderer.css.util.ConversionUtil.rgbToColor;
 
+public final class DOMInspector extends JPanel {
     private StyleReference styleReference;
-    private ElementPropertiesPanel elementPropPanel;
     private DOMSelectionListener nodeSelectionListener;
-    private JSplitPane splitPane;
+    private final JSplitPane splitPane;
     private Document doc;
     private final JTree tree;
 
-    public DOMInspector(Document doc) {
-        this(doc, null, null);
-    }
-
-    public DOMInspector(Document doc, SharedContext context, StyleReference sr) {
+    public DOMInspector(Document doc, StyleReference sr) {
         setLayout(new java.awt.BorderLayout());
 
-        //JPanel treePanel = new JPanel();
         tree = new JTree();
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         JScrollPane scroll = new JScrollPane(tree);
 
-        splitPane = null;
-        if (sr == null) {
-            add(scroll, "Center");
-        } else {
-            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-            splitPane.setOneTouchExpandable(true);
-            splitPane.setDividerLocation(150);
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(150);
 
-            add(splitPane, "Center");
-            splitPane.setLeftComponent(scroll);
-        }
+        add(splitPane, "Center");
+        splitPane.setLeftComponent(scroll);
 
         JButton close = new JButton("close");
         add(close, "South");
         setPreferredSize(new Dimension(300, 300));
 
-        setForDocument(doc, context, sr);
+        this.doc = doc;
+        this.styleReference = sr;
+        this.initForCurrentDocument();
 
         close.addActionListener(evt -> getFrame(this).setVisible(false));
     }
@@ -94,22 +93,14 @@ public final class DOMInspector extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawLine(0, 0, 100, 100);
-
     }
 
     /**
      * Sets the forDocument attribute of the DOMInspector object
      */
-    public void setForDocument(Document doc) {
-        setForDocument(doc, null, null);
-    }
-
-    /**
-     * Sets the forDocument attribute of the DOMInspector object
-     */
-    public void setForDocument(Document doc, SharedContext context, StyleReference sr) {
-        this.doc = doc;
-        this.styleReference = sr;
+    public void setForDocument(Document doc, StyleReference sr) {
+        this.doc = requireNonNull(doc);
+        this.styleReference = requireNonNull(sr);
         this.initForCurrentDocument();
     }
 
@@ -117,8 +108,8 @@ public final class DOMInspector extends JPanel {
      * Gets the frame attribute of the DOMInspector object
      */
     public JFrame getFrame(Component comp) {
-        if (comp instanceof JFrame) {
-            return (JFrame) comp;
+        if (comp instanceof JFrame frame) {
+            return frame;
         }
         return getFrame(comp.getParent());
     }
@@ -131,26 +122,18 @@ public final class DOMInspector extends JPanel {
             tree.setCellRenderer(new DOMTreeCellRenderer());
         }
 
-        if (styleReference != null) {
-            if (elementPropPanel != null) {
-                splitPane.remove(elementPropPanel);
-            }
-            elementPropPanel = new ElementPropertiesPanel(styleReference);
-            splitPane.setRightComponent(elementPropPanel);
+        splitPane.remove(splitPane.getRightComponent());
+        ElementPropertiesPanel elementPropPanel = new ElementPropertiesPanel(styleReference);
+        splitPane.setRightComponent(elementPropPanel);
 
-            tree.removeTreeSelectionListener(nodeSelectionListener);
+        tree.removeTreeSelectionListener(nodeSelectionListener);
 
-            //nodeSelectionListener = new DOMSelectionListener( tree, styleReference, elementPropPanel );
-            nodeSelectionListener = new DOMSelectionListener(tree, elementPropPanel);
-            tree.addTreeSelectionListener(nodeSelectionListener);
-        }
+        nodeSelectionListener = new DOMSelectionListener(tree, elementPropPanel);
+        tree.addTreeSelectionListener(nodeSelectionListener);
     }
 }
 
 final class ElementPropertiesPanel extends JPanel {
-    private static final long serialVersionUID = 1L;
-
-    //private SharedContext _context;
     private final StyleReference _sr;
     private final JTable _properties;
     private final TableModel _defaultTableModel;
@@ -189,8 +172,6 @@ final class ElementPropertiesPanel extends JPanel {
     }
 
     static final class PropertiesJTable extends JTable {
-        private static final long serialVersionUID = 1L;
-
         private final Font propLabelFont;
         private final Font defaultFont;
 
@@ -213,11 +194,11 @@ final class ElementPropertiesPanel extends JPanel {
                 // BUG: not working?
                 label.setFont(propLabelFont);
             } else if (col == 2) {
-                PropertiesTableModel pmodel = (PropertiesTableModel) getModel();
-                Map.Entry<String, CSSPrimitiveValue> me = (Map.Entry<String, CSSPrimitiveValue>) pmodel._properties.entrySet().toArray()[row];
+                PropertiesTableModel model = (PropertiesTableModel) getModel();
+                Map.Entry<String, CSSPrimitiveValue> me = model._properties.get(row);
                 CSSPrimitiveValue cpv = me.getValue();
                 if (cpv.getCssText().startsWith("rgb")) {
-                    label.setBackground(org.xhtmlrenderer.css.util.ConversionUtil.rgbToColor(cpv.getRGBColorValue()));
+                    label.setBackground(rgbToColor(cpv.getRGBColorValue()));
                 }
             }
             return (TableCellRenderer) label;
@@ -225,15 +206,13 @@ final class ElementPropertiesPanel extends JPanel {
     }
 
     static class PropertiesTableModel extends AbstractTableModel {
-        private static final long serialVersionUID = 1L;
-
         //String _colNames[] = {"Property Name", "Text", "Value", "Important-Inherit"};
         private final String[] _colNames = {"Property Name", "Text", "Value"};
 
-        private final Map<String, CSSPrimitiveValue> _properties;
+        private final List<Map.Entry<String, CSSPrimitiveValue>> _properties;
 
         PropertiesTableModel(Map<String, CSSPrimitiveValue> cssProperties) {
-            _properties = cssProperties;
+            _properties = new ArrayList<>(cssProperties.entrySet());
         }
 
         /**
@@ -263,35 +242,28 @@ final class ElementPropertiesPanel extends JPanel {
         /**
          * Gets the valueAt attribute of the PropertiesTableModel object
          */
+        @Nullable
+        @CheckReturnValue
         @Override
         public Object getValueAt(int row, int col) {
-            Map.Entry<String, CSSPrimitiveValue> me = (Map.Entry<String, CSSPrimitiveValue>) _properties.entrySet().toArray()[row];
+            Map.Entry<String, CSSPrimitiveValue> me = _properties.get(row);
             CSSPrimitiveValue cpv = me.getValue();
 
-            Object val = null;
-            switch (col) {
+            return switch (col) {
 
-                case 0:
-                    val = me.getKey();
-                    break;
-                case 1:
-                    val = cpv.getCssText();
-                    break;
-                case 2:
-                    if (ValueConstants.isNumber(cpv.getPrimitiveType())) {
-                        val = cpv.getFloatValue(cpv.getPrimitiveType());
-                    } else {
-                        val = "";//actual.cssValue().getCssText();
-                    }
-                    break;
-                    /* ouch, can't do this now: case 3:
-                        val = ( cpv.actual.isImportant() ? "!Imp" : "" ) +
+                case 0 -> me.getKey();
+                case 1 -> cpv.getCssText();
+                case 2 -> ValueConstants.isNumber(cpv.getPrimitiveType()) ?
+                        cpv.getFloatValue(cpv.getPrimitiveType()) :
+                        ""; //actual.cssValue().getCssText();
+
+                    /* ouch, can't do this now:
+                    case 3 -> ( cpv.actual.isImportant() ? "!Imp" : "" ) +
                                 " " +
                                 ( actual.forcedInherit() ? "Inherit" : "" );
-                        break;
                      */
-            }
-            return val;
+                default -> null;
+            };
         }
 
         /**
@@ -308,24 +280,20 @@ final class ElementPropertiesPanel extends JPanel {
 class DOMSelectionListener implements TreeSelectionListener {
 
     private final JTree _tree;
-    //private StyleReference _sr;
     private final ElementPropertiesPanel _elemPropPanel;
 
     DOMSelectionListener(JTree tree, ElementPropertiesPanel panel) {
         _tree = tree;
-        //_sr = sr;
         _elemPropPanel = panel;
     }
 
     @Override
     public void valueChanged(TreeSelectionEvent e) {
         Node node = (Node) _tree.getLastSelectedPathComponent();
-
-        if (node == null) {
-            return;
+        if (node != null) {
+            _elemPropPanel.setForElement(node);
         }
 
-        _elemPropPanel.setForElement(node);
     }
 }
 
@@ -337,7 +305,6 @@ class DOMTreeModel implements TreeModel {
     private Node root;
 
     private final Map<Object, List<Node>> displayableNodes = new HashMap<>();
-    private final List<TreeModelListener> listeners = new ArrayList<>();
 
     DOMTreeModel(Document doc) {
         Node tempRoot = doc.getDocumentElement();
@@ -349,48 +316,18 @@ class DOMTreeModel implements TreeModel {
         }
     }
 
-
-    //Adds a listener for the TreeModelEvent posted after the tree changes.
-
-    /**
-     * Adds the specified TreeModel listener to receive TreeModel events from
-     * this component. If listener l is null, no exception is thrown and no
-     * action is performed.
-     *
-     * @param l Contains the TreeModelListener for TreeModelEvent data.
-     */
     @Override
     public void addTreeModelListener(TreeModelListener l) {
-        this.listeners.add(l);
     }
 
-
-    //Removes a listener previously added with addTreeModelListener.
-
-    /**
-     * Removes the specified TreeModel listener so that it no longer receives
-     * TreeModel events from this component. This method performs no function,
-     * nor does it throw an exception, if the listener specified by the argument
-     * was not previously added to this component. If listener l is null, no
-     * exception is thrown and no action is performed.
-     *
-     * @param l Contains the TreeModelListener for TreeModelEvent data.
-     */
     @Override
     public void removeTreeModelListener(TreeModelListener l) {
-        this.listeners.remove(l);
-
     }
-
-
-    //Messaged when the user has altered the value for the item identified by path to newValue.
 
     @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
         // no-op
     }
-
-    //Returns the child of parent at index in the parent's child array.
 
     /**
      * Gets the child attribute of the DOMTreeModel object
@@ -433,9 +370,10 @@ class DOMTreeModel implements TreeModel {
      * Gets the indexOfChild attribute of the DOMTreeModel object
      */
     @Override
-    public int getIndexOfChild(Object parent, Object child) {
-
+    public int getIndexOfChild(Object parent, Object childNode) {
         Node node = (Node) parent;
+        Node child = (Node) childNode;
+
         List<Node> children = this.displayableNodes.get(parent);
         if (children == null) {
             children = addDisplayable(node);
@@ -488,7 +426,7 @@ class DOMTreeModel implements TreeModel {
                 Node child = nl.item(i);
                 if (child.getNodeType() == Node.ELEMENT_NODE ||
                         child.getNodeType() == Node.COMMENT_NODE ||
-                        (child.getNodeType() == Node.TEXT_NODE && !child.getNodeValue().trim().isEmpty())) {
+                    child.getNodeType() == Node.TEXT_NODE && !child.getNodeValue().trim().isEmpty()) {
                     children.add(child);
                 }
             }

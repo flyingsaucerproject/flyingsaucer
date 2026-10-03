@@ -1,10 +1,12 @@
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.util.Configuration;
+import org.xhtmlrenderer.util.IOUtil;
 import org.xhtmlrenderer.util.ImageUtil;
-import org.xhtmlrenderer.util.StreamResource;
 import org.xhtmlrenderer.util.XRLog;
 
 import javax.imageio.ImageIO;
@@ -17,24 +19,27 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.util.ImageUtil.isEmbeddedBase64Image;
+
 public class ImageResourceLoader {
     public static final RepaintListener NO_OP_REPAINT_LISTENER = doLayout -> XRLog.general(Level.FINE, "No-op repaint requested");
     private final Map<CacheKey, ImageResource> _imageCache;
 
+    @Nullable
     private final ImageLoadQueue _loadQueue;
-
     private final int _imageCacheCapacity;
-
-    private RepaintListener _repaintListener = NO_OP_REPAINT_LISTENER;
-
+    private final RepaintListener _repaintListener;
     private final boolean _useBackgroundImageLoading;
 
     public ImageResourceLoader() {
-        // FIXME
-        this(16);
+        this(16, NO_OP_REPAINT_LISTENER);
     }
 
-    public ImageResourceLoader(int cacheSize) {
+    public ImageResourceLoader(RepaintListener repaintListener) {
+        this(16, repaintListener);
+    }
+
+    public ImageResourceLoader(int cacheSize, RepaintListener repaintListener) {
         this._imageCacheCapacity = cacheSize;
         this._useBackgroundImageLoading = Configuration.isTrue("xr.image.background.loading.enable", false);
 
@@ -51,46 +56,41 @@ public class ImageResourceLoader {
         // note we do *not* override removeEldestEntry() here--users of this class must call shrinkImageCache().
         // that's because we don't know when is a good time to flush the cache
         this._imageCache = new LinkedHashMap<>(cacheSize, 0.75f, true);
+        this._repaintListener = repaintListener;
     }
 
     public static ImageResource loadImageResourceFromUri(final String uri) {
-        if (ImageUtil.isEmbeddedBase64Image(uri)) {
+        if (isEmbeddedBase64Image(uri)) {
             return loadEmbeddedBase64ImageResource(uri);
-        } else {
-            StreamResource sr = new StreamResource(uri);
-            InputStream is;
-            ImageResource ir = null;
-            try {
-                sr.connect();
-                is = sr.bufferedStream();
-                try {
-                    BufferedImage img = ImageIO.read(is);
-                    if (img == null) {
-                        throw new IOException("ImageIO.read() returned null");
-                    }
-                    ir = createImageResource(uri, img);
-                } catch (FileNotFoundException e) {
-                    XRLog.exception("Can't read image file; image at URI '" + uri + "' not found");
-                } catch (IOException e) {
-                    XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
-                } finally {
-                    sr.close();
-                }
-            } catch (IOException e) {
-                // couldn't open stream at URI...
-                XRLog.exception("Can't open stream for URI '" + uri + "': " + e.getMessage());
-            }
-            if (ir == null) {
-                ir = createImageResource(uri, null);
-            }
-            return ir;
         }
+
+        try (InputStream is = IOUtil.getInputStream(uri)) {
+            try {
+                if (is == null) {
+                    return createImageResource(uri, null);
+                }
+                BufferedImage img = ImageIO.read(is);
+                if (img == null) {
+                    throw new IOException("ImageIO.read() returned null");
+                }
+                return createImageResource(uri, img);
+            } catch (FileNotFoundException e) {
+                XRLog.exception("Can't read image file; image at URI '" + uri + "' not found");
+            } catch (IOException e) {
+                XRLog.exception("Can't read image file; unexpected problem for URI '" + uri + "'", e);
+            }
+        } catch (IOException e) {
+            // couldn't open stream at URI...
+            XRLog.exception("Can't open stream for URI '" + uri + "': " + e.getMessage());
+        }
+
+        return createImageResource(uri, null);
     }
 
     public static ImageResource loadEmbeddedBase64ImageResource(final String uri) {
         BufferedImage bufferedImage = ImageUtil.loadEmbeddedBase64Image(uri);
         if (bufferedImage != null) {
-            FSImage image = AWTFSImage.createImage(bufferedImage);
+            FSImage image = AWTFSImageFactory.createImage(bufferedImage);
             return new ImageResource(null, image);
         } else {
             return new ImageResource(null, null);
@@ -110,15 +110,18 @@ public class ImageResourceLoader {
         _imageCache.clear();
     }
 
+    @CheckReturnValue
     public ImageResource get(final String uri) {
         return get(uri, -1, -1);
     }
 
+    @CheckReturnValue
     public synchronized ImageResource get(final String uri, final int width, final int height) {
-        if (ImageUtil.isEmbeddedBase64Image(uri)) {
+        if (isEmbeddedBase64Image(uri)) {
             ImageResource resource = loadEmbeddedBase64ImageResource(uri);
-            resource.getImage().scale(width, height);
-            return resource;
+            FSImage image = resource.getImage();
+            FSImage scaledImage = image == null ? null : image.scale(width, height);
+            return new ImageResource(resource.getImageUri(), scaledImage);
         } else {
             CacheKey key = new CacheKey(uri, width, height);
             ImageResource ir = _imageCache.get(key);
@@ -139,7 +142,7 @@ public class ImageResourceLoader {
                         if (width > -1 && height > -1) {
                             XRLog.load(Level.FINE, this + ", scaling " + uri + " to " + width + ", " + height);
                             newImg = ImageUtil.getScaledInstance(newImg, width, height);
-                            ir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
+                            ir = new ImageResource(ir.getImageUri(), AWTFSImageFactory.createImage(newImg));
                             loaded(ir, width, height);
                         }
                     } else {
@@ -157,7 +160,7 @@ public class ImageResourceLoader {
                     BufferedImage newImg = ((AWTFSImage) awtfsImage).getImage();
 
                     newImg = ImageUtil.getScaledInstance(newImg, width, height);
-                    ir = new ImageResource(ir.getImageUri(), AWTFSImage.createImage(newImg));
+                    ir = new ImageResource(ir.getImageUri(), AWTFSImageFactory.createImage(newImg));
                     loaded(ir, width, height);
                 }
             }
@@ -176,16 +179,12 @@ public class ImageResourceLoader {
         }
     }
 
-    public static ImageResource createImageResource(final String uri, final BufferedImage img) {
+    public static ImageResource createImageResource(final String uri, @Nullable final BufferedImage img) {
         if (img == null) {
-            return new ImageResource(uri, AWTFSImage.createImage(ImageUtil.createTransparentImage(10, 10)));
+            return new ImageResource(uri, AWTFSImageFactory.createImage(ImageUtil.createTransparentImage(10, 10)));
         } else {
-            return new ImageResource(uri, AWTFSImage.createImage(ImageUtil.makeCompatible(img)));
+            return new ImageResource(uri, AWTFSImageFactory.createImage(ImageUtil.makeCompatible(img)));
         }
-    }
-
-    public void setRepaintListener(final RepaintListener repaintListener) {
-        _repaintListener = repaintListener;
     }
 
     public void stopLoading() {

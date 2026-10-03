@@ -19,50 +19,47 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.Image;
+import org.openpdf.text.Image;
 import org.xhtmlrenderer.extend.FSImage;
+import org.xhtmlrenderer.extend.Size;
 
 public class ITextFSImage implements FSImage, Cloneable {
-    private final Image _image;
+    private final Image image;
 
     public ITextFSImage(Image image) {
-        _image = image;
+        this.image = image;
     }
 
+    @Override
     public int getWidth() {
-        return (int)_image.getPlainWidth();
+        return (int) image.getPlainWidth();
     }
 
+    @Override
     public int getHeight() {
-        return (int)_image.getPlainHeight();
+        return (int) image.getPlainHeight();
     }
 
-    public void scale(int width, int height) {
-        if (width > 0 || height > 0) {
-            int currentWith = getWidth();
-            int currentHeight = getHeight();
-            int targetWidth = width;
-            int targetHeight = height;
+    @Override
+    public ITextFSImage scale(int width, int height) {
+        Size current = new Size(getWidth(), getHeight());
+        Size target = current.scale(width, height);
 
-            if (targetWidth == -1) {
-                targetWidth = (int)(currentWith * ((double)targetHeight / currentHeight));
-            }
-
-            if (targetHeight == -1) {
-                targetHeight = (int)(currentHeight * ((double)targetWidth / currentWith));
-            }
-
-            if (currentWith != targetWidth || currentHeight != targetHeight) {
-                _image.scaleAbsolute(targetWidth, targetHeight);
-            }
+        if (!target.equals(current)) {
+            Image scaledImage = Image.getInstance(image);
+            scaledImage.scaleAbsolute(target.width(), target.height());
+            return new ITextFSImage(scaledImage);
         }
+        return this;
     }
 
     public Image getImage() {
-        return _image;
+        return image;
     }
 
+    @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     public Object clone() {
-        return new ITextFSImage(Image.getInstance(_image));
+        return new ITextFSImage(Image.getInstance(image));
     }
 }

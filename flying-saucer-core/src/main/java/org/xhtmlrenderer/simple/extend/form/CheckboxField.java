@@ -26,13 +26,13 @@ import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 import javax.swing.*;
 
-class CheckboxField extends InputField {
+class CheckboxField extends InputField<JCheckBox> {
     CheckboxField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JCheckBox create() {
         JCheckBox checkbox = new JCheckBox();
 
         checkbox.setText("");
@@ -44,26 +44,23 @@ class CheckboxField extends InputField {
     @Override
     protected FormFieldState loadOriginalState() {
         return FormFieldState.fromBoolean(
-                getAttribute("checked").equalsIgnoreCase("checked"));
+            getAttribute("checked").equalsIgnoreCase("checked"));
     }
 
     @Override
     protected void applyOriginalState() {
-        JToggleButton button = (JToggleButton) getComponent();
-
+        JToggleButton button = component();
         button.setSelected(getOriginalState().isChecked());
     }
 
     @Override
     protected String[] getFieldValues() {
-        JToggleButton button = (JToggleButton) getComponent();
+        JToggleButton button = component();
 
         if (button.isSelected()) {
-            return new String [] {
-                    hasAttribute("value") ? getAttribute("value") : "on"
-            };
+            return new String[]{getAttribute("value", "on")};
         } else {
-            return new String[] {};
+            return new String[]{};
         }
     }
 }

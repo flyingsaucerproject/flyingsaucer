@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
+	<title>Nth-child test</title>
+
+	<style>
+        #odd :nth-child(odd):after {
+            content: "ODD";
+        }
+        #even :nth-child(even):after {
+            content: "EVEN";
+        }
+        #third :nth-child(3):after {
+            content: "THIRD";
+        }
+        #after-fourth :nth-child(n+4):after {
+            content: "AFTER-FOURTH";
+        }
+        #dartagnan :nth-child(3n + 1):after {
+            content: "d'Artagnan";
+        }
+	</style>
+</head>
+
+<body>
+<h1>Odd</h1>
+<ul id="odd">
+    <li>o1. </li>
+    <li>o2. </li>
+    <li>o3. </li>
+    <li>o4. </li>
+</ul>
+
+<h1>Even</h1>
+<ul id="even">
+    <li>e1. </li>
+    <li>e2. </li>
+    <li>e3. </li>
+    <li>e4. </li>
+</ul>
+
+<h1>Third</h1>
+<ul id="third">
+    <li>t1. </li>
+    <li>t2. </li>
+    <li>t3. </li>
+    <li>t4. </li>
+</ul>
+
+<h1>After fourth</h1>
+<ul id="after-fourth">
+    <li>af1. </li>
+    <li>af2. </li>
+    <li>af3. </li>
+    <li>af4. </li>
+    <li>af5. </li>
+    <li>af6. </li>
+</ul>
+
+<h1>d'Artagnan</h1>
+<ul id="dartagnan">
+    <li>d1. </li>
+    <li>d2. </li>
+    <li>d3. </li>
+    <li>d4. </li>
+    <li>d5. </li>
+    <li>d6. </li>
+    <li>d7. </li>
+</ul>
+
+</body>
+
+</html>

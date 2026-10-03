@@ -19,9 +19,8 @@
  */
 package org.xhtmlrenderer.css.extend;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
-
-import javax.annotation.Nullable;
 
 /**
  * In XML, an application may or may not know how to find the ID and/or class

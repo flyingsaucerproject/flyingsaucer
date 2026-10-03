@@ -31,20 +31,23 @@ import org.xhtmlrenderer.layout.breaker.ListBreakPointsProvider;
 import org.xhtmlrenderer.layout.breaker.UrlAwareLineBreakIterator;
 
 import java.text.BreakIterator;
-import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
+ * Word wrapping capability
+ *
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class FOPLineBreakingStrategy implements LineBreakingStrategy {
 
     private static final int SOFT_HYPHEN = '\u00AD';
 
-    private TreeSet<BreakPoint> getPoints(String text, String lang, CalculatedStyle style) {
+    private Set<BreakPoint> getPoints(String text, String lang, CalculatedStyle style) {
         text = new NonBreakPointsEnhancer().enhance(text, lang);
         BreakIterator breakIt = new UrlAwareLineBreakIterator(text);
-        TreeSet<BreakPoint> points = new TreeSet<>();
+        Set<BreakPoint> points = new TreeSet<>();
         int p;
         while ((p = breakIt.next()) != BreakIterator.DONE) {
             points.add(new BreakPoint(p));
@@ -55,8 +58,7 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
         if (style.getHyphens() == IdentValue.MANUAL) {
             int index = text.indexOf(SOFT_HYPHEN);
             while (index >= 0) {
-                BreakPoint point = new BreakPoint(index);
-                addHyphen(point);
+                BreakPoint point = new BreakPoint(index, "-");
                 points.add(point);
                 index = text.indexOf(SOFT_HYPHEN, index + 1);
             }
@@ -68,8 +70,7 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
             if (s == null) return points;
             for (int i = 0; i < s.getHyphenationPoints().length; i++) {
                 int position = s.getHyphenationPoints()[i];
-                BreakPoint point = new BreakPoint(position);
-                addHyphen(point);
+                BreakPoint point = new BreakPoint(position, "-");
                 points.add(point);
             }
         }
@@ -78,11 +79,6 @@ public class FOPLineBreakingStrategy implements LineBreakingStrategy {
 
     @Override
     public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
-        return new ListBreakPointsProvider(Arrays.asList(getPoints(text, lang, style).toArray(new BreakPoint[0])));
+        return new ListBreakPointsProvider(List.of(getPoints(text, lang, style).toArray(new BreakPoint[0])));
     }
-
-    private void addHyphen(BreakPoint p) {
-        p.setHyphen("-");
-    }
-
 }

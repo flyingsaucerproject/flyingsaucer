@@ -19,7 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.pdf.PdfTemplate;
+import org.jspecify.annotations.Nullable;
+import org.openpdf.text.pdf.PdfTemplate;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSCMYKColor;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -28,10 +29,8 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.util.Util;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.awt.*;
+import java.awt.Point;
 
-@ParametersAreNonnullByDefault
 public abstract class AbstractFormField implements ITextReplacedElement {
     protected static final String DEFAULT_CHECKED_STATE = "Yes";
     protected static final String OFF_STATE = "Off"; // required per the spec
@@ -44,6 +43,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
     private int _width;
     private int _height;
 
+    @Nullable
     private String _fieldName;
 
     protected abstract String getFieldType();
@@ -117,26 +117,32 @@ public abstract class AbstractFormField implements ITextReplacedElement {
         return Util.isNullOrEmpty(e.getAttribute("selected"));
     }
 
+    @Override
     public void detach(LayoutContext c) {
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return getHeight();
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return getWidth();
     }
 
+    @Override
     public Point getLocation() {
         return new Point(getX(), getY());
     }
 
+    @Override
     public boolean isRequiresInteractivePaint() {
         // N/A
         return false;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         setX(x);
         setY(y);
@@ -150,7 +156,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
             if (cssHeight != -1) {
                 setWidth(cssHeight);
             } else {
-                setWidth((int) (box.getStyle().getFont(c).size * FONT_SIZE_ADJUSTMENT));
+                setWidth((int) (box.getStyle().getFont(c).size() * FONT_SIZE_ADJUSTMENT));
             }
         }
 
@@ -160,7 +166,7 @@ public abstract class AbstractFormField implements ITextReplacedElement {
             if (cssWidth != -1) {
                 setHeight(cssWidth);
             } else {
-                setHeight((int) (box.getStyle().getFont(c).size * FONT_SIZE_ADJUSTMENT));
+                setHeight((int) (box.getStyle().getFont(c).size() * FONT_SIZE_ADJUSTMENT));
             }
         }
     }

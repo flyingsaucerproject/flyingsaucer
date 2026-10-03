@@ -19,8 +19,8 @@
  */
 package org.xhtmlrenderer.pdf;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.extend.ReplacedElement;
 import org.xhtmlrenderer.extend.ReplacedElementFactory;
@@ -28,13 +28,23 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
+import org.xhtmlrenderer.util.XRRuntimeException;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ITextReplacedElementFactory implements ReplacedElementFactory {
+    private static final String SVG_NAMESPACE_URI = "http://www.w3.org/2000/svg";
+    private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
+
     private final ITextOutputDevice _outputDevice;
 
     private final Map<Element, RadioButtonFormField> _radioButtonsByElem = new HashMap<>();
@@ -44,6 +54,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         _outputDevice = outputDevice;
     }
 
+    @Nullable
     @Override
     public ReplacedElement createReplacedElement(LayoutContext c, BlockBox box,
                                                  UserAgentCallback uac, int cssWidth, int cssHeight) {
@@ -60,13 +71,19 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
                     FSImage fsImage = uac.getImageResource(srcAttr).getImage();
                     if (fsImage != null) {
                         if (cssWidth != -1 || cssHeight != -1) {
-                            fsImage.scale(cssWidth, cssHeight);
+                            fsImage = fsImage.scale(cssWidth, cssHeight);
                         }
                         return new ITextImageElement(fsImage);
                     }
                 }
 
                 break;
+            case "svg":
+                FSImage svgImage = new SvgImage(serializeToXml(e), ITextUserAgent.getSvgSize(e), "inline-svg");
+                if (cssWidth != -1 || cssHeight != -1) {
+                    svgImage = svgImage.scale(cssWidth, cssHeight);
+                }
+                return new ITextImageElement(svgImage);
             case "input":
                 String type = e.getAttribute("type");
                 switch (type) {
@@ -90,32 +107,41 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
              */
             case "bookmark":
                 // HACK Add box as named anchor and return placeholder
-                BookmarkElement result = new BookmarkElement();
                 if (e.hasAttribute("name")) {
                     String name = e.getAttribute("name");
                     c.addBoxId(name, box);
-                    result.setAnchorName(name);
+                    return new BookmarkElement(name);
                 }
-                return result;
+                return new BookmarkElement(null);
         }
 
         return null;
     }
 
-    private boolean isTextarea(Element e) {
-        if (!e.getNodeName().equals("textarea")) {
-            return false;
+    private static byte[] serializeToXml(Element e) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Transformer transformer = TRANSFORMER_FACTORY.newTransformer();
+            transformer.transform(new DOMSource(ensureSvgNamespace(e)), new StreamResult(out));
+            return out.toByteArray();
+        } catch (TransformerException ex) {
+            throw new XRRuntimeException("Failed to serialize inline <svg> element", ex);
         }
+    }
 
-        Node n = e.getFirstChild();
-        while (n != null) {
-            short nodeType = n.getNodeType();
-            if (nodeType != Node.TEXT_NODE && nodeType != Node.CDATA_SECTION_NODE) {
-                return false;
-            }
+    /**
+     * Authors commonly copy-paste HTML5 SVG markup, which omits {@code xmlns} since HTML5 parsers infer
+     * the SVG namespace from the tag name. Flying Saucer requires well-formed XML input, so a bare
+     * {@code <svg>} with no {@code xmlns} attribute (and no inherited SVG namespace) would otherwise be
+     * serialized without one, and Batik would then fail to recognize it as SVG.
+     */
+    private static Element ensureSvgNamespace(Element e) {
+        if (SVG_NAMESPACE_URI.equals(e.getNamespaceURI()) || !e.getAttribute("xmlns").isEmpty()) {
+            return e;
         }
-
-        return true;
+        Element clone = (Element) e.cloneNode(true);
+        clone.setAttribute("xmlns", SVG_NAMESPACE_URI);
+        return clone;
     }
 
     private void saveResult(Element e, RadioButtonFormField result) {
@@ -158,6 +184,7 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         _radioButtonsByName.remove(fieldName);
     }
 
+    @Nullable
     public List<RadioButtonFormField> getRadioButtons(String name) {
         return _radioButtonsByName.get(name);
     }

@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.pdf;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class FontFamily {
         _fontDescriptions.sort(comparingInt(FontDescription::getWeight));
     }
 
+    @Nullable
     public FontDescription match(int desiredWeight, IdentValue style) {
         List<FontDescription> candidates = new ArrayList<>();
 
@@ -47,64 +49,69 @@ public class FontFamily {
             }
         }
 
-        FontDescription result = findByWeight(candidates, desiredWeight, SM_EXACT);
+        FontDescription result = findByWeight(candidates, desiredWeight, SearchMode.EXACT);
 
         if (result != null) {
             return result;
         } else {
             if (desiredWeight <= 500) {
-                return findByWeight(candidates, desiredWeight, SM_LIGHTER_OR_DARKER);
+                return findByWeight(candidates, desiredWeight, SearchMode.LIGHTER_OR_DARKER);
             } else {
-                return findByWeight(candidates, desiredWeight, SM_DARKER_OR_LIGHTER);
+                return findByWeight(candidates, desiredWeight, SearchMode.DARKER_OR_LIGHTER);
             }
         }
     }
 
-    private static final int SM_EXACT = 1;
-    private static final int SM_LIGHTER_OR_DARKER = 2;
-    private static final int SM_DARKER_OR_LIGHTER = 3;
+    private enum SearchMode {
+        EXACT,
+        LIGHTER_OR_DARKER,
+        DARKER_OR_LIGHTER
+    }
 
-    private FontDescription findByWeight(List<FontDescription> matches, int desiredWeight, int searchMode) {
-        if (searchMode == SM_EXACT) {
-            for (FontDescription description : matches) {
-                if (description.getWeight() == desiredWeight) {
-                    return description;
+    @Nullable
+    private FontDescription findByWeight(List<FontDescription> matches, int desiredWeight, SearchMode searchMode) {
+        return switch (searchMode) {
+            case EXACT -> {
+                for (FontDescription description : matches) {
+                    if (description.getWeight() == desiredWeight) {
+                        yield description;
+                    }
+                }
+                yield null;
+            }
+            case LIGHTER_OR_DARKER -> {
+                int offset;
+                FontDescription description = null;
+                for (offset = 0; offset < matches.size(); offset++) {
+                    description = matches.get(offset);
+                    if (description.getWeight() > desiredWeight) {
+                        break;
+                    }
+                }
+
+                if (offset > 0 && description.getWeight() > desiredWeight) {
+                    yield matches.get(offset - 1);
+                } else {
+                    yield description;
+                }
+
+            }
+            case DARKER_OR_LIGHTER -> {
+                int offset;
+                FontDescription description = null;
+                for (offset = matches.size() - 1; offset >= 0; offset--) {
+                    description = matches.get(offset);
+                    if (description.getWeight() < desiredWeight) {
+                        break;
+                    }
+                }
+
+                if (offset != matches.size() - 1 && description != null && description.getWeight() < desiredWeight) {
+                    yield matches.get(offset + 1);
+                } else {
+                    yield description;
                 }
             }
-            return null;
-        } else if (searchMode == SM_LIGHTER_OR_DARKER) {
-            int offset;
-            FontDescription description = null;
-            for (offset = 0; offset < matches.size(); offset++) {
-                description = matches.get(offset);
-                if (description.getWeight() > desiredWeight) {
-                    break;
-                }
-            }
-
-            if (offset > 0 && description.getWeight() > desiredWeight) {
-                return matches.get(offset - 1);
-            } else {
-                return description;
-            }
-
-        } else if (searchMode == SM_DARKER_OR_LIGHTER) {
-            int offset;
-            FontDescription description = null;
-            for (offset = matches.size() - 1; offset >= 0; offset--) {
-                description = matches.get(offset);
-                if (description.getWeight() < desiredWeight) {
-                    break;
-                }
-            }
-
-            if (offset != matches.size() - 1 && description != null && description.getWeight() < desiredWeight) {
-                return matches.get(offset + 1);
-            } else {
-                return description;
-            }
-        }
-
-        return null;
+        };
     }
 }

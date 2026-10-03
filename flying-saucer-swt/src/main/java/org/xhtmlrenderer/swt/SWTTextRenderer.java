@@ -19,31 +19,28 @@
  */
 package org.xhtmlrenderer.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.xhtmlrenderer.extend.FSGlyphVector;
-import org.xhtmlrenderer.extend.FontContext;
-import org.xhtmlrenderer.extend.OutputDevice;
 import org.xhtmlrenderer.extend.TextRenderer;
-import org.xhtmlrenderer.render.FSFont;
 import org.xhtmlrenderer.render.FSFontMetrics;
 import org.xhtmlrenderer.render.JustificationInfo;
 import org.xhtmlrenderer.util.Configuration;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 /**
  * Render text with SWT.
  *
  * @author Vianney le Clément
- *
  */
-public class SWTTextRenderer implements TextRenderer {
+public final class SWTTextRenderer implements TextRenderer<SWTOutputDevice, SWTFontContext, SWTFSFont> {
 
     private float _scale;
-    private boolean _antialiasing;
+    private boolean _antialiasing = false;
 
     public SWTTextRenderer() {
         _scale = Configuration.valueAsFloat("xr.text.scale", 1.0f);
@@ -51,67 +48,91 @@ public class SWTTextRenderer implements TextRenderer {
             "xr.text.aa-fontsize-threshhold", 0));
     }
 
-    public void setup(FontContext context) {
-        GC gc = ((SWTFontContext) context).getGC();
+    @Override
+    public void setup(SWTFontContext context) {
+        GC gc = context.getGC();
         gc.setTextAntialias(_antialiasing ? SWT.ON : SWT.OFF);
     }
 
-    public void drawString(OutputDevice outputDevice, String string, float x,
+    @Override
+    public void drawString(SWTOutputDevice outputDevice, String string, float x,
             float y) {
-        GC gc = ((SWTOutputDevice) outputDevice).getGC();
+        GC gc = outputDevice.getGC();
         FontMetrics metrics = gc.getFontMetrics();
-        y -= (metrics.getAscent() + metrics.getLeading());
+        y -= metrics.getAscent() + metrics.getLeading();
         gc.drawText(string, (int) x, (int) y, SWT.DRAW_TRANSPARENT);
     }
 
-    public FSFontMetrics getFSFontMetrics(FontContext context, FSFont font,
-            String string) {
-        return new SWTFontMetricsAdapter((SWTFontContext) context,
-            (SWTFSFont) font);
+    @CheckReturnValue
+    @Override
+    public FSFontMetrics getFSFontMetrics(SWTFontContext context, SWTFSFont font, String string) {
+        return new SWTFontMetricsAdapter(context, font);
     }
 
-    public int getWidth(FontContext context, FSFont font, String string) {
-        GC gc = ((SWTFontContext) context).getGC();
+    @Override
+    public int getWidth(SWTFontContext context, SWTFSFont font, String string) {
+        GC gc = context.getGC();
         Font previous = gc.getFont();
-        gc.setFont(((SWTFSFont) font).getSWTFont());
+        gc.setFont(font.getSWTFont());
         int width = gc.stringExtent(string).x;
         gc.setFont(previous);
         return width;
     }
 
+    @Override
     public float getFontScale() {
         return _scale;
     }
 
+    @Override
     public void setFontScale(float scale) {
         _scale = scale;
     }
 
+    @Override
     public void setSmoothingThreshold(float fontsize) {
-        _antialiasing = (fontsize >= 0);
+        _antialiasing = fontsize >= 0;
     }
 
-    public void drawGlyphVector(OutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
+    @Override
+    public void drawGlyphVector(SWTOutputDevice outputDevice, FSGlyphVector vector, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: drawGlyphVector");
     }
 
-    public void drawString(OutputDevice outputDevice, String string, float x, float y,
+    @Override
+    public void drawString(SWTOutputDevice outputDevice, String string, float x, float y,
             JustificationInfo info) {
-        // TODO handle justification
-        drawString(outputDevice, string, x, y);
+        GC gc = outputDevice.getGC();
+        float xc = x;
+        for (int i = 0; i < string.length(); ) {
+            char c = string.charAt(i);
+            int end = string.offsetByCodePoints(i, 1);
+            String character = string.substring(i, end);
+            drawString(outputDevice, character, xc, y);
+            xc += gc.stringExtent(character).x;
+            if (c == ' ' || c == '\u00a0' || c == '\u3000') {
+                xc += info.spaceAdjust();
+            } else {
+                xc += info.nonSpaceAdjust();
+            }
+            i = end;
+        }
     }
 
-    public Rectangle getGlyphBounds(OutputDevice outputDevice, FSFont font,
+    @Override
+    public Rectangle getGlyphBounds(SWTOutputDevice outputDevice, SWTFSFont font,
             FSGlyphVector fsGlyphVector, int index, float x, float y) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphBounds");
     }
 
-    public float[] getGlyphPositions(OutputDevice outputDevice, FSFont font,
+    @Override
+    public float[] getGlyphPositions(SWTOutputDevice outputDevice, SWTFSFont font,
             FSGlyphVector fsGlyphVector) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphPositions");
     }
 
-    public FSGlyphVector getGlyphVector(OutputDevice outputDevice, FSFont font, String string) {
+    @Override
+    public FSGlyphVector getGlyphVector(SWTOutputDevice outputDevice, SWTFSFont font, String string) {
         throw new UnsupportedOperationException("Unsupported operation: getGlyphVector");
     }
 

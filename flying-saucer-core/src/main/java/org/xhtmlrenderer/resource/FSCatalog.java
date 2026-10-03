@@ -172,7 +172,7 @@ public class FSCatalog {
         @Override
         public void startElement(String namespaceURI, String localName, String qName, Attributes attributes) {
             if (localName.equalsIgnoreCase("public") ||
-                    (localName.isEmpty() && qName.equalsIgnoreCase("public"))) {
+                localName.isEmpty() && qName.equalsIgnoreCase("public")) {
                 entityMap.put(attributes.getValue("publicId"), attributes.getValue("uri"));
             }
         }

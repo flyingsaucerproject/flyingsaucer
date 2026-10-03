@@ -19,10 +19,10 @@
  */
 package org.xhtmlrenderer.swing;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.extend.NamespaceHandler;
-import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.extend.UserInterface;
 import org.xhtmlrenderer.layout.BoxBuilder;
 import org.xhtmlrenderer.layout.LayoutContext;
@@ -32,13 +32,20 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
-import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.ImageUtil;
+import org.xhtmlrenderer.util.XMLUtil;
+import org.xml.sax.SAXException;
 
-import java.awt.*;
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
 
 /**
  * <p>Renders an XML files, formatted with CSS, as an image. Input is a document in the form of file or URL,
@@ -72,10 +79,12 @@ public class Java2DRenderer {
     private static final int DEFAULT_DOTS_PER_PIXEL = 1;
     private static final int DEFAULT_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
 
-    private SharedContext sharedContext;
+    private final SharedContext sharedContext;
     private Java2DOutputDevice outputDevice;
 
+    @Nullable
     private Document doc;
+    @Nullable
     private Box root;
 
     private BufferedImage outputImage;
@@ -85,10 +94,12 @@ public class Java2DRenderer {
      * Whether we've completed rendering; image will only be rendered once.
      */
     private boolean rendered;
+    @Nullable
     private String sourceDocument;
+    @Nullable
     private String sourceDocumentBase;
     private final int width;
-    private int height;
+    private final int height;
     private static final int NO_HEIGHT = -1;
 
     public Java2DRenderer(String url, String baseUrl, int width, int height) {
@@ -108,13 +119,10 @@ public class Java2DRenderer {
         // bypass scaling routines based on DPI -- see PDFRenderer and compare--dotsPerPoint is not implemented
         // in all subordinate classes and interfaces for Java2D, so leaving it out
         // leaving this constructor call here as a TODO
-        init();
+        this(width, height, bufferedImageType);
 
         this.sourceDocument = url;
         this.sourceDocumentBase = baseUrl;
-        this.width = width;
-        this.height = height;
-        this.bufferedImageType = bufferedImageType;
     }
 
     /**
@@ -138,11 +146,8 @@ public class Java2DRenderer {
          * @param height Target height, in pixels, for the image.
          */
         public Java2DRenderer(Document doc, int width, int height) {
-            init();
+            this(width, height, DEFAULT_IMAGE_TYPE);
             this.doc = doc;
-            this.width = width;
-            this.height = height;
-            this.bufferedImageType = DEFAULT_IMAGE_TYPE;
         }
 
     public Java2DRenderer(Document doc, int width) {
@@ -235,23 +240,19 @@ public class Java2DRenderer {
      */
     public BufferedImage getImage() {
         if (!rendered) {
-            setDocument((doc == null ? loadDocument(sourceDocument) : doc), sourceDocumentBase, new XhtmlNamespaceHandler());
+            setDocument(doc == null ? loadDocument(sourceDocument) : doc, sourceDocumentBase, new XhtmlNamespaceHandler());
 
             layout(this.width);
 
-            height = this.height == -1 ? root.getHeight() : this.height;
+            int height = this.height == -1 ? root.getHeight() : this.height;
             outputImage = createBufferedImage(this.width, height);
             outputDevice = new Java2DOutputDevice(outputImage);
-            Graphics2D newG = (Graphics2D) outputImage.getGraphics();
+            withGraphics(outputImage, newG -> {
+                RenderingContext rc = sharedContext.newRenderingContextInstance(outputDevice, new Java2DFontContext(newG));
+                sharedContext.getTextRenderer().setup(rc.getFontContext());
+                root.getLayer().paint(rc);
+            });
 
-            RenderingContext rc = sharedContext.newRenderingContextInstance();
-            rc.setFontContext(new Java2DFontContext(newG));
-            rc.setOutputDevice(outputDevice);
-            sharedContext.getTextRenderer().setup(rc.getFontContext());
-
-            root.getLayer().paint(rc);
-
-            newG.dispose();
             rendered = true;
         }
 
@@ -277,11 +278,6 @@ public class Java2DRenderer {
         this.doc = doc;
 
         sharedContext.reset();
-        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
-            sharedContext.getCss().flushStyleSheets();
-        } else {
-            sharedContext.getCss().flushAllStyleSheets();
-        }
         sharedContext.setBaseURL(url);
         sharedContext.setNamespaceHandler(nsh);
         sharedContext.getCss().setDocumentContext(
@@ -299,6 +295,7 @@ public class Java2DRenderer {
         BlockBox root = BoxBuilder.createRootBox(c, doc);
         root.setContainingBlock(new ViewportBox(rect));
         root.layout(c);
+        c.getSharedContext().logUnsupportedFeatures();
         this.root = root;
     }
 
@@ -307,30 +304,26 @@ public class Java2DRenderer {
     }
 
     private LayoutContext newLayoutContext() {
-        LayoutContext result = sharedContext.newLayoutContextInstance();
-        result.setFontContext(new Java2DFontContext(outputDevice.getGraphics()));
-
-        sharedContext.getTextRenderer().setup(result.getFontContext());
+        Java2DFontContext fontContext = new Java2DFontContext(outputDevice.getGraphics());
+        LayoutContext result = sharedContext.newLayoutContextInstance(fontContext);
+        sharedContext.getTextRenderer().setup(fontContext);
 
         return result;
     }
 
-    private void init() {
+    private Java2DRenderer(int width, int height, int bufferedImageType) {
+        this.width = width;
+        this.height = height;
+        this.bufferedImageType = bufferedImageType;
+
         outputImage = ImageUtil.createCompatibleBufferedImage(DEFAULT_DOTS_PER_POINT, DEFAULT_DOTS_PER_POINT);
         outputDevice = new Java2DOutputDevice(outputImage);
 
-        UserAgentCallback userAgent = new NaiveUserAgent();
-        sharedContext = new SharedContext(userAgent);
-
-        AWTFontResolver fontResolver = new AWTFontResolver();
-        sharedContext.setFontResolver(fontResolver);
-
-        SwingReplacedElementFactory replacedElementFactory = new SwingReplacedElementFactory();
-        sharedContext.setReplacedElementFactory(replacedElementFactory);
-
-        sharedContext.setTextRenderer(new Java2DTextRenderer());
-        sharedContext.setDPI(72 * (float) Java2DRenderer.DEFAULT_DOTS_PER_POINT);
-        sharedContext.setDotsPerPixel(Java2DRenderer.DEFAULT_DOTS_PER_PIXEL);
+        sharedContext = new SharedContext(
+                new NaiveUserAgent(),
+                72 * (float) DEFAULT_DOTS_PER_POINT,
+                DEFAULT_DOTS_PER_PIXEL
+        );
         sharedContext.setPrint(false);
         sharedContext.setInteractive(false);
     }
@@ -351,5 +344,18 @@ public class Java2DRenderer {
         public boolean isFocus(Element e) {
             return false;
         }
+    }
+
+    public static BufferedImage htmlAsImage(String html, int widthInPixels) throws SAXException {
+        try (InputStream in = new ByteArrayInputStream(html.getBytes(UTF_8))) {
+            return htmlAsImage(in, widthInPixels);
+        } catch (IOException | ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static BufferedImage htmlAsImage(InputStream source, int widthInPixels) throws SAXException, IOException, ParserConfigurationException {
+        Document document = XMLUtil.newDocumentBuilder().parse(source);
+        return new Java2DRenderer(document, widthInPixels).getImage();
     }
 }

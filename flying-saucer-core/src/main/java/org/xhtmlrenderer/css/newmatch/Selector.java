@@ -19,15 +19,20 @@
  */
 package org.xhtmlrenderer.css.newmatch;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.extend.AttributeResolver;
 import org.xhtmlrenderer.css.extend.TreeResolver;
+import org.xhtmlrenderer.css.parser.Token;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.util.XRLog;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+
+import static org.xhtmlrenderer.css.newmatch.Selector.Axis.DESCENDANT_AXIS;
 
 
 /**
@@ -37,12 +42,20 @@ import java.util.logging.Level;
  * @author Torbjoern Gannholm
  */
 public class Selector {
-    private Ruleset _parent;
+    public record HasRelativeSelector(List<Axis> axes, List<Selector> selectors) {
+        public HasRelativeSelector {
+            if (axes == null || selectors == null || axes.isEmpty() || selectors.isEmpty() || axes.size() != selectors.size()) {
+                throw new IllegalArgumentException("Axes/selectors must be non-empty and same size");
+            }
+        }
+    }
+
+    private final Ruleset _parent;
     private Selector chainedSelector;
     private Selector siblingSelector;
-
-    private int _axis;
+    private Axis _axis = DESCENDANT_AXIS;
     private String _name;
+    private String _text;
     private String _namespaceURI;
     private int _pc;
     private String _pe;
@@ -56,9 +69,7 @@ public class Selector {
 
     private List<Condition> conditions;
 
-    public static final int DESCENDANT_AXIS = 0;
-    public static final int CHILD_AXIS = 1;
-    public static final int IMMEDIATE_SIBLING_AXIS = 2;
+    public enum Axis {DESCENDANT_AXIS, CHILD_AXIS, IMMEDIATE_SIBLING_AXIS}
 
     public static final int VISITED_PSEUDOCLASS = 2;
     public static final int HOVER_PSEUDOCLASS = 4;
@@ -71,7 +82,8 @@ public class Selector {
     private final int selectorID;
     private static int selectorCount;
 
-    public Selector() {
+    public Selector(Ruleset ruleset) {
+        _parent = ruleset;
         selectorID = selectorCount++;
     }
 
@@ -201,6 +213,13 @@ public class Selector {
         addCondition(Condition.createLangCondition(lang));
     }
 
+    public void addHasCondition(List<HasRelativeSelector> relativeSelectors, int specificityB, int specificityC, int specificityD) {
+        _specificityB += specificityB;
+        _specificityC += specificityC;
+        _specificityD += specificityD;
+        addCondition(Condition.createHasCondition(relativeSelectors));
+    }
+
     /**
      * the CSS condition #ID
      */
@@ -215,6 +234,7 @@ public class Selector {
     public void addClassCondition(String className) {
         _specificityC++;
         addCondition(Condition.createClassCondition(className));
+        _text = _name + Token.TK_PERIOD.getExternalName() + className;
     }
 
     /**
@@ -314,7 +334,7 @@ public class Selector {
      * @return The pseudoClass value
      */
     public boolean isPseudoClass(int pc) {
-        return ((_pc & pc) != 0);
+        return (_pc & pc) != 0;
     }
 
     /**
@@ -350,7 +370,8 @@ public class Selector {
      *
      * @return The axis value
      */
-    public int getAxis() {
+    @CheckReturnValue
+    public Axis getAxis() {
         return _axis;
     }
 
@@ -400,16 +421,16 @@ public class Selector {
      *
      * @return The appropriateSibling value
      */
+    @Nullable
+    @CheckReturnValue
     Node getAppropriateSibling(Node e, TreeResolver treeRes) {
-        Node sibling = null;
-        switch (_axis) {
-            case IMMEDIATE_SIBLING_AXIS:
-                sibling = treeRes.getPreviousSiblingElement(e);
-                break;
-            default:
+        return switch (_axis) {
+            case IMMEDIATE_SIBLING_AXIS -> treeRes.getPreviousSiblingElement(e);
+            case DESCENDANT_AXIS, CHILD_AXIS -> {
                 XRLog.exception("Bad sibling axis");
-        }
-        return sibling;
+                yield null;
+            }
+        };
     }
 
     /**
@@ -434,7 +455,12 @@ public class Selector {
 
     public void setName(String name) {
         _name = name;
+        _text = name;
         _specificityD++;
+    }
+
+    public String getSelectorText() {
+        return _text + (chainedSelector != null ? " " + chainedSelector.getSelectorText() : "");
     }
 
     public void setPos(int pos) {
@@ -447,11 +473,7 @@ public class Selector {
         }
     }
 
-    public void setParent(Ruleset ruleset) {
-        _parent = ruleset;
-    }
-
-    public void setAxis(int axis) {
+    public void setAxis(Axis axis) {
         _axis = axis;
     }
 
@@ -477,6 +499,11 @@ public class Selector {
 
     public void setNamespaceURI(String namespaceURI) {
         _namespaceURI = namespaceURI;
+    }
+
+    @Override
+    public String toString() {
+        return "%s{%s}".formatted(getClass().getSimpleName(), _name);
     }
 }
 

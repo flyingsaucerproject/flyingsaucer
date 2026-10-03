@@ -44,14 +44,17 @@ public class FormControlReplacementElement implements ReplacedElement {
         return _swtControl;
     }
 
+    @Override
     public void detach(LayoutContext c) {
         // nothing to do
     }
 
+    @Override
     public int getIntrinsicHeight() {
         return _height;
     }
 
+    @Override
     public int getIntrinsicWidth() {
         return _width;
     }
@@ -73,10 +76,12 @@ public class FormControlReplacementElement implements ReplacedElement {
         _swtControl.getSWTControl().setSize(_width, _height);
     }
 
+    @Override
     public Point getLocation() {
         return _location;
     }
 
+    @Override
     public void setLocation(int x, int y) {
         _location.setLocation(x, y);
         BasicRenderer parent = (BasicRenderer) _swtControl.getSWTControl()
@@ -85,14 +90,17 @@ public class FormControlReplacementElement implements ReplacedElement {
         _swtControl.getSWTControl().setLocation(x - origin.x, y - origin.y);
     }
 
+    @Override
     public boolean isRequiresInteractivePaint() {
         return true;
     }
 
+    @Override
     public int getBaseline() {
         return 0;
     }
 
+    @Override
     public boolean hasBaseline() {
         return false;
     }

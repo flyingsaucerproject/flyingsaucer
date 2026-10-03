@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.context.StyleReference;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.value.FontSpecification;
@@ -31,7 +33,7 @@ import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
 import org.xhtmlrenderer.layout.SharedContext;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 /**
  * Supplies information about the context in which rendering will take place
@@ -39,33 +41,33 @@ import java.awt.*;
  * @author jmarinacci
  *         November 16, 2004
  */
+@CheckReturnValue
 public class RenderingContext implements CssContext {
-    protected SharedContext sharedContext;
-    private OutputDevice outputDevice;
-    private FontContext fontContext;
+    protected final SharedContext sharedContext;
+    private final OutputDevice outputDevice;
+    private final FontContext fontContext;
+    private int pageCount = 0;
+    private int pageNo = 0;
 
-    private int pageCount;
-
-    private int pageNo;
+    @Nullable
     private PageBox page;
 
-    private Layer rootLayer;
+    @Nullable
+    private final Layer rootLayer;
 
-    private int initialPageNo;
+    private final int initialPageNo;
 
     /**
      * needs a new instance every run
      */
-    public RenderingContext(SharedContext sharedContext) {
+    public RenderingContext(SharedContext sharedContext, OutputDevice outputDevice, FontContext fontContext,
+                            @Nullable Layer rootLayer,
+                            int initialPageNo) {
         this.sharedContext = sharedContext;
-    }
-
-    public void setContext(SharedContext sharedContext) {
-        this.sharedContext = sharedContext;
-    }
-
-    public void setBaseURL(String url) {
-        sharedContext.setBaseURL(url);
+        this.outputDevice = outputDevice;
+        this.fontContext = fontContext;
+        this.rootLayer = rootLayer;
+        this.initialPageNo = initialPageNo;
     }
 
     public UserAgentCallback getUac() {
@@ -80,22 +82,27 @@ public class RenderingContext implements CssContext {
         return sharedContext.getDPI();
     }
 
+    @Override
     public float getMmPerDot() {
         return sharedContext.getMmPerPx();
     }
 
+    @Override
     public int getDotsPerPixel() {
         return sharedContext.getDotsPerPixel();
     }
 
+    @Override
     public float getFontSize2D(FontSpecification font) {
         return sharedContext.getFont(font).getSize2D();
     }
 
+    @Override
     public float getXHeight(FontSpecification parentFont) {
         return sharedContext.getXHeight(getFontContext(), parentFont);
     }
 
+    @Override
     public TextRenderer getTextRenderer() {
         return sharedContext.getTextRenderer();
     }
@@ -117,23 +124,21 @@ public class RenderingContext implements CssContext {
         return sharedContext.getFontResolver();
     }
 
+    @Nullable
+    @Override
     public FSFont getFont(FontSpecification font) {
         return sharedContext.getFont(font);
     }
 
+    @Nullable
     public FSCanvas getCanvas() {
         return sharedContext.getCanvas();
     }
 
     public Rectangle getFixedRectangle() {
-        Rectangle result;
-        if (! isPrint()) {
-            result = sharedContext.getFixedRectangle();
-        } else {
-            result = new Rectangle(0, -this.page.getTop(),
-                    this.page.getContentWidth(this),
-                    this.page.getContentHeight(this)-1);
-        }
+        Rectangle result = isPrint() ?
+            new Rectangle(0, -this.page.getTop(), this.page.getContentWidth(this), this.page.getContentHeight(this) - 1) :
+            sharedContext.getFixedRectangle();
         result.translate(-1, -1);
         return result;
     }
@@ -173,16 +178,9 @@ public class RenderingContext implements CssContext {
         return outputDevice;
     }
 
-    public void setOutputDevice(OutputDevice outputDevice) {
-        this.outputDevice = outputDevice;
-    }
-
+    @Override
     public FontContext getFontContext() {
         return fontContext;
-    }
-
-    public void setFontContext(FontContext fontContext) {
-        this.fontContext = fontContext;
     }
 
     public void setPage(int pageNo, PageBox page) {
@@ -198,6 +196,7 @@ public class RenderingContext implements CssContext {
         this.pageCount = pageCount;
     }
 
+    @Nullable
     public PageBox getPage() {
         return page;
     }
@@ -206,30 +205,26 @@ public class RenderingContext implements CssContext {
         return pageNo;
     }
 
+    @Override
     public StyleReference getCss() {
         return sharedContext.getCss();
     }
 
+    @Override
     public FSFontMetrics getFSFontMetrics(FSFont font) {
         return getTextRenderer().getFSFontMetrics(getFontContext(), font, "");
     }
 
+    @Nullable
     public Layer getRootLayer() {
         return rootLayer;
-    }
-
-    public void setRootLayer(Layer rootLayer) {
-        this.rootLayer = rootLayer;
     }
 
     public int getInitialPageNo() {
         return initialPageNo;
     }
 
-    public void setInitialPageNo(int initialPageNo) {
-        this.initialPageNo = initialPageNo;
-    }
-
+    @Nullable
     public Box getBoxById(String id) {
         return sharedContext.getBoxById(id);
     }

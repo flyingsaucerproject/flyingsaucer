@@ -20,33 +20,54 @@
  */
 package org.xhtmlrenderer.util;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import static java.lang.System.lineSeparator;
+import static java.util.Locale.ROOT;
 
 /**
  * @author Patrick Wright
  */
 public class GeneralUtil {
-    public static InputStream openStreamFromClasspath(Object obj, String resource) {
-        InputStream readStream = null;
-        try {
-            ClassLoader loader = obj.getClass().getClassLoader();
-            if (loader == null) {
-                readStream = ClassLoader.getSystemResourceAsStream(resource);
-            } else {
-                readStream = loader.getResourceAsStream(resource);
-            }
-            if (readStream == null) {
-                URL stream = resource.getClass().getResource(resource);
-                if (stream != null) readStream = stream.openStream();
-            }
-        } catch (Exception ex) {
-            XRLog.exception("Could not open stream from CLASSPATH: " + resource, ex);
-        }
-        return readStream;
+    private static final Logger log = LoggerFactory.getLogger(GeneralUtil.class);
+
+    @CheckReturnValue
+    public static boolean ciEquals(final @Nullable String a, final @Nullable String b) {
+        return a == null && b == null ||
+            a != null && b != null && a.toLowerCase(ROOT).equals(b.toLowerCase(ROOT));
     }
 
+    @Nullable
+    @CheckReturnValue
+    @SuppressWarnings("resource")
+    public static InputStream openStreamFromClasspath(Object obj, String resource) {
+        try {
+            ClassLoader loader = obj.getClass().getClassLoader();
+            InputStream stream = loader == null ?
+                ClassLoader.getSystemResourceAsStream(resource) :
+                loader.getResourceAsStream(resource);
+
+            return stream != null ? stream : openResourceAsStream(resource);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Could not open stream from CLASSPATH: " + resource, ex);
+        }
+    }
+
+    @Nullable
+    private static InputStream openResourceAsStream(String resource) throws IOException {
+        URL stream = resource.getClass().getResource(resource);
+        return stream == null ? null : stream.openStream();
+    }
+
+    @Nullable
+    @CheckReturnValue
     public static URL getURLFromClasspath(Object obj, String resource) {
         URL url = null;
         try {
@@ -74,17 +95,21 @@ public class GeneralUtil {
         if (s == null || s.trim().equals("null")) {
             s = "{no ex. message}";
         }
-        System.out.println(s + ", " + ex.getClass());
+
         StackTraceElement[] stackTrace = ex.getStackTrace();
+        StringBuilder sb = new StringBuilder(stackTrace.length * 50);
         for (int i = 0; i < stackTrace.length && i < 5; i++) {
             StackTraceElement ste = stackTrace[i];
-            System.out.println("  " + ste.getClassName() + "." + ste.getMethodName() + "(ln " + ste.getLineNumber() + ")");
+            sb.append("  ").append(ste.getClassName()).append(".").append(ste.getMethodName()).append("(ln ").append(ste.getLineNumber()).append(")").append(lineSeparator());
         }
+
+        log.info("{}, {}{}{}", s, ex.getClass(), lineSeparator(), sb);
     }
-    
+
+    @CheckReturnValue
     public static boolean isMacOSX() {
         try {
-            if (System.getProperty("os.name").toLowerCase().startsWith("mac os x")) {
+            if (System.getProperty("os.name").toLowerCase(ROOT).startsWith("mac os x")) {
                 return true;
             }
         } catch (SecurityException e) {
@@ -120,9 +145,13 @@ public class GeneralUtil {
      *         characters, or simply evaluates to 0 after parsing (e.g. "0")
      */
     public static int parseIntRelaxed(String s) {
+        return parseIntRelaxed(s, 0);
+    }
+
+    public static int parseIntRelaxed(String s, int defaultValue) {
         // An edge-case short circuit...
-        if (s == null || s.isEmpty() || s.trim().isEmpty()) {
-            return 0;
+        if (s.isEmpty() || s.trim().isEmpty()) {
+            return defaultValue;
         }
 
         StringBuilder buffer = new StringBuilder();
@@ -142,12 +171,12 @@ public class GeneralUtil {
         }
 
         if (buffer.isEmpty()) {
-            return 0;
+            return defaultValue;
         }
 
         try {
             return Integer.parseInt(buffer.toString());
-        } catch (NumberFormatException exception) {
+        } catch (NumberFormatException ignored) {
             // The only way we get here now is if s > Integer.MAX_VALUE
             return Integer.MAX_VALUE;
         }
@@ -163,7 +192,7 @@ public class GeneralUtil {
      * @param s The String which may contain characters to escape.
      * @return The string with the characters as HTML entities.
      */
-    public static String escapeHTML(String s){
+    public static String escapeHTML(@Nullable String s){
         if (s == null) {
             return "";
         }

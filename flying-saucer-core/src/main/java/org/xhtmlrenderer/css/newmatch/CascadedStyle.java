@@ -24,18 +24,16 @@ import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
-import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
+import static org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin.USER;
 
 
 /**
@@ -71,7 +69,7 @@ public class CascadedStyle {
         CSSPrimitiveValue val = new PropertyValue(display);
 
         List<PropertyDeclaration> props = singletonList(
-                new PropertyDeclaration(CSSName.DISPLAY, val, true, StylesheetInfo.USER));
+                new PropertyDeclaration(CSSName.DISPLAY, val, true, USER));
 
         return new CascadedStyle(props);
     }
@@ -85,7 +83,7 @@ public class CascadedStyle {
      * @see #createLayoutPropertyDeclaration(CSSName, IdentValue)
      */
     public static CascadedStyle createLayoutStyle(PropertyDeclaration... declarations) {
-        return new CascadedStyle(asList(declarations));
+        return new CascadedStyle(List.of(declarations));
     }
 
     public static CascadedStyle createLayoutStyle(List<PropertyDeclaration> declarations) {
@@ -102,7 +100,7 @@ public class CascadedStyle {
      */
     public static CascadedStyle createLayoutStyle(
             CascadedStyle startingPoint, PropertyDeclaration[] decls) {
-        return new CascadedStyle(startingPoint.cascadedProperties, asList(decls).iterator());
+        return new CascadedStyle(startingPoint.cascadedProperties, List.of(decls).iterator());
     }
 
     /**
@@ -114,7 +112,7 @@ public class CascadedStyle {
             CSSName cssName, IdentValue display) {
         CSSPrimitiveValue val = new PropertyValue(display);
         // Urk... kind of ugly, but we really want this value to be used
-        return new PropertyDeclaration(cssName, val, true, StylesheetInfo.USER);
+        return new PropertyDeclaration(cssName, val, true, USER);
     }
 
     /**
@@ -138,7 +136,7 @@ public class CascadedStyle {
         //properties should already be in order of specificity
         List<List<PropertyDeclaration>> buckets = new ArrayList<>(PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT);
         for (int i = 0; i < PropertyDeclaration.IMPORTANCE_AND_ORIGIN_COUNT; i++) {
-            buckets.add(new LinkedList<>());
+            buckets.add(new ArrayList<>());
         }
 
         while (iter.hasNext()) {
@@ -199,7 +197,7 @@ public class CascadedStyle {
      */
     public IdentValue getIdent(CSSName cssName) {
         PropertyDeclaration pd = propertyByName(cssName);
-        return (pd == null ? null : pd.asIdentValue());
+        return pd == null ? null : pd.asIdentValue();
     }
 
 

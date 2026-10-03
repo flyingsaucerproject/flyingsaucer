@@ -22,6 +22,7 @@ package org.xhtmlrenderer.css.parser.property;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public abstract class OneToFourPropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             List<PropertyDeclaration> result = new ArrayList<>(4);
             assertFoundUpToValues(cssName, values, 4);
 

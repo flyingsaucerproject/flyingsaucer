@@ -19,16 +19,13 @@
  */
 package org.xhtmlrenderer.extend;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.extend.StylesheetFactory;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides knowledge specific to a certain document type, like resolving
@@ -36,90 +33,58 @@ import java.util.List;
  *
  * @author Torbjoern Gannholm
  */
-@ParametersAreNonnullByDefault
 public interface NamespaceHandler {
 
-    /**
-     * @return the namespace handled
-     */
-    @Nonnull
-    @CheckReturnValue
     String getNamespace();
 
-    /**
-     * @return the default CSS stylesheet for this namespace
-     */
-    @Nullable
-    @CheckReturnValue
-    StylesheetInfo getDefaultStylesheet(StylesheetFactory factory);
+    Optional<StylesheetInfo> getDefaultStylesheet();
 
-    /**
-     * @param doc the document
-     * @return the title for this document, if any exists
-     */
     @Nullable
-    @CheckReturnValue
     String getDocumentTitle(Document doc);
 
     /**
      * @param doc the document
-     * @return all links to CSS stylesheets (type="text/css") in this
-     *         document
+     * @return all links to CSS stylesheets (type="text/css") in this document
      */
-    @Nonnull
-    @CheckReturnValue
     List<StylesheetInfo> getStylesheets(Document doc);
 
     /**
      * may return null. Required to return null if attribute does not exist and
      * not null if attribute exists.
      */
-    @Nonnull
-    @CheckReturnValue
     String getAttributeValue(Element e, String attrName);
 
-    @Nonnull
-    @CheckReturnValue
     String getAttributeValue(Element e, @Nullable String namespaceURI, String attrName);
 
     @Nullable
-    @CheckReturnValue
     String getClass(Element e);
 
     @Nullable
-    @CheckReturnValue
     String getID(Element e);
 
     @Nullable
-    @CheckReturnValue
     String getElementStyling(Element e);
 
     /**
      * @return The corresponding css properties for styling that is obtained in other ways.
      */
     @Nullable
-    @CheckReturnValue
     String getNonCssStyling(Element e);
 
-    @Nonnull
-    @CheckReturnValue
     String getLang(Element e);
 
     /**
      * should return null if element is not a link
      */
     @Nullable
-    @CheckReturnValue
     String getLinkUri(Element e);
 
     @Nullable
-    @CheckReturnValue
     String getAnchorName(@Nullable Element e);
 
     /**
      * @return Returns true if the Element represents an image.
      */
-    @CheckReturnValue
     boolean isImageElement(Element e);
 
     /**
@@ -129,7 +94,6 @@ public interface NamespaceHandler {
      * @param e The Element to evaluate.
      * @return true if the Element is a &lt;form&gt; element, false otherwise.
      */
-    @CheckReturnValue
     boolean isFormElement(Element e);
 
     /**
@@ -143,7 +107,6 @@ public interface NamespaceHandler {
      * @return String containing the URI for the image.
      */
     @Nullable
-    @CheckReturnValue
     String getImageSourceURI(Element e);
 }
 

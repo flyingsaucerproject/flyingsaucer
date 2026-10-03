@@ -19,20 +19,19 @@
  */
 package org.xhtmlrenderer.resource;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.extend.FSImage;
 import org.xhtmlrenderer.swing.AWTFSImage;
 import org.xhtmlrenderer.swing.MutableFSImage;
 import org.xml.sax.InputSource;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 /**
  * @author Administrator
  */
-@ParametersAreNonnullByDefault
 public class ImageResource extends AbstractResource {
+    @Nullable
     private final String _imageUri;
+    @Nullable
     private final FSImage _img;
 
     //HACK: at least for now, till we know what we want to do here
@@ -42,27 +41,23 @@ public class ImageResource extends AbstractResource {
         _img = img;
     }
 
+    @Nullable
     public FSImage getImage() {
         return _img;
     }
 
     public boolean isLoaded() {
-        return !(_img instanceof MutableFSImage) || ((MutableFSImage) _img).isLoaded();
+        return !(_img instanceof MutableFSImage mutableFSImage) || mutableFSImage.isLoaded();
     }
 
+    @Nullable
     public String getImageUri() {
         return _imageUri;
     }
 
     public boolean hasDimensions(final int width, final int height) {
-        if (isLoaded()) {
-            if (_img instanceof AWTFSImage image) {
-                return image.getWidth() == width && image.getHeight() == height;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        return isLoaded() &&
+                _img instanceof AWTFSImage image &&
+                image.hasSize(width, height);
     }
 }

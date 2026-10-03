@@ -19,18 +19,37 @@
  */
 package org.xhtmlrenderer.util;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+import org.xhtmlrenderer.extend.Size;
+
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
+
+import static java.awt.Transparency.OPAQUE;
+import static java.awt.Transparency.TRANSLUCENT;
+import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
+import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR_PRE;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 
 /**
  * Static utility methods for working with images. Meant to suggest "best practices" for the most straightforward
@@ -38,7 +57,6 @@ import java.util.logging.Level;
  *
  * @author pwright
  */
-@ParametersAreNonnullByDefault
 public class ImageUtil {
 
     private static final Map<DownscaleQuality, Scaler> qualities = Map.of(
@@ -52,13 +70,32 @@ public class ImageUtil {
      * Sets the background of the image to white
      */
     public static void clearImage(BufferedImage image) {
-        Graphics2D g2d = (Graphics2D) image.getGraphics();
-        g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
-        g2d.dispose();
+        withGraphics(image, g2d -> {
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
+        });
     }
 
-    @Nonnull
+    public static void withGraphics(BufferedImage image, Consumer<Graphics2D> block) {
+        Graphics2D g = (Graphics2D) image.getGraphics();
+        try {
+            block.accept(g);
+        }
+        finally {
+            g.dispose();
+        }
+    }
+
+    public static void withGraphics(Graphics graphics, Consumer<Graphics> block) {
+        Graphics g = graphics.create();
+        try {
+            block.accept(g);
+        }
+        finally {
+            g.dispose();
+        }
+    }
+
     @CheckReturnValue
     public static BufferedImage makeCompatible(BufferedImage image) {
         BufferedImage cimg;
@@ -72,9 +109,7 @@ public class ImageUtil {
             cimg = gc.createCompatibleImage(image.getWidth(), image.getHeight(), image.getTransparency());
         }
 
-        Graphics cg = cimg.getGraphics();
-        cg.drawImage(image, 0, 0, null);
-        cg.dispose();
+        withGraphics(cimg, cg -> cg.drawImage(image, 0, 0, null));
         return cimg;
     }
 
@@ -95,33 +130,38 @@ public class ImageUtil {
      *               in non-headless more.
      * @return A BufferedImage compatible with the screen (best fit).
      */
-    @Nonnull
     @CheckReturnValue
     public static BufferedImage createCompatibleBufferedImage(int width, int height, int biType) {
-        final BufferedImage image;
-
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         if (ge.isHeadlessInstance()) {
-            image = new BufferedImage(width, height, biType);
+            return new BufferedImage(width, height, biType);
         } else {
             GraphicsConfiguration gc = getGraphicsConfiguration();
-
-            // TODO: check type using image type - can be sniffed; see Filthy Rich Clients
-            int type = (biType == BufferedImage.TYPE_INT_ARGB || biType == BufferedImage.TYPE_INT_ARGB_PRE ?
-                    Transparency.TRANSLUCENT : Transparency.OPAQUE);
-
-            image = gc.createCompatibleImage(width, height, type);
+            return gc.createCompatibleImage(width, height, detectTransparency(biType));
         }
-
-        return image;
     }
 
-    @Nonnull
+    static int detectTransparency(int biType) {
+        // TODO: check type using image type - can be sniffed; see Filthy Rich Clients
+        return switch (biType) {
+            case TYPE_INT_ARGB,
+                 TYPE_INT_ARGB_PRE,
+                 TYPE_4BYTE_ABGR,
+                 TYPE_4BYTE_ABGR_PRE -> TRANSLUCENT;
+            default -> OPAQUE;
+        };
+    }
+
     @CheckReturnValue
     private static GraphicsConfiguration getGraphicsConfiguration() {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gs = ge.getDefaultScreenDevice();
         return gs.getDefaultConfiguration();
+    }
+
+    @CheckReturnValue
+    public static BufferedImage createCompatibleBufferedImage(Size size) {
+        return createCompatibleBufferedImage(size.width(), size.height());
     }
 
     /**
@@ -134,7 +174,6 @@ public class ImageUtil {
      * @param height Target height for the image
      * @return A BufferedImage compatible with the screen (best fit) supporting transparent pixels.
      */
-    @Nonnull
     @CheckReturnValue
     public static BufferedImage createCompatibleBufferedImage(int width, int height) {
         return createCompatibleBufferedImage(width, height, Transparency.BITMASK);
@@ -156,24 +195,22 @@ public class ImageUtil {
      * @param orgImage The image to scale
      * @return The scaled image instance.
      */
-    @Nonnull
     @CheckReturnValue
     public static BufferedImage getScaledInstance(ScalingOptions opt, BufferedImage orgImage) {
-        int w = orgImage.getWidth(null);
-        int h = orgImage.getHeight(null);
+        final int w = orgImage.getWidth(null);
+        final int h = orgImage.getHeight(null);
 
         if (opt.sizeMatches(w, h)) {
             return orgImage;
         }
 
-        w = (opt.getTargetWidth() <= 0 ? w : opt.getTargetWidth());
-        h = (opt.getTargetHeight() <= 0 ? h : opt.getTargetHeight());
+        ScalingOptions normalizedOptions = opt.withTarget(
+            opt.getTargetWidth() <= 0 ? w : opt.getTargetWidth(),
+            opt.getTargetHeight() <= 0 ? h : opt.getTargetHeight()
+        );
 
         Scaler scaler = qualities.get(opt.getDownscalingHint());
-        opt.setTargetWidth(w);
-        opt.setTargetHeight(h);
-
-        return scaler.getScaledInstance(orgImage, opt);
+        return scaler.getScaledInstance(orgImage, normalizedOptions);
     }
 
     /**
@@ -194,7 +231,6 @@ public class ImageUtil {
      * @param targetHeight The target height in pixels
      * @return The scaled image instance.
      */
-    @Nonnull
     @CheckReturnValue
     public static BufferedImage getScaledInstance(BufferedImage orgImage, int targetWidth, int targetHeight) {
         String downscaleQuality = Configuration.valueFor("xr.image.scale", DownscaleQuality.HIGH_QUALITY.asString());
@@ -203,8 +239,7 @@ public class ImageUtil {
         Object hint = Configuration.valueFromClassConstant("xr.image.render-quality",
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-        ScalingOptions opt = new ScalingOptions(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB, quality, hint);
-
+        ScalingOptions opt = new ScalingOptions(targetWidth, targetHeight, quality, hint);
         return getScaledInstance(opt, orgImage);
     }
 
@@ -217,33 +252,27 @@ public class ImageUtil {
      *               {@link java.awt.image.BufferedImage#BufferedImage(int,int,int)}
      * @return BufferedImage with same content.
      */
-    @Nonnull
     @CheckReturnValue
     public static BufferedImage convertToBufferedImage(Image awtImg, int type) {
-        final BufferedImage image;
-        if (awtImg instanceof BufferedImage) {
-            image = (BufferedImage) awtImg;
+        if (awtImg instanceof BufferedImage result) {
+            return result;
         } else {
-            image = createCompatibleBufferedImage(awtImg.getWidth(null), awtImg.getHeight(null), type);
-            Graphics2D g = image.createGraphics();
-            g.drawImage(awtImg, 0, 0, null, null);
-            g.dispose();
+            BufferedImage image = createCompatibleBufferedImage(awtImg.getWidth(null), awtImg.getHeight(null), type);
+            withGraphics(image, g -> g.drawImage(awtImg, 0, 0, null, null));
+            return image;
         }
-        return image;
     }
 
-    @Nonnull
     @CheckReturnValue
     public static BufferedImage createTransparentImage(int width, int height) {
-        BufferedImage bi = createCompatibleBufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = bi.createGraphics();
-
-        // Make all filled pixels transparent
-        Color transparent = new Color(0, 0, 0, 0);
-        g2d.setColor(transparent);
-        g2d.setComposite(AlphaComposite.Src);
-        g2d.fillRect(0, 0, width, height);
-        g2d.dispose();
+        BufferedImage bi = createCompatibleBufferedImage(width, height, TYPE_INT_ARGB);
+        withGraphics(bi, g2d -> {
+            // Make all filled pixels transparent
+            Color transparent = new Color(0, 0, 0, 0);
+            g2d.setColor(transparent);
+            g2d.setComposite(AlphaComposite.Src);
+            g2d.fillRect(0, 0, width, height);
+        });
         return bi;
     }
 
@@ -264,12 +293,14 @@ public class ImageUtil {
      * @param imageDataUri URI of the embedded image
      * @return The binary content
      */
-    @Nullable
     @CheckReturnValue
-    public static byte[] getEmbeddedBase64Image(String imageDataUri) {
+    public static byte @Nullable [] getEmbeddedBase64Image(String imageDataUri) {
         int b64Index = imageDataUri.indexOf("base64,");
         if (b64Index != -1) {
             String b64encoded = imageDataUri.substring(b64Index + "base64,".length());
+            if (b64encoded.contains("%")) {
+                b64encoded = URLDecoder.decode(b64encoded, StandardCharsets.US_ASCII);
+            }
             return Base64.getDecoder().decode(b64encoded);
         } else {
             XRLog.load(Level.SEVERE, "Embedded XHTML images must be encoded in base 64.");
@@ -297,7 +328,6 @@ public class ImageUtil {
         return null;
     }
 
-    @ParametersAreNonnullByDefault
     private interface Scaler {
         /**
          * Convenience method that returns a scaled instance of the
@@ -326,15 +356,12 @@ public class ImageUtil {
          *                      in pixels
          * @return a scaled version of the original {@code BufferedImage}
          */
-        @Nonnull
         @CheckReturnValue
         BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt);
     }
 
-    @ParametersAreNonnullByDefault
     private abstract static class AbstractFastScaler implements Scaler {
         @Override
-        @Nonnull
         @CheckReturnValue
         public BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt) {
             // target is always >= 1
@@ -349,7 +376,6 @@ public class ImageUtil {
     /**
      * Old AWT-style scaling, poor quality
      */
-    @ParametersAreNonnullByDefault
     private static class OldScaler extends AbstractFastScaler {
         @Override
         @CheckReturnValue
@@ -361,7 +387,6 @@ public class ImageUtil {
     /**
      * AWT-style one-step scaling, using area averaging
      */
-    @ParametersAreNonnullByDefault
     private static class AreaAverageScaler extends AbstractFastScaler {
         @Override
         @CheckReturnValue
@@ -373,24 +398,20 @@ public class ImageUtil {
     /**
      * Fast but decent scaling
      */
-    @ParametersAreNonnullByDefault
     private static class FastScaler implements Scaler {
         @Override
-        @Nonnull
         @CheckReturnValue
         public BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt) {
-            int w, h;
-
             // Use one-step technique: scale directly from original
             // size to target size with a single drawImage() call
-            w = opt.getTargetWidth();
-            h = opt.getTargetHeight();
+            int w = opt.getTargetWidth();
+            int h = opt.getTargetHeight();
 
             BufferedImage scaled = createCompatibleBufferedImage(w, h, img.getType());
-            Graphics2D g2 = scaled.createGraphics();
-            opt.applyRenderingHints(g2);
-            g2.drawImage(img, 0, 0, w, h, null);
-            g2.dispose();
+            withGraphics(scaled, g2 -> {
+                opt.applyRenderingHints(g2);
+                g2.drawImage(img, 0, 0, w, h, null);
+            });
 
             return scaled;
         }
@@ -399,10 +420,8 @@ public class ImageUtil {
     /**
      * Step-wise downscaling
      */
-    @ParametersAreNonnullByDefault
     private static class HighQualityScaler implements Scaler {
         @Override
-        @Nonnull
         @CheckReturnValue
         public BufferedImage getScaledInstance(BufferedImage img, ScalingOptions opt) {
             int w, h;
@@ -442,9 +461,13 @@ public class ImageUtil {
 
                 BufferedImage tmp = createCompatibleBufferedImage(w, h, img.getType());
                 Graphics2D g2 = tmp.createGraphics();
-                opt.applyRenderingHints(g2);
-                g2.drawImage(scaled, 0, 0, w, h, null);
-                g2.dispose();
+                try {
+                    opt.applyRenderingHints(g2);
+                    g2.drawImage(scaled, 0, 0, w, h, null);
+                }
+                finally {
+                    g2.dispose();
+                }
 
                 scaled = tmp;
 

@@ -19,19 +19,19 @@
  */
 package org.xhtmlrenderer.simple.extend.form;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
-import javax.annotation.Nullable;
-
 import static java.util.Objects.requireNonNull;
 
-public class FormFieldFactory {
+public final class FormFieldFactory {
     private FormFieldFactory() {
     }
 
+    @Nullable
     public static FormField create(XhtmlForm form, LayoutContext context, BlockBox box) {
         Element e = requireNonNull(box.getElement());
 

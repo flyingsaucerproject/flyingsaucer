@@ -25,26 +25,7 @@ package org.xhtmlrenderer.render;
  * use this information to figure out where they need to position themselves
  * within their containing block box.
  */
-public class FloatDistances {
-    private int _leftFloatDistance;
-    private int _rightFloatDistance;
-
-    public FloatDistances() {
-    }
-
-    public int getLeftFloatDistance() {
-        return _leftFloatDistance;
-    }
-
-    public void setLeftFloatDistance(int leftFloatDistance) {
-        _leftFloatDistance = leftFloatDistance;
-    }
-
-    public int getRightFloatDistance() {
-        return _rightFloatDistance;
-    }
-
-    public void setRightFloatDistance(int rightFloatDistance) {
-        _rightFloatDistance = rightFloatDistance;
-    }
+public interface FloatDistances {
+    int leftFloatDistance();
+    int rightFloatDistance();
 }

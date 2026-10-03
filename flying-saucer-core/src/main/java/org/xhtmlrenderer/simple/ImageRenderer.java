@@ -27,10 +27,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.nio.file.Paths;
 
 import static java.nio.file.Files.newOutputStream;
-
 
 /**
  * <p>
@@ -52,13 +52,10 @@ import static java.nio.file.Files.newOutputStream;
  *
  * <p>Image width must always be supplied; height is determined automatically.</p>
  *
- * @see org.xhtmlrenderer.pdf.PDFRenderer
  * @author Pete Brant
  * @author Patrick Wright
  */
 public class ImageRenderer {
-    public static final int DEFAULT_WIDTH = 1024;
-
     /**
      * Renders the XML file at the given URL as an image file at the target location. Width must be provided,
      * height is determined automatically based on content and CSS.
@@ -70,59 +67,6 @@ public class ImageRenderer {
      * @throws java.io.IOException if the input URL, or output path location is invalid
      */
     public static BufferedImage renderToImage(String url, String path, int width) throws IOException {
-        return renderImageToOutput(url, path, width);
-    }
-
-    /**
-     * Renders the XML file at the given URL as an image file at the target location.
-     *
-     * @param url	 url for the XML file to render
-     * @param path path to the PDF file to create
-     * @param width Width in pixels to which the document should be constrained.
-     * @param height Height in pixels to which the document should be constrained.
-     *
-     * @throws java.io.IOException if the input URL, or output path location is invalid
-     */
-    public static BufferedImage renderToImage(String url, String path, int width, int height) throws IOException {
-        return renderImageToOutput(url, path, width);
-    }
-
-    /**
-     * Renders the XML file as an image file at the target location. Width must be provided, height is determined
-     * automatically based on content and CSS.
-     *
-     * @param inFile  XML file to render
-     * @param path path to the image file to create
-     * @param width Width in pixels to which the document should be constrained.
-     *
-     * @throws java.io.IOException if the input URL, or output path location is invalid
-     */
-    public static BufferedImage renderToImage(File inFile, String path, int width) throws IOException {
-        return renderToImage(inFile.toURI().toURL().toExternalForm(), path, width);
-    }
-
-    /**
-     * Renders the XML file as an image file at the target location. Width must be provided, height is determined
-     * automatically based on content and CSS.
-     *
-     * @param inFile  XML file to render
-     * @param path path to the image file to create
-     * @param width Width in pixels to which the document should be constrained.
-     * @param height Height in pixels to which the document should be constrained.
-     *
-     * @throws java.io.IOException if the input URL, or output path location is invalid
-     */
-    public static BufferedImage renderToImage(File inFile, String path, int width, int height) throws IOException {
-        return renderToImage(inFile.toURI().toURL().toExternalForm(), path, width, height);
-    }
-
-    /**
-     * Renders a document at a given URL and writes it out using the FSImageWriter provided (e.g. to a file
-     * or output stream).
-     */
-    private static BufferedImage renderImageToOutput(String url, String path, int width)
-            throws IOException {
-
         try (OutputStream os = new BufferedOutputStream(newOutputStream(Paths.get(path)))) {
             Java2DRenderer renderer = new Java2DRenderer(url, url, width);
             BufferedImage image = renderer.getImage();
@@ -132,43 +76,20 @@ public class ImageRenderer {
     }
 
     /**
-     * Renders a file or URL to an image file. Command line use: first
-     * argument is URL or file path, second argument is path to image file to generate.
+     * Renders the XML file as an image file at the target location. Width must be provided, height is determined
+     * automatically based on content and CSS.
      *
-     * @param args see desc
-     * @throws java.io.IOException if source could not be read, or if image path is invalid
+     * @param xhtmlFile  XML file to render
+     * @param path path to the image file to create
+     * @param width Width in pixels to which the document should be constrained.
+     *
+     * @throws java.io.IOException if the input URL, or output path location is invalid
      */
-    public static void main(String[] args) throws IOException {
-        if (args.length != 1) {
-            usage("Incorrect argument list.");
-        }
-        String url = args[0];
-        if (!url.contains("://")) {
-            // maybe it's a file
-            File f = new File(url);
-            if (f.exists()) {
-                String output = f.getAbsolutePath();
-                output = output.substring(0, output.lastIndexOf('.')) + ".png";
-                System.out.println("Saving image to " + output);
-                renderToImage(f, output, DEFAULT_WIDTH);
-            } else {
-                usage("File to render is not found: " + url);
-            }
-        } else {
-            File out = File.createTempFile("fs", ".png");
-            System.out.println("Saving image to " + out.getAbsolutePath());
-            renderToImage(url, out.getAbsolutePath(), DEFAULT_WIDTH);
-        }
+    public static BufferedImage renderToImage(File xhtmlFile, String path, int width) throws IOException {
+        return renderToImage(xhtmlFile.toURI().toURL().toExternalForm(), path, width);
     }
 
-    /**
-     * prints out usage information, with optional error message
-     */
-    private static void usage(String err) {
-        if (err != null && !err.isEmpty()) {
-            System.err.println("==>" + err);
-        }
-        System.err.println("Usage: ... [url]");
-        System.exit(1);
+    public static BufferedImage renderToImage(URL xhtmlUrl, String path, int width) throws IOException {
+        return renderToImage(xhtmlUrl.toExternalForm(), path, width);
     }
 }

@@ -19,7 +19,7 @@
  */
 package org.xhtmlrenderer.pdf;
 
-import com.lowagie.text.DocumentException;
+import org.openpdf.text.DocumentException;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +28,7 @@ import java.nio.file.Paths;
 
 import static java.nio.file.Files.newOutputStream;
 
-public class ToPDF
-{
+public class ToPDF {
     public static void main(String[] args) throws IOException, DocumentException {
         if (args.length != 2) {
             System.err.println("Usage: ... [url] [pdf]");

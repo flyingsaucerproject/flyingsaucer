@@ -42,6 +42,7 @@ public class SWTFSFont implements FSFont {
         _noDispose = noDispose;
     }
 
+    @Override
     public float getSize2D() {
         // return _font.getFontData()[0].getHeight();
         return _size;
@@ -57,10 +58,10 @@ public class SWTFSFont implements FSFont {
         }
     }
 
+    @Override
     protected void finalize() {
         if (!_noDispose && !_font.isDisposed()) {
             _font.dispose();
         }
     }
-
 }

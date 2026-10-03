@@ -19,12 +19,13 @@
 package org.xhtmlrenderer.fop;
 
 import com.codeborne.pdftest.PDF;
-import com.lowagie.text.DocumentException;
 import org.junit.jupiter.api.Test;
+import org.openpdf.text.DocumentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,6 +36,7 @@ import static com.codeborne.pdftest.assertj.Assertions.assertThat;
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
 public class PDFHyphenationTest {
+    private static final Logger log = LoggerFactory.getLogger(PDFHyphenationTest.class);
 
     private static final String XML =
             """
@@ -71,8 +73,8 @@ public class PDFHyphenationTest {
         Path temp = Files.createTempFile("pdfTest", ".pdf");
         OutputStream os = Files.newOutputStream(temp);
         generatePDF(XML, os);
-        System.out.println("Generated file: " + temp);
-        
+        log.info("Generated file: {}", temp);
+
         PDF pdf = new PDF(temp.toFile());
         assertThat(pdf).containsText(
                 "Velice dlouhy text",
@@ -80,7 +82,7 @@ public class PDFHyphenationTest {
         );
     }
 
-    private void generatePDF(String xml, OutputStream os) throws DocumentException, IOException {
+    private void generatePDF(String xml, OutputStream os) throws DocumentException {
         ITextRenderer renderer = new ITextRenderer();
         ITextUserAgent ua = new ITextUserAgent(renderer.getOutputDevice(), renderer.getSharedContext().getDotsPerPixel());
         renderer.getSharedContext().setUserAgentCallback(ua);

@@ -8,7 +8,7 @@
  * <p>All classes in this package are intended for ease-of-use, with no customization
  * required. To render a document quickly, use {@link org.xhtmlrenderer.simple.XHTMLPanel}--just instantiate
  * the panel, add it to a scroll pane or {@link org.xhtmlrenderer.simple.FSScrollPane}, and call
- * {@link org.xhtmlrenderer.simple.XHTMLPanel#setDocument(Document)}. You can render from a {@link org.w3c.dom.Document},
+ * {@link org.xhtmlrenderer.simple.XHTMLPanel#setDocument(org.w3c.dom.Document)}. You can render from a {@link org.w3c.dom.Document},
  * from a {@link java.net.URL}, from a file, and from an {@link java.io.InputStream}.</p>
  * <p>The {@link org.xhtmlrenderer.simple.Graphics2DRenderer} allows you to render XHTML right to image files--
  * without displaying them onscreen at all. You can use any XHTML/XML/CSS combination and
@@ -17,8 +17,7 @@
  * just as you would expect from a browsable XHTML document. Drop your {@link org.xhtmlrenderer.simple.XHTMLPanel}
  * in a {@link org.xhtmlrenderer.simple.FSScrollPane} and your users can move up or down by line or page, and jump to
  * the start or end of the document, just as they are used to.</p>
- * <p>{@link org.xhtmlrenderer.simple.XHTMLPrintable} supports the AWT {@link java.awt.print.Printable} interface,
- * allowing you to print a document without rendering it onscreen first.</p>
+ *
  * <h2>Related Documentation</h2>
  * For overviews, tutorials, examples, guides, and tool documentation, please see:
  * <ul>
@@ -26,4 +25,7 @@
  * </ul>
  * <!-- Put @see and @since tags down here. -->
  */
+@NullMarked
 package org.xhtmlrenderer.simple;
+
+import org.jspecify.annotations.NullMarked;

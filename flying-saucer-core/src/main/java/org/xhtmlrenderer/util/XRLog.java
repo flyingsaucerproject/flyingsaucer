@@ -20,11 +20,15 @@
  */
 package org.xhtmlrenderer.util;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
 
 
 /**
@@ -50,10 +54,8 @@ public class XRLog {
     public static final String LAYOUT = registerLoggerByName("org.xhtmlrenderer.layout");
     public static final String RENDER = registerLoggerByName("org.xhtmlrenderer.render");
 
-    private static volatile boolean initPending = true;
-    private static XRLogger loggerImpl;
-
-    private static boolean loggingEnabled = true;
+    private static XRLogger loggerImpl = new JDKXRLogger();
+    private static boolean loggingEnabled = Configuration.isTrue("xr.util-logging.loggingEnabled", true);
 
     private static String registerLoggerByName(final String loggerName) {
         LOGGER_NAMES.add(loggerName);
@@ -67,6 +69,7 @@ public class XRLog {
      *
      * @return List of loggers, never null.
      */
+    @CheckReturnValue
     public static List<String> listRegisteredLoggers() {
         return unmodifiableList(LOGGER_NAMES);
     }
@@ -112,7 +115,7 @@ public class XRLog {
         exception(msg, null);
     }
 
-    public static void exception(String msg, Throwable th) {
+    public static void exception(String msg, @Nullable Throwable th) {
         log(EXCEPTION, Level.WARNING, msg, th);
     }
 
@@ -201,56 +204,18 @@ public class XRLog {
     }
 
     public static void log(String where, Level level, String msg) {
-        init();
         if (isLoggingEnabled()) {
             loggerImpl.log(where, level, msg);
         }
     }
 
-    public static void log(String where, Level level, String msg, Throwable th) {
-        init();
+    public static void log(String where, Level level, String msg, @Nullable Throwable th) {
         if (isLoggingEnabled()) {
             loggerImpl.log(where, level, msg, th);
         }
     }
 
-    public static void main(String[] args) {
-        XRLog.cascade("Cascade msg");
-        XRLog.cascade(Level.WARNING, "Cascade msg");
-        XRLog.exception("Exception msg");
-        XRLog.exception("Exception msg", new Exception("General exception"));
-        XRLog.general("General msg");
-        XRLog.general(Level.WARNING, "General msg");
-        XRLog.init("Init msg");
-        XRLog.init(Level.WARNING, "Init msg");
-        XRLog.load("Load msg");
-        XRLog.load(Level.WARNING, "Load msg");
-        XRLog.match("Match msg");
-        XRLog.match(Level.WARNING, "Match msg");
-        XRLog.layout("Layout msg");
-        XRLog.layout(Level.WARNING, "Layout msg");
-        XRLog.render("Render msg");
-        XRLog.render(Level.WARNING, "Render msg");
-    }
-
-    private static void init() {
-        if (initPending) {
-            synchronized (XRLog.class) {
-                if (initPending) {
-                    XRLog.setLoggingEnabled(Configuration.isTrue("xr.util-logging.loggingEnabled", true));
-
-                    if (loggerImpl == null) {
-                        loggerImpl = new JDKXRLogger();
-                    }
-
-                    initPending = false;
-                }
-            }
-        }
-    }
-
     public static void setLevel(String log, Level level) {
-        init();
         loggerImpl.setLevel(log, level);
     }
 
@@ -261,6 +226,7 @@ public class XRLog {
      * to configuration file property xr.util-logging.loggingEnabled, or to
      * value passed to setLoggingEnabled(bool).
      */
+    @CheckReturnValue
     public static boolean isLoggingEnabled() {
         return loggingEnabled;
     }
@@ -276,11 +242,12 @@ public class XRLog {
         XRLog.loggingEnabled = loggingEnabled;
     }
 
+    @CheckReturnValue
     public static XRLogger getLoggerImpl() {
         return loggerImpl;
     }
 
     public static void setLoggerImpl(XRLogger loggerImpl) {
-        XRLog.loggerImpl = loggerImpl;
+        XRLog.loggerImpl = requireNonNull(loggerImpl);
     }
 }

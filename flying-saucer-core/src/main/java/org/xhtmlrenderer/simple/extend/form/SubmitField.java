@@ -27,33 +27,21 @@ import org.xhtmlrenderer.util.XRLog;
 
 import javax.swing.*;
 
-class SubmitField extends AbstractButtonField {
+class SubmitField extends AbstractButtonField<JButton> {
     SubmitField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JButton create() {
         JButton button = new JButton();
-
-        String value;
-        if (hasAttribute("value")) {
-            value = getAttribute("value");
-            if (value.isEmpty()) {
-                value = " ";    //otherwise we get a very short button
-            }
-        } else {
-            value = "Submit";
-        }
-
         applyComponentStyle(button);
-
-        button.setText(value);
+        button.setText(getValueAttribute("Submit"));
 
         button.addActionListener(event -> {
             XRLog.layout("Submit pressed: Submit");
 
-            getParentForm().submit(getComponent());
+            getParentForm().submit(component());
         });
 
         return button;
@@ -61,13 +49,13 @@ class SubmitField extends AbstractButtonField {
 
     @Override
     public boolean includeInSubmission(JComponent source) {
-        return (source == getComponent());
+        return source == component();
     }
 
     @Override
     protected String[] getFieldValues() {
         return new String[] {
-                hasAttribute("value") ? getAttribute("value") : "Submit" // TODO: Don't hardcode
+                getAttribute("value", "Submit") // TODO: Don't hardcode
         };
     }
 }

@@ -28,14 +28,14 @@ pre {
 
 heading {
     font-weight: bold;
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    border-top-width: 0px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    border-top-width: 0;
     border-bottom-width: 2px;
-    border-left-width: 0px;
-    border-right-width: 0px;
+    border-left-width: 0;
+    border-right-width: 0;
     border-color: #008800;
     background-color: #88ff88;
     padding-top: 3px;

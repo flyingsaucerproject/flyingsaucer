@@ -19,14 +19,10 @@
  */
 package org.xhtmlrenderer.extend;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.resource.CSSResource;
 import org.xhtmlrenderer.resource.ImageResource;
 import org.xhtmlrenderer.resource.XMLResource;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 
 /**
  * <p>To be implemented by any user agent using the panel. "User agent" is a
@@ -51,7 +47,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
  *
  * @author Torbjoern Gannholm
  */
-@ParametersAreNonnullByDefault
 public interface UserAgentCallback {
     /**
      * Retrieves the CSS at the given URI. This is a synchronous call.
@@ -75,15 +70,14 @@ public interface UserAgentCallback {
      * @param uri Location of the XML
      * @return A XMLResource for the content at the URI.
      */
+    @Nullable
     XMLResource getXMLResource(String uri);
 
     /**
      * Retrieves a binary resource located at a given URI and returns its contents
      * as a byte array or {@code null} if the resource could not be loaded.
      */
-    @Nullable
-    @CheckReturnValue
-    byte[] getBinaryResource(String uri);
+    byte @Nullable [] getBinaryResource(String uri);
 
     /**
      * Normally, returns true if the user agent has visited this URI. UserAgent should consider
@@ -92,7 +86,6 @@ public interface UserAgentCallback {
      * @param uri A URI which may have been visited by this user agent.
      * @return The visited value
      */
-    @CheckReturnValue
     boolean isVisited(@Nullable String uri);
 
     /**
@@ -106,6 +99,7 @@ public interface UserAgentCallback {
     /**
      * @return the base uri, possibly in the implementations private uri-space
      */
+    @Nullable
     String getBaseURL();
 
     /**
@@ -117,7 +111,6 @@ public interface UserAgentCallback {
      * @return the full uri in uri-spaces known to the current implementation.
      */
     @Nullable
-    @CheckReturnValue
     String resolveURI(@Nullable String uri);
 }
 

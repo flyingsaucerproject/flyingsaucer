@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.style;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.constants.ValueConstants;
@@ -33,17 +34,14 @@ import static org.w3c.dom.css.CSSPrimitiveValue.CSS_URI;
 
 
 public abstract class DerivedValue implements FSDerivedValue {
-    private String _asString;
-
-    private short _cssSacUnitType;
-
-    protected DerivedValue() {}
+    private final String _asString;
+    private final short _cssSacUnitType;
 
     protected DerivedValue(
             CSSName name,
             short cssSACUnitType,
             String cssText,
-            String cssStringValue) {
+            @Nullable String cssStringValue) {
         this._cssSacUnitType = cssSACUnitType;
 
         if ( cssText == null ) {
@@ -54,7 +52,7 @@ public abstract class DerivedValue implements FSDerivedValue {
         this._asString = deriveStringValue(cssText, cssStringValue);
     }
 
-    private String deriveStringValue(String cssText, String cssStringValue) {
+    private String deriveStringValue(String cssText, @Nullable String cssStringValue) {
         return switch (_cssSacUnitType) {
             case CSS_IDENT, CSS_STRING, CSS_URI, CSS_ATTR -> requireNonNullElse(cssStringValue, cssText);
             default -> cssText;
@@ -66,9 +64,11 @@ public abstract class DerivedValue implements FSDerivedValue {
         return _asString;
     }
 
-    /** If value is declared INHERIT should always be the IdentValue.INHERIT,
-     * not a DerivedValue
+    /**
+     * If value is declared INHERIT should always be the {@link IdentValue#INHERIT},
+     * not a DerivedValue.
      */
+    @Override
     public boolean isDeclaredInherit() {
         return false;
     }
@@ -81,14 +81,18 @@ public abstract class DerivedValue implements FSDerivedValue {
         return ValueConstants.isAbsoluteUnit(_cssSacUnitType);
     }
 
+    @Override
     public float asFloat() {
         throw new XRRuntimeException("asFloat() needs to be overridden in subclass.");
     }
 
+    @Nullable
+    @Override
     public FSColor asColor() {
         throw new XRRuntimeException("asColor() needs to be overridden in subclass.");
     }
 
+    @Override
     public float getFloatProportionalTo(
             CSSName cssName,
             float baseValue,
@@ -97,21 +101,32 @@ public abstract class DerivedValue implements FSDerivedValue {
         throw new XRRuntimeException("getFloatProportionalTo() needs to be overridden in subclass.");
     }
 
+    @Override
     public String asString() {
         return getStringValue();
     }
+
+    @Override
     public String[] asStringArray() {
         throw new XRRuntimeException("asStringArray() needs to be overridden in subclass.");
     }
+
+    @Override
     public IdentValue asIdentValue() {
         throw new XRRuntimeException("asIdentValue() needs to be overridden in subclass.");
     }
+
+    @Override
     public boolean hasAbsoluteUnit() {
         throw new XRRuntimeException("hasAbsoluteUnit() needs to be overridden in subclass.");
     }
+
+    @Override
     public boolean isIdent() {
         return false;
     }
+
+    @Override
     public boolean isDependentOnFontSize() {
         return false;
     }

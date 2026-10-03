@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
@@ -43,13 +45,17 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
-import org.xhtmlrenderer.util.Configuration;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,28 +63,32 @@ import java.util.logging.Level;
 
 import static java.util.Objects.requireNonNull;
 
-@ParametersAreNonnullByDefault
 public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCanvas, RepaintListener {
+    @Nullable
     private Box rootBox;
     private boolean needRelayout;
+    @Nullable
     private CellRendererPane cellRendererPane;
     private final Set<DocumentListener> documentListeners = new HashSet<>();
     private boolean defaultFontFromComponent;
-    protected SharedContext sharedContext;
+    private final SharedContext sharedContext;
+    @Nullable
     private volatile LayoutContext layoutContext;
+    @Nullable
     private JScrollPane enclosingScrollPane;
     private boolean viewportMatchWidth = true;
 
     private int default_scroll_mode = JViewport.BLIT_SCROLL_MODE;
 
+    @Nullable
     protected Document doc;
 
     /*
      * ========= UserInterface implementation ===============
      */
-    public Element hovered_element;
-    public Element active_element;
-    public Element focus_element;
+    @Nullable Element hovered_element;
+    @Nullable Element active_element;
+    @Nullable Element focus_element;
 
     // On-demand repaint requests for async image loading
     private long lastRepaintRunAt = System.currentTimeMillis();
@@ -86,13 +96,16 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     private boolean repaintRequestPending;
     private long pendingRepaintCount;
 
-    public RootPanel() {
+    public RootPanel(SharedContext sharedContext) {
+        this.sharedContext = sharedContext;
     }
 
     public SharedContext getSharedContext() {
         return sharedContext;
     }
 
+    @Nullable
+    @CheckReturnValue
     public LayoutContext getLayoutContext() {
         return layoutContext;
     }
@@ -103,38 +116,12 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         setRootBox(null);
         this.doc = doc;
 
-        //have to do this first
-        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
-            getSharedContext().getCss().flushStyleSheets();
-        } else {
-            getSharedContext().getCss().flushAllStyleSheets();
-        }
-
         getSharedContext().reset();
         getSharedContext().setBaseURL(url);
         getSharedContext().setNamespaceHandler(nsh);
         getSharedContext().getCss().setDocumentContext(getSharedContext(), getSharedContext().getNamespaceHandler(), doc, this);
 
         repaint();
-    }
-
-    // iterates over all boxes and, if they have a BG url assigned, makes a call to the UAC
-    // to request it. when running with async image loading, this means BG images will start
-    // loading before the box ever shows on screen
-    private void requestBGImages(final Box box) {
-        if (box.getChildCount() == 0) return;
-        for (Box cb : box.getChildren()) {
-            CalculatedStyle style = cb.getStyle();
-            if (!style.isIdent(CSSName.BACKGROUND_IMAGE, IdentValue.NONE)) {
-                String uri = style.getStringProperty(CSSName.BACKGROUND_IMAGE);
-                XRLog.load(Level.FINE, "Greedily loading background property " + uri);
-                try {
-                    getSharedContext().getUac().getImageResource(uri);
-                } catch (Exception ignore) {
-                }
-            }
-            requestBGImages(cb);
-        }
     }
 
     public void resetScrollPosition() {
@@ -166,6 +153,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         }
     }
 
+    @Nullable
     protected JScrollPane getEnclosingScrollPane() {
         return enclosingScrollPane;
     }
@@ -195,14 +183,14 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         Container p = getParent();
         if (p instanceof JViewport) {
             Container vp = p.getParent();
-            if (vp instanceof JScrollPane) {
-                setEnclosingScrollPane((JScrollPane) vp);
+            if (vp instanceof JScrollPane scrollPane) {
+                setEnclosingScrollPane(scrollPane);
             }
         }
     }
 
     /**
-     * Overrides the default implementation unconfigure any {@link JScrollPane}
+     * Overrides the default implementation un-configure any {@link JScrollPane}
      * parent.
      */
     @Override
@@ -223,34 +211,22 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
 
         XRLog.layout(Level.FINEST, "new context end");
 
-        RenderingContext result = getSharedContext().newRenderingContextInstance();
-        result.setFontContext(new Java2DFontContext(g));
-        result.setOutputDevice(new Java2DOutputDevice(g));
-
-        getSharedContext().getTextRenderer().setup(result.getFontContext());
-
+        Java2DFontContext fontContext = new Java2DFontContext(g);
+        getSharedContext().getTextRenderer().setup(fontContext);
         final Box rb = getRootBox();
-        if (rb != null) {
-            result.setRootLayer(rb.getLayer());
-        }
-
-        return result;
+        Layer rootLayer = rb == null ? null : rb.getLayer();
+        return getSharedContext().newRenderingContextInstance(new Java2DOutputDevice(g), fontContext, rootLayer, 0);
     }
 
     protected LayoutContext newLayoutContext(Graphics2D g) {
         XRLog.layout(Level.FINEST, "new context begin");
-
         getSharedContext().setCanvas(this);
-
         XRLog.layout(Level.FINEST, "new context end");
 
-        LayoutContext result = getSharedContext().newLayoutContextInstance();
-
-        Graphics2D layoutGraphics =
-            g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics();
-        result.setFontContext(new Java2DFontContext(layoutGraphics));
-
-        getSharedContext().getTextRenderer().setup(result.getFontContext());
+        Graphics2D layoutGraphics = g.getDeviceConfiguration().createCompatibleImage(1, 1).createGraphics();
+        Java2DFontContext fontContext = new Java2DFontContext(layoutGraphics);
+        LayoutContext result = getSharedContext().newLayoutContextInstance(fontContext);
+        getSharedContext().getTextRenderer().setup(fontContext);
 
         return result;
     }
@@ -275,8 +251,8 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
     public Rectangle getScreenExtents() {
         Rectangle extents;
         if (enclosingScrollPane != null) {
-            Rectangle bnds = enclosingScrollPane.getViewportBorderBounds();
-            extents = new Rectangle(0, 0, bnds.width, bnds.height);
+            Rectangle bounds = enclosingScrollPane.getViewportBorderBounds();
+            extents = new Rectangle(0, 0, bounds.width, bounds.height);
         } else {
             extents = new Rectangle(getWidth(), getHeight());
             Insets insets = getInsets();
@@ -321,10 +297,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             long end = System.currentTimeMillis();
 
             XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
-
-            /*
-            System.out.println(root.dump(c, "", BlockBox.DUMP_LAYOUT));
-            */
+            c.getSharedContext().logUnsupportedFeatures();
 
             // if there is a fixed child then we need to set opaque to false
             // so that the entire viewport will be repainted. this is slower
@@ -346,7 +319,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             // Otherwise, if the intrinsic width is different then we can't
             // couple the width of the view pane to the width of this panel
             // (we hit the minimum size threshold).
-            viewportMatchWidth = (initialExtents.width == intrinsic_size.width);
+            viewportMatchWidth = initialExtents.width == intrinsic_size.width;
 
             setPreferredSize(intrinsic_size);
             revalidate();
@@ -376,19 +349,11 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
             }*/
         } catch (ThreadDeath t) {
             throw t;
-        } catch (Throwable t) {
+        } catch (Error | RuntimeException t) {
             if (hasDocumentListeners()) {
                 fireOnLayoutException(t);
             } else {
-                if (t instanceof Error) {
-                    throw (Error)t;
-                }
-                if (t instanceof RuntimeException) {
-                    throw (RuntimeException)t;
-                }
-
-                // "Shouldn't" happen
-                XRLog.exception(t.getMessage(), t);
+                throw t;
             }
         }
     }
@@ -397,8 +362,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         if (isDefaultFontFromComponent()) {
             CalculatedStyle style = root.getStyle();
             PropertyValue fontFamilyProp = new PropertyValue(CSSPrimitiveValue.CSS_STRING, getFont().getFamily(),
-                    getFont().getFamily());
-            fontFamilyProp.setStringArrayValue(new String[] { fontFamilyProp.getStringValue() });
+                    getFont().getFamily(), new String[]{getFont().getFamily()}, null);
             style.setDefaultValue(CSSName.FONT_FAMILY, new StringValue(CSSName.FONT_FAMILY, fontFamilyProp));
             style.setDefaultValue(CSSName.FONT_SIZE, new LengthValue(style, CSSName.FONT_SIZE,
                     new PropertyValue(CSSPrimitiveValue.CSS_PX, getFont().getSize(), Integer
@@ -511,7 +475,12 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         return e == focus_element;
     }
 
+
+    /**
+     * Lays out the current document again, and re-renders.
+     */
     protected void relayout() {
+        getSharedContext().flushFonts();
         if (doc != null) {
             setNeedRelayout(true);
             repaint();
@@ -530,6 +499,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         return false;
     }
 
+    @Nullable
     public synchronized Box getRootBox() {
         return rootBox;
     }
@@ -538,6 +508,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         this.rootBox = rootBox;
     }
 
+    @Nullable
     public synchronized Layer getRootLayer() {
         return getRootBox() == null ? null : getRootBox().getLayer();
     }
@@ -546,6 +517,7 @@ public class RootPanel extends JPanel implements Scrollable, UserInterface, FSCa
         return find(e.getX(), e.getY());
     }
 
+    @Nullable
     public Box find(int x, int y) {
         Layer l = getRootLayer();
         if (l != null) {

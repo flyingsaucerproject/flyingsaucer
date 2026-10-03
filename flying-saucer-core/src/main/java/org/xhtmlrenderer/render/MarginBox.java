@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.css.style.CssContext;
 
 import java.awt.*;
@@ -53,6 +54,7 @@ public class MarginBox extends BlockBox {
         return new Rectangle(-_bounds.x, -_bounds.y, _bounds.width, _bounds.height);
     }
 
+    @CheckReturnValue
     @Override
     public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         return new Rectangle(-_bounds.x, -_bounds.y, _bounds.width, _bounds.height);

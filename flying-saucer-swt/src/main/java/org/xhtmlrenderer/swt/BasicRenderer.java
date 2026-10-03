@@ -36,11 +36,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.event.DocumentListener;
 import org.xhtmlrenderer.extend.FSCanvas;
@@ -65,7 +66,8 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Shape;
 import java.awt.geom.Area;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -74,6 +76,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_SCREEN;
 import static org.xhtmlrenderer.util.XRLog.exception;
 
 /**
@@ -89,10 +92,12 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
     private final SharedContext _sharedContext;
 
     // TODO layout_context should not be stored!
-    private LayoutContext _layout_context;
+    private @Nullable LayoutContext _layout_context;
 
+    @Nullable
     private Image _layout_image; // Image and GC used in layout_context
 
+    @Nullable
     private GC _layout_gc;
 
     private float _fontScalingFactor = 1.2F;
@@ -101,8 +106,10 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     private float _maxFontScale = 3.0F;
 
+    @Nullable
     private Document _doc;
 
+    @Nullable
     private BlockBox _rootBox;
 
     private final Set<DocumentListener> _documentListeners = new HashSet<>();
@@ -117,13 +124,15 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
     private Point _drawnSize = new Point(0, 0);
 
+    @Nullable
     private Image _offscreen;
 
+    @Nullable
     private SpecialRedraw _specialRedraw;
 
     private static int checkStyle(int style) {
         final int mask = SWT.BORDER;
-        return (style & mask) | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.V_SCROLL
+        return style & mask | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.V_SCROLL
                 | SWT.H_SCROLL | SWT.NO_RADIO_GROUP;
     }
 
@@ -158,13 +167,13 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
             _sharedContext.flushFonts();
             // clean ReplacedElementFactory
             ReplacedElementFactory ref = _sharedContext.getReplacedElementFactory();
-            if (ref instanceof SWTReplacedElementFactory) {
-                ((SWTReplacedElementFactory) ref).clean();
+            if (ref instanceof SWTReplacedElementFactory swtFactory) {
+                swtFactory.clean();
             }
             // dispose images when using NaiveUserAgent
             UserAgentCallback uac1 = _sharedContext.getUac();
-            if (uac1 instanceof NaiveUserAgent) {
-                ((NaiveUserAgent) uac1).disposeCache();
+            if (uac1 instanceof NaiveUserAgent userAgent) {
+                userAgent.disposeCache();
             }
             // dispose offscreen image
             if (_offscreen != null) {
@@ -319,15 +328,14 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
      * @return a new {@link LayoutContext}
      */
     protected LayoutContext newLayoutcontext() {
-        LayoutContext result = _sharedContext.newLayoutContextInstance();
-
         if (_layout_gc == null) {
             _layout_image = new Image(getDisplay(), 1, 1);
             _layout_gc = new GC(_layout_image);
         }
 
-        result.setFontContext(new SWTFontContext(_layout_gc));
-        _sharedContext.getTextRenderer().setup(result.getFontContext());
+        SWTFontContext fontContext = new SWTFontContext(_layout_gc);
+        LayoutContext result = _sharedContext.newLayoutContextInstance(fontContext);
+        _sharedContext.getTextRenderer().setup(fontContext);
 
         return result;
     }
@@ -336,13 +344,8 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
      * @return a new {@link RenderingContext}
      */
     protected RenderingContext newRenderingContext(GC gc) {
-        RenderingContext result = _sharedContext.newRenderingContextInstance();
-
-        result.setFontContext(new SWTFontContext(gc));
-        result.setOutputDevice(new SWTOutputDevice(gc));
-
+        RenderingContext result = _sharedContext.newRenderingContextInstance(new SWTOutputDevice(gc), new SWTFontContext(gc));
         _sharedContext.getTextRenderer().setup(result.getFontContext());
-
         return result;
     }
 
@@ -521,7 +524,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
                 // the origin has been corrected
                 if (_offscreen != null) {
                     if (_hasFixedContent
-                            || (_specialRedraw != null && !(_specialRedraw instanceof RedrawNewOrigin))) {
+                            || _specialRedraw != null && !(_specialRedraw instanceof RedrawNewOrigin)) {
                         _offscreen.dispose();
                         _offscreen = null;
                     } else if (_specialRedraw == null) {
@@ -538,15 +541,15 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
                 c.getOutputDevice().setClip(new java.awt.Rectangle(0, 0, size.x, size.y));
                 doRender(c);
                 gc.dispose();
-            } else if (_specialRedraw instanceof RedrawTarget) { // targeted
-                Rectangle target = ((RedrawTarget) _specialRedraw)._target;
+            } else if (_specialRedraw instanceof RedrawTarget redrawTarget) { // targeted
+                Rectangle target = redrawTarget._target;
                 GC gc = new GC(_offscreen);
                 RenderingContext c = newRenderingContext(gc);
                 c.getOutputDevice().setClip(convertRectangle(target));
                 doRender(c);
                 gc.dispose();
-            } else if (_specialRedraw instanceof RedrawNewOrigin) { // scroll
-                Point previousOrigin = ((RedrawNewOrigin) _specialRedraw)._previousOrigin;
+            } else if (_specialRedraw instanceof RedrawNewOrigin redrawNewOrigin) { // scroll
+                Point previousOrigin = redrawNewOrigin._previousOrigin;
                 Image img = new Image(getDisplay(), size.x, size.y);
                 GC gc = new GC(img);
                 gc.drawImage(_offscreen, previousOrigin.x - _origin.x, previousOrigin.y
@@ -572,9 +575,9 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
                 gc.dispose();
                 _offscreen.dispose();
                 _offscreen = img;
-            } else if (_specialRedraw instanceof RedrawNewSize) { // adjust
+            } else if (_specialRedraw instanceof RedrawNewSize redrawNewSize) { // adjust
                 // size
-                Point previousSize = ((RedrawNewSize) _specialRedraw)._previousSize;
+                Point previousSize = redrawNewSize._previousSize;
                 Image img = new Image(getDisplay(), size.x, size.y);
                 GC gc = new GC(img);
                 gc.drawImage(_offscreen, 0, 0);
@@ -624,6 +627,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
 
             long end = System.currentTimeMillis();
             XRLog.layout(Level.INFO, "Layout took " + (end - start) + "ms");
+            _sharedContext.logUnsupportedFeatures();
         } catch (Throwable e) {
             exception(e.getMessage(), e);
             log.error(e.toString(), e);
@@ -639,7 +643,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         if (_layout_context.isPrint()) {
             rootLayer.trimEmptyPages(intrinsic_size.height);
             if (rootLayer.getLastPage() != null) {
-                rootLayer.assignPagePaintingPositions(_layout_context, Layer.PAGED_MODE_SCREEN,
+                rootLayer.assignPagePaintingPositions(_layout_context, PAGED_MODE_SCREEN,
                         PAGE_PAINTING_CLEARANCE);
                 _drawnSize = new Point(rootLayer.getMaxPageWidth(_layout_context,
                         PAGE_PAINTING_CLEARANCE), rootLayer.getLastPage().getPaintingBottom()
@@ -705,9 +709,9 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
             bounds.width += 1;
             bounds.height += 1;
             if (working.intersects(bounds)) {
-                page.paintBackground(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
-                page.paintMarginAreas(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
-                page.paintBorder(c, PAGE_PAINTING_CLEARANCE, Layer.PAGED_MODE_SCREEN);
+                page.paintBackground(c, PAGE_PAINTING_CLEARANCE, PAGED_MODE_SCREEN);
+                page.paintMarginAreas(c, PAGE_PAINTING_CLEARANCE, PAGED_MODE_SCREEN);
+                page.paintBorder(c, PAGE_PAINTING_CLEARANCE, PAGED_MODE_SCREEN);
 
                 Color old = gc.getForeground();
                 gc.setForeground(gc.getDevice().getSystemColor(SWT.COLOR_BLACK));
@@ -719,9 +723,9 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
                 out.clip(content);
 
                 int left = PAGE_PAINTING_CLEARANCE
-                        + page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+                        + page.getMarginBorderPadding(c, Edge.LEFT);
                 int top = page.getPaintingTop()
-                        + page.getMarginBorderPadding(c, CalculatedStyle.TOP) - page.getTop();
+                        + page.getMarginBorderPadding(c, Edge.TOP) - page.getTop();
 
                 out.translate(left, top);
                 root.paint(c);
@@ -749,12 +753,6 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         _active_element = null;
         _hovered_element = null;
         _focus_element = null;
-        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
-            _sharedContext.getCss().flushStyleSheets();
-        } else {
-            _sharedContext.getCss().flushAllStyleSheets();
-        }
-
         setCursor(null);
         _sharedContext.reset();
         if (_offscreen != null) {
@@ -767,21 +765,13 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         redraw();
     }
 
-    public void setDocument(Document doc, String url, NamespaceHandler nsh) {
+    public void setDocument(@Nullable Document doc, String url, NamespaceHandler nsh) {
         _rootBox = null;
         _doc = doc;
 
         _active_element = null;
         _hovered_element = null;
         _focus_element = null;
-
-        // have to do this first
-        if (Configuration.isTrue("xr.cache.stylesheets", true)) {
-            _sharedContext.getCss().flushStyleSheets();
-        } else {
-            _sharedContext.getCss().flushAllStyleSheets();
-        }
-
         setCursor(null);
         _sharedContext.reset();
         if (_offscreen != null) {
@@ -890,10 +880,12 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return nsh.getDocumentTitle(_doc);
     }
 
+    @Nullable
     public Box getRootBox() {
         return _rootBox;
     }
 
+    @Nullable
     public Layer getRootLayer() {
         return getRootBox() == null ? null : getRootBox().getLayer();
     }
@@ -902,10 +894,12 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return _sharedContext;
     }
 
+    @Nullable
     public LayoutContext getLayoutContext() {
         return _layout_context;
     }
 
+    @Nullable
     public Box find(int x, int y) {
         Layer l = getRootLayer();
         if (l != null) {
@@ -914,17 +908,16 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return null;
     }
 
-    private Element _hovered_element;
-
-    private Element _active_element;
-
-    private Element _focus_element;
+    private @Nullable Element _hovered_element;
+    private @Nullable Element _active_element;
+    private @Nullable Element _focus_element;
 
     @Override
     public boolean isHover(org.w3c.dom.Element e) {
         return e == _hovered_element;
     }
 
+    @Nullable
     public Element getHovered_element() {
         return _hovered_element;
     }
@@ -938,6 +931,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return e == _active_element;
     }
 
+    @Nullable
     public Element getActive_element() {
         return _active_element;
     }
@@ -951,6 +945,7 @@ public class BasicRenderer extends Canvas implements PaintListener, UserInterfac
         return e == _focus_element;
     }
 
+    @Nullable
     public Element getFocus_element() {
         return _focus_element;
     }

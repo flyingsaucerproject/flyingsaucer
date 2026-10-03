@@ -20,6 +20,7 @@
 
 package org.xhtmlrenderer.css.style;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSColor;
@@ -44,6 +45,8 @@ public interface FSDerivedValue {
     boolean isDeclaredInherit();
 
     float asFloat();
+
+    @Nullable
     FSColor asColor();
 
     float getFloatProportionalTo(

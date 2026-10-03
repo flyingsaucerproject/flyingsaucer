@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.util.ImageUtil;
 import org.xhtmlrenderer.util.XRLog;
 
@@ -43,20 +44,26 @@ public class MutableFSImage extends AWTFSImage {
         img = ImageUtil.createTransparentImage(10, 10);
     }
 
+    @Override
     public synchronized BufferedImage getImage() {
         return img;
     }
 
+    @Override
     public synchronized int getWidth() {
         return img.getWidth(null);
     }
 
+    @Override
     public synchronized int getHeight() {
         return img.getHeight(null);
     }
 
-    public synchronized void scale(int width, int height) {
+    @CheckReturnValue
+    @Override
+    public synchronized MutableFSImage scale(int width, int height) {
         img.getScaledInstance(width, height, Image.SCALE_DEFAULT);
+        return this;
     }
 
     public synchronized void setImage(String uri, BufferedImage newImg, final boolean wasScaled) {

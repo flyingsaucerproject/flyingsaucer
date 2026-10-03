@@ -37,26 +37,32 @@ public class LineMetricsAdapter implements FSFontMetrics {
         _lineMetrics = lineMetrics;
     }
 
+    @Override
     public float getAscent() {
         return _lineMetrics.getAscent();
     }
 
+    @Override
     public float getDescent() {
         return _lineMetrics.getDescent();
     }
 
+    @Override
     public float getStrikethroughOffset() {
         return _lineMetrics.getStrikethroughOffset();
     }
 
+    @Override
     public float getStrikethroughThickness() {
         return _lineMetrics.getStrikethroughThickness();
     }
 
+    @Override
     public float getUnderlineOffset() {
         return _lineMetrics.getUnderlineOffset();
     }
 
+    @Override
     public float getUnderlineThickness() {
         return _lineMetrics.getUnderlineThickness();
     }

@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.demo.browser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.swing.DelegatingUserAgent;
 import org.xhtmlrenderer.util.GeneralUtil;
@@ -26,9 +28,6 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.xml.transform.sax.SAXSource;
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +50,6 @@ import java.util.List;
  * As a NaiveUserAgent, the PanelManager is also a DocumentListener, but must be added to the source of document
  * events (like a RootPanel subclass).
  */
-@ParametersAreNonnullByDefault
 public class PanelManager extends DelegatingUserAgent {
     private int index = -1;
     private final List<String> history = new ArrayList<>();
@@ -97,7 +95,7 @@ public class PanelManager extends DelegatingUserAgent {
                 }
                 ref = new URL(base, uri);
             } catch (MalformedURLException e) {
-                Uu.p("URI/URL is malformed: " + burl + " or " + uri);
+                Uu.p("URI/URL is malformed: %s or %s (caused by: %s)".formatted(burl, uri, e));
             }
         }
 
@@ -179,14 +177,14 @@ public class PanelManager extends DelegatingUserAgent {
      * Returns true if the link has been visited by the user in this session. Visit tracking is not persisted.
      */
     @Override
-    public boolean isVisited(String uri) {
+    public boolean isVisited(@Nullable String uri) {
         if (uri == null) return false;
         uri = resolveURI(uri);
         return history.contains(uri);
     }
 
     @Override
-    public void setBaseURL(String url) {
+    public void setBaseURL(@Nullable String url) {
         String burl = resolveURI(url);
         if (burl == null) burl = "error:FileNotFound";
 

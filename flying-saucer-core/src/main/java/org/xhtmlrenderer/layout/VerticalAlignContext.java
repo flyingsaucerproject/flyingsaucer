@@ -19,13 +19,17 @@
  */
 package org.xhtmlrenderer.layout;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.render.Box;
+import org.xhtmlrenderer.render.InlineChild;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Objects.requireNonNullElse;
 
 /**
  * This class performs the real work of vertically positioning inline boxes
@@ -51,7 +55,17 @@ public class VerticalAlignContext {
 
     private final List<ChildContextData> _children = new ArrayList<>();
 
-    private VerticalAlignContext _parent = null;
+    @Nullable
+    private final VerticalAlignContext _parent;
+
+    public VerticalAlignContext(VerticalAlignContext parent) {
+        _parent = parent;
+    }
+
+    public VerticalAlignContext(InlineBoxMeasurements initialMeasurements) {
+        _parent = null;
+        _measurements.add(initialMeasurements);
+    }
 
     private void moveTrackedValues(int ty) {
         if (_inlineTopSet) {
@@ -138,13 +152,10 @@ public class VerticalAlignContext {
     }
 
     public VerticalAlignContext createChild(Box root) {
-        VerticalAlignContext result = new VerticalAlignContext();
-
         VerticalAlignContext vaRoot = getRoot();
-
-        result.setParent(vaRoot);
-
         InlineBoxMeasurements initial = vaRoot._measurements.get(0);
+
+        VerticalAlignContext result = new VerticalAlignContext(vaRoot);
         result.pushMeasurements(initial);
 
         vaRoot._children.add(new ChildContextData(root, result));
@@ -155,17 +166,13 @@ public class VerticalAlignContext {
         return _children;
     }
 
+    @Nullable
     public VerticalAlignContext getParent() {
         return _parent;
     }
 
-    public void setParent(VerticalAlignContext parent) {
-        _parent = parent;
-    }
-
     private VerticalAlignContext getRoot() {
-        VerticalAlignContext result = this;
-        return result.getParent() != null ? result.getParent() : this;
+        return requireNonNullElse(_parent, this);
     }
 
     private void merge(VerticalAlignContext context) {
@@ -184,10 +191,6 @@ public class VerticalAlignContext {
         }
     }
 
-    public void setInitialMeasurements(InlineBoxMeasurements measurements) {
-        _measurements.add(measurements);
-    }
-
     private static final class ChildContextData {
         private final Box _root;
         private final VerticalAlignContext _verticalAlignContext;
@@ -195,10 +198,6 @@ public class VerticalAlignContext {
         public ChildContextData(Box root, VerticalAlignContext vaContext) {
             _root = root;
             _verticalAlignContext = vaContext;
-        }
-
-        public Box getRoot() {
-            return _root;
         }
 
         public VerticalAlignContext getVerticalAlignContext() {
@@ -214,9 +213,9 @@ public class VerticalAlignContext {
                 box.setY(box.getY() + ty);
                 if (box instanceof InlineLayoutBox iB) {
                     for (int i = 0; i < iB.getInlineChildCount(); i++) {
-                        Object child = iB.getInlineChild(i);
-                        if (child instanceof Box) {
-                            moveInlineContents((Box)child, ty);
+                        InlineChild child = iB.getInlineChild(i);
+                        if (child instanceof Box chilBox) {
+                            moveInlineContents(chilBox, ty);
                         }
                     }
                 }

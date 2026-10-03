@@ -19,11 +19,15 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import org.jspecify.annotations.Nullable;
+
 public class CSSParseException extends RuntimeException {
+    @Nullable
     private final Token _found;
-    private final Token[] _expected;
+    private final Token @Nullable [] _expected;
     private int _line;
 
+    @Nullable
     private final String _genericMessage;
 
     private boolean _callerNotified;
@@ -32,7 +36,7 @@ public class CSSParseException extends RuntimeException {
         this(message, line, null);
     }
 
-    public CSSParseException(String message, int line, Throwable cause) {
+    public CSSParseException(String message, int line, @Nullable Throwable cause) {
         super(message, cause);
         _found = null;
         _expected = null;
@@ -47,13 +51,14 @@ public class CSSParseException extends RuntimeException {
         _genericMessage = null;
     }
 
-    public CSSParseException(Token found, Token[] expected, int line) {
+    public CSSParseException(Token found, Token @Nullable [] expected, int line) {
         _found = found;
         _expected = expected == null ? new Token[]{} : expected.clone();
         _line = line;
         _genericMessage = null;
     }
 
+    @Override
     public String getMessage() {
         if (_genericMessage != null) {
             return _genericMessage + " at line " + (_line+1) + ".";

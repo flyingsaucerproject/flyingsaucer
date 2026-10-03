@@ -19,12 +19,10 @@
  */
 package org.xhtmlrenderer.simple.extend;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 /**
  * No-op implementation of a FormSubmissionListener; override the submit method in a subclass as needed.
  */
-@ParametersAreNonnullByDefault
 public class DefaultFormSubmissionListener implements FormSubmissionListener {
+    @Override
     public void submit(String query) { }
 }

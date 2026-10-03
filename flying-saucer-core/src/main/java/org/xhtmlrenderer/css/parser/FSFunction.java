@@ -30,6 +30,10 @@ public class FSFunction {
         _parameters = parameters;
     }
 
+    public boolean is(String name) {
+        return _name.equals(name);
+    }
+
     public String getName() {
         return _name;
     }
@@ -38,6 +42,7 @@ public class FSFunction {
         return _parameters;
     }
 
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append(_name);

@@ -20,12 +20,12 @@
  */
 package org.xhtmlrenderer.layout;
 
-import java.awt.Point;
-
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.LineBox;
+
+import java.awt.*;
 
 /**
  * This class represents a block formatting context as defined in the CSS spec.
@@ -84,6 +84,7 @@ public class BlockFormattingContext {
         getFloatManager().clear(c, this, current);
     }
 
+    @Override
     public String toString() {
         return "BlockFormattingContext: (" + _x + "," + _y + ")";
     }

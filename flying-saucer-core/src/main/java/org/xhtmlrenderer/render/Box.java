@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xhtmlrenderer.css.constants.CSSName;
@@ -27,6 +29,7 @@ import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.CssContext;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
@@ -36,9 +39,9 @@ import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.layout.Styleable;
 import org.xhtmlrenderer.util.XRLog;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -47,8 +50,10 @@ import java.util.List;
 import java.util.logging.Level;
 
 import static java.util.Objects.requireNonNullElseGet;
+import static org.xhtmlrenderer.render.Box.State.NOTHING;
 
 public abstract class Box implements Styleable {
+    @Nullable
     private Element _element;
 
     private int _x;
@@ -64,14 +69,14 @@ public abstract class Box implements Styleable {
     private int _rightMBP;
     private int _leftMBP;
 
-    /**
-     * Box height.
-     */
     private int _height;
 
+    @Nullable
     private Layer _layer;
+    @Nullable
     private Layer _containingLayer;
 
+    @Nullable
     private Box _parent;
 
     private final List<Box> _boxes = new ArrayList<>(3);
@@ -82,29 +87,44 @@ public abstract class Box implements Styleable {
     private int _tx;
     private int _ty;
 
+    @Nullable
     private CalculatedStyle _style;
+    @Nullable
     private Box _containingBlock;
 
+    @Nullable
     private Dimension _relativeOffset;
 
+    @Nullable
     private PaintingInfo _paintingInfo;
 
+    @Nullable
     private RectPropertySet _workingMargin;
 
     private int _index;
 
+    @Nullable
     private String _pseudoElementOrClass;
 
-    private boolean _anonymous;
+    private final boolean _anonymous;
 
-    protected Box() {
+    protected Box(@Nullable Box parent, @Nullable CalculatedStyle style) {
+        this._parent = parent;
+        this.setStyle(style);
+        _anonymous = false;
     }
 
-    public abstract String dump(LayoutContext c, String indent, int which);
+    protected Box(@Nullable Element element, @Nullable CalculatedStyle style, boolean anonymous) {
+        this._element = element;
+        this.setStyle(style);
+        _anonymous = anonymous;
+    }
+
+    public abstract String dump(LayoutContext c, String indent, Dump which);
 
     protected void dumpBoxes(
             LayoutContext c, String indent, List<Box> boxes,
-            int which, StringBuilder result) {
+            Dump which, StringBuilder result) {
         for (Iterator<Box> i = boxes.iterator(); i.hasNext(); ) {
             Box b = i.next();
             result.append(b.dump(c, indent + "  ", which));
@@ -118,6 +138,7 @@ public abstract class Box implements Styleable {
         return getContentWidth() + getLeftMBP() + getRightMBP();
     }
 
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append(getClass().getSimpleName());
@@ -177,20 +198,28 @@ public abstract class Box implements Styleable {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public Box getPreviousSibling() {
         Box parent = getParent();
         return parent == null ? null : parent.getPrevious(this);
     }
 
+    @Nullable
+    @CheckReturnValue
     public Box getNextSibling() {
         Box parent = getParent();
         return parent == null ? null : parent.getNext(this);
     }
 
+    @Nullable
+    @CheckReturnValue
     protected Box getPrevious(Box child) {
         return child.getIndex() == 0 ? null : getChild(child.getIndex()-1);
     }
 
+    @Nullable
+    @CheckReturnValue
     protected Box getNext(Box child) {
         return child.getIndex() == getChildCount() - 1 ? null : getChild(child.getIndex()+1);
     }
@@ -199,69 +228,66 @@ public abstract class Box implements Styleable {
         removeChild(getChild(i));
     }
 
-    public void setParent(Box box) {
+    public void setParent(@Nullable Box box) {
         _parent = box;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Box getParent() {
         return _parent;
-    }
-
-    public Box getDocumentParent() {
-        return getParent();
     }
 
     public int getChildCount() {
         return _boxes.size();
     }
 
+    @CheckReturnValue
     public Box getChild(int i) {
         return _boxes.get(i);
     }
 
+    @CheckReturnValue
     public List<Box> getChildren() {
         return _boxes;
     }
 
-    public static final int NOTHING = 0;
-    public static final int FLUX = 1;
-    public static final int CHILDREN_FLUX = 2;
-    public static final int DONE = 3;
+    public enum State {
+        NOTHING,
+        FLUX,
+        CHILDREN_FLUX,
+        DONE
+    }
 
-    private volatile int _state = NOTHING;
+    private volatile State _state = NOTHING;
 
-    public static final int DUMP_RENDER = 2;
+    public enum Dump {
+        RENDER,
+        LAYOUT
+    }
 
-    public static final int DUMP_LAYOUT = 1;
-
-    public int getState() {
+    public State getState() {
         return _state;
     }
 
-    public void setState(int state) {
+    public void setState(State state) {
         _state = state;
     }
 
-    public static String stateToString(int state) {
-        return switch (state) {
-            case NOTHING -> "NOTHING";
-            case FLUX -> "FLUX";
-            case CHILDREN_FLUX -> "CHILDREN_FLUX";
-            case DONE -> "DONE";
-            default -> "unknown";
-        };
-    }
-
+    @Nullable
+    @CheckReturnValue
     @Override
     public final CalculatedStyle getStyle() {
         return _style;
     }
 
     @Override
-    public void setStyle(CalculatedStyle style) {
+    public void setStyle(@Nullable CalculatedStyle style) {
         _style = style;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Box getContainingBlock() {
         return _containingBlock == null ? getParent() : _containingBlock;
     }
@@ -286,6 +312,7 @@ public abstract class Box implements Styleable {
         return getBorderEdge(getAbsX(), getAbsY(), cssCtx);
     }
 
+    @CheckReturnValue
     public Rectangle getPaintingPaddingEdge(CssContext cssCtx) {
         return getPaddingEdge(getAbsX(), getAbsY(), cssCtx);
     }
@@ -294,6 +321,7 @@ public abstract class Box implements Styleable {
         return getPaintingBorderEdge(cssCtx);
     }
 
+    @CheckReturnValue
     public Rectangle getChildrenClipEdge(RenderingContext c) {
         return getPaintingPaddingEdge(c);
     }
@@ -301,7 +329,7 @@ public abstract class Box implements Styleable {
     /**
      * <B>NOTE</B>: This method does not consider any children of this box
      */
-    public boolean intersects(CssContext cssCtx, Shape clip) {
+    public boolean intersects(CssContext cssCtx, @Nullable Shape clip) {
         return clip == null || clip.intersects(getPaintingClipEdge(cssCtx));
     }
 
@@ -313,6 +341,7 @@ public abstract class Box implements Styleable {
                 getHeight() - (int) margin.top() - (int) margin.bottom());
     }
 
+    @CheckReturnValue
     public Rectangle getPaddingEdge(int left, int top, CssContext cssCtx) {
         RectPropertySet margin = getMargin(cssCtx);
         RectPropertySet border = getBorder(cssCtx);
@@ -339,14 +368,17 @@ public abstract class Box implements Styleable {
                 getHeight() - (int) margin.height() - (int) border.height() - (int) padding.height());
     }
 
+    @Nullable
+    @CheckReturnValue
     public Layer getLayer() {
         return _layer;
     }
 
-    public void setLayer(Layer layer) {
+    public void setLayer(@Nullable Layer layer) {
         _layer = layer;
     }
 
+    @Nullable
     public Dimension positionRelative(CssContext cssCtx) {
         int initialX = getX();
         int initialY = getY();
@@ -371,14 +403,14 @@ public abstract class Box implements Styleable {
         }
 
         if (!style.isIdent(CSSName.TOP, IdentValue.AUTO)) {
-            setY(getY() + ((int)style.getFloatPropertyProportionalHeight(
-                    CSSName.TOP, cbContentHeight, cssCtx)));
+            setY(getY() + (int)style.getFloatPropertyProportionalHeight(
+                    CSSName.TOP, cbContentHeight, cssCtx));
         } else if (!style.isIdent(CSSName.BOTTOM, IdentValue.AUTO)) {
-            setY(getY() - ((int)style.getFloatPropertyProportionalHeight(
-                    CSSName.BOTTOM, cbContentHeight, cssCtx)));
+            setY(getY() - (int)style.getFloatPropertyProportionalHeight(
+                    CSSName.BOTTOM, cbContentHeight, cssCtx));
         }
 
-        setRelativeOffset(new Dimension(getX() - initialX, getY() - initialY));
+        _relativeOffset = new Dimension(getX() - initialX, getY() - initialY);
         return getRelativeOffset();
     }
 
@@ -415,8 +447,8 @@ public abstract class Box implements Styleable {
     }
 
     private boolean isPaintsRootElementBackground() {
-        return (isRoot() && getStyle().isHasBackground()) ||
-                (isBody() && ! getParent().getStyle().isHasBackground());
+        return isRoot() && getStyle().isHasBackground() ||
+            isBody() && ! getParent().getStyle().isHasBackground();
     }
 
     public void paintBackground(RenderingContext c) {
@@ -444,11 +476,12 @@ public abstract class Box implements Styleable {
         c.getOutputDevice().paintBackground(c, getStyle(), canvasBounds, canvasBounds, BorderPropertySet.EMPTY_BORDER);
     }
 
+    @Nullable
     public Layer getContainingLayer() {
         return _containingLayer;
     }
 
-    public void setContainingLayer(Layer containingLayer) {
+    public void setContainingLayer(@Nullable Layer containingLayer) {
         _containingLayer = containingLayer;
     }
 
@@ -573,8 +606,8 @@ public abstract class Box implements Styleable {
                     c.getRootLayer().addPage(c);
                 }
             }
-            if ((page.isLeftPage() && pageBreakValue == IdentValue.LEFT) ||
-                    (page.isRightPage() && pageBreakValue == IdentValue.RIGHT)) {
+            if (page.isLeftPage() && pageBreakValue == IdentValue.LEFT ||
+                page.isRightPage() && pageBreakValue == IdentValue.RIGHT) {
                 pageBreakCount++;
             }
 
@@ -615,13 +648,13 @@ public abstract class Box implements Styleable {
         PageBox page = c.getRootLayer().getLastPage(c, this);
 
         if (page != null) {
-            if ((page.isLeftPage() && pageBreakValue == IdentValue.LEFT) ||
-                    (page.isRightPage() && pageBreakValue == IdentValue.RIGHT)) {
+            if (page.isLeftPage() && pageBreakValue == IdentValue.LEFT ||
+                page.isRightPage() && pageBreakValue == IdentValue.RIGHT) {
                 needSecondPageBreak = true;
             }
 
             int delta = page.getBottom() + c.getExtraSpaceTop() - (getAbsY() +
-                    getMarginBorderPadding(c, CalculatedStyle.TOP) + getHeight());
+                    getMarginBorderPadding(c, Edge.TOP) + getHeight());
 
             if (page == c.getRootLayer().getLastPage()) {
                 c.getRootLayer().addPage(c);
@@ -653,24 +686,23 @@ public abstract class Box implements Styleable {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     public Dimension getRelativeOffset() {
         return _relativeOffset;
     }
 
-    public void setRelativeOffset(Dimension relativeOffset) {
-        _relativeOffset = relativeOffset;
-    }
-
+    @Nullable
+    @CheckReturnValue
     public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         PaintingInfo pI = getPaintingInfo();
         if (pI != null && ! pI.getAggregateBounds().contains(absX, absY)) {
             return null;
         }
 
-        Box result;
         for (int i = 0; i < getChildCount(); i++) {
             Box child = getChild(i);
-            result = child.find(cssCtx, absX, absY, findAnonymous);
+            Box result = child.find(cssCtx, absX, absY, findAnonymous);
             if (result != null) {
                 return result;
             }
@@ -696,34 +728,32 @@ public abstract class Box implements Styleable {
     }
 
     @Override
-    public final void setElement(Element element) {
+    public final void setElement(@Nullable Element element) {
         _element = element;
     }
 
-    public void setMarginTop(CssContext cssContext, int marginTop) {
-        ensureWorkingMargin(cssContext);
-        _workingMargin.setTop(marginTop);
+    protected final void setMarginTop(CssContext cssContext, int marginTop) {
+        ensureWorkingMargin(cssContext).setTop(marginTop);
     }
 
-    public void setMarginBottom(CssContext cssContext, int marginBottom) {
-        ensureWorkingMargin(cssContext);
-        _workingMargin.setBottom(marginBottom);
+    protected void setMarginBottom(CssContext cssContext, int marginBottom) {
+        ensureWorkingMargin(cssContext).setBottom(marginBottom);
     }
 
     public void setMarginLeft(CssContext cssContext, int marginLeft) {
-        ensureWorkingMargin(cssContext);
-        _workingMargin.setLeft(marginLeft);
+        ensureWorkingMargin(cssContext).setLeft(marginLeft);
     }
 
-    public void setMarginRight(CssContext cssContext, int marginRight) {
-        ensureWorkingMargin(cssContext);
-        _workingMargin.setRight(marginRight);
+    protected void setMarginRight(CssContext cssContext, int marginRight) {
+        ensureWorkingMargin(cssContext).setRight(marginRight);
     }
 
-    private void ensureWorkingMargin(CssContext cssContext) {
+    @CheckReturnValue
+    private RectPropertySet ensureWorkingMargin(CssContext cssContext) {
         if (_workingMargin == null) {
             _workingMargin = getStyleMargin(cssContext).copyOf();
         }
+        return _workingMargin;
     }
 
     public RectPropertySet getMargin(CssContext cssContext) {
@@ -778,13 +808,12 @@ public abstract class Box implements Styleable {
             return cached;
         }
 
-        final PaintingInfo result = new PaintingInfo();
-
         Rectangle bounds = getMarginEdge(getAbsX(), getAbsY(), c, 0, 0);
-        result.setOuterMarginCorner(
-            new Dimension(bounds.x + bounds.width, bounds.y + bounds.height));
 
-        result.setAggregateBounds(getPaintingClipEdge(c));
+        PaintingInfo result = new PaintingInfo(
+                new Dimension(bounds.x + bounds.width, bounds.y + bounds.height),
+                getPaintingClipEdge(c)
+        );
 
         if (!getStyle().isOverflowApplies() || getStyle().isOverflowVisible()) {
             calcChildPaintingInfo(c, result, useCache);
@@ -805,18 +834,11 @@ public abstract class Box implements Styleable {
         }
     }
 
-    public int getMarginBorderPadding(CssContext cssCtx, int which) {
+    public int getMarginBorderPadding(CssContext cssCtx, Edge edge) {
         BorderPropertySet border = getBorder(cssCtx);
         RectPropertySet margin = getMargin(cssCtx);
         RectPropertySet padding = getPadding(cssCtx);
-
-        return switch (which) {
-            case CalculatedStyle.LEFT -> (int) (margin.left() + border.left() + padding.left());
-            case CalculatedStyle.RIGHT -> (int) (margin.right() + border.right() + padding.right());
-            case CalculatedStyle.TOP -> (int) (margin.top() + border.top() + padding.top());
-            case CalculatedStyle.BOTTOM -> (int) (margin.bottom() + border.bottom() + padding.bottom());
-            default -> throw new IllegalArgumentException("Unsupported margin style: " + which);
-        };
+        return edge.getMarginBorderPadding(margin, border, padding);
     }
 
     protected void moveIfGreater(Dimension result, Dimension test) {
@@ -888,6 +910,8 @@ public abstract class Box implements Styleable {
         _index = index;
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public String getPseudoElementOrClass() {
         return _pseudoElementOrClass;
@@ -961,11 +985,13 @@ public abstract class Box implements Styleable {
         return _contentWidth;
     }
 
+    @Nullable
+    @CheckReturnValue
     public PaintingInfo getPaintingInfo() {
         return _paintingInfo;
     }
 
-    private void setPaintingInfo(PaintingInfo paintingInfo) {
+    private void setPaintingInfo(@Nullable PaintingInfo paintingInfo) {
         _paintingInfo = paintingInfo;
     }
 
@@ -973,19 +999,8 @@ public abstract class Box implements Styleable {
         return _anonymous;
     }
 
-    public void setAnonymous(boolean anonymous) {
-        _anonymous = anonymous;
-    }
-
     public BoxDimensions getBoxDimensions() {
-        BoxDimensions result = new BoxDimensions();
-
-        result.setLeftMBP(getLeftMBP());
-        result.setRightMBP(getRightMBP());
-        result.setContentWidth(getContentWidth());
-        result.setHeight(getHeight());
-
-        return result;
+        return new BoxDimensions(getLeftMBP(), getRightMBP(), getContentWidth(), getHeight());
     }
 
     public void setBoxDimensions(BoxDimensions dimensions) {

@@ -20,19 +20,23 @@
 package org.xhtmlrenderer.swing;
 
 
+import org.jspecify.annotations.Nullable;
 
 /**
  * Denotes a URI pointing to an image that needs to be loaded. BackgroundImageLoaderItem are queued inside a
  * BackgroundImageLoader and loaded by a BackgroundImageLoaderThread.
  */
 class ImageLoadItem {
+    @Nullable
     final ImageResourceLoader _imageResourceLoader;
+    @Nullable
     final String _uri;
+    @Nullable
     final MutableFSImage _mfsImage;
     final int _targetWidth;
     final int _targetHeight;
 
-    public ImageLoadItem(final ImageResourceLoader imageResourceLoader, String uri, MutableFSImage fsi, int width, int height) {
+    public ImageLoadItem(@Nullable ImageResourceLoader imageResourceLoader, @Nullable String uri, @Nullable MutableFSImage fsi, int width, int height) {
         this._imageResourceLoader = imageResourceLoader;
         this._uri = uri;
         this._mfsImage = fsi;

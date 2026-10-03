@@ -19,9 +19,11 @@
  */
 package org.xhtmlrenderer.extend;
 
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
+import org.xhtmlrenderer.css.style.derived.FSLinearGradient;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.FSFont;
@@ -32,9 +34,8 @@ import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.TextDecoration;
 
 import java.awt.*;
-import java.awt.RenderingHints.Key;
 
-public interface OutputDevice {
+public interface OutputDevice<T extends FSImage, FontType extends FSFont> {
     void drawText(RenderingContext c, InlineText inlineText);
     void drawSelection(RenderingContext c, InlineText inlineText);
 
@@ -58,16 +59,18 @@ public interface OutputDevice {
 
     void drawDebugOutline(RenderingContext c, Box box, FSColor color);
 
-    void setFont(FSFont font);
+    void setFont(FontType font);
 
     void setColor(FSColor color);
+    void setOpacity(float opacity);
 
     void drawRect(int x, int y, int width, int height);
     void drawOval(int x, int y, int width, int height);
 
     void drawBorderLine(Shape bounds, int side, int width, boolean solid);
 
-    void drawImage(FSImage image, int x, int y);
+    void drawImage(T image, int x, int y);
+    void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height);
 
     void draw(Shape s);
     void fill(Shape s);
@@ -75,16 +78,34 @@ public interface OutputDevice {
     void fillOval(int x, int y, int width, int height);
 
     void clip(Shape s);
+    @Nullable
     Shape getClip();
     void setClip(Shape s);
 
     void translate(double tx, double ty);
 
+    /**
+     * Applies the box's CSS {@code transform}, if any, around subsequent paint calls for this box
+     * and its descendants; must be paired with a matching {@link #popTransform()}. The default
+     * no-op implementation means CSS {@code transform} only has a visual effect on backends that
+     * override this (currently PDF output only).
+     */
+    default void pushTransform(RenderingContext c, Box box) {
+    }
+
+    /**
+     * Restores the graphics state saved by the matching {@link #pushTransform(RenderingContext, Box)}.
+     */
+    default void popTransform() {
+    }
+
     void setStroke(Stroke s);
     Stroke getStroke();
 
-    Object getRenderingHint(Key key);
-    void setRenderingHint(Key key, Object value);
+    @Nullable
+    Object getRenderingHint(RenderingHints.Key key);
+
+    void setRenderingHint(RenderingHints.Key key, Object value);
 
     boolean isSupportsSelection();
 

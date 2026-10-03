@@ -26,11 +26,14 @@ import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.parser.Token;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+
+import static java.util.Locale.ROOT;
 
 public class FontPropertyBuilder extends AbstractPropertyBuilder {
     // [ [ <'font-style'> || <'font-variant'> || <'font-weight'> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'> ]
@@ -40,7 +43,7 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
 
     @Override
     public List<PropertyDeclaration> buildDeclarations(
-            CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+            CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
         List<PropertyDeclaration> result = checkInheritAll(ALL, values, origin, important, inheritAllowed);
         if (result != null) {
             return result;
@@ -64,7 +67,7 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
                 // (case-wise) in the CSS text since we might be creating
                 // a font-family list out of them.  Here we want the normalized
                 // (lowercase) version though.
-                String lowerCase = value.getStringValue().toLowerCase();
+                String lowerCase = value.getStringValue().toLowerCase(ROOT);
                 value = new PropertyValue(CSSPrimitiveValue.CSS_IDENT, lowerCase, lowerCase);
                 IdentValue ident = checkIdent(value);
                 if (ident == IdentValue.NORMAL) { // skip to avoid double set false positives
@@ -115,7 +118,7 @@ public class FontPropertyBuilder extends AbstractPropertyBuilder {
             PropertyValue value = (PropertyValue)i.next();
 
             if (value.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
-                String lowerCase = value.getStringValue().toLowerCase();
+                String lowerCase = value.getStringValue().toLowerCase(ROOT);
                 value = new PropertyValue(CSSPrimitiveValue.CSS_IDENT, lowerCase, lowerCase);
             }
 

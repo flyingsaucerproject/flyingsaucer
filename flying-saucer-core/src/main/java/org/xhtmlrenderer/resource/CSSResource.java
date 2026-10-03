@@ -19,14 +19,13 @@
  */
 package org.xhtmlrenderer.resource;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+
 import java.io.InputStream;
 
 /**
  * @author Administrator
  */
-@ParametersAreNonnullByDefault
 public class CSSResource extends AbstractResource {
     public CSSResource(@Nullable InputStream stream) {
         super(stream);

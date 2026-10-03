@@ -19,6 +19,8 @@
  */
 package org.xhtmlrenderer.css.parser;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 import java.util.Objects;
 
 public class FSRGBColor implements FSColor {
@@ -30,13 +32,19 @@ public class FSRGBColor implements FSColor {
     private final int _red;
     private final int _green;
     private final int _blue;
+    private final float _alpha;
 
     public FSRGBColor(int red, int green, int blue) {
+        this(red, green, blue, 1.0f);
+    }
+
+    public FSRGBColor(int red, int green, int blue, float alpha) {
         _red = validateColor("Red", red);
         _green = validateColor("Green", green);
         _blue = validateColor("Blue", blue);
+        _alpha = validateAlpha(alpha);
     }
-    
+
     private int validateColor(String name, int color) {
         if (color < 0 || color > 255) {
             throw new IllegalArgumentException(String.format("%s %s is out of range [0, 255]", name, color));
@@ -44,8 +52,15 @@ public class FSRGBColor implements FSColor {
         return color;
     }
 
+    private float validateAlpha(float alpha) {
+        if (alpha < 0 || alpha > 1) {
+            throw new IllegalArgumentException(String.format("alpha %s is out of range [0, 1]", alpha));
+        }
+        return alpha;
+    }
+
     public FSRGBColor(int color) {
-        this(((color & 0xff0000) >> 16),((color & 0x00ff00) >> 8), color & 0xff);
+        this((color & 0xff0000) >> 16, (color & 0x00ff00) >> 8, color & 0xff);
     }
 
     public int getBlue() {
@@ -60,138 +75,90 @@ public class FSRGBColor implements FSColor {
         return _red;
     }
 
-    public String toString() {
-        return '#' + toString(_red) + toString(_green) + toString(_blue);
+    public float getAlpha() {
+        return _alpha;
     }
 
-    private String toString(int color) {
-        String result = Integer.toHexString(color);
-        if (result.length() == 1) {
-            return "0" + result;
+
+    @Override
+    public String toString() {
+        if (_alpha != 1) {
+            return "rgba(" + _red + "," + _green + "," + _blue + "," + _alpha + ")";
         } else {
-            return result;
+            return '#' + toString(_red) + toString(_green) + toString(_blue);
         }
     }
 
+    private String toString(int color) {
+        return String.format("%02x", color);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof FSRGBColor that)) return false;
 
-        return _blue == that._blue && _green == that._green && _red == that._red;
+        return _blue == that._blue && _green == that._green && _red == that._red && _alpha == that._alpha;
     }
 
+    @Override
     public int hashCode() {
         return Objects.hash(_red, _green, _blue);
     }
 
+    @CheckReturnValue
+    @Override
     public FSColor lightenColor() {
-        float[] hsb = RGBtoHSB(getRed(), getGreen(), getBlue(), null);
-        float hBase = hsb[0];
-        float sBase = hsb[1];
-        float bBase = hsb[2];
-
-        float sLighter = 0.35f*bBase*sBase;
-        float bLighter = 0.6999f + 0.3f*bBase;
-
-        int[] rgb = HSBtoRGB(hBase, sLighter, bLighter);
-        return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
+        HSBColor hsb = toHSB();
+        float sLighter = 0.35f * hsb.brightness() * hsb.saturation();
+        float bLighter = 0.6999f + 0.3f * hsb.brightness();
+        return new HSBColor(hsb.hue(), sLighter, bLighter).toRGB();
     }
 
+    @CheckReturnValue
+    @Override
     public FSColor darkenColor() {
-        float[] hsb = RGBtoHSB(getRed(), getGreen(), getBlue(), null);
-        float hBase = hsb[0];
-        float sBase = hsb[1];
-        float bBase = hsb[2];
+        HSBColor hsb = toHSB();
+        float hBase = hsb.hue();
+        float sBase = hsb.saturation();
+        float bBase = hsb.brightness();
         float bDarker = 0.56f * bBase;
 
-        int[] rgb = HSBtoRGB(hBase, sBase, bDarker);
-        return new FSRGBColor(rgb[0], rgb[1], rgb[2]);
+        return new HSBColor(hBase, sBase, bDarker).toRGB();
+    }
+
+    HSBColor toHSB() {
+        return RGBtoHSB(getRed(), getGreen(), getBlue());
     }
 
     // Taken from java.awt.Color to avoid dependency on it
-    private static float[] RGBtoHSB(int r, int g, int b, float[] hsbvals) {
-        float hue, saturation, brightness;
-        if (hsbvals == null) {
-            hsbvals = new float[3];
-        }
-        int cmax = Math.max(r, g);
-        if (b > cmax)
-            cmax = b;
-        int cmin = Math.min(r, g);
-        if (b < cmin)
-            cmin = b;
-
-        brightness = ((float) cmax) / 255.0f;
-        if (cmax != 0)
-            saturation = ((float) (cmax - cmin)) / ((float) cmax);
-        else
-            saturation = 0;
-        if (saturation == 0)
-            hue = 0;
-        else {
-            float redc = ((float) (cmax - r)) / ((float) (cmax - cmin));
-            float greenc = ((float) (cmax - g)) / ((float) (cmax - cmin));
-            float bluec = ((float) (cmax - b)) / ((float) (cmax - cmin));
-            if (r == cmax)
-                hue = bluec - greenc;
-            else if (g == cmax)
-                hue = 2.0f + redc - bluec;
-            else
-                hue = 4.0f + greenc - redc;
-            hue = hue / 6.0f;
-            if (hue < 0)
-                hue = hue + 1.0f;
-        }
-        hsbvals[0] = hue;
-        hsbvals[1] = saturation;
-        hsbvals[2] = brightness;
-        return hsbvals;
+    private static HSBColor RGBtoHSB(int r, int g, int b) {
+        final float cmax = max(r, g, b);
+        final float cmin = min(r, g, b);
+        final float brightness = cmax / 255.0f;
+        final float saturation = cmax == 0.0f ? 0.0f : (cmax - cmin) / cmax;
+        final float hue = saturation == 0 ? 0 : calculateHue(r, g, b, cmax, cmin);
+        return new HSBColor(hue, saturation, brightness);
     }
 
-    // Taken from java.awt.Color to avoid dependency on it
-    private static int[] HSBtoRGB(float hue, float saturation, float brightness) {
-        int r = 0, g = 0, b = 0;
-        if (saturation == 0) {
-            r = g = b = (int) (brightness * 255.0f + 0.5f);
-        } else {
-            float h = (hue - (float) Math.floor(hue)) * 6.0f;
-            float f = h - (float) java.lang.Math.floor(h);
-            float p = brightness * (1.0f - saturation);
-            float q = brightness * (1.0f - saturation * f);
-            float t = brightness * (1.0f - (saturation * (1.0f - f)));
-            switch ((int) h) {
-                case 0:
-                    r = (int) (brightness * 255.0f + 0.5f);
-                    g = (int) (t * 255.0f + 0.5f);
-                    b = (int) (p * 255.0f + 0.5f);
-                    break;
-                case 1:
-                    r = (int) (q * 255.0f + 0.5f);
-                    g = (int) (brightness * 255.0f + 0.5f);
-                    b = (int) (p * 255.0f + 0.5f);
-                    break;
-                case 2:
-                    r = (int) (p * 255.0f + 0.5f);
-                    g = (int) (brightness * 255.0f + 0.5f);
-                    b = (int) (t * 255.0f + 0.5f);
-                    break;
-                case 3:
-                    r = (int) (p * 255.0f + 0.5f);
-                    g = (int) (q * 255.0f + 0.5f);
-                    b = (int) (brightness * 255.0f + 0.5f);
-                    break;
-                case 4:
-                    r = (int) (t * 255.0f + 0.5f);
-                    g = (int) (p * 255.0f + 0.5f);
-                    b = (int) (brightness * 255.0f + 0.5f);
-                    break;
-                case 5:
-                    r = (int) (brightness * 255.0f + 0.5f);
-                    g = (int) (p * 255.0f + 0.5f);
-                    b = (int) (q * 255.0f + 0.5f);
-                    break;
-            }
-        }
-        return new int[] { r, g, b };
+    private static float calculateHue(int r, int g, int b, float cmax, float cmin) {
+        float redc = (cmax - r) / (cmax - cmin);
+        float greenc = (cmax - g) / (cmax - cmin);
+        float bluec = (cmax - b) / (cmax - cmin);
+        final float hue1 = r == cmax ?
+            bluec - greenc : g == cmax ?
+            2.0f + redc - bluec :
+            4.0f + greenc - redc;
+
+        float hue2 = hue1 / 6.0f;
+        return hue1 < 0 ? hue2 + 1.0f : hue2;
+    }
+
+    private static float max(int a, int b, int c) {
+        return Math.max(Math.max(a, b), c);
+    }
+
+    private static float min(int a, int b, int c) {
+        return Math.min(Math.min(a, b), c);
     }
 }

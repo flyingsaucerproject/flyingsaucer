@@ -20,11 +20,15 @@
 package org.xhtmlrenderer.simple;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.beans.Transient;
+
+import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 
 /**
  * <p>{@code FSScrollPane} is a JScrollPane set up to support keyboard navigation of an XHTML/XML
@@ -62,8 +66,6 @@ import java.awt.event.KeyEvent;
  * @author Patrick Wright
  */
 public class FSScrollPane extends JScrollPane {
-    private static final long serialVersionUID = 2L;
-
     /** Constant used for mapping a key binding to "scroll down 1 page" */
     public static final String PAGE_DOWN = "page-down";
 
@@ -82,12 +84,6 @@ public class FSScrollPane extends JScrollPane {
     /** Constant used for mapping a key binding to "scroll to top of document" */
     public static final String PAGE_START = "page-start";
 
-
-    public FSScrollPane() {
-        this(null);
-    }
-
-
     /** Instantiates a new FSScrollPane around the given Panel; see class documentation. */
     public FSScrollPane(JPanel view) {
         super(view, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -96,13 +92,19 @@ public class FSScrollPane extends JScrollPane {
         getVerticalScrollBar().setUnitIncrement(15);
     }
 
+    @Transient
+    @Override
+    public final JScrollBar getVerticalScrollBar() {
+        return super.getVerticalScrollBar();
+    }
+
     @Override
     public void setViewportView(Component view)
     {
         setPreferredSize(new Dimension((int)view.getSize().getWidth(), (int)view.getSize().getHeight()));
-        if (view instanceof JComponent) {
-            setDefaultInputMap((JComponent) view);
-            setDefaultActionMap((JComponent) view);
+        if (view instanceof JComponent jComponent) {
+            setDefaultInputMap(jComponent);
+            setDefaultActionMap(jComponent);
         }
         addResizeListener(view);
         super.setViewportView(view);
@@ -119,11 +121,11 @@ public class FSScrollPane extends JScrollPane {
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), LINE_UP);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_MASK), PAGE_END);
+                put(KeyStroke.getKeyStroke(KeyEvent.VK_END, CTRL_DOWN_MASK), PAGE_END);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), PAGE_END);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
-                put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_MASK), PAGE_START);
+                put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, CTRL_DOWN_MASK), PAGE_START);
         view.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).
                 put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), PAGE_START);
 
@@ -133,8 +135,6 @@ public class FSScrollPane extends JScrollPane {
     private void setDefaultActionMap(JComponent view) {
         view.getActionMap().put(PAGE_DOWN,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -143,8 +143,6 @@ public class FSScrollPane extends JScrollPane {
                 });
         view.getActionMap().put(PAGE_END,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -153,8 +151,6 @@ public class FSScrollPane extends JScrollPane {
                 });
         view.getActionMap().put(PAGE_UP,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -163,8 +159,6 @@ public class FSScrollPane extends JScrollPane {
                 });
         view.getActionMap().put(PAGE_START,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -173,8 +167,6 @@ public class FSScrollPane extends JScrollPane {
                 });
         view.getActionMap().put(LINE_DOWN,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -183,8 +175,6 @@ public class FSScrollPane extends JScrollPane {
                 });
         view.getActionMap().put(LINE_UP,
                 new AbstractAction() {
-                    private static final long serialVersionUID = 1L;
-
                     @Override
                     public void actionPerformed(ActionEvent evt) {
                         JScrollBar sb = getVerticalScrollBar();
@@ -208,7 +198,7 @@ public class FSScrollPane extends JScrollPane {
 
                 // want to page down leaving the current line at the bottom be the first at the top
                 // TODO: this will only work once unit increment is set correctly; multiplier is a workaround (PWW 28-01-05)
-                int incr = (int)(getSize().getHeight() - (bar.getUnitIncrement(1) * 3));
+                int incr = (int)(getSize().getHeight() - bar.getUnitIncrement(1) * 3);
                 getVerticalScrollBar().setBlockIncrement(incr);
             }
         });

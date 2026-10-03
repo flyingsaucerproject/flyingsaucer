@@ -27,18 +27,20 @@ import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.FSFunction;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.xhtmlrenderer.css.parser.PropertyValue.Type.VALUE_TYPE_FUNCTION;
 
 public class ContentPropertyBuilder extends AbstractPropertyBuilder {
 
     @Override
     public List<PropertyDeclaration> buildDeclarations(
-            CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+            CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
         if (values.size() == 1) {
             PropertyValue value = (PropertyValue)values.get(0);
             if (value.getCssValueType() == CSSValue.CSS_INHERIT) {
@@ -66,7 +68,7 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
                 continue;
             } else if (type == CSSPrimitiveValue.CSS_STRING) {
                 resultValues.add(value);
-            } else if (value.getPropertyValueType() == PropertyValue.VALUE_TYPE_FUNCTION) {
+            } else if (value.getPropertyValueType() == VALUE_TYPE_FUNCTION) {
                 if (!isFunctionAllowed(value.getFunction())) {
                     throw new CSSParseException(
                             "Function " + value.getFunction().getName() + " is not allowed here", -1);
@@ -96,9 +98,8 @@ public class ContentPropertyBuilder extends AbstractPropertyBuilder {
     }
 
     private boolean isFunctionAllowed(FSFunction function) {
-        String name = function.getName();
-        return name.equals("attr") || name.equals("counter") || name.equals("counters") ||
-            name.equals("element") || name.startsWith("-fs") || name.equals("target-counter") ||
-            name.equals("leader");
+        return function.is("attr") || function.is("counter") || function.is("counters") ||
+                function.is("element") || function.getName().startsWith("-fs") || function.is("target-counter") ||
+                function.is("leader");
     }
 }

@@ -37,14 +37,11 @@ import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 import org.xml.sax.SAXException;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -53,93 +50,57 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@ParametersAreNonnullByDefault
-public class BrowserPanel extends JPanel implements DocumentListener {
+import static java.util.Objects.requireNonNull;
+
+public final class BrowserPanel extends JPanel implements DocumentListener {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(BrowserPanel.class);
-
-    private static final long serialVersionUID = 1L;
-    private static final int maxLineLength = 80;
-
-    private JButton forward;
-    private JButton backward;
-    private JButton reload;
-    private JButton goHome;
-    private JButton font_inc;
-    private JButton font_rst;
-    private JButton font_dec;
-    JTextField url;
-    BrowserStatus status;
-    public ScalableXHTMLPanel view;
-    private JScrollPane scroll;
-    private final BrowserStartup root;
-    private final BrowserPanelListener listener;
-    private JButton print_preview;
-    
     private static final Logger logger = Logger.getLogger("app.browser");
 
-    private PanelManager manager;
-    JButton goToPage;
-    JToolBar toolbar;
+    private static final int maxLineLength = 80;
+
+    private final JButton forward = new JButton();
+    private final JButton backward = new JButton();
+    private final JButton reload = new JButton();
+    private final JButton goHome = new JButton();
+    final JTextField url = new JTextField();
+    final BrowserStatus status = new BrowserStatus();
+    private final BrowserStartup root;
+    private final BrowserPanelListener listener;
+    private final JButton print_preview = new JButton();
+    private final PanelManager manager = new PanelManager();
+    public final ScalableXHTMLPanel view = new ScalableXHTMLPanel(manager);
+    private final JButton goToPage = new JButton();
+    final JToolBar toolbar;
 
     public BrowserPanel(BrowserStartup root, BrowserPanelListener listener) {
         this.root = root;
         this.listener = listener;
-    }
 
-    public void init() {
-        forward = new JButton();
-        backward = new JButton();
-        JButton stop = new JButton();
-        reload = new JButton();
-        goToPage = new JButton();
-        goHome = new JButton();
+        url.addFocusListener(new SelectOnFocus(url));
 
-        url = new JTextField();
-        url.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                super.focusGained(e);
-                url.selectAll();
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                super.focusLost(e);
-                url.select(0, 0);
-            }
-        });
-
-
-        manager = new PanelManager();
-        view = new ScalableXHTMLPanel(manager);
         manager.setRepaintListener(view);
-        ImageResourceLoader irl = new ImageResourceLoader();
-        irl.setRepaintListener(view);
+        ImageResourceLoader irl = new ImageResourceLoader(view);
         manager.setImageResourceLoader(irl);
         view.getSharedContext().setReplacedElementFactory(new SwingReplacedElementFactory(view, irl));
         view.addDocumentListener(manager);
         view.setCenteredPagedView(true);
         view.setBackground(Color.LIGHT_GRAY);
-        scroll = new FSScrollPane(view);
-        print_preview = new JButton();
-        JButton print = new JButton();
 
         loadCustomFonts();
 
-        status = new BrowserStatus();
-        status.init();
+        toolbar = initToolbar();
 
-        initToolbar();
-
-        int text_width = 200;
-        view.setPreferredSize(new Dimension(text_width, text_width));
+        int textWidth = 200;
+        view.setPreferredSize(new Dimension(textWidth, textWidth));
 
         setLayout(new BorderLayout());
-        this.add(scroll, BorderLayout.CENTER);
+        this.add(new FSScrollPane(view), BorderLayout.CENTER);
+
+        createActions();
     }
 
-    private void initToolbar() {
-        toolbar = new JToolBar();
+    private JToolBar initToolbar() {
+        JToolBar toolbar = new JToolBar();
         toolbar.setRollover(true);
         toolbar.add(backward);
         toolbar.add(forward);
@@ -150,89 +111,20 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         // disabled for R6
         // toolbar.add(print);
         toolbar.setFloatable(false);
+        return toolbar;
     }
 
     private void loadCustomFonts() {
         SharedContext rc = view.getSharedContext();
         try {
             rc.setFontMapping("Fuzz", Font.createFont(Font.TRUETYPE_FONT,
-                    new DemoMarker().getClass().getResourceAsStream("/demos/fonts/fuzz.ttf")));
+                    requireNonNull(DemoMarker.class.getResourceAsStream("/demos/fonts/fuzz.ttf"))));
         } catch (Exception ex) {
             Uu.p(ex);
         }
     }
 
-    public void createLayout() {
-        GridBagLayout gbl = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        setLayout(gbl);
-
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = c.weighty = 0.0;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        gbl.setConstraints(toolbar, c);
-        add(toolbar);
-
-        //c.gridx = 0;
-        c.gridx++;
-        c.gridy++;
-        c.weightx = c.weighty = 0.0;
-        c.insets = new Insets(5, 0, 5, 5);
-        gbl.setConstraints(backward, c);
-        add(backward);
-
-        c.gridx++;
-        gbl.setConstraints(forward, c);
-        add(forward);
-
-        c.gridx++;
-        gbl.setConstraints(reload, c);
-        add(reload);
-
-        c.gridx++;
-        c.fill = GridBagConstraints.NONE;
-        c.weightx = c.weighty = 0.0;
-        gbl.setConstraints(print_preview, c);
-        add(print_preview);
-
-        c.gridx++;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.ipadx = 5;
-        c.ipady = 5;
-        c.weightx = 10.0;
-        c.insets = new Insets(5, 0, 5, 0);
-        gbl.setConstraints(url, c);
-        url.setBorder(BorderFactory.createLoweredBevelBorder());
-        add(url);
-
-        c.gridx++;
-        c.fill = GridBagConstraints.NONE;
-        c.weightx = c.weighty = 0.0;
-        c.insets = new Insets(0, 5, 0, 0);
-        gbl.setConstraints(goToPage, c);
-        add(goToPage);
-
-        c.gridx = 0;
-        c.gridy++;
-        c.ipadx = 0;
-        c.ipady = 0;
-        c.fill = GridBagConstraints.BOTH;
-        c.gridwidth = 7;
-        c.weightx = c.weighty = 10.0;
-        gbl.setConstraints(scroll, c);
-        add(scroll);
-
-        c.gridx = 0;
-        c.gridy++;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weighty = 0.1;
-        gbl.setConstraints(status, c);
-        add(status);
-
-    }
-
-    public void createActions() {
+    private void createActions() {
         // set text to "" to avoid showing action text in button--
         // we only want it in menu items
         backward.setAction(root.actions.backward);
@@ -283,9 +175,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
 
             setStatus("Successfully loaded: " + url_text);
 
-            if (listener != null) {
-                listener.pageLoadSuccess(url_text, view.getDocumentTitle());
-            }
+            listener.pageLoadSuccess(url_text, view.getDocumentTitle());
         } catch (XRRuntimeException ex) {
             XRLog.general(Level.SEVERE, "Runtime exception", ex);
             setStatus("Can't load document");
@@ -357,13 +247,12 @@ public class BrowserPanel extends JPanel implements DocumentListener {
     }
 
     private String getRootCause(Exception ex) {
-        // FIXME
         Throwable cause = ex;
-        while (cause != null) {
+        while (cause.getCause() != null) {
             cause = cause.getCause();
         }
 
-        return cause == null ? ex.getMessage() : cause.getMessage();
+        return cause.toString();
     }
 
     @Override
@@ -385,7 +274,7 @@ public class BrowserPanel extends JPanel implements DocumentListener {
         status.text.setText(txt);
     }
 
-    protected void updateButtons() {
+    private void updateButtons() {
         root.actions.backward.setEnabled(manager.hasBack());
         root.actions.forward.setEnabled(manager.hasForward());
         url.setText(manager.getBaseURL());

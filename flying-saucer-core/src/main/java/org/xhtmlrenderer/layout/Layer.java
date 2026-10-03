@@ -19,6 +19,9 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.PageElementPosition;
 import org.xhtmlrenderer.css.newmatch.PageInfo;
@@ -29,6 +32,7 @@ import org.xhtmlrenderer.newtable.CollapsedBorderValue;
 import org.xhtmlrenderer.newtable.TableBox;
 import org.xhtmlrenderer.newtable.TableCellBox;
 import org.xhtmlrenderer.render.BlockBox;
+import org.xhtmlrenderer.render.BlockBox.Position;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxDimensions;
 import org.xhtmlrenderer.render.InlineLayoutBox;
@@ -36,7 +40,10 @@ import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -50,6 +57,10 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Comparator.comparingInt;
+import static org.xhtmlrenderer.layout.Layer.Width.AUTO;
+import static org.xhtmlrenderer.layout.Layer.Width.NEGATIVE;
+import static org.xhtmlrenderer.layout.Layer.Width.POSITIVE;
+import static org.xhtmlrenderer.layout.Layer.Width.ZERO;
 
 /**
  * All positioned content as well as content with an overflow value other
@@ -63,16 +74,22 @@ import static java.util.Comparator.comparingInt;
  * completed layout).
  */
 public final class Layer {
-    public static final short PAGED_MODE_SCREEN = 1;
-    public static final short PAGED_MODE_PRINT = 2;
+    public enum PagedMode {
+        PAGED_MODE_SCREEN,
+        PAGED_MODE_PRINT
+    }
 
+    @Nullable
     private final Layer _parent;
-    private boolean _stackingContext;
+    private final boolean _stackingContext;
+    @Nullable
     private List<Layer> _children;
     private final Box _master;
 
+    @Nullable
     private Box _end;
 
+    @Nullable
     private List<BlockBox> _floats;
 
     private boolean _fixedBackground;
@@ -81,43 +98,61 @@ public final class Layer {
     private boolean _requiresLayout;
 
     private final List<PageBox> _pages = new ArrayList<>();
+    @Nullable
     private PageBox _lastRequestedPage;
 
+    @Nullable
     private Set<BlockBox> _pageSequences;
+    @Nullable
     private List<BlockBox> _sortedPageSequences;
 
+    @Nullable
     private Map<String, List<BlockBox>> _runningBlocks;
 
     public Layer(Box master) {
-        this(null, master);
-        setStackingContext(true);
+        this(null, master, true);
     }
 
-    public Layer(Layer parent, Box master) {
+    public Layer(@Nullable Layer parent, Box master) {
+        // A transformed box must be a stacking context too, otherwise collectLayers() flattens it and
+        // paints its own layered descendants (position:absolute, nested transforms, ...) outside the
+        // transform established by this layer's paint().
+        this(parent, master,
+                master.getStyle().isPositioned() && !master.getStyle().isAutoZIndex() || master.getStyle().hasTransform());
+    }
+
+    Layer(@Nullable Layer parent, Box master, boolean stackingContext) {
         _parent = parent;
         _master = master;
-        setStackingContext(
-                master.getStyle().isPositioned() && ! master.getStyle().isAutoZIndex());
+        _stackingContext = stackingContext;
         master.setLayer(this);
         master.setContainingLayer(this);
     }
 
+    @Nullable
+    @CheckReturnValue
     public Layer getParent() {
         return _parent;
     }
 
+    @CheckReturnValue
     public boolean isStackingContext() {
         return _stackingContext;
     }
 
-    private void setStackingContext(boolean stackingContext) {
-        _stackingContext = stackingContext;
-    }
-
+    @CheckReturnValue
     public int getZIndex() {
-        return (int) _master.getStyle().asFloat(CSSName.Z_INDEX);
+        // A stacking context not established by z-index (e.g. a transformed box with the default
+        // z-index: auto) is treated as z-index: 0 among its sibling stacking contexts.
+        return _master.getStyle().isAutoZIndex() ? 0 : (int) _master.getStyle().asFloat(CSSName.Z_INDEX);
     }
 
+    public float getOpacity() {
+    	return _master.getStyle().getOpacity();
+	}
+
+
+    @CheckReturnValue
     public Box getMaster() {
         return _master;
     }
@@ -129,13 +164,12 @@ public final class Layer {
         _children.add(layer);
     }
 
-    public void addFloat(BlockBox floater, BlockFormattingContext bfc) {
+    public void addFloat(BlockBox floater) {
         if (_floats == null) {
             _floats = new ArrayList<>();
         }
 
         _floats.add(floater);
-
         floater.getFloatedBoxData().setDrawingLayer(this);
     }
 
@@ -160,12 +194,10 @@ public final class Layer {
         }
     }
 
-    private static final int POSITIVE = 1;
-    private static final int ZERO = 2;
-    private static final int NEGATIVE = 3;
-    private static final int AUTO = 4;
+    enum Width {POSITIVE, ZERO, NEGATIVE, AUTO}
 
-    private List<Layer> collectLayers(int which) {
+    @CheckReturnValue
+    private List<Layer> collectLayers(Width which) {
         List<Layer> result = new ArrayList<>();
 
         if (which != AUTO) {
@@ -185,7 +217,8 @@ public final class Layer {
         return result;
     }
 
-    private List<Layer> getStackingContextLayers(int which) {
+    @CheckReturnValue
+    private List<Layer> getStackingContextLayers(Width which) {
         List<Layer> result = new ArrayList<>();
 
         List<Layer> children = getChildren();
@@ -205,7 +238,8 @@ public final class Layer {
         return result;
     }
 
-    private List<Layer> getSortedLayers(int which) {
+    @CheckReturnValue
+	private List<Layer> getSortedLayers(Width which) {
         List<Layer> result = collectLayers(which);
         result.sort(new ZIndexComparator());
         return result;
@@ -220,17 +254,18 @@ public final class Layer {
 
     private void paintBackgroundsAndBorders(
             RenderingContext c, List<Box> blocks,
-            Map<TableCellBox, List<CollapsedBorderSide>> collapsedTableBorders, BoxRangeLists rangeLists) {
+            @Nullable Map<TableCellBox, List<CollapsedBorderSide>> collapsedTableBorders,
+            BoxRangeLists rangeLists) {
         BoxRangeHelper helper = new BoxRangeHelper(c.getOutputDevice(), rangeLists.getBlock());
 
         for (int i = 0; i < blocks.size(); i++) {
-            helper.popClipRegions(c, i);
+            helper.popClipRegions(i);
 
             Box box = blocks.get(i);
             box.paintBackground(c);
             box.paintBorder(c);
-            if (c.debugDrawBoxes() && box instanceof BlockBox) {
-                ((BlockBox) box).paintDebugOutline(c);
+            if (c.debugDrawBoxes() && box instanceof BlockBox blockBox) {
+                blockBox.paintDebugOutline(c);
             }
 
             if (collapsedTableBorders != null && box instanceof TableCellBox cell) {
@@ -245,7 +280,7 @@ public final class Layer {
             helper.pushClipRegion(c, i);
         }
 
-        helper.popClipRegions(c, blocks.size());
+        helper.popClipRegions(blocks.size());
     }
 
     private void paintInlineContent(RenderingContext c, List<Box> lines, BoxRangeLists rangeLists) {
@@ -253,24 +288,25 @@ public final class Layer {
                 c.getOutputDevice(), rangeLists.getInline());
 
         for (int i = 0; i < lines.size(); i++) {
-            helper.popClipRegions(c, i);
+            helper.popClipRegions(i);
             helper.pushClipRegion(c, i);
             ((InlinePaintable) lines.get(i)).paintInline(c);
         }
 
-        helper.popClipRegions(c, lines.size());
+        helper.popClipRegions(lines.size());
     }
 
     private void paintSelection(RenderingContext c, List<Box> lines) {
         if (c.getOutputDevice().isSupportsSelection()) {
             for (Box paintable : lines) {
-                if (paintable instanceof InlineLayoutBox) {
-                    ((InlineLayoutBox) paintable).paintSelection(c);
+                if (paintable instanceof InlineLayoutBox inlineLayoutBox) {
+                    inlineLayoutBox.paintSelection(c);
                 }
             }
         }
     }
 
+    @CheckReturnValue
     public Dimension getPaintingDimension(LayoutContext c) {
         return calcPaintingDimension(c).getOuterMarginCorner();
     }
@@ -284,51 +320,87 @@ public final class Layer {
             getMaster().paintRootElementBackground(c);
         }
 
-        if (! isInline() && ((BlockBox)getMaster()).isReplaced()) {
-            paintLayerBackgroundAndBorder(c);
-            paintReplacedElement(c, (BlockBox)getMaster());
-        } else {
-            BoxRangeLists rangeLists = new BoxRangeLists();
-
-            List<Box> blocks = new ArrayList<>();
-            List<Box> lines = new ArrayList<>();
-
-            BoxCollector collector = new BoxCollector();
-            collector.collect(c, c.getOutputDevice().getClip(), this, blocks, lines, rangeLists);
-
-            if (! isInline()) {
-                paintLayerBackgroundAndBorder(c);
-                if (c.debugDrawBoxes()) {
-                    ((BlockBox)getMaster()).paintDebugOutline(c);
+        // Apply clip from parent TableCellBox if this layer is inside a paginated table cell
+        Shape originalClip = null;
+        boolean needsClipRestore = false;
+        if (c.isPrint() && !isRootLayer()) {
+            Box master = getMaster();
+            Box parent = master.getParent();
+            // Find the containing TableCellBox if any
+            while (parent != null && !(parent instanceof TableCellBox)) {
+                parent = parent.getParent();
+            }
+            if (parent instanceof TableCellBox) {
+                TableCellBox cell = (TableCellBox) parent;
+                if (cell.getTable().getStyle().isPaginateTable() && cell.isNeedsClipOnPaint(c)) {
+                    Rectangle clipEdge = cell.getChildrenClipEdge(c);
+                    if (clipEdge != null) {
+                        originalClip = c.getOutputDevice().getClip();
+                        c.getOutputDevice().clip(clipEdge);
+                        needsClipRestore = true;
+                    }
                 }
             }
+        }
 
-            if (isRootLayer() || isStackingContext()) {
-                paintLayers(c, getSortedLayers(NEGATIVE));
+        c.getOutputDevice().pushTransform(c, getMaster());
+        try {
+            if (!isInline() && ((BlockBox) getMaster()).isReplaced()) {
+                paintLayerBackgroundAndBorder(c);
+                paintReplacedElement(c, (BlockBox)getMaster());
+            } else {
+                BoxRangeLists rangeLists = new BoxRangeLists();
+
+                List<Box> blocks = new ArrayList<>();
+                List<Box> lines = new ArrayList<>();
+
+                BoxCollector collector = new BoxCollector();
+                collector.collect(c, c.getOutputDevice().getClip(), this, blocks, lines, rangeLists);
+
+                if (!isInline()) {
+                    paintLayerBackgroundAndBorder(c);
+                    if (c.debugDrawBoxes()) {
+                        ((BlockBox)getMaster()).paintDebugOutline(c);
+                    }
+                }
+
+                if (isRootLayer() || isStackingContext()) {
+                    paintLayers(c, getSortedLayers(NEGATIVE));
+                }
+
+                Map<TableCellBox, List<CollapsedBorderSide>> collapsedTableBorders = collectCollapsedTableBorders(blocks);
+
+                paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
+                paintFloats(c);
+                paintListMarkers(c, blocks, rangeLists);
+                paintInlineContent(c, lines, rangeLists);
+                paintReplacedElements(c, blocks, rangeLists);
+                paintSelection(c, lines); // XXX do only when there is a selection
+
+                if (isRootLayer() || isStackingContext()) {
+                    paintLayers(c, collectLayers(AUTO));
+                    // TODO z-index: 0 layers should be painted atomically
+                    paintLayers(c, getSortedLayers(ZERO));
+                    paintLayers(c, getSortedLayers(POSITIVE));
+                }
             }
+        } finally {
+            c.getOutputDevice().popTransform();
 
-            Map<TableCellBox, List<CollapsedBorderSide>> collapsedTableBorders = collectCollapsedTableBorders(blocks);
-
-            paintBackgroundsAndBorders(c, blocks, collapsedTableBorders, rangeLists);
-            paintFloats(c);
-            paintListMarkers(c, blocks, rangeLists);
-            paintInlineContent(c, lines, rangeLists);
-            paintReplacedElements(c, blocks, rangeLists);
-            paintSelection(c, lines); // XXX do only when there is a selection
-
-            if (isRootLayer() || isStackingContext()) {
-                paintLayers(c, collectLayers(AUTO));
-                // TODO z-index: 0 layers should be painted atomically
-                paintLayers(c, getSortedLayers(ZERO));
-                paintLayers(c, getSortedLayers(POSITIVE));
+            // Restore original clip if we applied table cell clipping
+            if (needsClipRestore && originalClip != null) {
+                c.getOutputDevice().setClip(originalClip);
             }
         }
     }
 
+    @CheckReturnValue
     private List<BlockBox> getFloats() {
         return _floats == null ? emptyList() : _floats;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         if (isRootLayer() || isStackingContext()) {
             Box result = find(cssCtx, absX, absY, getSortedLayers(POSITIVE), findAnonymous);
@@ -368,6 +440,8 @@ public final class Layer {
         return null;
     }
 
+    @Nullable
+    @CheckReturnValue
     private Box find(CssContext cssCtx, int absX, int absY, List<Layer> layers, boolean findAnonymous) {
         // Work backwards since layers are painted forwards and we're looking
         // for the top-most box
@@ -387,6 +461,8 @@ public final class Layer {
     // we're about to draw and returns a map with the last cell in a given table
     // we'll paint as a key and a sorted list of borders as values.  These are
     // then painted after we've drawn the background for this cell.
+    @Nullable
+    @CheckReturnValue
     private Map<TableCellBox, List<CollapsedBorderSide>> collectCollapsedTableBorders(List<Box> blocks) {
         Map<TableBox, List<CollapsedBorderSide>> cellBordersByTable = new HashMap<>();
         Map<TableBox, TableCellBox> triggerCellsByTable = new HashMap<>();
@@ -446,7 +522,7 @@ public final class Layer {
         BoxRangeHelper helper = new BoxRangeHelper(c.getOutputDevice(), rangeLists.getBlock());
 
         for (int i = 0; i < blocks.size(); i++) {
-            helper.popClipRegions(c, i);
+            helper.popClipRegions(i);
 
             BlockBox box = (BlockBox)blocks.get(i);
             box.paintListMarker(c);
@@ -454,14 +530,14 @@ public final class Layer {
             helper.pushClipRegion(c, i);
         }
 
-        helper.popClipRegions(c, blocks.size());
+        helper.popClipRegions(blocks.size());
     }
 
     private void paintReplacedElements(RenderingContext c, List<Box> blocks, BoxRangeLists rangeLists) {
         BoxRangeHelper helper = new BoxRangeHelper(c.getOutputDevice(), rangeLists.getBlock());
 
         for (int i = 0; i < blocks.size(); i++) {
-            helper.popClipRegions(c, i);
+            helper.popClipRegions(i);
 
             BlockBox box = (BlockBox)blocks.get(i);
             if (box.isReplaced()) {
@@ -471,7 +547,7 @@ public final class Layer {
             helper.pushClipRegion(c, i);
         }
 
-        helper.popClipRegions(c, blocks.size());
+        helper.popClipRegions(blocks.size());
     }
 
     private void positionFixedLayer(RenderingContext c) {
@@ -485,7 +561,7 @@ public final class Layer {
         fixed.setAbsY(0);
 
         fixed.setContainingBlock(new ViewportBox(rect));
-        ((BlockBox)fixed).positionAbsolute(c, BlockBox.POSITION_BOTH);
+        ((BlockBox)fixed).positionAbsolute(c, Position.BOTH);
 
         fixed.calcPaintingInfo(c, false);
     }
@@ -506,7 +582,7 @@ public final class Layer {
         if (contentBounds.x != loc.x || contentBounds.y != loc.y) {
             replaced.getReplacedElement().setLocation(contentBounds.x, contentBounds.y);
         }
-        if (! c.isInteractive() || replaced.getReplacedElement().isRequiresInteractivePaint()) {
+        if (!c.isInteractive() || replaced.getReplacedElement().isRequiresInteractivePaint()) {
             c.getOutputDevice().paintReplacedElement(c, replaced);
         }
     }
@@ -524,15 +600,15 @@ public final class Layer {
         }
     }
 
+    @CheckReturnValue
     private PaintingInfo calcPaintingDimension(LayoutContext c) {
         getMaster().calcPaintingInfo(c, true);
         PaintingInfo result = getMaster().getPaintingInfo().copyOf();
 
         List<Layer> children = getChildren();
         for (Layer child : children) {
-            if (child.getMaster().getStyle().isFixed()) {
-                continue;
-            } else if (child.getMaster().getStyle().isAbsolute()) {
+            CalculatedStyle masterStyle = child.getMaster().getStyle();
+            if (!masterStyle.isFixed() && masterStyle.isAbsolute()) {
                 PaintingInfo info = child.calcPaintingDimension(c);
                 moveIfGreater(result.getOuterMarginCorner(), info.getOuterMarginCorner());
             }
@@ -548,13 +624,12 @@ public final class Layer {
     }
 
     private void position(LayoutContext c) {
-
-        if (getMaster().getStyle().isAbsolute() && ! c.isPrint()) {
-            ((BlockBox)getMaster()).positionAbsolute(c, BlockBox.POSITION_BOTH);
+        if (getMaster().getStyle().isAbsolute() && !c.isPrint()) {
+            ((BlockBox) getMaster()).positionAbsolute(c, Position.BOTH);
         } else if (getMaster().getStyle().isRelative() &&
                 (isInline() || ((BlockBox)getMaster()).isInline())) {
             getMaster().positionRelative(c);
-            if (! isInline()) {
+            if (!isInline()) {
                 getMaster().calcCanvasLocation();
                 getMaster().calcChildLocations();
             }
@@ -562,6 +637,7 @@ public final class Layer {
         }
     }
 
+    @CheckReturnValue
     private boolean containsFixedLayer() {
         for (Layer child : getChildren()) {
             if (child.getMaster().getStyle().isFixed() || child.containsFixedLayer()) {
@@ -571,6 +647,7 @@ public final class Layer {
         return false;
     }
 
+    @CheckReturnValue
     public boolean containsFixedContent() {
         return _fixedBackground || containsFixedLayer();
     }
@@ -579,6 +656,7 @@ public final class Layer {
         _fixedBackground = b;
     }
 
+    @CheckReturnValue
     public synchronized List<Layer> getChildren() {
         return _children == null ? emptyList() : unmodifiableList(_children);
     }
@@ -600,7 +678,7 @@ public final class Layer {
             }
         }
 
-        if (! removed) {
+        if (!removed) {
             throw new RuntimeException("Could not find layer to remove");
         }
     }
@@ -611,6 +689,7 @@ public final class Layer {
         }
     }
 
+    @CheckReturnValue
     public boolean isInline() {
         return _inline;
     }
@@ -619,6 +698,8 @@ public final class Layer {
         _inline = inline;
     }
 
+    @Nullable
+    @CheckReturnValue
     public Box getEnd() {
         return _end;
     }
@@ -627,6 +708,7 @@ public final class Layer {
         _end = end;
     }
 
+    @CheckReturnValue
     public boolean isRequiresLayout() {
         return _requiresLayout;
     }
@@ -639,7 +721,7 @@ public final class Layer {
         if (c.isPrint()) {
             layoutAbsoluteChildren(c);
         }
-        if (! isInline()) {
+        if (!isInline()) {
             positionChildren(c);
         }
     }
@@ -674,12 +756,12 @@ public final class Layer {
         BlockBox master = (BlockBox)child.getMaster();
         if (child.getMaster().getStyle().isBottomAuto()) {
             // Set top, left
-            master.positionAbsolute(c, BlockBox.POSITION_BOTH);
+            master.positionAbsolute(c, Position.BOTH);
             master.positionAbsoluteOnPage(c);
             c.reInit(true);
             ((BlockBox)child.getMaster()).layout(c);
             // Set right
-            master.positionAbsolute(c, BlockBox.POSITION_HORIZONTALLY);
+            master.positionAbsolute(c, Position.HORIZONTALLY);
         } else {
             // FIXME Not right in the face of pagination, but what
             // to do?  Not sure if just laying out and positioning
@@ -692,7 +774,7 @@ public final class Layer {
             master.reset(c);
             BoxDimensions after = master.getBoxDimensions();
             master.setBoxDimensions(before);
-            master.positionAbsolute(c, BlockBox.POSITION_BOTH);
+            master.positionAbsolute(c, Position.BOTH);
             master.positionAbsoluteOnPage(c);
             master.setBoxDimensions(after);
 
@@ -701,6 +783,7 @@ public final class Layer {
         }
     }
 
+    @CheckReturnValue
     public List<PageBox> getPages() {
         return _pages;
     }
@@ -710,59 +793,60 @@ public final class Layer {
     }
 
     public void addPage(CssContext c) {
-        String pseudoPage;
         List<PageBox> pages = getPages();
-        if (pages.isEmpty()) {
-            pseudoPage = "first";
-        } else if (pages.size() % 2 == 0) {
-            pseudoPage = "right";
-        } else {
-            pseudoPage = "left";
-        }
-        PageBox pageBox = createPageBox(c, pseudoPage);
-        if (pages.isEmpty()) {
-            pageBox.setTopAndBottom(c, 0);
-        } else {
-            PageBox previous = pages.get(pages.size()-1);
-            pageBox.setTopAndBottom(c, previous.getBottom());
-        }
-
-        pageBox.setPageNo(pages.size());
+        int pagesCount = pages.size();
+        String pseudoPage = pseudoPage(pagesCount);
+        PageBox pageBox = pages.isEmpty() ?
+                createPageBox(c, pseudoPage, 0, pagesCount) :
+                createPageBox(c, pseudoPage, pages.get(pagesCount - 1).getBottom(), pagesCount);
         pages.add(pageBox);
     }
 
+    private static String pseudoPage(int size) {
+        if (size == 0) {
+            return "first";
+        } else if (size % 2 == 0) {
+            return "right";
+        } else {
+            return "left";
+        }
+    }
+
     public void removeLastPage() {
-        PageBox pageBox = _pages.remove(_pages.size()-1);
+        PageBox pageBox = _pages.remove(_pages.size() - 1);
         if (pageBox == getLastRequestedPage()) {
             setLastRequestedPage(null);
         }
     }
 
+    @CheckReturnValue
     public static PageBox createPageBox(CssContext c, String pseudoPage) {
-        PageBox result = new PageBox();
+        return createPageBox(c, pseudoPage, 0, 0);
+    }
 
+    @CheckReturnValue
+    public static PageBox createPageBox(CssContext c, String pseudoPage, int top, int pageNo) {
         String pageName = null;
         // HACK We only create pages during layout, but the OutputDevice
         // queries page positions and since pages are created lazily, changing
         // this method to use LayoutContext is tricky
-        if (c instanceof LayoutContext) {
-            pageName = ((LayoutContext)c).getPageName();
+        if (c instanceof LayoutContext layoutContext) {
+            pageName = layoutContext.getPageName();
         }
 
         PageInfo pageInfo = c.getCss().getPageStyle(pageName, pseudoPage);
-        result.setPageInfo(pageInfo);
-
         CalculatedStyle cs = new EmptyStyle().deriveStyle(pageInfo.getPageStyle());
-        result.setStyle(cs);
-        result.setOuterPageWidth(result.getWidth(c));
-
-        return result;
+        return new PageBox(pageInfo, c, cs, top, pageNo);
     }
 
+    @Nullable
+    @CheckReturnValue
     public PageBox getFirstPage(CssContext c, Box box) {
         return getPage(c, box.getAbsY());
     }
 
+    @Nullable
+    @CanIgnoreReturnValue
     public PageBox getLastPage(CssContext c, Box box) {
         return getPage(c, box.getAbsY() + box.getHeight() - 1);
     }
@@ -771,6 +855,8 @@ public final class Layer {
         getLastPage(c, box);
     }
 
+    @Nullable
+    @CanIgnoreReturnValue
     public PageBox getPage(CssContext c, int yOffset) {
         List<PageBox> pages = getPages();
         if (yOffset < 0) {
@@ -801,7 +887,7 @@ public final class Layer {
                 int high = count-6;
 
                 while (low <= high) {
-                    int mid = (low + high) >> 1;
+                    int mid = low + high >> 1;
                     PageBox pageBox = pages.get(mid);
 
                     if (yOffset >= pageBox.getTop() && yOffset < pageBox.getBottom()) {
@@ -861,22 +947,19 @@ public final class Layer {
         }
     }
 
-    public void assignPagePaintingPositions(CssContext cssCtx, short mode) {
+    public void assignPagePaintingPositions(CssContext cssCtx, PagedMode mode) {
         assignPagePaintingPositions(cssCtx, mode, 0);
     }
 
     public void assignPagePaintingPositions(
-            CssContext cssCtx, int mode, int additionalClearance) {
+            CssContext cssCtx, PagedMode mode, int additionalClearance) {
         List<PageBox> pages = getPages();
         int paintingTop = additionalClearance;
         for (PageBox page : pages) {
             page.setPaintingTop(paintingTop);
-            if (mode == PAGED_MODE_SCREEN) {
-                page.setPaintingBottom(paintingTop + page.getHeight(cssCtx));
-            } else if (mode == PAGED_MODE_PRINT) {
-                page.setPaintingBottom(paintingTop + page.getContentHeight(cssCtx));
-            } else {
-                throw new IllegalArgumentException("Illegal mode");
+            switch (mode) {
+                case PAGED_MODE_SCREEN -> page.setPaintingBottom(paintingTop + page.getHeight(cssCtx));
+                case PAGED_MODE_PRINT -> page.setPaintingBottom(paintingTop + page.getContentHeight(cssCtx));
             }
             paintingTop = page.getPaintingBottom() + additionalClearance;
         }
@@ -895,6 +978,7 @@ public final class Layer {
         return maxWidth;
     }
 
+    @Nullable
     public PageBox getLastPage() {
         List<PageBox> pages = getPages();
         return pages.isEmpty() ? null : pages.get(pages.size()-1);
@@ -908,6 +992,7 @@ public final class Layer {
         return bottom >= page.getBottom() - c.getExtraSpaceBottom();
     }
 
+    @CheckReturnValue
     public Layer findRoot() {
         if (isRootLayer()) {
             return this;
@@ -922,11 +1007,8 @@ public final class Layer {
         }
 
         String identifier = block.getStyle().getRunningName();
-
         List<BlockBox> blocks = _runningBlocks.computeIfAbsent(identifier, k -> new ArrayList<>());
-
         blocks.add(block);
-
         blocks.sort(comparingInt(Box::getAbsY));
     }
 
@@ -938,13 +1020,12 @@ public final class Layer {
         String identifier = block.getStyle().getRunningName();
 
         List<BlockBox> blocks = _runningBlocks.get(identifier);
-        if (blocks == null) {
-            return;
+        if (blocks != null) {
+            blocks.remove(block);
         }
-
-        blocks.remove(block);
     }
 
+    @Nullable
     public BlockBox getRunningBlock(String identifier, PageBox page, PageElementPosition which) {
         if (_runningBlocks == null) {
             return null;
@@ -1014,6 +1095,8 @@ public final class Layer {
         _pageSequences.add(start);
     }
 
+    @Nullable
+    @CanIgnoreReturnValue
     private List<BlockBox> getSortedPageSequences() {
         if (_pageSequences == null) {
             return null;
@@ -1021,9 +1104,7 @@ public final class Layer {
 
         if (_sortedPageSequences == null) {
             List<BlockBox> result = new ArrayList<>(_pageSequences);
-
             result.sort(comparingInt(Box::getAbsY));
-
             _sortedPageSequences = result;
         }
 
@@ -1036,7 +1117,7 @@ public final class Layer {
         if (c.getInitialPageNo() > 0) {
             initial = c.getInitialPageNo() - 1;
         }
-        if ((sequences == null) || sequences.isEmpty()) {
+        if (sequences == null || sequences.isEmpty()) {
             return initial + getPage(c, absY).getPageNo();
         } else {
             BlockBox pageSequence = findPageSequence(sequences, absY);
@@ -1046,19 +1127,20 @@ public final class Layer {
         }
     }
 
+    @Nullable
+    @CheckReturnValue
     private BlockBox findPageSequence(List<BlockBox> sequences, int absY) {
-        BlockBox result = null;
-
         for (int i = 0; i < sequences.size(); i++) {
-            result = sequences.get(i);
-            if ((i < sequences.size() - 1) && (sequences.get(i + 1).getAbsY() > absY)) {
-                break;
+            BlockBox result = sequences.get(i);
+            if (i < sequences.size() - 1 && sequences.get(i + 1).getAbsY() > absY) {
+                return result;
             }
         }
 
-        return result;
+        return null;
     }
 
+    @CheckReturnValue
     public int getRelativePageNo(RenderingContext c) {
         List<BlockBox> sequences = getSortedPageSequences();
         int initial = 0;
@@ -1078,6 +1160,7 @@ public final class Layer {
         }
     }
 
+    @CheckReturnValue
     public int getRelativePageCount(RenderingContext c) {
         List<BlockBox> sequences = getSortedPageSequences();
         int initial = 0;
@@ -1115,6 +1198,7 @@ public final class Layer {
         }
     }
 
+    @CheckReturnValue
     private int getPageSequenceStart(List<BlockBox> sequences, PageBox page) {
         for (int i = sequences.size() - 1; i >= 0; i--) {
             BlockBox start = sequences.get(i);
@@ -1126,11 +1210,13 @@ public final class Layer {
         return -1;
     }
 
+    @Nullable
+    @CheckReturnValue
     private PageBox getLastRequestedPage() {
         return _lastRequestedPage;
     }
 
-    private void setLastRequestedPage(PageBox lastRequestedPage) {
+    private void setLastRequestedPage(@Nullable PageBox lastRequestedPage) {
         _lastRequestedPage = lastRequestedPage;
     }
 }

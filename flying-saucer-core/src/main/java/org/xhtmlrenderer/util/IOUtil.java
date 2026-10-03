@@ -1,9 +1,9 @@
 package org.xhtmlrenderer.util;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,6 +13,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Path;
@@ -24,7 +27,6 @@ import static java.nio.file.Files.newOutputStream;
 /**
  * @author patrick
  */
-@ParametersAreNonnullByDefault
 public class IOUtil {
     public static void copyFile(File page, File outputDir) throws IOException {
         File outputFile = new File(outputDir, page.getName());
@@ -61,24 +63,31 @@ public class IOUtil {
      * and reading from it. will return the stream, or null if unable to open or read or a timeout occurred. Does not
      * buffer the stream.
      */
+    @Nullable
     public static InputStream openStreamAtUrl(String uri) {
         try {
-            URLConnection uc = new URL(uri).openConnection();
-            uc.setConnectTimeout(10 * 1000);
-            uc.setReadTimeout(30 * 1000);
-            uc.setRequestProperty("Accept", "*/*");
-            uc.connect();
-            
-            return uc.getInputStream();
-        } catch (java.net.MalformedURLException e) {
+            return streamAtUrl(uri);
+        } catch (MalformedURLException | URISyntaxException e) {
             XRLog.exception("bad URL given: " + uri, e);
         } catch (FileNotFoundException e) {
-            XRLog.exception("item at URI " + uri + " not found");
+            XRLog.exception("item at URI " + uri + " not found (caused by: " + e + ")");
         } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         }
 
         return null;
+    }
+
+    @NullMarked
+    @CheckReturnValue
+    public static InputStream streamAtUrl(String uri) throws IOException, URISyntaxException {
+        URLConnection uc = new URI(uri).toURL().openConnection();
+        uc.setConnectTimeout(10 * 1000);
+        uc.setReadTimeout(30 * 1000);
+        uc.setRequestProperty("Accept", "*/*");
+        uc.connect();
+
+        return uc.getInputStream();
     }
 
     /**
@@ -88,22 +97,22 @@ public class IOUtil {
      */
     @Nullable
     @CheckReturnValue
-    public static InputStream getInputStream(String uri) {
+    public static InputStream getInputStream(@Nullable String uri) {
+        if (uri == null) return null;
         try {
-            return new URL(uri).openStream();
-        } catch (java.net.MalformedURLException e) {
+            return new BufferedInputStream(new URL(uri).openStream());
+        } catch (MalformedURLException e) {
             XRLog.exception("bad URL given: " + uri, e);
-        } catch (java.io.FileNotFoundException e) {
-            XRLog.exception("item at URI " + uri + " not found");
-        } catch (java.io.IOException e) {
+        } catch (FileNotFoundException e) {
+            XRLog.exception("item at URI " + uri + " not found (caused by: " + e + ")");
+        } catch (IOException e) {
             XRLog.exception("IO problem for " + uri, e);
         }
         return null;
     }
 
-    @Nullable
     @CheckReturnValue
-    public static byte[] readBytes(String uri) {
+    public static byte @Nullable [] readBytes(String uri) {
         try (InputStream is = getInputStream(uri)) {
             if (is == null) return null;
             return readBytes(is);
@@ -113,7 +122,6 @@ public class IOUtil {
         }
     }
 
-    @Nonnull
     @CheckReturnValue
     public static byte[] readBytes(Path file) throws IOException {
         try (InputStream is = newInputStream(file)) {
@@ -121,7 +129,6 @@ public class IOUtil {
         }
     }
 
-    @Nonnull
     @CheckReturnValue
     public static byte[] readBytes(InputStream is) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream(is.available());
@@ -129,6 +136,11 @@ public class IOUtil {
         return result.toByteArray();
     }
 
+    /**
+     * @deprecated Use try-with-resources idiom instead.
+     */
+    @Deprecated
+    @SuppressWarnings("EmptyCatch")
     public static void close(@Nullable Closeable in) {
         if (in != null) {
             try {

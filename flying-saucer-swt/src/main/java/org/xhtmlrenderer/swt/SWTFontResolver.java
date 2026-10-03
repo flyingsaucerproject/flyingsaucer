@@ -19,10 +19,12 @@
  */
 package org.xhtmlrenderer.swt;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.jspecify.annotations.Nullable;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.extend.FontResolver;
@@ -58,7 +60,7 @@ public class SWTFontResolver implements FontResolver {
 
     public SWTFontResolver(Device device) {
         _device = device;
-        _pointsPerPixel = 72f / device.getDPI().y;
+        _pointsPerPixel = 72.0f / device.getDPI().y;
 
         // system fonts
         String system_font_family = _device.getSystemFont().getFontData()[0].getName();
@@ -87,6 +89,7 @@ public class SWTFontResolver implements FontResolver {
         _system_font = new SWTFSFont(systemFont, systemFont.getFontData()[0].getHeight(), true);
     }
 
+    @Override
     public void flushCache() {
         for (SWTFSFont swtfsFont : _instance_hash.values()) {
             swtfsFont.dispose();
@@ -94,11 +97,14 @@ public class SWTFontResolver implements FontResolver {
         _instance_hash.clear();
     }
 
+    @Nullable
+    @CheckReturnValue
+    @Override
     public FSFont resolveFont(SharedContext renderingContext, FontSpecification spec) {
-        if (spec.families != null) {
-            for (int i = 0; i < spec.families.length; i++) {
-                FSFont font = resolveFont(renderingContext, spec.families[i], spec.size,
-                        spec.fontWeight, spec.fontStyle, spec.variant);
+        if (spec.families() != null) {
+            for (int i = 0; i < spec.families().length; i++) {
+                FSFont font = resolveFont(renderingContext, spec.families()[i], spec.size(),
+                        spec.fontWeight(), spec.fontStyle(), spec.variant());
                 if (font != null) {
                     return font;
                 }
@@ -106,8 +112,8 @@ public class SWTFontResolver implements FontResolver {
         }
 
         // no font found, fall back to standard sans
-        FSFont font = resolveFont(renderingContext, "sans-serif", spec.size, spec.fontWeight,
-                spec.fontStyle, spec.variant);
+        FSFont font = resolveFont(renderingContext, "sans-serif", spec.size(), spec.fontWeight(),
+                spec.fontStyle(), spec.variant());
         if (font != null) {
             return font;
         }
@@ -118,8 +124,11 @@ public class SWTFontResolver implements FontResolver {
         return _system_font;
     }
 
-    private SWTFSFont resolveFont(SharedContext ctx, String font, float size, IdentValue weight,
-            IdentValue style, IdentValue variant) {
+    @Nullable
+    private SWTFSFont resolveFont(SharedContext ctx, String font, float size,
+                                  @Nullable IdentValue weight,
+                                  @Nullable IdentValue style,
+                                  @Nullable IdentValue variant) {
         // strip off the "s if they are there
         if (font.startsWith("\"")) {
             font = font.substring(1);

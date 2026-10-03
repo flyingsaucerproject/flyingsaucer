@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.parser.property;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
@@ -26,6 +27,7 @@ import org.xhtmlrenderer.css.parser.CSSParseException;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.parser.PropertyValue;
 import org.xhtmlrenderer.css.sheet.PropertyDeclaration;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,8 @@ public class BorderPropertyBuilders {
     private abstract static class BorderSidePropertyBuilder extends AbstractPropertyBuilder {
         protected abstract CSSName[][] getProperties();
 
-        private void addAll(List<PropertyDeclaration> result, CSSName[] properties, CSSPrimitiveValue value, int origin, boolean important) {
+        private void addAll(List<PropertyDeclaration> result, CSSName[] properties, CSSPrimitiveValue value,
+                            Origin origin, boolean important) {
             for (CSSName property : properties) {
                 result.add(new PropertyDeclaration(
                         property, value, important, origin));
@@ -45,19 +48,17 @@ public class BorderPropertyBuilders {
 
         @Override
         public List<PropertyDeclaration> buildDeclarations(
-                CSSName cssName, List<? extends CSSPrimitiveValue> values, int origin, boolean important, boolean inheritAllowed) {
+                CSSName cssName, List<? extends CSSPrimitiveValue> values, Origin origin, boolean important, boolean inheritAllowed) {
             CSSName[][] props = getProperties();
 
             List<PropertyDeclaration> result = new ArrayList<>(3);
 
-            if (values.size() == 1 &&
-                    values.get(0).getCssValueType() == CSS_INHERIT) {
+            if (values.size() == 1 && values.get(0).getCssValueType() == CSS_INHERIT) {
                 CSSPrimitiveValue value = values.get(0);
                 addAll(result, props[0], value, origin, important);
                 addAll(result, props[1], value, origin, important);
                 addAll(result, props[2], value, origin, important);
 
-                return result;
             } else {
                 assertFoundUpToValues(cssName, values, 3);
                 boolean haveBorderStyle = false;
@@ -101,20 +102,20 @@ public class BorderPropertyBuilders {
                     }
                 }
 
-                if (! haveBorderWidth) {
+                if (!haveBorderWidth) {
                     addAll(result, props[0], new PropertyValue(IdentValue.FS_INITIAL_VALUE), origin, important);
                 }
 
-                if (! haveBorderStyle) {
+                if (!haveBorderStyle) {
                     addAll(result, props[1], new PropertyValue(IdentValue.FS_INITIAL_VALUE), origin, important);
                 }
 
-                if (! haveBorderColor) {
+                if (!haveBorderColor) {
                     addAll(result, props[2], new PropertyValue(IdentValue.FS_INITIAL_VALUE), origin, important);
                 }
 
-                return result;
             }
+            return result;
         }
 
         private boolean isBorderStyle(CSSPrimitiveValue value) {
@@ -130,9 +131,10 @@ public class BorderPropertyBuilders {
             return PrimitivePropertyBuilders.BORDER_STYLES.get(ident.FS_ID);
         }
 
+        @Nullable
         private CSSPrimitiveValue convertToBorderWidth(CSSPrimitiveValue value) {
             int type = value.getPrimitiveType();
-            if (type != CSSPrimitiveValue.CSS_IDENT && ! isLength(value)) {
+            if (type != CSSPrimitiveValue.CSS_IDENT && !isLength(value)) {
                 return null;
             }
 
@@ -152,15 +154,14 @@ public class BorderPropertyBuilders {
             }
         }
 
+        @Nullable
         private CSSPrimitiveValue convertToBorderColor(CSSPrimitiveValue value) {
             int type = value.getPrimitiveType();
             if (type != CSSPrimitiveValue.CSS_IDENT && type != CSSPrimitiveValue.CSS_RGBCOLOR) {
                 return null;
             }
 
-            if (type == CSSPrimitiveValue.CSS_RGBCOLOR) {
-                return value;
-            } else {
+            if (type != CSSPrimitiveValue.CSS_RGBCOLOR) {
                 FSRGBColor color = Conversions.getColor(value.getStringValue());
                 if (color != null) {
                     return new PropertyValue(color);
@@ -170,9 +171,8 @@ public class BorderPropertyBuilders {
                 if (ident == null || ident != IdentValue.TRANSPARENT) {
                     return null;
                 }
-
-                return value;
             }
+            return value;
         }
     }
 

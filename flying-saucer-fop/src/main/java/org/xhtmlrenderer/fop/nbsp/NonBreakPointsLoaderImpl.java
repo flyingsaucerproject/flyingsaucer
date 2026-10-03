@@ -18,28 +18,26 @@
  */
 package org.xhtmlrenderer.fop.nbsp;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyList;
 
 /**
+ * Loads non-breaking points for a given language
+ *
  * @author Lukas Zaruba, lukas.zaruba@gmail.com
  */
-@ParametersAreNonnullByDefault
 public class NonBreakPointsLoaderImpl implements NonBreakPointsLoader {
 
     @Override
-    @Nonnull
     @CheckReturnValue
     public List<String> loadNBSP(@Nullable String lang) {
         if (lang == null || lang.isEmpty()) {
@@ -58,20 +56,17 @@ public class NonBreakPointsLoaderImpl implements NonBreakPointsLoader {
     @CheckReturnValue
     private List<String> loadForKey(String lang) {
         String path = "non-break-spaces/" + lang + ".nbsp";
-        
+
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path)) {
             if (is == null) return null;
-            BufferedReader r = new BufferedReader(new InputStreamReader(is, UTF_8));
-            List<String> result = new ArrayList<>();
-            String line;
-            while ((line = r.readLine()) != null) {
-                if (line.isEmpty() || line.startsWith("#")) continue;
-                result.add(line);
+            try (BufferedReader r = new BufferedReader(new InputStreamReader(is, UTF_8))) {
+                return r.lines()
+                        .filter(line -> !line.isEmpty())
+                        .filter(line -> !line.startsWith("#"))
+                        .toList();
             }
-            return result;
         } catch (IOException e) {
             throw new RuntimeException("Error while loading nbsp file from path " + path, e);
         }
     }
-
 }

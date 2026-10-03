@@ -37,7 +37,7 @@ public class DefaultLineBreakingStrategy implements LineBreakingStrategy {
         @Override
             public BreakPoint next() {
                 int next = iterator.next();
-                if (next < 0) return BreakPoint.getDonePoint();
+                if (next < 0) return BreakPoint.DONE;
                 return new BreakPoint(next);
             }
         }

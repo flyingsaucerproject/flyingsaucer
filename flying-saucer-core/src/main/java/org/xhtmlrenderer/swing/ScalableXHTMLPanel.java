@@ -20,6 +20,7 @@
 
 package org.xhtmlrenderer.swing;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.Layer;
@@ -28,20 +29,18 @@ import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.print.PrinterGraphics;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ScalableXHTMLPanel extends {@link org.xhtmlrenderer.simple.XHTMLPanel} to allow zoom on output.
  *
  * @author chm
  */
-@ParametersAreNonnullByDefault
 public class ScalableXHTMLPanel extends XHTMLPanel {
 
     public static final int SCALE_POLICY_NONE = 0;
@@ -49,21 +48,15 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
     public static final int SCALE_POLICY_FIT_HEIGHT = 0x02;
     public static final int SCALE_POLICY_FIT_WHOLE = SCALE_POLICY_FIT_WIDTH + SCALE_POLICY_FIT_HEIGHT;
 
-    private static final long serialVersionUID = 1L;
-
     private int scalePolicy = SCALE_POLICY_NONE;
     private double scale = -1.0d;
-    private final java.util.List<ScaleChangeListener> scListeners = new ArrayList<>();
+    private final List<ScaleChangeListener> scListeners = new ArrayList<>();
+
     /**
      * The lastly calculated layout size
      */
-    private Dimension lastLayoutSize = null;
-
-    /**
-     * Instantiates an XHTMLPanel with no {@link Document} loaded by default.
-     */
-    public ScalableXHTMLPanel() {
-    }
+    @Nullable
+    private Dimension lastLayoutSize;
 
     /**
      * Instantiates a panel with a custom {@link org.xhtmlrenderer.extend.UserAgentCallback}
@@ -114,6 +107,7 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
      * @param y the displayed y position
      */
     @Override
+    @Nullable
     public Box find(int x, int y) {
         Point p = convertFromScaled(x, y);
         Layer l = getRootLayer();
@@ -173,14 +167,16 @@ public class ScalableXHTMLPanel extends XHTMLPanel {
         AffineTransform current = g.getTransform();
 
         PaintingInfo pI = root.getMaster().getPaintingInfo();
-        Dimension layoutSize = pI.getOuterMarginCorner();
+        if (pI != null) {
+            Dimension layoutSize = pI.getOuterMarginCorner();
 
-        calculateScaleAccordingToPolicy(layoutSize);
+            calculateScaleAccordingToPolicy(layoutSize);
 
-        if (lastLayoutSize == null) {
-            lastLayoutSize = layoutSize;
-            setPreferredSize(new Dimension((int) (lastLayoutSize.width * scale), (int) (lastLayoutSize.height * scale)));
-            revalidate();
+            if (lastLayoutSize == null) {
+                lastLayoutSize = layoutSize;
+                setPreferredSize(new Dimension((int) (lastLayoutSize.width * scale), (int) (lastLayoutSize.height * scale)));
+                revalidate();
+            }
         }
 
         g.transform(AffineTransform.getScaleInstance(scale, scale));

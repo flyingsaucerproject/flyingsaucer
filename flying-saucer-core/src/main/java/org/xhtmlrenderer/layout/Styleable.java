@@ -19,12 +19,11 @@
  */
 package org.xhtmlrenderer.layout;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.render.InlineLayoutBox;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
 
 /**
  * All objects appearing the layout tree must implement this interface.  It
@@ -35,14 +34,19 @@ import javax.annotation.Nullable;
  * (e.g. {@code :before} and {@code :after} pseudo-elements)
  */
 public interface Styleable {
+    @Nullable
+    @CheckReturnValue
     CalculatedStyle getStyle();
-    void setStyle(CalculatedStyle style);
+
+    void setStyle(@Nullable CalculatedStyle style);
 
     @Nullable
     @CheckReturnValue
     Element getElement();
-    
-    void setElement(Element e);
 
+    void setElement(@Nullable Element e);
+
+    @Nullable
+    @CheckReturnValue
     String getPseudoElementOrClass();
 }

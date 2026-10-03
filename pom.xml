@@ -6,14 +6,14 @@
 
   <groupId>org.xhtmlrenderer</groupId>
   <artifactId>flying-saucer-parent</artifactId>
-  <version>9.9.3-SNAPSHOT</version>
+  <version>10.6.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
   <name>Flying Saucer</name>
   <description>Flying Saucer is a CSS 2.1 renderer written in Java. It supports Java2D, PDF, and SWT output.</description>
 
-  <url>http://code.google.com/p/flying-saucer/</url>
+  <url>https://github.com/flyingsaucerproject/flyingsaucer</url>
 
   <licenses>
     <license>
@@ -28,6 +28,11 @@
         <groupId>com.github.librepdf</groupId>
         <artifactId>openpdf</artifactId>
         <version>${openpdf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit</groupId>
@@ -53,10 +58,16 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-      <version>3.0.2</version>
-      <scope>compile</scope>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+      <version>1.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.errorprone</groupId>
+      <artifactId>error_prone_annotations</artifactId>
+      <version>${error_prone.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -64,9 +75,20 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>${assertj.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>5.24.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -79,6 +101,7 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -94,9 +117,9 @@
     <module>flying-saucer-pdf-osgi</module>
     <module>flying-saucer-log4j</module>
     <module>flying-saucer-swt</module>
-    <module>flying-saucer-swt-examples</module>
     <module>flying-saucer-examples</module>
     <module>flying-saucer-fop</module>
+    <module>flying-saucer-chrome-pdf</module>
   </modules>
 
   <scm>
@@ -108,8 +131,8 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <id>central</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -131,17 +154,22 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.6.0</version>
         <configuration>
           <includes>
             <include>org/**/*</include>
           </includes>
+          <systemPropertyVariables>
+            <xr.test-config-from-system-property>from-system-property</xr.test-config-from-system-property>
+            <xr.test-config-constant-without-package>RenderingHints.VALUE_TEXT_ANTIALIAS_ON</xr.test-config-constant-without-package>
+            <xr.test-config-missing-constant>java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_HGRB</xr.test-config-missing-constant>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.5.0</version>
+        <version>3.6.3</version>
         <executions>
           <execution>
             <id>enforce</id>
@@ -161,19 +189,19 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.7.0</version>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.11.0</version>
         <extensions>true</extensions>
         <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>false</autoReleaseAfterClose>
+          <publishingServerId>central</publishingServerId>
+          <autoPublish>true</autoPublish>
+          <waitUntil>published</waitUntil>
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.3.1</version>
         <configuration>
           <useReleaseProfile>false</useReleaseProfile>
           <releaseProfiles>release</releaseProfiles>
@@ -183,17 +211,30 @@
 
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
+        <version>3.16.0</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
+          <compilerArgs>
+            <arg>-XDcompilePolicy=simple</arg>
+            <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
+            <arg>--should-stop=ifError=FLOW</arg>
+            <arg>-Xplugin:ErrorProne -Xep:MissingSummary:OFF -Xep:JdkObsolete:OFF -Xep:ReferenceEquality:OFF -Xep:OperatorPrecedence:OFF -XepExcludedPaths:.*/org/xhtmlrenderer/css/parser/Lexer.java$</arg>
+          </compilerArgs>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.google.errorprone</groupId>
+              <artifactId>error_prone_core</artifactId>
+              <version>${error_prone.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.3.1</version>
+        <version>3.4.0</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -207,9 +248,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.10.0</version>
+        <version>3.12.0</version>
         <configuration>
-          <doclint>all,-accessibility,-syntax,-html,-reference</doclint>
+          <doclint>all,-accessibility,-syntax,-html,-reference,-missing</doclint>
         </configuration>
         <executions>
           <execution>
@@ -224,19 +265,30 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.4.2</version>
+        <version>3.5.1</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Implementation-Title>${project.groupId}.${project.artifactId}</Implementation-Title>
+              <Implementation-Version>${project.version}</Implementation-Version>
+              <Implementation-Vendor>https://github.com/flyingsaucerproject</Implementation-Vendor>
+              <X-OpenPDF-Version>${openpdf.version}</X-OpenPDF-Version>
+              <X-Build-Time>${maven.build.timestamp}</X-Build-Time>
+            </manifestEntries>
+          </archive>
+        </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>3.1.3</version>
+        <version>3.2.0</version>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.2.5</version>
+        <version>3.2.8</version>
         <executions>
           <execution>
             <id>sign-artifacts</id>
@@ -258,7 +310,7 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>5.1.9</version>
+          <version>6.2.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -266,14 +318,18 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <openpdf.version>2.0.3</openpdf.version>
-    <junit.version>5.11.0</junit.version>
-    <slf4j.version>2.0.16</slf4j.version>
-    <assertj.version>3.26.3</assertj.version>
-    <pdftest.version>1.9.0</pdftest.version>
-    <pdfbox.version>3.0.3</pdfbox.version>
+    <openpdf.version>3.0.5</openpdf.version>
+    <batik.version>1.19</batik.version>
+    <commons-io.version>2.22.0</commons-io.version>
+    <junit.version>6.1.3</junit.version>
+    <slf4j.version>2.0.20</slf4j.version>
+    <assertj.version>3.27.7</assertj.version>
+    <pdftest.version>2.1.1</pdftest.version>
+    <pdfbox.version>3.0.8</pdfbox.version>
     <bouncycastle.version>1.77</bouncycastle.version>
-    <java.version>17</java.version>
+    <java.version>21</java.version>
+    <error_prone.version>2.50.0</error_prone.version>
+    <swt.version>3.135.0</swt.version>
   </properties>
 
 </project>

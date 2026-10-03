@@ -19,6 +19,7 @@
  */
 package org.xhtmlrenderer.css.extend.lib;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.css.extend.TreeResolver;
@@ -26,11 +27,11 @@ import org.xhtmlrenderer.css.extend.TreeResolver;
 import static java.util.Objects.requireNonNullElseGet;
 
 /**
+ * works for a w3c DOM tree
  * @author scott
- *         <p>
- *         works for a w3c DOM tree
  */
 public class DOMTreeResolver implements TreeResolver {
+    @Nullable
     @Override
     public Node getParentElement(Node element) {
         Node parent = element.getParentNode();
@@ -38,6 +39,7 @@ public class DOMTreeResolver implements TreeResolver {
         return parent;
     }
 
+    @Nullable
     @Override
     public Node getPreviousSiblingElement(Node element) {
         Node sibling = element.getPreviousSibling();
@@ -80,9 +82,7 @@ public class DOMTreeResolver implements TreeResolver {
     @Override
     public boolean matchesElement(Node element, String namespaceURI, String name) {
         String localName = element.getLocalName();
-        String eName;
-
-        eName = requireNonNullElseGet(localName, element::getNodeName);
+        String eName = requireNonNullElseGet(localName, element::getNodeName);
 
         if (namespaceURI != null) {
             return name.equals(localName) && namespaceURI.equals(element.getNamespaceURI());

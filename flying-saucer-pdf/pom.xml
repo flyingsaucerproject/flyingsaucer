@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.9.3-SNAPSHOT</version>
+    <version>10.6.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -34,6 +34,27 @@
       <groupId>com.github.librepdf</groupId>
       <artifactId>openpdf</artifactId>
       <version>${openpdf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-codec</artifactId>
+      <version>${batik.version}</version>
+      <exclusions>
+          <!-- Exclude legacy XML libraries (xml-apis, xerces, xalan) that duplicate java.xml.
+               Prevents JPMS module conflicts and ensures Java 11+ compatibility. -->
+        <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 

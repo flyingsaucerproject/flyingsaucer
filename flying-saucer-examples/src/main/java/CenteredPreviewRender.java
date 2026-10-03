@@ -34,15 +34,17 @@ import java.net.MalformedURLException;
  * @author Patrick Wright
  */
 public class CenteredPreviewRender {
-    private String fileName;
+    private final File file;
 
-    public static void main(String[] args) throws MalformedURLException {
-        new CenteredPreviewRender().run(args);
+    public CenteredPreviewRender(File file) {
+        this.file = file;
     }
 
-    private void run(String[] args) throws MalformedURLException {
-        loadAndCheckArgs(args);
+    public static void main(String[] args) throws MalformedURLException {
+        new CenteredPreviewRender(loadAndCheckArgs(args)).run();
+    }
 
+    private void run() throws MalformedURLException {
         // Create a JPanel subclass to render the page
         XHTMLPanel panel = new XHTMLPanel();
         panel.setInteractive(false);
@@ -53,7 +55,7 @@ public class CenteredPreviewRender {
         // Set the XHTML document to render. We use the simplest form
         // of the API call, which uses a File reference. There
         // are a variety of overloads for setDocument().
-        panel.setDocument(new File(fileName));
+        panel.setDocument(file);
 
         // Put our panel in a scrolling pane. You can use
         // a regular JScrollPane here, or our FSScrollPane.
@@ -69,14 +71,12 @@ public class CenteredPreviewRender {
         frame.setVisible(true);
     }
 
-    private void loadAndCheckArgs(String[] args) {
-        if (args.length == 0) {
-            throw new IllegalArgumentException("Enter a file or URI.");
+    private static File loadAndCheckArgs(String[] args) {
+        File file = args.length > 0 ? new File(args[0]) : new File("flying-saucer-examples/src/test/resources/hello.html");
+
+        if (!file.exists()) {
+            throw new IllegalArgumentException("File " + file.getAbsolutePath() + " does not exist.");
         }
-        String name = args[0];
-        if (! new File(name).exists()) {
-            throw new IllegalArgumentException("File " + name + " does not exist.");
-        }
-        this.fileName = name;
+        return file;
     }
 }

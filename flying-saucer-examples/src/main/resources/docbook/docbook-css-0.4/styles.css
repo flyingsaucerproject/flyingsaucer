@@ -507,7 +507,7 @@ warning, caution, tip, note, important {
 /* Have admonition titles appear inline with generated content ("Note:" etc.) */
 warning>title, caution>title, tip>title, note>title, important>title {
 	display: inline;
-	
+
 }
 
 warning:before, caution:before, tip:before, note:before, important:before {
@@ -578,8 +578,8 @@ footnote:hover>* {
 	border: 2px dotted black;
 	background-color: #ffeeaa;
 	padding: .5em;
-	left: 0px;
-	bottom: 0px;
+	left: 0;
+	bottom: 0;
 }
 footnote:before {
 	content: "?";

@@ -23,13 +23,11 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.FSDerivedValue;
-import org.xhtmlrenderer.css.style.derived.BorderPropertySet;
 import org.xhtmlrenderer.css.style.derived.LengthValue;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
-import org.xhtmlrenderer.util.GeneralUtil;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -37,92 +35,50 @@ import javax.swing.plaf.basic.BasicTextFieldUI;
 import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
 
-class TextField extends InputField {
+class TextField extends InputField<JTextField> {
     TextField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
-        TextFieldJTextField textfield = new TextFieldJTextField();
-
-        if (hasAttribute("size")) {
-            int size = GeneralUtil.parseIntRelaxed(getAttribute("size"));
-
-            // Size of 0 doesn't make any sense, so use default value
-            if (size == 0) {
-                textfield.setColumns(15);
-            } else {
-                textfield.setColumns(size);
-            }
-        } else {
-            textfield.setColumns(15);
-        }
-
-        if (hasAttribute("maxlength")) {
-            textfield.setDocument(
-                    new SizeLimitedDocument(
-                            GeneralUtil.parseIntRelaxed(getAttribute("maxlength"))));
-        }
-
-        if (hasAttribute("readonly") &&
-                getAttribute("readonly").equalsIgnoreCase("readonly")) {
-            textfield.setEditable(false);
-        }
-
-        applyComponentStyle(textfield);
-
-        return textfield;
+    public JTextField create() {
+        TextFieldJTextField textField = new TextFieldJTextField();
+        prepareTextField(textField);
+        applyComponentStyle(textField);
+        return textField;
     }
 
     @Override
     protected void applyComponentStyle(JComponent component) {
         super.applyComponentStyle(component);
 
-        TextFieldJTextField field = (TextFieldJTextField)component;
-
+        JTextField field = component();
         CalculatedStyle style = getBox().getStyle();
-        BorderPropertySet border = style.getBorder(null);
-        boolean disableOSBorder = (border.leftStyle() != null && border.rightStyle() != null || border.topStyle() != null || border.bottomStyle() != null);
-
         RectPropertySet padding = style.getCachedPadding();
-
-        Integer paddingTop = getLengthValue(style, CSSName.PADDING_TOP);
-        Integer paddingLeft = getLengthValue(style, CSSName.PADDING_LEFT);
-        Integer paddingBottom = getLengthValue(style, CSSName.PADDING_BOTTOM);
-        Integer paddingRight = getLengthValue(style, CSSName.PADDING_RIGHT);
-
-
-        int top = paddingTop == null ? 2 : Math.max(2, paddingTop);
-        int left = paddingLeft == null ? 3 : Math.max(3, paddingLeft);
-        int bottom = paddingBottom == null ? 2 : Math.max(2, paddingBottom);
-        int right = paddingRight == null ? 3 : Math.max(3, paddingRight);
+        Insets margin = style.padding().withDefaults(new Insets(2, 3, 2, 3));
 
         //if a border is set or a background color is set, then use a special JButton with the BasicButtonUI.
-        if (disableOSBorder) {
+        if (style.disableOSBorder()) {
             //when background color is set, need to use the BasicButtonUI, certainly when using XP l&f
             BasicTextUI ui = new BasicTextFieldUI();
             field.setUI(ui);
-            Border fieldBorder = BorderFactory.createEmptyBorder(top, left, bottom, right);
+            Border fieldBorder = BorderFactory.createEmptyBorder(margin.top, margin.left, margin.bottom, margin.right);
             field.setBorder(fieldBorder);
         }
         else {
-            field.setMargin(new Insets(top, left, bottom, right));
+            field.setMargin(margin);
         }
 
-        padding.setRight(0);
-        padding.setLeft(0);
-        padding.setTop(0);
-        padding.setBottom(0);
+        padding.reset();
 
         FSDerivedValue widthValue = style.valueByName(CSSName.WIDTH);
         if (widthValue instanceof LengthValue) {
-            intrinsicWidth = getBox().getContentWidth() + left + right;
+            intrinsicWidth = getBox().getContentWidth() + margin.left + margin.right;
         }
 
         FSDerivedValue heightValue = style.valueByName(CSSName.HEIGHT);
         if (heightValue instanceof LengthValue) {
-            intrinsicHeight = getBox().getHeight() + top + bottom;
+            intrinsicHeight = getBox().getHeight() + margin.top + margin.bottom;
         }
     }
 
@@ -130,26 +86,27 @@ class TextField extends InputField {
 
     @Override
     protected void applyOriginalState() {
-        JTextField textfield = (JTextField) getComponent();
+        JTextField textField = component();
 
-        textfield.setText(getOriginalState().getValue());
+        textField.setText(getOriginalState().getValue());
 
         // Make sure we are showing the front of 'value' instead of the end.
-        textfield.setCaretPosition(0);
+        textField.setCaretPosition(0);
     }
 
     @Override
     protected String[] getFieldValues() {
-        JTextField textfield = (JTextField) getComponent();
+        JTextField textField = component();
 
         return new String[] {
-                textfield.getText()
+                textField.getText()
         };
     }
 
     private static class TextFieldJTextField extends JTextField {
         //override getColumnWidth to base on 'o' instead of 'm'.  more like other browsers
         private int columnWidth = 0;
+        @Override
         protected int getColumnWidth() {
             if (columnWidth == 0) {
                 FontMetrics metrics = getFontMetrics(getFont());

@@ -19,9 +19,11 @@
  */
 package org.xhtmlrenderer.css.extend;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import org.xhtmlrenderer.css.sheet.Ruleset;
 import org.xhtmlrenderer.css.sheet.Stylesheet;
 import org.xhtmlrenderer.css.sheet.StylesheetInfo;
+import org.xhtmlrenderer.css.sheet.StylesheetInfo.Origin;
 
 import java.io.Reader;
 
@@ -34,8 +36,12 @@ import java.io.Reader;
  * @author Torbjoern Gannholm
  */
 public interface StylesheetFactory {
+    @CheckReturnValue
     Stylesheet parse(Reader reader, StylesheetInfo info);
-    Ruleset parseStyleDeclaration(int author, String style);
-
+    @CheckReturnValue
+    Stylesheet parse(Reader reader, String uri, Origin origin);
+    @CheckReturnValue
+    Ruleset parseStyleDeclaration(Origin origin, String style);
+    @CheckReturnValue
     Stylesheet getStylesheet(StylesheetInfo si);
 }

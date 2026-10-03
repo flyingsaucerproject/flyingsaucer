@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.util;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 import org.xhtmlrenderer.DefaultCSSMarker;
 
@@ -27,9 +29,9 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,7 +65,7 @@ import static java.nio.file.Files.newInputStream;
  * second properties file, specify the System property xr-conf. This should be
  * the location of the second file relative to the CLASSPATH, or else a file
  * path, e.g.</p>
- * {@code java -Dxr-conf=resources/conf/myprops.conf}
+ * {@code java -Dxr-conf=resources/conf/my-props.conf}
  * <p>
  * You can also place your override properties file in your user home directory,
  * in </p>
@@ -72,7 +74,7 @@ import static java.nio.file.Files.newInputStream;
  * property on the command line. e.g.</p>
  * {@code java -Dxr.property-name=new_value}
  * <p>The order in which these will be read is: default properties (bundled with
- * the core, in the jar; override configuration properties; properties file in
+ * the core), in the jar; override configuration properties; properties file in
  * user.home; and system properties.</p>
  * <p>You can override as many properties as you like. </p>
  * <p> Note that overrides are driven by the property names in the default
@@ -89,18 +91,19 @@ import static java.nio.file.Files.newInputStream;
  *
  * @author Patrick Wright
  */
+@SuppressWarnings("NonConstantLogger")
 public class Configuration {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Configuration.class);
 
     /**
      * Our backing data store of properties.
      */
-    private Properties properties;
+    private final Properties properties;
 
     /**
      * The log Level for Configuration messages; taken from show-config System property.
      */
-    private Level logLevel;
+    private Level logLevel = Level.OFF;
 
     /**
      * The Singleton instance of the class.
@@ -116,6 +119,7 @@ public class Configuration {
     /**
      * Logger we use internally related to configuration.
      */
+    @Nullable
     private Logger configLogger;
 
     /**
@@ -132,26 +136,14 @@ public class Configuration {
      */
     private Configuration() {
         try {
-            try {
-                // read logging level from System properties
-                // here we are trying to see if user wants to see logging about
-                // what configuration was loaded, e.g. debugging for config itself
-                String val;
-                try {
-                    val = System.getProperty("show-config");
-                } catch (SecurityException ex) {
-                    // this may happen if running in a sandbox; not a problem
-                    val = null;
-                }
-                logLevel = Level.OFF;
-                if (val != null) {
-                    logLevel = LoggerUtil.parseLogLevel(val, Level.OFF);
-                }
-            } catch (SecurityException e) {
-                // may be thrown in a sandbox; OK
-                System.err.println(e.getLocalizedMessage());
+            // read logging level from System properties
+            // here we are trying to see if user wants to see logging about
+            // what configuration was loaded, e.g. debugging for config itself
+            String val = getSystemProperty("show-config");
+            if (val != null) {
+                logLevel = LoggerUtil.parseLogLevel(val, Level.OFF);
             }
-            loadDefaultProperties();
+            this.properties = loadDefaultProperties();
 
             String sysOverrideFile = getSystemPropertyOverrideFileName();
             if (sysOverrideFile != null) {
@@ -203,7 +195,7 @@ public class Configuration {
      * @param msg the message to log
      */
     private void println(Level level, String msg) {
-        if (logLevel != Level.OFF) {
+        if (!logLevel.equals(Level.OFF)) {
             if (configLogger == null) {
                 startupLogRecords.add(new LogRecord(level, msg));
             } else {
@@ -271,26 +263,21 @@ public class Configuration {
     /**
      * Loads the default set of properties, which may be overridden.
      */
-    private void loadDefaultProperties() {
-        try {
-            InputStream readStream = GeneralUtil.openStreamFromClasspath(new DefaultCSSMarker(), SF_FILE_NAME);
-
+    @CheckReturnValue
+    private Properties loadDefaultProperties() {
+        try (InputStream readStream = GeneralUtil.openStreamFromClasspath(new DefaultCSSMarker(), SF_FILE_NAME)) {
             if (readStream == null) {
-                System.err.println("WARNING: Flying Saucer: No configuration files found in classpath using URL: " + SF_FILE_NAME + ", resorting to hard-coded fallback properties.");
-                this.properties = newFallbackProperties();
+                log.warn("No configuration files found in classpath using URL {}, resorting to hard-coded fallback properties.", SF_FILE_NAME);
+                return newFallbackProperties();
             } else {
-                try (readStream) {
-                    this.properties = new Properties();
-                    this.properties.load(readStream);
-                }
+                Properties properties = new Properties();
+                properties.load(readStream);
+                info("Configuration loaded from " + SF_FILE_NAME);
+                return properties;
             }
-        } catch (RuntimeException rex) {
-            throw rex;
-        } catch (Exception ex) {
-            throw new RuntimeException("Could not load properties file for configuration.",
-                    ex);
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not load properties file for configuration.", ex);
         }
-        info("Configuration loaded from " + SF_FILE_NAME);
     }
 
     /**
@@ -300,80 +287,74 @@ public class Configuration {
      * @param uri Path to the file, or classpath URL, where properties are defined.
      */
     private void loadOverrideProperties(String uri) {
-        try {
-            File f = new File(uri);
-            Properties temp = new Properties();
-            if (f.exists()) {
-                info("Found config override file " + f.getAbsolutePath());
-                try {
-                    try (InputStream readStream = new BufferedInputStream(newInputStream(f.toPath()))) {
-                        temp.load(readStream);
-                    }
-                } catch (IOException iex) {
-                    warning("Error while loading override properties file; skipping.", iex);
-                    return;
+        File f = new File(uri);
+        Properties temp = new Properties();
+        if (f.exists()) {
+            info("Found config override file " + f.getAbsolutePath());
+            try {
+                try (InputStream readStream = new BufferedInputStream(newInputStream(f.toPath()))) {
+                    temp.load(readStream);
                 }
-            } else {
-                try {
-                    URL url = new URL(uri);
-                    try (InputStream in = new BufferedInputStream(url.openStream())) {
-                        info("Found config override URI " + uri);
-                        temp.load(in);
-                    }
-                } catch (MalformedURLException e) {
-                    warning("URI for override properties is malformed, skipping: " + uri);
-                    return;
-                } catch (IOException e) {
-                    warning("Overridden properties could not be loaded from URI: " + uri, e);
-                    return;
-                }
+            } catch (IOException iex) {
+                warning("Error while loading override properties file; skipping.", iex);
+                return;
             }
-
-            // override existing properties
-            int cnt = 0;
-            for (String key : sortedKeys(properties)) {
-                String val = temp.getProperty(key);
-                if (val != null) {
-                    this.properties.setProperty(key, val);
-                    finer("  " + key + " -> " + val);
-                    cnt++;
+        } else {
+            try {
+                URL url = new URL(uri);
+                try (InputStream in = new BufferedInputStream(url.openStream())) {
+                    info("Found config override URI " + uri);
+                    temp.load(in);
                 }
+            } catch (MalformedURLException e) {
+                warning("URI for override properties is malformed, skipping: '%s' (caused by: %s)".formatted(uri, e));
+                return;
+            } catch (IOException e) {
+                warning("Overridden properties could not be loaded from URI: " + uri, e);
+                return;
             }
-            finer("Configuration: " + cnt + " properties overridden from secondary properties file.");
-            // and add any new properties we don't already know about (needed for custom logging
-            // configuration)
-            Collection<String> allRead = sortedKeys(temp);
-
-            cnt = 0;
-            for (String key : allRead) {
-                String val = temp.getProperty(key);
-                if (val != null) {
-                    this.properties.setProperty(key, val);
-                    finer("  (+)" + key + " -> " + val);
-                    cnt++;
-                }
-            }
-            finer("Configuration: " + cnt + " properties added from secondary properties file.");
-        } catch (SecurityException e) {
-            // can happen in a sandbox environment
-            System.err.println(e.getLocalizedMessage());
         }
+
+        // override existing properties
+        int cnt = 0;
+        for (String key : sortedKeys(properties)) {
+            String val = temp.getProperty(key);
+            if (val != null) {
+                this.properties.setProperty(key, val);
+                finer("  " + key + " -> " + val);
+                cnt++;
+            }
+        }
+        finer("Configuration: " + cnt + " properties overridden from secondary properties file.");
+        // and add any new properties we don't already know about (needed for custom logging
+        // configuration)
+        Collection<String> allRead = sortedKeys(temp);
+
+        cnt = 0;
+        for (String key : allRead) {
+            String val = temp.getProperty(key);
+            if (val != null) {
+                this.properties.setProperty(key, val);
+                finer("  (+)" + key + " -> " + val);
+                cnt++;
+            }
+        }
+        finer("Configuration: " + cnt + " properties added from secondary properties file.");
     }
 
+    @Nullable
     private String getSystemPropertyOverrideFileName() {
-        try {
-            return System.getProperty("xr.conf");
-        } catch (SecurityException e) {
-            // can happen in sandbox
-            return null;
-        }
+        return getSystemProperty("xr.conf");
     }
 
+    @Nullable
     private String getUserHomeOverrideFileName() {
+        String confFileName = "local.xhtmlrenderer.conf";
         try {
-            return System.getProperty("user.home") + File.separator + ".flyingsaucer" + File.separator + "local.xhtmlrenderer.conf";
+            return Path.of(System.getProperty("user.home"), ".flyingsaucer", confFileName).toString();
         } catch (SecurityException e) {
             // can happen in a sandbox
+            log.warn("Cannot read file '{}': {}", confFileName, e.toString());
             return null;
         }
     }
@@ -397,15 +378,12 @@ public class Configuration {
                 continue;
             }
 
-            try {
-                String val = System.getProperty(key);
-                if (val != null) {
-                    properties.setProperty(key, val);
-                    finer("  Overrode value for " + key);
-                    cnt++;
-                }
-            } catch (SecurityException e) {
-                // skip, this will happen in WebStart
+
+            String val = getSystemProperty(key);
+            if (val != null) {
+                properties.setProperty(key, val);
+                finer("  Overrode value for " + key);
+                cnt++;
             }
         }
         fine("Configuration: " + cnt + " properties overridden from System properties.");
@@ -415,7 +393,7 @@ public class Configuration {
             final Properties sysProps = System.getProperties();
 
             cnt = 0;
-            for (String key : sortedKeys(properties)) {
+            for (String key : sysProps.stringPropertyNames().stream().sorted().toList()) {
                 if (key.startsWith("xr.") && !this.properties.containsKey(key)) {
                     String val = sysProps.getProperty(key);
                     this.properties.setProperty(key, val);
@@ -424,13 +402,14 @@ public class Configuration {
                 }
             }
         } catch (SecurityException e) {
-            // skip, this will happen in webstart or sandbox
+            // skip, this will happen in Web Start or sandbox
+            log.warn("Cannot read system properties: {}", e.toString());
         }
         fine("Configuration: " + cnt + " FS properties added from System properties.");
     }
 
     /**
-     * Writes a log of loaded properties to the plumbing.init Logger.
+     * Writes a log of loaded properties to the "plumbing.init" Logger.
      */
     private void logAfterLoad() {
         finer("Configuration contains " + properties.size() + " keys.");
@@ -449,6 +428,7 @@ public class Configuration {
      * @param key Name of the property.
      * @return Value assigned to the key, as a String.
      */
+    @Nullable
     public static String valueFor(String key) {
         Configuration conf = instance();
         String val = conf.properties.getProperty(key);
@@ -456,12 +436,6 @@ public class Configuration {
             conf.warning("CONFIGURATION: no value found for key " + key);
         }
         return val;
-    }
-
-    public static boolean hasValue(String key) {
-        Configuration conf = instance();
-        String val = conf.properties.getProperty(key);
-        return val != null;
     }
 
     /**
@@ -482,7 +456,7 @@ public class Configuration {
 
         try {
             return parseByte(val);
-        } catch (NumberFormatException nex) {
+        } catch (NumberFormatException ignore) {
             XRLog.exception("Property '" + key + "' was requested as a byte, but " +
                     "value of '" + val + "' is not a byte. Check configuration.");
             return defaultVal;
@@ -507,7 +481,7 @@ public class Configuration {
 
         try {
             return Short.parseShort(val);
-        } catch (NumberFormatException nex) {
+        } catch (NumberFormatException ignore) {
             XRLog.exception("Property '" + key + "' was requested as a short, but " +
                     "value of '" + val + "' is not a short. Check configuration.");
             return defaultVal;
@@ -532,7 +506,7 @@ public class Configuration {
 
         try {
             return parseInt(val);
-        } catch (NumberFormatException nex) {
+        } catch (NumberFormatException ignore) {
             XRLog.exception("Property '" + key + "' was requested as an integer, but " +
                     "value of '" + val + "' is not an integer. Check configuration.");
             return defaultVal;
@@ -582,7 +556,7 @@ public class Configuration {
 
         try {
             return parseLong(val);
-        } catch (NumberFormatException nex) {
+        } catch (NumberFormatException ignore) {
             XRLog.exception("Property '" + key + "' was requested as a long, but " +
                     "value of '" + val + "' is not a long. Check configuration.");
             return defaultVal;
@@ -607,7 +581,7 @@ public class Configuration {
 
         try {
             return parseFloat(val);
-        } catch (NumberFormatException nex) {
+        } catch (NumberFormatException ignore) {
             XRLog.exception("Property '" + key + "' was requested as a float, but " +
                     "value of '" + val + "' is not a float. Check configuration.");
             return defaultVal;
@@ -632,7 +606,7 @@ public class Configuration {
 
         try {
             return parseDouble(val);
-        } catch (NumberFormatException nex) {
+        } catch (NumberFormatException ignore) {
             XRLog.exception("Property '" + key + "' was requested as a double, but " +
                     "value of '" + val + "' is not a double. Check configuration.");
             return defaultVal;
@@ -651,7 +625,9 @@ public class Configuration {
     public static String valueFor(String key, String defaultVal) {
         Configuration conf = instance();
         String val = conf.properties.getProperty(key);
-        val = (val == null ? defaultVal : val);
+        val = val == null ? defaultVal : val;
+
+        //noinspection ConstantValue
         if (val == null) {
             conf.warning("CONFIGURATION: no value found for key " + key + " and no default given.");
         }
@@ -725,49 +701,28 @@ public class Configuration {
      * VALUE_INTERPOLATION_NEAREST_NEIGHBOR constant on the RendingHints class.
      *
      * @param key Name of the property
-     * @param defaultValue Returned in case of error.
-     * @return Value of the constant, or defaultValue in case of error.
+     * @param defaultValue Returned if the property is not defined.
+     * @return Value of the constant, or defaultValue if the property is not defined.
+     * @throws IllegalArgumentException if the property is defined, but does not refer to a public constant
      */
     public static Object valueFromClassConstant(String key, Object defaultValue) {
-        Configuration conf = instance();
         String val = valueFor(key);
         if ( val == null ) {
             return defaultValue;
         }
         int idx = val.lastIndexOf('.');
-        String klassname;
-        String cnst;
-        try {
-            klassname = val.substring(0, idx);
-            cnst = val.substring(idx + 1);
-        } catch (IndexOutOfBoundsException e) {
-            conf.warning("Property key " + key + " for object value constant is not properly formatted; " +
-                    "should be FQN<dot>constant, is " + val);
-            return defaultValue;
+        if (idx <= 0) {
+            throw new IllegalArgumentException("Invalid value of configuration property " + key + ": \"" + val +
+                    "\", expected <fully qualified class name>.<constant name>");
         }
-        Class<?> klass;
+        String className = val.substring(0, idx);
+        String constant = val.substring(idx + 1);
         try {
-            klass = Class.forName(klassname);
-        } catch (ClassNotFoundException e) {
-            conf.warning("Property for object value constant " + key + " is not a FQN: " + klassname);
-            return defaultValue;
+            return Class.forName(className).getField(constant).get(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            throw new IllegalArgumentException("Invalid value of configuration property " + key + ": \"" + val +
+                    "\", expected <fully qualified class name>.<public static constant name>", e);
         }
-
-        Object cnstVal;
-        try {
-            Field fld = klass.getDeclaredField(cnst);
-            try {
-                cnstVal = fld.get(klass);
-            } catch (IllegalAccessException e) {
-                conf.warning("Property for object value constant " + key + ", field is not public: " + klassname +
-                        "." + cnst);
-                return defaultValue;
-            }
-        } catch (NoSuchFieldException e) {
-            conf.warning("Property for object value constant " + key + " is not a FQN: " + klassname);
-            return defaultValue;
-        }
-        return cnstVal;
     }
 
     /**
@@ -775,6 +730,8 @@ public class Configuration {
      * file for some reason; this is to prevent Configuration init from throwing any exceptions, or ending up
      * with a completely empty configuration instance.
      */
+    @SuppressWarnings("SpellCheckingInspection")
+    @CheckReturnValue
     private Properties newFallbackProperties() {
         Properties props = new Properties();
         props.setProperty("xr.css.user-agent-default-css", "/resources/css/");
@@ -821,8 +778,9 @@ public class Configuration {
         props.setProperty("xr.renderer.missing-character-replacement", "false");
         props.setProperty("xr.text.scale", "1.0");
         props.setProperty("xr.text.aa-smoothing-level", "1");
-        props.setProperty("xr.text.aa-fontsize-threshhold", "25");
-        props.setProperty("xr.text.aa-rendering-hint", "RenderingHints.VALUE_TEXT_ANTIALIAS_HGRB");
+        props.setProperty("xr.text.aa-fontsize-threshhold", "0");
+        props.setProperty("xr.text.aa-rendering-hint", "java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON");
+        props.setProperty("xr.text.fractional-font-metrics", "true");
         props.setProperty("xr.cache.stylesheets", "false");
         props.setProperty("xr.incremental.enabled", "false");
         props.setProperty("xr.incremental.lazyimage", "false");
@@ -834,5 +792,16 @@ public class Configuration {
         props.setProperty("xr.image.scale", "LOW");
         props.setProperty("xr.image.render-quality", "java.awt.RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR");
         return props;
+    }
+
+    @Nullable
+    private String getSystemProperty(String name) {
+        try {
+            return System.getProperty(name);
+        } catch (SecurityException e) {
+            // can happen in sandbox
+            log.warn("Cannot read system property '{}': {}", name, e.toString());
+            return null;
+        }
     }
 }

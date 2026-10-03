@@ -26,23 +26,16 @@ import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 import javax.swing.*;
 
-class ButtonField extends AbstractButtonField {
+class ButtonField extends AbstractButtonField<JButton> {
     ButtonField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
 
     @Override
-    public JComponent create() {
+    public JButton create() {
         JButton button = new JButton();
-
-        String value = getAttribute("value");
-
-        if (value == null || value.isEmpty())
-            value = " ";    //otherwise we get a very short button
-
         applyComponentStyle(button);
-
-        button.setText(value);
+        button.setText(getValueAttribute(" ")); // otherwise we get a very short button
 
         button.addActionListener(e -> JOptionPane.showMessageDialog(
                 null,

@@ -20,6 +20,8 @@
  */
 package org.xhtmlrenderer.render;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CssContext;
@@ -40,11 +42,9 @@ public final class AnonymousBlockBox extends BlockBox {
 
     public AnonymousBlockBox(Element element, CalculatedStyle style, List<InlineBox> savedParents,
                              List<Styleable> inlineContent) {
-        setElement(element);
-        setStyle(style);
-        setAnonymous(true);
+        super(element, style, true);
         _openInlineBoxes = savedParents;
-        setChildrenContentType(BlockBox.CONTENT_INLINE);
+        setChildrenContentType(ContentType.INLINE);
         setInlineContent(inlineContent);
     }
 
@@ -58,6 +58,8 @@ public final class AnonymousBlockBox extends BlockBox {
         return getContainingBlock().getContentWidth();
     }
 
+    @Nullable
+    @CheckReturnValue
     @Override
     public Box find(CssContext cssCtx, int absX, int absY, boolean findAnonymous) {
         Box result = super.find(cssCtx, absX, absY, findAnonymous);

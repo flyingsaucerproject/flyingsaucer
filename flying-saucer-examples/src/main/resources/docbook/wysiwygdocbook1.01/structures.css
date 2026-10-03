@@ -41,7 +41,7 @@ set>title + * {
 	border-top:solid 3px black;
 }
 set>title + subtitle {
-	border-top: 0px;
+	border-top: 0;
 }
 set>subtitle + * {
 	border-top:solid 3px black;
@@ -61,7 +61,7 @@ book>title + * {
 	border-top:solid 3px black;
 }
 book>title + subtitle {
-	border-top: 0px;
+	border-top: 0;
 }
 book>subtitle + * {
 	border-top:solid 3px black;
@@ -81,7 +81,7 @@ part>title + * {
 	border-top:solid 3px black;
 }
 part>title + subtitle {
-	border-top: 0px;
+	border-top: 0;
 }
 part>subtitle + * {
 	border-top:solid 3px black;
@@ -211,7 +211,7 @@ simplesect>simplesect>simplesect>simplesect>simplesect>subtitle {
 }
 title+chapter, title+bibliography, title+appendix, title+glossary, subtitle+chapter,
 subtitle+bibliography, subtitle+appendix, subtitle+glossary {
-	margin-top: 0em;
+	margin-top: 0;
 }
 section>*+section, simplesect>*+simplesect, *+sect2 {
 	margin-top: 2em;

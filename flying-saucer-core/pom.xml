@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>9.9.3-SNAPSHOT</version>
+    <version>10.6.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -40,6 +40,32 @@
     </resources>
     <plugins>
       <plugin>
+        <groupId>de.jflex</groupId>
+        <artifactId>jflex-maven-plugin</artifactId>
+        <version>1.9.1</version>
+        <executions>
+          <execution>
+            <id>generate-parser</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>src/main/java</outputDirectory>
+              <lexDefinitions>
+                <lexDefinition>src/main/java/org/xhtmlrenderer/css/parser/Lexer.flex</lexDefinition>
+              </lexDefinitions>
+              <jlex>true</jlex>
+              <minimize>false</minimize>
+              <encodingName>UTF-8</encodingName>
+              <verbose>true</verbose>
+              <backup>false</backup>
+              <dump>true</dump>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
@@ -69,14 +95,6 @@
             <Import-Package>!org.xhtmlrenderer.*</Import-Package>
             <Export-Package>org.xhtmlrenderer.*</Export-Package>
           </instructions>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
         </configuration>
       </plugin>
     </plugins>

@@ -19,8 +19,10 @@
  */
 package org.xhtmlrenderer.swing;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.NamespaceHandler;
 import org.xhtmlrenderer.extend.UserAgentCallback;
@@ -37,8 +39,6 @@ import org.xhtmlrenderer.util.Uu;
 import org.xhtmlrenderer.util.XRLog;
 import org.xml.sax.InputSource;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.print.PrinterGraphics;
@@ -49,13 +49,16 @@ import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 
+import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_PRINT;
+import static org.xhtmlrenderer.layout.Layer.PagedMode.PAGED_MODE_SCREEN;
+import static org.xhtmlrenderer.util.ImageUtil.withGraphics;
+
 /**
  * A Swing {@link javax.swing.JPanel} that encloses the Flying Saucer renderer
  * for easy integration into Swing applications.
  *
  * @author Joshua Marinacci
  */
-@ParametersAreNonnullByDefault
 public abstract class BasicPanel extends RootPanel implements FormSubmissionListener {
     private static final int PAGE_PAINTING_CLEARANCE_WIDTH = 10;
     private static final int PAGE_PAINTING_CLEARANCE_HEIGHT = 10;
@@ -71,7 +74,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     protected BasicPanel(UserAgentCallback uac) {
-        sharedContext = new SharedContext(uac);
+        super(new SharedContext(uac));
         mouseTracker = new MouseTracker(this);
         formSubmissionListener = query -> {
             System.out.println("Form Submitted!");
@@ -85,7 +88,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
                     JOptionPane.INFORMATION_MESSAGE
             );
         };
-        sharedContext.setFormSubmissionListener(formSubmissionListener);
+        getSharedContext().setFormSubmissionListener(formSubmissionListener);
         init();
     }
 
@@ -99,28 +102,21 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         // if this is the first time painting this document, then calc layout
         Layer root = getRootLayer();
         if (root == null || isNeedRelayout()) {
-            Graphics gg = g.create();
-            try {
-                doDocumentLayout(gg);
-            } finally {
-                gg.dispose();
-            }
+            withGraphics(g, gg -> doDocumentLayout(gg));
             root = getRootLayer();
         }
         setNeedRelayout(false);
         if (root == null) {
             XRLog.render(Level.FINE, "skipping the actual painting");
         } else {
-            Graphics gg = g.create();
-            try {
+            Layer rootLayer = root;
+            withGraphics(g, gg -> {
                 RenderingContext c = newRenderingContext((Graphics2D) gg);
                 long start = System.currentTimeMillis();
-                doRender(c, root);
+                doRender(c, rootLayer);
                 long end = System.currentTimeMillis();
                 XRLog.render(Level.FINE, "RENDERING TOOK " + (end - start) + " ms");
-            } finally {
-                gg.dispose();
-            }
+            });
         }
     }
 
@@ -150,19 +146,11 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
             }
         } catch (ThreadDeath t) {
             throw t;
-        } catch (Throwable t) {
+        } catch (Error | RuntimeException t) {
             if (hasDocumentListeners()) {
                 fireOnRenderException(t);
             } else {
-                if (t instanceof Error) {
-                    throw (Error)t;
-                }
-                if (t instanceof RuntimeException) {
-                    throw (RuntimeException)t;
-                }
-
-                // "Shouldn't" happen
-                XRLog.exception(t.getMessage(), t);
+                throw t;
             }
         }
     }
@@ -183,7 +171,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
                 calcCenteredPageLeftOffset(root.getMaxPageWidth(c, 0)) :
                 PAGE_PAINTING_CLEARANCE_WIDTH;
         root.assignPagePaintingPositions(
-                c, Layer.PAGED_MODE_SCREEN, PAGE_PAINTING_CLEARANCE_HEIGHT);
+                c, PAGED_MODE_SCREEN, PAGE_PAINTING_CLEARANCE_HEIGHT);
 
         setPreferredSize(new Dimension(
                 root.getMaxPageWidth(c, pagePaintingClearanceWidth),
@@ -211,9 +199,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
             bounds.width += 1;
             bounds.height += 1;
             if (working.intersects(bounds)) {
-                page.paintBackground(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
-                page.paintMarginAreas(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
-                page.paintBorder(c, pagePaintingClearanceWidth, Layer.PAGED_MODE_SCREEN);
+                page.paintBackground(c, pagePaintingClearanceWidth, PAGED_MODE_SCREEN);
+                page.paintMarginAreas(c, pagePaintingClearanceWidth, PAGED_MODE_SCREEN);
+                page.paintBorder(c, pagePaintingClearanceWidth, PAGED_MODE_SCREEN);
 
                 Color old = g.getColor();
 
@@ -225,9 +213,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
                 g.clip(content);
 
                 int left = pagePaintingClearanceWidth +
-                    page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+                    page.getMarginBorderPadding(c, Edge.LEFT);
                 int top = page.getPaintingTop()
-                    + page.getMarginBorderPadding(c, CalculatedStyle.TOP)
+                    + page.getMarginBorderPadding(c, Edge.TOP)
                     - page.getTop();
 
                 g.translate(left, top);
@@ -263,9 +251,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         c.setPageCount(root.getPages().size());
         c.setPage(pageNo, page);
 
-        page.paintBackground(c, 0, Layer.PAGED_MODE_PRINT);
-        page.paintMarginAreas(c, 0, Layer.PAGED_MODE_PRINT);
-        page.paintBorder(c, 0, Layer.PAGED_MODE_PRINT);
+        page.paintBackground(c, 0, PAGED_MODE_PRINT);
+        page.paintMarginAreas(c, 0, PAGED_MODE_PRINT);
+        page.paintBorder(c, 0, PAGED_MODE_PRINT);
 
         Shape working = g.getClip();
 
@@ -273,9 +261,9 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         g.clip(content);
 
         int top = -page.getPaintingTop() +
-            page.getMarginBorderPadding(c, CalculatedStyle.TOP);
+            page.getMarginBorderPadding(c, Edge.TOP);
 
-        int left = page.getMarginBorderPadding(c, CalculatedStyle.LEFT);
+        int left = page.getMarginBorderPadding(c, Edge.LEFT);
 
         g.translate(left, top);
         root.paint(c);
@@ -286,7 +274,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
 
     public void assignPagePrintPositions(Graphics2D g) {
         RenderingContext c = newRenderingContext(g);
-        getRootLayer().assignPagePaintingPositions(c, Layer.PAGED_MODE_PRINT);
+        getRootLayer().assignPagePaintingPositions(c, PAGED_MODE_PRINT);
     }
 
     public void printTree() {
@@ -310,10 +298,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
      */
     @Override
     public void setLayout(LayoutManager l) {
-    }
-
-    public void setSharedContext(SharedContext ctx) {
-        sharedContext = ctx;
     }
 
     @Override
@@ -418,6 +402,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         setDocument(this.doc, getSharedContext().getBaseURL(), getSharedContext().getNamespaceHandler());
     }
 
+    @CheckReturnValue
     public URL getURL() {
         try {
             return new URL(getSharedContext().getUac().getBaseURL());
@@ -426,6 +411,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
         }
     }
 
+    @CheckReturnValue
     public Document getDocument() {
         return doc;
     }
@@ -442,7 +428,7 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
 
     protected Document loadDocument(final String uri) {
-        XMLResource xmlResource = sharedContext.getUac().getXMLResource(uri);
+        XMLResource xmlResource = getSharedContext().getUac().getXMLResource(uri);
         return xmlResource.getDocument();
     }
 
@@ -553,6 +539,6 @@ public abstract class BasicPanel extends RootPanel implements FormSubmissionList
     }
     public void setFormSubmissionListener(FormSubmissionListener fsl) {
         formSubmissionListener =fsl;
-        sharedContext.setFormSubmissionListener(formSubmissionListener);
+        getSharedContext().setFormSubmissionListener(formSubmissionListener);
     }
 }
