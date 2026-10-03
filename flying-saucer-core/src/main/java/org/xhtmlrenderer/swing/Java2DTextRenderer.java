@@ -70,7 +70,7 @@ public class Java2DTextRenderer implements TextRenderer<Java2DOutputDevice, Java
         } else {
             antiAliasRenderingHint = aaHint;
         }
-        if("true".equals(Configuration.valueFor("xr.text.fractional-font-metrics", "false"))) {
+        if (Configuration.isTrue("xr.text.fractional-font-metrics", true)) {
             fractionalFontMetricsHint = RenderingHints.VALUE_FRACTIONALMETRICS_ON;
         } else {
             fractionalFontMetricsHint = RenderingHints.VALUE_FRACTIONALMETRICS_OFF;
