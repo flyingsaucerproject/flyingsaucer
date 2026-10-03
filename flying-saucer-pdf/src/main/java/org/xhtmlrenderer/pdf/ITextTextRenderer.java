@@ -49,6 +49,40 @@ public class ITextTextRenderer implements TextRenderer<ITextOutputDevice, ITextF
         FontDescription description = font.getFontDescription();
         BaseFont bf = description.getFont();
         float size = font.getSize2D();
+        return isTrueType(bf) ?
+                trueTypeFontMetrics(bf, size) :
+                fontMetrics(description, bf, size);
+    }
+
+    private static boolean isTrueType(BaseFont bf) {
+        int type = bf.getFontType();
+        return type == BaseFont.FONT_TYPE_TT || type == BaseFont.FONT_TYPE_TTUNI;
+    }
+
+    /**
+     * OpenPDF scales the decoration values of TrueType fonts by the font's own {@code unitsPerEm},
+     * which is not necessarily 1000 (e.g. 2048 for many fonts).
+     */
+    private static FSFontMetrics trueTypeFontMetrics(BaseFont bf, float size) {
+        float strikethroughThickness = bf.getFontDescriptor(BaseFont.STRIKETHROUGH_THICKNESS, size);
+        float underlineThickness = bf.getFontDescriptor(BaseFont.UNDERLINE_THICKNESS, size);
+        // OpenPDF returns the middle of the underline stroke, but we need its top
+        float underlinePosition = bf.getFontDescriptor(BaseFont.UNDERLINE_POSITION, size) + underlineThickness / 2;
+
+        return new ITextFSFontMetrics(
+                bf.getFontDescriptor(BaseFont.BBOXURY, size),
+                -bf.getFontDescriptor(BaseFont.BBOXLLY, size),
+                -bf.getFontDescriptor(BaseFont.STRIKETHROUGH_POSITION, size),
+                strikethroughThickness != 0 ? strikethroughThickness : size / 12.0f,
+                -underlinePosition,
+                underlineThickness
+        );
+    }
+
+    /**
+     * Type 1 and CJK fonts are designed on a 1000-unit em, and OpenPDF does not provide strikethrough values for them.
+     */
+    private static FSFontMetrics fontMetrics(FontDescription description, BaseFont bf, float size) {
         float strikethroughThickness = description.getYStrikeoutSize() != 0 ?
                 description.getYStrikeoutSize() / 1000.0f * size :
                 size / 12.0f;
