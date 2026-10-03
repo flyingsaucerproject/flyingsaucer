@@ -801,7 +801,7 @@ public class Configuration {
         props.setProperty("xr.text.scale", "1.0");
         props.setProperty("xr.text.aa-smoothing-level", "1");
         props.setProperty("xr.text.aa-fontsize-threshhold", "0");
-        props.setProperty("xr.text.aa-rendering-hint", "RenderingHints.VALUE_TEXT_ANTIALIAS_HGRB");
+        props.setProperty("xr.text.aa-rendering-hint", "java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON");
         props.setProperty("xr.cache.stylesheets", "false");
         props.setProperty("xr.incremental.enabled", "false");
         props.setProperty("xr.incremental.lazyimage", "false");
