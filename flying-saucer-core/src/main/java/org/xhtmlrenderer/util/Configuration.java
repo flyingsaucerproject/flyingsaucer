@@ -29,7 +29,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -702,49 +701,28 @@ public class Configuration {
      * VALUE_INTERPOLATION_NEAREST_NEIGHBOR constant on the RendingHints class.
      *
      * @param key Name of the property
-     * @param defaultValue Returned in case of error.
-     * @return Value of the constant, or defaultValue in case of error.
+     * @param defaultValue Returned if the property is not defined.
+     * @return Value of the constant, or defaultValue if the property is not defined.
+     * @throws IllegalArgumentException if the property is defined, but does not refer to a public constant
      */
     public static Object valueFromClassConstant(String key, Object defaultValue) {
-        Configuration conf = instance();
         String val = valueFor(key);
         if ( val == null ) {
             return defaultValue;
         }
         int idx = val.lastIndexOf('.');
-        final String className;
-        final String constant;
-        try {
-            className = val.substring(0, idx);
-            constant = val.substring(idx + 1);
-        } catch (IndexOutOfBoundsException ignore) {
-            conf.warning("Property key " + key + " for object value constant is not properly formatted; " +
-                    "should be FQN<dot>constant, is " + val);
-            return defaultValue;
+        if (idx <= 0) {
+            throw new IllegalArgumentException("Invalid value of configuration property " + key + ": \"" + val +
+                    "\", expected <fully qualified class name>.<constant name>");
         }
-        Class<?> klass;
+        String className = val.substring(0, idx);
+        String constant = val.substring(idx + 1);
         try {
-            klass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            conf.warning("Property for object value constant " + key + " is not a FQN: " + className + ", caused by: " + e);
-            return defaultValue;
+            return Class.forName(className).getField(constant).get(null);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            throw new IllegalArgumentException("Invalid value of configuration property " + key + ": \"" + val +
+                    "\", expected <fully qualified class name>.<public static constant name>", e);
         }
-
-        final Object constantValue;
-        try {
-            Field fld = klass.getDeclaredField(constant);
-            try {
-                constantValue = fld.get(klass);
-            } catch (IllegalAccessException e) {
-                conf.warning("Property for object value constant " + key + ", field is not public: " + className +
-                        "." + constant + ", caused by: " + e);
-                return defaultValue;
-            }
-        } catch (NoSuchFieldException e) {
-            conf.warning("Property for object value constant " + key + " is not a FQN: " + className + ", caused by: " + e);
-            return defaultValue;
-        }
-        return constantValue;
     }
 
     /**
