@@ -92,7 +92,7 @@ import static java.nio.file.Files.newInputStream;
  * @author Patrick Wright
  */
 @SuppressWarnings("NonConstantLogger")
-public class Configuration {
+public final class Configuration {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Configuration.class);
 
     /**
@@ -159,9 +159,6 @@ public class Configuration {
         } catch (RuntimeException e) {
             handleUnexpectedExceptionOnInit(e);
             throw e;
-        } catch (Exception e) {
-            handleUnexpectedExceptionOnInit(e);
-            throw new RuntimeException(e);
         }
     }
 
