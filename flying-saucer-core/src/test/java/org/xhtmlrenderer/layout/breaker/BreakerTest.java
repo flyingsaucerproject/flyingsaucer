@@ -101,6 +101,51 @@ class BreakerTest {
         assertThat(wraps.getWidth()).isEqualTo(17 + 23);
     }
 
+    /**
+     * A line which fits whole is as wide as all of its text, also where the break points do not reach its end.
+     */
+    @Test
+    void aLineWhichFitsCountsTheTextAfterItsLastBreakPoint() {
+        when(sharedContext.getLineBreakingStrategy()).thenReturn((text, lang, s) -> breakPoints(new BreakPoint(4)));
+
+        LineBreakContext context = new LineBreakContext("abcdefghi", null);
+        Breaker.breakText(c, context, 100, 100, style);
+
+        // "abcd" + "efghi", the text after the last break point included
+        assertThat(context.getEnd()).isEqualTo(9);
+        assertThat(context.getWidth()).isEqualTo(23 + 29);
+        assertThat(context.isNeedsNewLine()).isFalse();
+    }
+
+    /**
+     * A line without any break point which fits is as wide as its text.
+     */
+    @Test
+    void aLineWithoutBreakPointsWhichFitsIsAsWideAsItsText() {
+        when(sharedContext.getLineBreakingStrategy()).thenReturn((text, lang, s) -> breakPoints());
+
+        LineBreakContext context = new LineBreakContext("abcdefghi", null);
+        Breaker.breakText(c, context, 100, 100, style);
+
+        assertThat(context.getEnd()).isEqualTo(9);
+        assertThat(context.getWidth()).isEqualTo(53);
+    }
+
+    /**
+     * A line which fits whole gets no hyphen, so the hyphen of its last break point does not count.
+     */
+    @Test
+    void aLineWhichFitsDoesNotCountTheHyphenOfItsLastBreakPoint() {
+        when(sharedContext.getLineBreakingStrategy()).thenReturn((text, lang, s) -> breakPoints(
+                new BreakPoint(3, "-"), new BreakPoint(9, "-")));
+
+        LineBreakContext context = new LineBreakContext("abcdefghi", null);
+        Breaker.breakText(c, context, 100, 100, style);
+
+        assertThat(context.getMaster()).isEqualTo("abcdefghi");
+        assertThat(context.getWidth()).isEqualTo(17 + 35);
+    }
+
     private static int width(String text) {
         return Math.max(0, 6 * text.codePointCount(0, text.length()) - 1);
     }
