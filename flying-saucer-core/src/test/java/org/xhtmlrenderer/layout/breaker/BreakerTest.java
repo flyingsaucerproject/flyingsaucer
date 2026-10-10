@@ -146,6 +146,56 @@ class BreakerTest {
         assertThat(context.getWidth()).isEqualTo(17 + 35);
     }
 
+    /**
+     * The hyphen of a break point at the end of the text is never printed, so it does not decide whether the line fits.
+     */
+    @Test
+    void aHyphenAtTheEndOfTheTextDoesNotDecideWhetherTheLineFits() {
+        when(sharedContext.getLineBreakingStrategy()).thenReturn((text, lang, s) -> breakPoints(
+                new BreakPoint(3, "-"), new BreakPoint(9, "-")));
+
+        LineBreakContext context = new LineBreakContext("abcdefghi", null);
+        // "abc" + "defghi" is 52, with the hyphen after it 58
+        Breaker.breakText(c, context, 52, 52, style);
+
+        assertThat(context.getMaster()).isEqualTo("abcdefghi");
+        assertThat(context.getEnd()).isEqualTo(9);
+        assertThat(context.getWidth()).isEqualTo(52);
+        assertThat(context.isNeedsNewLine()).isFalse();
+    }
+
+    /**
+     * The text after the last break point decides whether the line fits: where it does not, the line wraps at that break point.
+     */
+    @Test
+    void aLineWrapsWhereTheTextAfterItsLastBreakPointDoesNotFit() {
+        when(sharedContext.getLineBreakingStrategy()).thenReturn((text, lang, s) -> breakPoints(new BreakPoint(4)));
+
+        LineBreakContext context = new LineBreakContext("abcdefghi", null);
+        // "abcd" is 23 and fits, "efghi" takes it to 52
+        Breaker.breakText(c, context, 30, 30, style);
+
+        assertThat(context.getEnd()).isEqualTo(4);
+        assertThat(context.getWidth()).isEqualTo(23);
+        assertThat(context.isNeedsNewLine()).isTrue();
+    }
+
+    /**
+     * A text without any break point which does not fit is unbreakable, as a long word is.
+     */
+    @Test
+    void aTextWithoutBreakPointsWhichDoesNotFitIsUnbreakable() {
+        when(sharedContext.getLineBreakingStrategy()).thenReturn((text, lang, s) -> breakPoints());
+
+        LineBreakContext context = new LineBreakContext("abcdefghi", null);
+        Breaker.breakText(c, context, 30, 30, style);
+
+        assertThat(context.getEnd()).isEqualTo(9);
+        assertThat(context.getWidth()).isEqualTo(53);
+        assertThat(context.isNeedsNewLine()).isTrue();
+        assertThat(context.isUnbreakable()).isTrue();
+    }
+
     private static int width(String text) {
         return Math.max(0, 6 * text.codePointCount(0, text.length()) - 1);
     }
