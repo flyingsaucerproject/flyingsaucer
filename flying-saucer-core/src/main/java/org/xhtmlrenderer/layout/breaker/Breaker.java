@@ -98,6 +98,15 @@ public class Breaker {
             } else if (whitespace == IdentValue.PRE) {
                 context.setEnd(context.getLast());
                 context.setWidth(TextUtil.textWidth(c, style, font, context.getCalculatedSubstring()));
+            } else {
+                // The last line: its box asks for its width measured whole (InlineBox.calcMaxWidthFromLineLength), which
+                // may be less than its parts added up, so it is measured whole here too before it is broken (#742)
+                int width = TextUtil.textWidth(c, style, font, context.getStartSubstring());
+                if (width <= avail) {
+                    context.setEnd(context.getLast());
+                    context.setWidth(width);
+                    return;
+                }
             }
         }
 
