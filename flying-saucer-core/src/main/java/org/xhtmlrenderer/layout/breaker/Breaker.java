@@ -149,6 +149,9 @@ public class Breaker {
      * line ends at. A text measured whole may be wider than its parts added up (rounding, kerning), and the parts are
      * what the width of a table cell is made of: recording the whole would let the line exceed the width it was laid
      * out in, and a {@code <br>} after it then make an empty line (#742).
+     * <p>
+     * A line which fits whole gets no hyphen, and its width adds the text after the last break point, as a
+     * {@link LineBreakingStrategy} need not end with a break point at the end of the text.
      */
     private static void doBreakText(LayoutContext c,
             LineBreakContext context, int avail, CalculatedStyle style,
@@ -167,9 +170,10 @@ public class Breaker {
         int previousPosition = 0;
         while (bp != null && bp.position() != BreakIterator.DONE) {
             String part = currentString.substring(previousPosition, bp.position());
-            int widthWithHyphen = previousWidth + TextUtil.textWidth(c, style, f, part + bp.hyphen());
+            int partWidth = TextUtil.textWidth(c, style, f, part);
+            int widthWithHyphen = previousWidth + (bp.hyphen().isEmpty() ? partWidth : TextUtil.textWidth(c, style, f, part + bp.hyphen()));
             // A hyphen is printed only where the line ends, so the text after this break point is not wider by it
-            previousWidth += bp.hyphen().isEmpty() ? widthWithHyphen - previousWidth : TextUtil.textWidth(c, style, f, part);
+            previousWidth += partWidth;
             previousPosition = bp.position();
             if (widthWithHyphen > avail) break;
             right = previousPosition;
@@ -187,7 +191,8 @@ public class Breaker {
         }
 
         if (bp != null && bp.position() == BreakIterator.DONE) {
-            context.setWidth(rightWidth);
+            String tail = currentString.substring(previousPosition);
+            context.setWidth(previousWidth + (tail.isEmpty() ? 0 : TextUtil.textWidth(c, style, f, tail)));
             context.setEnd(context.getMaster().length());
             //It fits!
             return;
