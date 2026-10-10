@@ -159,8 +159,9 @@ public class Breaker {
      * what the width of a table cell is made of: recording the whole would let the line exceed the width it was laid
      * out in, and a {@code <br>} after it then make an empty line (#742).
      * <p>
-     * A line which fits whole gets no hyphen, and its width adds the text after the last break point, as a
-     * {@link LineBreakingStrategy} need not end with a break point at the end of the text.
+     * A line which fits whole gets no hyphen, so the hyphen of a break point at the end of the text does not count. Its
+     * width adds the text after the last break point, as a {@link LineBreakingStrategy} need not end with a break point
+     * at the end of the text, and where that text does not fit, the line wraps at the last break point.
      */
     private static void doBreakText(LayoutContext c,
             LineBreakContext context, int avail, CalculatedStyle style,
@@ -180,8 +181,10 @@ public class Breaker {
         while (bp != null && bp.position() != BreakIterator.DONE) {
             String part = currentString.substring(previousPosition, bp.position());
             int partWidth = TextUtil.textWidth(c, style, f, part);
-            int widthWithHyphen = previousWidth + (bp.hyphen().isEmpty() ? partWidth : TextUtil.textWidth(c, style, f, part + bp.hyphen()));
-            // A hyphen is printed only where the line ends, so the text after this break point is not wider by it
+            // A hyphen is printed only where the line wraps, so neither the text after this break point nor a line ending
+            // with the text is wider by it
+            boolean printsHyphen = !bp.hyphen().isEmpty() && bp.position() < currentString.length();
+            int widthWithHyphen = previousWidth + (printsHyphen ? TextUtil.textWidth(c, style, f, part + bp.hyphen()) : partWidth);
             previousWidth += partWidth;
             previousPosition = bp.position();
             if (widthWithHyphen > avail) break;
@@ -191,17 +194,25 @@ public class Breaker {
             bp = iterator.next();
         }
 
+        // Every break point fits: so does the line, if the text after the last one does
+        boolean fits = false;
+        int fitsWidth = 0;
+        if (bp != null && bp.position() == BreakIterator.DONE) {
+            String tail = currentString.substring(previousPosition);
+            fitsWidth = previousWidth + (tail.isEmpty() ? 0 : TextUtil.textWidth(c, style, f, tail));
+            fits = fitsWidth <= avail;
+        }
+
         // add hyphen if needed
-        if (bp != null && bp.position() != BreakIterator.DONE // it fits
+        if (bp != null && !fits
                 && right >= 0 // some break point found
                 && !lastBreakPoint.hyphen().isEmpty()) {
             context.setMaster(new StringBuilder(context.getMaster()).insert(context.getStart() + right, lastBreakPoint.hyphen()).toString());
             right += lastBreakPoint.hyphen().length();
         }
 
-        if (bp != null && bp.position() == BreakIterator.DONE) {
-            String tail = currentString.substring(previousPosition);
-            context.setWidth(previousWidth + (tail.isEmpty() ? 0 : TextUtil.textWidth(c, style, f, tail)));
+        if (fits) {
+            context.setWidth(fitsWidth);
             context.setEnd(context.getMaster().length());
             //It fits!
             return;
