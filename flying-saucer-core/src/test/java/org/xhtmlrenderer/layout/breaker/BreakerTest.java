@@ -196,6 +196,55 @@ class BreakerTest {
         assertThat(context.isUnbreakable()).isTrue();
     }
 
+    /**
+     * A line broken between any two characters is as wide as its text rendered whole: its characters measured one by
+     * one are what a break may fall between, not what the line is drawn as.
+     */
+    @Test
+    void aLineBrokenAnywhereWhichFitsKeepsTheWidthOfItsText() {
+        when(style.getWordBreak()).thenReturn(IdentValue.BREAK_ALL);
+
+        LineBreakContext context = new LineBreakContext("abcdefghij", null);
+        Breaker.breakText(c, context, 100, 100, style);
+
+        // Ten characters measure 5 each, 50 added up, and 59 rendered whole
+        assertThat(context.getEnd()).isEqualTo(10);
+        assertThat(context.getWidth()).isEqualTo(59);
+        assertThat(context.isNeedsNewLine()).isFalse();
+    }
+
+    /**
+     * A line broken between any two characters ends where its text rendered whole still fits.
+     */
+    @Test
+    void aLineBrokenAnywhereEndsWhereItsTextStillFits() {
+        when(style.getWordBreak()).thenReturn(IdentValue.BREAK_ALL);
+
+        LineBreakContext context = new LineBreakContext("abcdefghij", null);
+        // "abcde" renders 29 and fits; six characters would add up to 30, but render 35
+        Breaker.breakText(c, context, 30, 30, style);
+
+        assertThat(context.getEnd()).isEqualTo(5);
+        assertThat(context.getWidth()).isEqualTo(29);
+        assertThat(context.isNeedsNewLine()).isTrue();
+    }
+
+    /**
+     * A word which does not fit a line on its own is broken between its characters with {@code word-wrap: break-word},
+     * and that line too is as wide as its text rendered whole.
+     */
+    @Test
+    void aWordBrokenByBreakWordEndsWhereItsTextStillFits() {
+        when(style.getWordWrap()).thenReturn(IdentValue.BREAK_WORD);
+
+        LineBreakContext context = new LineBreakContext("abcdefghij", null);
+        Breaker.breakText(c, context, 30, 30, style);
+
+        assertThat(context.getEnd()).isEqualTo(5);
+        assertThat(context.getWidth()).isEqualTo(29);
+        assertThat(context.isNeedsNewLine()).isTrue();
+    }
+
     private static int width(String text) {
         return Math.max(0, 6 * text.codePointCount(0, text.length()) - 1);
     }
