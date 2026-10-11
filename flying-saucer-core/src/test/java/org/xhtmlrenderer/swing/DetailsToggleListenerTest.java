@@ -29,7 +29,7 @@ class DetailsToggleListenerTest {
               <body>
                 <details>
                   <summary>Toggle <a href="other.html">link</a></summary>
-                  <div class="content">Hidden content</div>
+                  <div class="content" id="hidden">Hidden content</div>
                 </details>
               </body>
             </html>""";
@@ -56,6 +56,17 @@ class DetailsToggleListenerTest {
         listener.onMouseUp(panel, summaryBox());
         assertThat(details.hasAttribute("open")).isFalse();
         assertThat(countRedPixels(render())).isZero();
+    }
+
+    @Test
+    void collapsingDetailsRemovesIdsOfHiddenContent() {
+        listener.onMouseUp(panel, summaryBox());
+        render();
+        assertThat(panel.getSharedContext().getBoxById("hidden")).isNotNull();
+
+        listener.onMouseUp(panel, summaryBox());
+        render();
+        assertThat(panel.getSharedContext().getBoxById("hidden")).isNull();
     }
 
     @Test

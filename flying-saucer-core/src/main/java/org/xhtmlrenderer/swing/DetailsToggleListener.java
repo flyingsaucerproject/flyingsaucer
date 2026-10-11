@@ -43,12 +43,15 @@ public class DetailsToggleListener extends DefaultFSMouseListener {
 
         // selectors like "details[open] > summary" must be re-matched
         restyle(panel.getSharedContext(), details);
+        // boxes of a collapsed content are not re-created, so their ids would point to stale boxes
+        panel.getSharedContext().getIdMap().clear();
         panel.setRootBox(null);
         panel.repaint();
     }
 
+    @SuppressWarnings("CheckReturnValue") // called only to refresh the cached style
     private static void restyle(SharedContext sharedContext, Element element) {
-        var unused = sharedContext.getStyle(element, true);
+        sharedContext.getStyle(element, true);
         for (Node child = element.getFirstChild(); child != null; child = child.getNextSibling()) {
             if (child instanceof Element childElement) {
                 restyle(sharedContext, childElement);
