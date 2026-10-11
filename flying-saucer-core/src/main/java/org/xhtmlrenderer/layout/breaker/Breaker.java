@@ -162,6 +162,10 @@ public class Breaker {
      * A line which fits whole gets no hyphen, so the hyphen of a break point at the end of the text does not count. Its
      * width adds the text after the last break point, as a {@link LineBreakingStrategy} need not end with a break point
      * at the end of the text, and where that text does not fit, the line wraps at the last break point.
+     * <p>
+     * A line broken between any two characters ({@code word-break: break-all}, or a word {@code word-wrap: break-word}
+     * breaks) is measured whole instead: its characters measured one by one, each rounded on its own, can add up to a
+     * width far from the one the line is rendered with.
      */
     private static void doBreakText(LayoutContext c,
             LineBreakContext context, int avail, CalculatedStyle style,
@@ -171,6 +175,13 @@ public class Breaker {
         BreakPointsProvider iterator = getBreakPointsProvider(currentString, c, context.getTextNode(), style);
         if (tryToBreakAnywhere) {
             iterator = new BreakAnywhereLineBreakStrategy(currentString);
+            // Measured whole, as below, and once: a text which fits needs no break point measured at all
+            int width = TextUtil.textWidth(c, style, f, currentString);
+            if (width <= avail) {
+                context.setWidth(width);
+                context.setEnd(context.getMaster().length());
+                return;
+            }
         }
         BreakPoint bp = iterator.next();
         BreakPoint lastBreakPoint = null;
@@ -179,13 +190,21 @@ public class Breaker {
         int previousWidth = 0;
         int previousPosition = 0;
         while (bp != null && bp.position() != BreakIterator.DONE) {
-            String part = currentString.substring(previousPosition, bp.position());
-            int partWidth = TextUtil.textWidth(c, style, f, part);
-            // A hyphen is printed only where the line wraps, so neither the text after this break point nor a line ending
-            // with the text is wider by it
-            boolean printsHyphen = !bp.hyphen().isEmpty() && bp.position() < currentString.length();
-            int widthWithHyphen = previousWidth + (printsHyphen ? TextUtil.textWidth(c, style, f, part + bp.hyphen()) : partWidth);
-            previousWidth += partWidth;
+            int widthWithHyphen;
+            if (tryToBreakAnywhere) {
+                // A break between any two characters: the line is measured whole, as it is rendered, rather than as its
+                // characters measured one by one, each rounded on its own
+                previousWidth = TextUtil.textWidth(c, style, f, currentString.substring(0, bp.position()));
+                widthWithHyphen = previousWidth;
+            } else {
+                String part = currentString.substring(previousPosition, bp.position());
+                int partWidth = TextUtil.textWidth(c, style, f, part);
+                // A hyphen is printed only where the line wraps, so neither the text after this break point nor a line
+                // ending with the text is wider by it
+                boolean printsHyphen = !bp.hyphen().isEmpty() && bp.position() < currentString.length();
+                widthWithHyphen = previousWidth + (printsHyphen ? TextUtil.textWidth(c, style, f, part + bp.hyphen()) : partWidth);
+                previousWidth += partWidth;
+            }
             previousPosition = bp.position();
             if (widthWithHyphen > avail) break;
             right = previousPosition;
