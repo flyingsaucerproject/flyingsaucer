@@ -27,6 +27,7 @@ import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 import org.xhtmlrenderer.swing.BasicPanel;
 import org.xhtmlrenderer.swing.CursorListener;
+import org.xhtmlrenderer.swing.DetailsToggleListener;
 import org.xhtmlrenderer.swing.HoverListener;
 import org.xhtmlrenderer.swing.LinkListener;
 import org.xhtmlrenderer.util.Configuration;
@@ -119,6 +120,7 @@ public class XHTMLPanel extends BasicPanel {
         if (Configuration.isTrue("xr.use.listeners", true)) {
             addMouseTrackingListener(new HoverListener());
             addMouseTrackingListener(new LinkListener());
+            addMouseTrackingListener(new DetailsToggleListener());
             addMouseTrackingListener(new CursorListener());
             setFormSubmissionListener(query -> XHTMLPanel.this.setDocumentRelative(query));
         }
