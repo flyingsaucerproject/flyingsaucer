@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
 /**
@@ -243,6 +244,43 @@ class BreakerTest {
         assertThat(context.getEnd()).isEqualTo(5);
         assertThat(context.getWidth()).isEqualTo(29);
         assertThat(context.isNeedsNewLine()).isTrue();
+    }
+
+    /**
+     * A line broken between any two characters measures a few prefixes of the text, not the whole remaining text and
+     * every prefix of the line: a long text without break points, such as base64 in a table cell, would otherwise cost
+     * time quadratic in its length.
+     */
+    @Test
+    void aLineBrokenAnywhereMeasuresFewPrefixes() {
+        when(style.getWordBreak()).thenReturn(IdentValue.BREAK_ALL);
+        String text = "x".repeat(10_000);
+
+        LineBreakContext context = new LineBreakContext(text, null);
+        // 50 characters render 299 and fit, 51 render 305
+        Breaker.breakText(c, context, 300, 300, style);
+
+        assertThat(context.getEnd()).isEqualTo(50);
+        assertThat(context.getWidth()).isEqualTo(299);
+        List<String> measured = mockingDetails(textRenderer).getInvocations().stream()
+                .filter(invocation -> invocation.getMethod().getName().equals("getWidth"))
+                .map(invocation -> (String) invocation.getArgument(2))
+                .toList();
+        assertThat(measured).hasSizeLessThan(20);
+        assertThat(measured.stream().mapToInt(String::length).sum()).isLessThan(1_000);
+    }
+
+    /** An empty text broken anywhere fits, with the width of nothing. */
+    @Test
+    void anEmptyTextBrokenAnywhereFits() {
+        when(style.getWordBreak()).thenReturn(IdentValue.BREAK_ALL);
+
+        LineBreakContext context = new LineBreakContext("", null);
+        Breaker.breakText(c, context, 30, 30, style);
+
+        assertThat(context.getEnd()).isZero();
+        assertThat(context.getWidth()).isZero();
+        assertThat(context.isNeedsNewLine()).isFalse();
     }
 
     private static int width(String text) {
