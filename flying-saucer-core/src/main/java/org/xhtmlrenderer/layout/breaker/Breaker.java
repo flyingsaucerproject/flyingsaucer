@@ -98,6 +98,15 @@ public class Breaker {
             } else if (whitespace == IdentValue.PRE) {
                 context.setEnd(context.getLast());
                 context.setWidth(TextUtil.textWidth(c, style, font, context.getCalculatedSubstring()));
+            } else {
+                // The last line: its box asks for its width measured whole (InlineBox.calcMaxWidthFromLineLength), which
+                // may be less than its parts added up, so it is measured whole here too before it is broken (#742)
+                int width = TextUtil.textWidth(c, style, font, context.getStartSubstring());
+                if (width <= avail) {
+                    context.setEnd(context.getLast());
+                    context.setWidth(width);
+                    return;
+                }
             }
         }
 
@@ -142,46 +151,138 @@ public class Breaker {
         return DEFAULT_LANGUAGE;
     }
 
+    /**
+     * Ends the line at the last break point whose text fits {@code avail}, and gives it the width that decided it fits.
+     * <p>
+     * The width is the sum of the widths of the text between the break points, plus the hyphen of the break point the
+     * line ends at. A text measured whole may be wider than its parts added up (rounding, kerning), and the parts are
+     * what the width of a table cell is made of: recording the whole would let the line exceed the width it was laid
+     * out in, and a {@code <br>} after it then make an empty line (#742).
+     * <p>
+     * A line which fits whole gets no hyphen, so the hyphen of a break point at the end of the text does not count. Its
+     * width adds the text after the last break point, as a {@link LineBreakingStrategy} need not end with a break point
+     * at the end of the text, and where that text does not fit, the line wraps at the last break point.
+     * <p>
+     * A line broken between any two characters ({@code word-break: break-all}, or a word {@code word-wrap: break-word}
+     * breaks) is measured whole instead: its characters measured one by one, each rounded on its own, can add up to a
+     * width far from the one the line is rendered with.
+     */
     private static void doBreakText(LayoutContext c,
             LineBreakContext context, int avail, CalculatedStyle style,
             boolean tryToBreakAnywhere, int fullLineWidth) {
         FSFont f = style.getFSFont(c);
         String currentString = context.getStartSubstring();
-        BreakPointsProvider iterator = getBreakPointsProvider(currentString, c, context.getTextNode(), style);
         if (tryToBreakAnywhere) {
-            iterator = new BreakAnywhereLineBreakStrategy(currentString);
+            breakAnywhere(c, context, avail, style, f, currentString, fullLineWidth);
+            return;
         }
+        BreakPointsProvider iterator = getBreakPointsProvider(currentString, c, context.getTextNode(), style);
         BreakPoint bp = iterator.next();
         BreakPoint lastBreakPoint = null;
         int right = -1;
+        int rightWidth = 0;
         int previousWidth = 0;
         int previousPosition = 0;
         while (bp != null && bp.position() != BreakIterator.DONE) {
-            int currentWidth = TextUtil.textWidth(c, style, f, currentString.substring(previousPosition, bp.position()) + bp.hyphen());
-            int widthWithHyphen = previousWidth + currentWidth;
-            previousWidth = widthWithHyphen;
+            String part = currentString.substring(previousPosition, bp.position());
+            int partWidth = TextUtil.textWidth(c, style, f, part);
+            // A hyphen is printed only where the line wraps, so neither the text after this break point nor a line
+            // ending with the text is wider by it
+            boolean printsHyphen = !bp.hyphen().isEmpty() && bp.position() < currentString.length();
+            int widthWithHyphen = previousWidth + (printsHyphen ? TextUtil.textWidth(c, style, f, part + bp.hyphen()) : partWidth);
+            previousWidth += partWidth;
             previousPosition = bp.position();
             if (widthWithHyphen > avail) break;
             right = previousPosition;
+            rightWidth = widthWithHyphen;
             lastBreakPoint = bp;
             bp = iterator.next();
         }
 
+        // Every break point fits: so does the line, if the text after the last one does
+        boolean fits = false;
+        int fitsWidth = 0;
+        if (bp != null && bp.position() == BreakIterator.DONE) {
+            String tail = currentString.substring(previousPosition);
+            fitsWidth = previousWidth + (tail.isEmpty() ? 0 : TextUtil.textWidth(c, style, f, tail));
+            fits = fitsWidth <= avail;
+        }
+
         // add hyphen if needed
-        if (bp != null && bp.position() != BreakIterator.DONE // it fits
+        if (bp != null && !fits
                 && right >= 0 // some break point found
                 && !lastBreakPoint.hyphen().isEmpty()) {
             context.setMaster(new StringBuilder(context.getMaster()).insert(context.getStart() + right, lastBreakPoint.hyphen()).toString());
             right += lastBreakPoint.hyphen().length();
         }
 
-        if (bp != null && bp.position() == BreakIterator.DONE) {
-            context.setWidth(TextUtil.textWidth(c, style, f, currentString));
+        if (fits) {
+            context.setWidth(fitsWidth);
             context.setEnd(context.getMaster().length());
             //It fits!
             return;
         }
 
+        wrap(c, context, avail, style, f, currentString, false, fullLineWidth, right, rightWidth);
+    }
+
+    /**
+     * Ends a line which may break between any two characters ({@code word-break: break-all}, or a word that
+     * {@code word-wrap: break-word} breaks) after the most code points that fit, measuring the line whole, as it is
+     * rendered: its characters measured one by one, each rounded on its own, can add up to a width far from that.
+     * <p>
+     * The width grows with the prefix, so the prefix is found with a few measurements rather than one per character:
+     * prefixes of 1, 2, 4, 8 code points and so on until one does not fit, then a binary search between the last two.
+     * That is about two measurements per doubling of the line, each of at most twice its length, and the remaining text
+     * is measured whole only when it fits.
+     */
+    private static void breakAnywhere(LayoutContext c, LineBreakContext context, int avail, CalculatedStyle style, FSFont f,
+            String currentString, int fullLineWidth) {
+        int codePoints = currentString.codePointCount(0, currentString.length());
+        int fitting = 0;
+        int fittingWidth = 0;
+        int notFitting = codePoints + 1;
+        int probe = 1;
+        while (probe <= codePoints) {
+            int width = prefixWidth(c, style, f, currentString, probe);
+            if (width > avail) {
+                notFitting = probe;
+                break;
+            }
+            fitting = probe;
+            fittingWidth = width;
+            if (probe == codePoints) {
+                break;
+            }
+            probe = Math.min(probe * 2, codePoints);
+        }
+        // Only when a prefix did not fit: when the whole text fits, the two are one apart already
+        while (notFitting - fitting > 1) {
+            int middle = (fitting + notFitting) >>> 1;
+            int width = prefixWidth(c, style, f, currentString, middle);
+            if (width <= avail) {
+                fitting = middle;
+                fittingWidth = width;
+            } else {
+                notFitting = middle;
+            }
+        }
+        if (fitting == codePoints) {
+            context.setWidth(codePoints == 0 ? TextUtil.textWidth(c, style, f, currentString) : fittingWidth);
+            context.setEnd(context.getMaster().length());
+            return;
+        }
+        int right = fitting == 0 ? -1 : currentString.offsetByCodePoints(0, fitting);
+        wrap(c, context, avail, style, f, currentString, true, fullLineWidth, right, fittingWidth);
+    }
+
+    private static int prefixWidth(LayoutContext c, CalculatedStyle style, FSFont f, String text, int codePoints) {
+        return TextUtil.textWidth(c, style, f, text.substring(0, text.offsetByCodePoints(0, codePoints)));
+    }
+
+    /** Ends a line that does not fit whole: at {@code right}, the last break point that fits, or as the style asks. */
+    private static void wrap(LayoutContext c, LineBreakContext context, int avail, CalculatedStyle style, FSFont f,
+            String currentString, boolean tryToBreakAnywhere, int fullLineWidth, int right, int rightWidth) {
         context.setNeedsNewLine(true);
         if (right <= 0 && style.getWordWrap() == IdentValue.BREAK_WORD) {
             if (!tryToBreakAnywhere) {
@@ -208,7 +309,7 @@ public class Breaker {
 
         if (right > 0) { // found a place to wrap
             context.setEnd(context.getStart() + right);
-            context.setWidth(TextUtil.textWidth(c, style, f, context.getMaster().substring(context.getStart(), context.getStart() + right)));
+            context.setWidth(rightWidth);
             return;
         }
 
