@@ -6,6 +6,9 @@ import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.bridge.ViewBox;
+import org.apache.batik.gvt.CanvasGraphicsNode;
+import org.apache.batik.gvt.CompositeGraphicsNode;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderException;
@@ -13,23 +16,31 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.jspecify.annotations.Nullable;
 import org.openpdf.text.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGSVGElement;
 import org.xhtmlrenderer.extend.Size;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Dimension2D;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+import static org.apache.batik.util.SVGConstants.SVG_PRESERVE_ASPECT_RATIO_ATTRIBUTE;
+import static org.apache.batik.util.SVGConstants.SVG_VIEW_BOX_ATTRIBUTE;
 
 public class SvgImage extends ITextFSImage {
     private static final Logger log = LoggerFactory.getLogger(SvgImage.class);
@@ -39,7 +50,7 @@ public class SvgImage extends ITextFSImage {
      * it would rasterize them in low resolution.
      */
     private static final Set<String> RASTER_ONLY_ELEMENTS = Set.of("linearGradient", "radialGradient", "pattern", "filter", "mask");
-    private static final Pattern RE_OPACITY = Pattern.compile("(?<![\\w-])opacity\\s*:\\s*([\\d.]+)(%?)");
+    private static final Pattern RE_OPACITY = Pattern.compile("(?<![\\w-])opacity\\s*:\\s*([\\d.]+)(%?)", CASE_INSENSITIVE);
 
     protected final byte[] image;
     protected final Size size;
@@ -143,28 +154,65 @@ public class SvgImage extends ITextFSImage {
     }
 
     /**
-     * Paints this SVG as vector graphics, scaled to fit the given box.
+     * Paints this SVG as vector graphics into the box of {@link #getWidth()} x {@link #getHeight()}
+     * - the same way as {@link #getImage()} rasterizes it.
      * <p>
      * Unlike {@link #getImage()}, it doesn't rasterize the SVG,
      * which is much faster and gives sharp output at any zoom level.
      *
-     * @param g      target graphics, with origin at the top-left corner of the image
-     * @param width  target width (in units of {@code g})
-     * @param height target height (in units of {@code g})
+     * @param g target graphics, with origin at the top-left corner of the image, in units of the image size
      */
-    void draw(Graphics2D g, float width, float height) {
+    void draw(Graphics2D g) {
+        float width = getWidth();
+        float height = getHeight();
         SvgUserAgent userAgent = new SvgUserAgent(width, height);
         BridgeContext ctx = new BridgeContext(userAgent, new DocumentLoader(userAgent));
         try {
-            GraphicsNode root = new GVTBuilder().build(ctx, parseSvg(image, uri));
-            Dimension2D documentSize = ctx.getDocumentSize();
-            if (documentSize.getWidth() > 0 && documentSize.getHeight() > 0) {
-                g.scale(width / documentSize.getWidth(), height / documentSize.getHeight());
+            SVGDocument document = parseSvg(image, uri);
+            GraphicsNode root = new GVTBuilder().build(ctx, document);
+            if (root == null) {
+                return; // e.g. the root element is excluded by "requiredFeatures"
+            }
+            AffineTransform viewingTransform = viewingTransform(document.getRootElement(), ctx, width, height);
+            CanvasGraphicsNode canvas = canvasGraphicsNode(root);
+            if (canvas != null) {
+                canvas.setViewingTransform(viewingTransform);
+            } else {
+                g.transform(viewingTransform);
             }
             root.paint(g);
         } finally {
             ctx.dispose();
         }
+    }
+
+    /**
+     * Same logic as in {@link org.apache.batik.transcoder.SVGAbstractTranscoder}:
+     * fits the SVG into the target box preserving its aspect ratio.
+     */
+    private static AffineTransform viewingTransform(SVGSVGElement root, BridgeContext ctx, float width, float height) {
+        String viewBox = root.getAttributeNS(null, SVG_VIEW_BOX_ATTRIBUTE);
+        if (!viewBox.isEmpty()) {
+            String aspectRatio = root.getAttributeNS(null, SVG_PRESERVE_ASPECT_RATIO_ATTRIBUTE);
+            return ViewBox.getPreserveAspectRatioTransform(root, viewBox, aspectRatio, width, height, ctx);
+        }
+        Dimension2D documentSize = ctx.getDocumentSize();
+        if (documentSize.getWidth() <= 0 || documentSize.getHeight() <= 0) {
+            return new AffineTransform();
+        }
+        double scale = Math.min(width / documentSize.getWidth(), height / documentSize.getHeight());
+        return AffineTransform.getScaleInstance(scale, scale);
+    }
+
+    @Nullable
+    private static CanvasGraphicsNode canvasGraphicsNode(GraphicsNode root) {
+        if (root instanceof CompositeGraphicsNode composite) {
+            List<?> children = composite.getChildren();
+            if (!children.isEmpty() && children.get(0) instanceof CanvasGraphicsNode canvas) {
+                return canvas;
+            }
+        }
+        return null;
     }
 
     private static SVGDocument parseSvg(byte[] image, String uri) {
@@ -184,6 +232,7 @@ public class SvgImage extends ITextFSImage {
         private final Dimension2D viewportSize;
 
         private SvgUserAgent(float width, float height) {
+            addStdFeatures();
             viewportSize = new Dimension2D() {
                 @Override
                 public double getWidth() {

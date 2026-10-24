@@ -1243,7 +1243,8 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
         PdfTemplate template = _currentPage.createTemplate(width, height);
         Graphics2D g = template.createGraphicsShapes(width, height);
         try {
-            image.draw(g, width, height);
+            g.scale(1 / _dotsPerPoint, 1 / _dotsPerPoint);
+            image.draw(g);
         } finally {
             g.dispose();
         }
