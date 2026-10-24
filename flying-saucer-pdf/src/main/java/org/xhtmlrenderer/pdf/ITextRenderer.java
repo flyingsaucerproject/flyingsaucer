@@ -323,6 +323,11 @@ public class ITextRenderer {
     }
 
     public void layout() {
+        if (!_sharedContext.isPrint()) {
+            // without print mode, layout creates no pages, so there would be nothing to write to the PDF
+            throw new IllegalStateException(
+                "ITextRenderer requires print mode, but SharedContext.setPrint(false) was called");
+        }
         LayoutContext c = newLayoutContext();
         BlockBox root = BoxBuilder.createRootBox(c, _doc);
         root.setContainingBlock(new ViewportBox(getInitialExtents(c)));
