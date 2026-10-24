@@ -256,6 +256,14 @@ public class SvgImage extends ITextFSImage {
             return viewportSize;
         }
 
+        /**
+         * Same as the default {@link org.apache.batik.transcoder.SVGAbstractTranscoder#KEY_MEDIA} used by {@link #getImage()}
+         */
+        @Override
+        public String getMedia() {
+            return "screen";
+        }
+
         @Override
         public void displayError(Exception e) {
             log.warn("Error while rendering SVG ({})", uri, e);
