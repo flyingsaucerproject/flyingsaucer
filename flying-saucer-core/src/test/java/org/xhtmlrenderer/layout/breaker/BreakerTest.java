@@ -283,6 +283,24 @@ class BreakerTest {
         assertThat(context.isNeedsNewLine()).isFalse();
     }
 
+    /**
+     * A {@code <br>} (a newline with no text before it) ends a line which already overflows, as with
+     * {@code white-space: nowrap}, instead of moving to the next line and making it empty, see
+     * <a href="https://github.com/flyingsaucerproject/flyingsaucer/issues/491">issue 491</a>.
+     */
+    @Test
+    void aNewlineEndsALineWhichAlreadyOverflows() {
+        when(style.getWhitespace()).thenReturn(IdentValue.PRE_LINE);
+
+        LineBreakContext context = new LineBreakContext("\n", null);
+        Breaker.breakText(c, context, -50, 100, style);
+
+        assertThat(context.getEnd()).isEqualTo(1);
+        assertThat(context.getWidth()).isZero();
+        assertThat(context.isNeedsNewLine()).isTrue();
+        assertThat(context.isEndsOnNL()).isTrue();
+    }
+
     private static int width(String text) {
         return Math.max(0, 6 * text.codePointCount(0, text.length()) - 1);
     }
