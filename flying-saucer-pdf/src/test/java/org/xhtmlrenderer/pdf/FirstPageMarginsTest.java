@@ -23,8 +23,8 @@ public class FirstPageMarginsTest {
     public void dynamicAutoWidthUsesWidthOfCurrentPage() throws IOException {
         float rightEdge = maxRightEdgeOnPage(html("body > * { -fs-dynamic-auto-width: dynamic; }"), 2);
         assertThat(rightEdge)
-            .as("text on page 2 must not cross its 1.5cm right margin")
-            .isLessThanOrEqualTo((210 - 15) * MM);
+            .as("text on page 2 must fill the page up to (but not cross) its 1.5cm right margin")
+            .isBetween((210 - 15 - 30) * MM, (210 - 15) * MM);
     }
 
     private static String html(String extraCss) {
