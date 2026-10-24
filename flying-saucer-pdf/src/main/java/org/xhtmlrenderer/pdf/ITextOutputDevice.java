@@ -38,6 +38,7 @@ import com.lowagie.text.pdf.PdfNumber;
 import com.lowagie.text.pdf.PdfOutline;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfString;
+import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfTextArray;
 import com.lowagie.text.pdf.PdfWriter;
 import org.jspecify.annotations.Nullable;
@@ -865,6 +866,8 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
     public void drawImage(FSImage fsImage, int x, int y) {
         if (fsImage instanceof PDFAsImage pdfAsImage) {
             drawPDFAsImage(pdfAsImage, x, y);
+        } else if (fsImage instanceof SvgImage svgImage && svgImage.isDrawableAsVector()) {
+            drawSvgImage(svgImage, x, y);
         } else if (fsImage instanceof ITextFSImage iTextImage) {
             Image image = iTextImage.getImage();
 
@@ -897,6 +900,36 @@ public class ITextOutputDevice extends AbstractOutputDevice implements OutputDev
 
     @Override
     public void drawLinearGradient(FSLinearGradient gradient, int x, int y, int width, int height) {
+    }
+
+    private void drawSvgImage(SvgImage image, int x, int y) {
+        if (image.getHeight() <= 0 || image.getWidth() <= 0) {
+            return;
+        }
+
+        float width = image.getWidth() / _dotsPerPoint;
+        float height = image.getHeight() / _dotsPerPoint;
+        PdfTemplate template = _currentPage.createTemplate(width, height);
+        Graphics2D g = template.createGraphicsShapes(width, height);
+        try {
+            g.scale(1 / _dotsPerPoint, 1 / _dotsPerPoint);
+            image.draw(g);
+        } finally {
+            g.dispose();
+        }
+
+        AffineTransform at = AffineTransform.getTranslateInstance(x, y);
+        at.translate(0, image.getHeight());
+        at.scale(_dotsPerPoint, _dotsPerPoint);
+
+        AffineTransform inverse = normalizeMatrix(_transform);
+        AffineTransform flipper = AffineTransform.getScaleInstance(1, -1);
+        inverse.concatenate(at);
+        inverse.concatenate(flipper);
+
+        double[] mx = new double[6];
+        inverse.getMatrix(mx);
+        _currentPage.addTemplate(template, (float) mx[0], (float) mx[1], (float) mx[2], (float) mx[3], (float) mx[4], (float) mx[5]);
     }
 
     private void drawPDFAsImage(PDFAsImage image, int x, int y) {
