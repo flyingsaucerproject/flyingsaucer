@@ -162,6 +162,16 @@ class SvgImageTest {
             """, 100, 100);
     }
 
+    @Test
+    void svgWithPrintOnlyStyles_usesScreenMedia() throws Exception {
+        assertVectorMatchesRaster("""
+            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+              <style>@media print { rect { display: none } }</style>
+              <rect x="10" y="10" width="50" height="50"/>
+            </svg>
+            """, 100, 100);
+    }
+
     private static void assertVectorMatchesRaster(String svg, int width, int height) throws IOException, TranscoderException {
         Rectangle raster = paintedBounds(rasterize(svg, width, height));
         Rectangle vector = paintedBounds(drawAsVector(svg, width, height));
