@@ -110,9 +110,10 @@ public class Breaker {
             }
         }
 
-        //check if we may wrap
+        // check if we may wrap: a forced line break with no text before it (e.g. <br>) always ends the line,
+        // even if the line already overflows (#491)
         if (whitespace == IdentValue.PRE ||
-            context.isNeedsNewLine() && context.getWidth() <= avail) {
+            context.isNeedsNewLine() && (context.getWidth() <= avail || context.getEnd() == context.getStart() + 1)) {
             return;
         }
 
