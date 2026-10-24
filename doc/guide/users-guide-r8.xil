@@ -620,6 +620,7 @@ All of the properties in the following table are used just like regular properti
 h3(fs_heading){page-break-before: avoid;}. Table of Extensions
 
 table(extensions). |{width:15%}  **Property** | **Description**
+| @-fs-dynamic-auto-width@ |  values @dynamic@ or @static@ (the default). By default, a block with @width: auto@ takes its width from the first page of the document, so if later pages have wider left/right margins (e.g. @@page :first@ has smaller margins than @@page@), the content overflows and is clipped on those pages. With @dynamic@, the block takes its width from the page it starts on. It only has effect if the block and all its ancestors have @width: auto@ and none of them is shrink-to-fit (float, inline-block, table cell, etc.). The property is not inherited, so apply it to the top-level blocks of each page, e.g. @body > * { -fs-dynamic-auto-width: dynamic; }@. A block that is split across pages keeps the width of the page it starts on.
 | @-fs-keep-with-inline@ | values @keep@ or auto (the default).  If it's keep, FS will try to avoid breaking a block in such a way that only padding and borders appear on a page.  This works regardless of how deeply nested the inline content is in the block.
 | @-fs-page-sequence@ |  values @start@ or @auto@ (the default) and allows you to limit the scope of the page and pages counters to a portion of the document
 | @-fs-font-metric-src@ |  use inside a @font-face@ rule in case the font you want to embed in the PDF has a custom font metrics file; value is the URL to the metrics file for the font
