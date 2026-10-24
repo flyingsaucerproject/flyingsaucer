@@ -1,5 +1,15 @@
 # Changelog
 
+## 10.7.0 (24.10.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/54?closed=1
+* #500 Expand/collapse <details> on click on <summary> in XHTMLPanel (#744)
+* #742 fix: an empty line after a <br> in a table cell (#743)
+* draw SVG images as vector graphics instead of rasterizing them (#746)
+* #491 A <br> after an overflowing line no longer makes an empty line (#747)
+* #272 Document -fs-dynamic-auto-width as a workaround for narrower margins after the first page
+* #375 Fail fast when ITextRenderer is used without print mode (#750)
+* #439 Is automatic page break possible? (#749)
+* #272 Document -fs-dynamic-auto-width (#748)
+
 ## 10.6.0 (04.10.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/53?closed=1
 * #500 support `<details>` and `<summary>` elements: closed `<details>` shows only its summary, `<summary>` gets a disclosure marker (#740)
 * fix: few bugs in the text line-breaking pipeline that caused text overflow and incorrect word-wrap behaviour / by Ilham Ferdian Rudianata (#724) (#725)

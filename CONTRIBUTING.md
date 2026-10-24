@@ -31,7 +31,7 @@ To make a release, you need to
 Steps to release version 10.6.0 (for example)
 1. Fill the CHANGELOG.md
 2. ./mvnw versions:set -DnewVersion=10.6.0  // replaces previous version by "10.6.0" in pom.xml files
-3. ./mvnw clean deploy -Psign.artifacts           // build & sign & upload `*.jar` files to https://central.sonatype.com/
+3. ./mvnw clean deploy -Psign.artifacts     // build & sign & upload `*.jar` files to https://central.sonatype.com/
 4. git commit -am "Release 10.6.0"
 5. git tag v10.6.0
 6. git push --tags
