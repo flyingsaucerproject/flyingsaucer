@@ -1679,6 +1679,8 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
         // The inline box whose last word the next text may continue, and the width of the word so far (#752)
         InlineBox openWordEnd = null;
         int openWordWidth = 0;
+        // The margin, border and padding of the elements starting before the next text, which go with its first word
+        int pendingStartWidth = 0;
 
         for (Styleable child : _inlineContent) {
             if (child.getStyle().isAbsolute() || child.getStyle().isFixed() || child.getStyle().isRunning()) {
@@ -1699,6 +1701,7 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
                 trimmableIB = null;
                 if (!child.getStyle().isFloated()) {
                     openWordEnd = null;
+                    pendingStartWidth = 0;
                 }
                 BlockBox block = (BlockBox) child;
                 block.calcMinMaxWidth(c);
@@ -1718,6 +1721,7 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
                     }
                     trimmableIB = iB;
                     openWordEnd = null;
+                    pendingStartWidth = 0;
                 } else if (whitespace == IdentValue.PRE) {
                     if (trimmableIB != null) {
                         lineWidth -= trimmableIB.getTrailingSpaceWidth(c);
@@ -1739,6 +1743,7 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
                     }
                     lineWidth = 0;
                     openWordEnd = null;
+                    pendingStartWidth = 0;
                 } else if (whitespace == IdentValue.PRE_WRAP || whitespace == IdentValue.PRE_LINE) {
                     lineWidth += textIndent + iB.getFirstLineWidth();
                     if (trimmableIB != null) {
@@ -1761,6 +1766,7 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
                     }
                     lineWidth = 0;
                     openWordEnd = null;
+                    pendingStartWidth = 0;
                 } else /* if (whitespace == IdentValue.NORMAL) */ {
                     lineWidth += textIndent + iB.getMaxWidth();
                     if (iB.getMinWidth() > childMinWidth) {
@@ -1770,22 +1776,31 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
 
                     if (iB.getStyle().getWordWrap() == IdentValue.BREAK_WORD) {
                         openWordEnd = null;
+                    pendingStartWidth = 0;
                     } else if (!iB.hasWords()) {
-                        // An element starts or ends here, and its margin, border and padding join the word around it
-                        openWordWidth += iB.getMaxWidth();
-                    } else {
-                        if (openWordEnd != null && continuesWord(c, openWordEnd, iB)) {
-                            openWordWidth += iB.firstWordWidth();
+                        // An element starts or ends here without text: the margin, border and padding where it ends go
+                        // with the word before, and those where it starts (or of an empty element) with the word after
+                        if (iB.isStartsHere() || openWordEnd == null || pendingStartWidth > 0) {
+                            pendingStartWidth += iB.getMaxWidth();
+                        } else {
+                            openWordWidth += iB.getMaxWidth();
                             if (openWordWidth > childMinWidth) {
                                 childMinWidth = openWordWidth;
                             }
-                            if (iB.breaksInside()) {
-                                openWordWidth = iB.lastWordWidth();
-                            }
-                        } else {
-                            openWordWidth = iB.lastWordWidth() + (iB.breaksInside() ? 0 : textIndent);
                         }
+                    } else {
+                        int firstWordWidth = pendingStartWidth + iB.firstWordWidth();
+                        if (openWordEnd != null && continuesWord(c, openWordEnd, iB)) {
+                            firstWordWidth += openWordWidth;
+                        } else if (!iB.breaksInside()) {
+                            firstWordWidth += textIndent;
+                        }
+                        if (firstWordWidth > childMinWidth) {
+                            childMinWidth = firstWordWidth;
+                        }
+                        openWordWidth = iB.breaksInside() ? iB.lastWordWidth() : firstWordWidth;
                         openWordEnd = iB;
+                        pendingStartWidth = 0;
                     }
                 }
 
@@ -1800,6 +1815,10 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
         }
         if (lineWidth > childMaxWidth) {
             childMaxWidth = lineWidth;
+        }
+        // No word follows the elements starting after the last word
+        if (openWordEnd != null && openWordWidth + pendingStartWidth > childMinWidth) {
+            childMinWidth = openWordWidth + pendingStartWidth;
         }
 
         _minWidth += childMinWidth;
