@@ -2,6 +2,7 @@ package org.xhtmlrenderer.render;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.Graphics2DRenderer;
@@ -59,15 +60,26 @@ class InlineBoundaryMinWidthTest {
         assertThat(lines("aaa<span>bbb</span>", "word-wrap: break-word;")).isGreaterThan(1);
     }
 
-    /** The width of the cell is the width of the word: the padding of the span counts once. */
+    /**
+     * The width of the cell is the width of the word: the padding of the span counts once, also where the span has no
+     * text of its own before or after the word. A word is measured with the white space after it, as in a text without
+     * a span.
+     */
     @ParameterizedTest
-    @ValueSource(strings = {
-            "aaa<span style='padding-left: 20px'>bbb</span>",
-            "<span style='padding-right: 20px'>aaa</span>bbb",
+    @CsvSource(delimiter = '|', value = {
+            "aaa<span style='padding-left: 20px'>bbb</span>                | aaabbb",
+            "<span style='padding-right: 20px'>aaa</span>bbb               | aaabbb",
+            "aaa<span style='padding-left: 20px'><span>bbb</span></span>         | aaabbb",
+            "<span style='padding-right: 20px'><span>aaa</span></span>bbb        | aaabbb",
+            "aaa<span style='padding-right: 20px'></span>                  | aaa",
+            "<span style='padding-left: 20px'></span>aaa                   | aaa",
+            "<span style='padding-left: 20px'><span>aaa</span></span>            | aaa",
+            "<span style='padding-right: 20px'><span>aaa</span></span>           | aaa",
+            "x <span style='padding-left: 20px'><span>aaa</span></span>          | x aaa",
+            "<span style='padding-right: 20px'><span>aaa</span></span> x         | aaa x",
     })
-    void theMarginBorderAndPaddingOfAnInlineBoxCountInTheWord(String cell) {
-        int plain = cellWidth("aaabbb");
-        assertThat(cellWidth(cell)).as("the width of %s", cell).isCloseTo(plain + 20, within(1));
+    void theMarginBorderAndPaddingOfAnInlineBoxCountInTheWord(String cell, String plain) {
+        assertThat(cellWidth(cell)).as("the width of %s", cell).isCloseTo(cellWidth(plain) + 20, within(1));
     }
 
     private static int lines(String cell, String cellStyle) {
