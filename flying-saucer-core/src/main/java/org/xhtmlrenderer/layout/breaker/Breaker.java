@@ -224,7 +224,9 @@ public class Breaker {
             return;
         }
 
-        wrap(c, context, avail, style, f, currentString, false, fullLineWidth, right, rightWidth);
+        // No break point fits: the loop stopped at the first one, which ends the first word
+        BreakPoint firstWordEnd = right < 0 && bp != null && bp.position() != BreakIterator.DONE ? bp : null;
+        wrap(c, context, avail, style, f, currentString, false, fullLineWidth, right, rightWidth, firstWordEnd);
     }
 
     /**
@@ -274,16 +276,23 @@ public class Breaker {
             return;
         }
         int right = fitting == 0 ? -1 : currentString.offsetByCodePoints(0, fitting);
-        wrap(c, context, avail, style, f, currentString, true, fullLineWidth, right, fittingWidth);
+        BreakPoint firstCodePoint = new BreakPoint(currentString.offsetByCodePoints(0, 1));
+        wrap(c, context, avail, style, f, currentString, true, fullLineWidth, right, fittingWidth, firstCodePoint);
     }
 
     private static int prefixWidth(LayoutContext c, CalculatedStyle style, FSFont f, String text, int codePoints) {
         return TextUtil.textWidth(c, style, f, text.substring(0, text.offsetByCodePoints(0, codePoints)));
     }
 
-    /** Ends a line that does not fit whole: at {@code right}, the last break point that fits, or as the style asks. */
+    /**
+     * Ends a line that does not fit whole: at {@code right}, the last break point that fits, or as the style asks.
+     * <p>
+     * Where no break point fits, the line holds the text up to {@code firstWordEnd}, the first break point, even if it
+     * does not fit: the text after it goes to the next line. With no break point, the line holds all the text.
+     */
     private static void wrap(LayoutContext c, LineBreakContext context, int avail, CalculatedStyle style, FSFont f,
-            String currentString, boolean tryToBreakAnywhere, int fullLineWidth, int right, int rightWidth) {
+            String currentString, boolean tryToBreakAnywhere, int fullLineWidth, int right, int rightWidth,
+            @Nullable BreakPoint firstWordEnd) {
         context.setNeedsNewLine(true);
         if (right <= 0 && style.getWordWrap() == IdentValue.BREAK_WORD) {
             if (!tryToBreakAnywhere) {
@@ -315,7 +324,16 @@ public class Breaker {
         }
 
         // unbreakable string
-        context.setEnd(context.getStart() + currentString.length());
+        if (firstWordEnd != null && firstWordEnd.position() > 0 && firstWordEnd.position() < currentString.length()) {
+            int end = firstWordEnd.position();
+            if (!firstWordEnd.hyphen().isEmpty()) {
+                context.setMaster(new StringBuilder(context.getMaster()).insert(context.getStart() + end, firstWordEnd.hyphen()).toString());
+                end += firstWordEnd.hyphen().length();
+            }
+            context.setEnd(context.getStart() + end);
+        } else {
+            context.setEnd(context.getStart() + currentString.length());
+        }
         context.setUnbreakable(true);
         context.setWidth(TextUtil.textWidth(c, style, f, context.getCalculatedSubstring()));
     }
