@@ -12,12 +12,19 @@ import java.text.CharacterIterator;
 public class UrlAwareLineBreakIterator extends BreakIterator {
 
     private static final String BREAKING_CHARS = ".,:;!?- \n\r\t/";
+    /** The characters no line may break before (UAX #14, LB6 and LB7), which come before the break after U+200B (LB8). */
+    private static final String NO_BREAK_BEFORE = "\u000B\u000C\r\n\u0085\u2028\u2029\u200B";
+    private static final int NONE = -2;
 
     private final BreakIterator delegate = BreakIterator.getLineInstance();
     @Nullable
     private String text;
     @Nullable
     private Range currentRange;
+    private int lastBreak;
+    private int pendingBreak = NONE;
+    /** The next zero width space at or after {@code lastBreak}, or -1 for none: the text is searched once. */
+    private int nextZeroWidthSpace;
 
     public UrlAwareLineBreakIterator(String text) {
         setText(text);
@@ -38,8 +45,48 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    /**
+     * The next break point. A break after U+200B ZERO WIDTH SPACE and the spaces after it is added: Unicode requires one
+     * there (UAX #14, LB8: {@code ZW SP* ÷}), and the line iterator of the JDK has none.
+     */
     @Override
     public int next() {
+        int next = pendingBreak == NONE ? nextBreak() : pendingBreak;
+        pendingBreak = NONE;
+        int zeroWidthSpaceBreak = zeroWidthSpaceBreakBefore(next == BreakIterator.DONE ? text.length() : next);
+        if (zeroWidthSpaceBreak != NONE) {
+            pendingBreak = next;
+            next = zeroWidthSpaceBreak;
+        }
+        if (next != BreakIterator.DONE) {
+            lastBreak = next;
+            if (nextZeroWidthSpace > -1 && nextZeroWidthSpace < lastBreak) {
+                nextZeroWidthSpace = indexOfZeroWidthSpace(lastBreak);
+            }
+        }
+        return next;
+    }
+
+    /** The first break after a zero width space between the last break point and {@code limit}, or {@code NONE}. */
+    private int zeroWidthSpaceBreakBefore(int limit) {
+        while (nextZeroWidthSpace > -1 && nextZeroWidthSpace < limit) {
+            int end = nextZeroWidthSpace + 1;
+            while (end < text.length() && text.charAt(end) == ' ') {
+                end++;
+            }
+            if (end > lastBreak && end < limit && NO_BREAK_BEFORE.indexOf(text.charAt(end)) < 0) {
+                return end;
+            }
+            nextZeroWidthSpace = indexOfZeroWidthSpace(end);
+        }
+        return NONE;
+    }
+
+    private int indexOfZeroWidthSpace(int fromIndex) {
+        return text.indexOf('\u200B', fromIndex);
+    }
+
+    private int nextBreak() {
         checkNotAheadOfDelegate();
 
         Range searchRange = currentRange; // the range in which we search for slashes
@@ -144,6 +191,9 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
         delegate.setText(newText);
         text = newText;
         currentRange = new Range(delegate.current(), delegate.current());
+        lastBreak = 0;
+        pendingBreak = NONE;
+        nextZeroWidthSpace = indexOfZeroWidthSpace(0);
     }
 
     private static final class Range {

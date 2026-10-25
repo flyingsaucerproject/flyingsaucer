@@ -1,6 +1,7 @@
 package org.xhtmlrenderer.layout.breaker;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.text.BreakIterator;
 
@@ -25,6 +26,73 @@ public class UrlAwareLineBreakIteratorTest {
     public void breakAtHyphen() {
         assertBreaksCorrectly("Pseudo-element",
                 new String[] {"Pseudo-", "element"});
+    }
+
+    /** Unicode requires a break after a zero width space (UAX #14, LB8: {@code ZW SP* ÷}). */
+    @Test
+    public void breakAfterZeroWidthSpace() {
+        assertBreaksCorrectly("aaa\u200Bbbb\u200Bccc",
+                new String[] {"aaa\u200B", "bbb\u200B", "ccc"});
+    }
+
+    /** The break comes after the spaces which follow the zero width space, not before them. */
+    @Test
+    public void breakAfterSpacesWhichFollowZeroWidthSpace() {
+        assertBreaksCorrectly("aaa\u200B  bbb",
+                new String[] {"aaa\u200B  ", "bbb"});
+    }
+
+    @Test
+    public void breakAfterZeroWidthSpaceAmongOtherBreaks() {
+        assertBreaksCorrectly("xx aaa\u200Bbbb yy",
+                new String[] {"xx ", "aaa\u200B", "bbb ", "yy"});
+    }
+
+    /** No break before a hard line break (UAX #14, LB6, which comes before LB8): the line ends after it. */
+    @Test
+    public void noBreakAfterZeroWidthSpaceBeforeHardLineBreak() {
+        assertBreaksCorrectly("aaa\u200B\nbbb",
+                new String[] {"aaa\u200B\n", "bbb"});
+    }
+
+    /** No break before a zero width space (UAX #14, LB7, which comes before LB8): the break follows the last one. */
+    @Test
+    public void noBreakBetweenTwoZeroWidthSpaces() {
+        assertBreaksCorrectly("aaa\u200B\u200Bbbb",
+                new String[] {"aaa\u200B\u200B", "bbb"});
+    }
+
+    /** A zero width space at the end of the text adds no break: the end of the text is one already. */
+    @Test
+    public void zeroWidthSpaceAtEndAddsNoBreak() {
+        assertBreaksCorrectly("aaa\u200B",
+                new String[] {"aaa\u200B"});
+    }
+
+    /**
+     * A long text without a zero width space is not searched for one again at every break: that would cost time
+     * quadratic in its length. Each word holds a slash, so the search for slashes finds one at once, and a Cyrillic
+     * letter, as a text of Latin-1 letters only finds no U+200B without searching.
+     */
+    @Test
+    @Timeout(5)
+    public void longTextWithoutZeroWidthSpaceBreaksInLinearTime() {
+        String text = "\u044F/b ".repeat(250_000);
+        BreakIterator iterator = new UrlAwareLineBreakIterator(text);
+
+        int last = 0;
+        int next;
+        while ((next = iterator.next()) != BreakIterator.DONE) {
+            last = next;
+        }
+
+        assertThat(last).isEqualTo(text.length());
+    }
+
+    @Test
+    public void breakAfterZeroWidthSpaceInUrl() {
+        assertBreaksCorrectly("http://example.com/a\u200Bb",
+                new String[] {"http://example.", "com", "/a\u200B", "b"});
     }
 
     @Test
