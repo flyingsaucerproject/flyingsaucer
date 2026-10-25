@@ -77,6 +77,12 @@ public class InlineBox implements Styleable {
 
     private int _firstLineWidth;
 
+    private int _wordCount;
+    private String _firstWord = "";
+    private String _lastWord = "";
+    private int _firstWordWidth;
+    private int _lastWordWidth;
+
     @Nullable
     private final String _pseudoElementOrClass;
 
@@ -290,12 +296,14 @@ public class InlineBox implements Styleable {
             if (minWordWidth > 0) {
                 if (! haveFirstWord) {
                     firstWord = minWordWidth;
+                    haveFirstWord = true;
                 }
                 lastWord = minWordWidth;
             }
 
             adjustMinWidth(minWordWidth);
             maxWidth += wordWidth;
+            addWord(currentWord, wordWidth);
 
             last = current;
             for (int i = current; i < text.length(); i++) {
@@ -334,20 +342,42 @@ public class InlineBox implements Styleable {
         }
         adjustMinWidth(minWordWidth);
         maxWidth += wordWidth;
+        addWord(currentWord, wordWidth);
 
         if (isStartsHere()) {
             int leftMBP = getStyle().getMarginBorderPadding(c, cbWidth, Edge.LEFT);
             adjustMinWidth(firstWord + leftMBP);
             maxWidth += leftMBP;
+            _firstWordWidth += leftMBP;
+            if (_wordCount == 1) {
+                _lastWordWidth += leftMBP;
+            }
         }
 
         if (isEndsHere()) {
             int rightMBP = getStyle().getMarginBorderPadding(c, cbWidth, Edge.RIGHT);
             adjustMinWidth(lastWord + rightMBP);
             maxWidth += rightMBP;
+            _lastWordWidth += rightMBP;
+            if (_wordCount == 1) {
+                _firstWordWidth += rightMBP;
+            }
         }
 
         return maxWidth;
+    }
+
+    private void addWord(String word, int width) {
+        if (word.isEmpty()) {
+            return;
+        }
+        if (_wordCount == 0) {
+            _firstWord = word;
+            _firstWordWidth = width;
+        }
+        _lastWord = word;
+        _lastWordWidth = width;
+        _wordCount++;
     }
 
     private void adjustMinWidth(int minWordWidth) {
@@ -407,6 +437,45 @@ public class InlineBox implements Styleable {
 
     public int getFirstLineWidth() {
         return _firstLineWidth;
+    }
+
+    /**
+     * Whether the text has a word, measured by {@link #calcMinMaxWidth} with {@code white-space: normal} or
+     * {@code pre-line}: a text between two soft wrap opportunities, including the white space before the second one.
+     */
+    public boolean hasWords() {
+        return _wordCount > 0;
+    }
+
+    /** Whether the line may break inside the text, which then has more than one word. */
+    public boolean breaksInside() {
+        return _wordCount > 1;
+    }
+
+    /** The text up to the first soft wrap opportunity inside it, or the whole text if there is none. */
+    public String firstWord() {
+        return _firstWord;
+    }
+
+    /** The text after the last soft wrap opportunity inside it, or the whole text if there is none. */
+    public String lastWord() {
+        return _lastWord;
+    }
+
+    /**
+     * The width of {@link #firstWord()}, with the margin, border and padding at the start of the element if it starts
+     * here, and, if the line does not break inside the text, those at the end of the element if it ends here.
+     */
+    public int firstWordWidth() {
+        return _firstWordWidth;
+    }
+
+    /**
+     * The width of {@link #lastWord()}, with the margin, border and padding at the end of the element if it ends here,
+     * and, if the line does not break inside the text, those at the start of the element if it starts here.
+     */
+    public int lastWordWidth() {
+        return _lastWordWidth;
     }
 
     @Nullable
