@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.7.1 (xx.10.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/55?closed=1
+* #752 fix: A line breaks where an inline element starts or ends inside a word (#754)
+
 ## 10.7.0 (24.10.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/54?closed=1
 * #500 Expand/collapse <details> on click on <summary> in XHTMLPanel (#744)
 * #742 fix: an empty line after a <br> in a table cell (#743)

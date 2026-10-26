@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.xhtmlrenderer</groupId>
     <artifactId>flying-saucer-parent</artifactId>
-    <version>10.7.0</version>
+    <version>10.7.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -61,7 +61,7 @@
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>fop</artifactId>
-      <version>2.11</version>
+      <version>2.12</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/net.sf.offo/fop-hyph -->
     <dependency>

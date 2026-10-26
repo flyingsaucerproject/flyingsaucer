@@ -47,12 +47,16 @@ import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.layout.PaintingInfo;
 import org.xhtmlrenderer.layout.PersistentBFC;
 import org.xhtmlrenderer.layout.Styleable;
+import org.xhtmlrenderer.layout.breaker.BreakPoint;
+import org.xhtmlrenderer.layout.breaker.BreakPointsProvider;
+import org.xhtmlrenderer.layout.breaker.Breaker;
 import org.xhtmlrenderer.newtable.TableRowBox;
 import org.xhtmlrenderer.render.MarkerData.ImageMarker;
 import org.xhtmlrenderer.render.MarkerData.TextMarker;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.text.BreakIterator;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -1672,6 +1676,12 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
 
         InlineBox trimmableIB = null;
 
+        // The inline box whose last word the next text may continue, and the width of the word so far (#752)
+        InlineBox openWordEnd = null;
+        int openWordWidth = 0;
+        // The margin, border and padding of the elements starting before the next text, which go with its first word
+        int pendingStartWidth = 0;
+
         for (Styleable child : _inlineContent) {
             if (child.getStyle().isAbsolute() || child.getStyle().isFixed() || child.getStyle().isRunning()) {
                 continue;
@@ -1689,6 +1699,10 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
                     lineWidth = 0;
                 }
                 trimmableIB = null;
+                if (!child.getStyle().isFloated()) {
+                    openWordEnd = null;
+                    pendingStartWidth = 0;
+                }
                 BlockBox block = (BlockBox) child;
                 block.calcMinMaxWidth(c);
                 lineWidth += block.getMaxWidth();
@@ -1706,6 +1720,8 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
                         childMinWidth = iB.getMinWidth();
                     }
                     trimmableIB = iB;
+                    openWordEnd = null;
+                    pendingStartWidth = 0;
                 } else if (whitespace == IdentValue.PRE) {
                     if (trimmableIB != null) {
                         lineWidth -= trimmableIB.getTrailingSpaceWidth(c);
@@ -1726,6 +1742,8 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
                         childMaxWidth = childMinWidth;
                     }
                     lineWidth = 0;
+                    openWordEnd = null;
+                    pendingStartWidth = 0;
                 } else if (whitespace == IdentValue.PRE_WRAP || whitespace == IdentValue.PRE_LINE) {
                     lineWidth += textIndent + iB.getFirstLineWidth();
                     if (trimmableIB != null) {
@@ -1747,12 +1765,43 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
                         trimmableIB = null;
                     }
                     lineWidth = 0;
+                    openWordEnd = null;
+                    pendingStartWidth = 0;
                 } else /* if (whitespace == IdentValue.NORMAL) */ {
                     lineWidth += textIndent + iB.getMaxWidth();
                     if (iB.getMinWidth() > childMinWidth) {
                         childMinWidth = textIndent + iB.getMinWidth();
                     }
                     trimmableIB = iB;
+
+                    if (iB.getStyle().getWordWrap() == IdentValue.BREAK_WORD) {
+                        openWordEnd = null;
+                    pendingStartWidth = 0;
+                    } else if (!iB.hasWords()) {
+                        // An element starts or ends here without text: the margin, border and padding where it ends go
+                        // with the word before, and those where it starts (or of an empty element) with the word after
+                        if (iB.isStartsHere() || openWordEnd == null || pendingStartWidth > 0) {
+                            pendingStartWidth += iB.getMaxWidth();
+                        } else {
+                            openWordWidth += iB.getMaxWidth();
+                            if (openWordWidth > childMinWidth) {
+                                childMinWidth = openWordWidth;
+                            }
+                        }
+                    } else {
+                        int firstWordWidth = pendingStartWidth + iB.firstWordWidth();
+                        if (openWordEnd != null && continuesWord(c, openWordEnd, iB)) {
+                            firstWordWidth += openWordWidth;
+                        } else if (!iB.breaksInside()) {
+                            firstWordWidth += textIndent;
+                        }
+                        if (firstWordWidth > childMinWidth) {
+                            childMinWidth = firstWordWidth;
+                        }
+                        openWordWidth = iB.breaksInside() ? iB.lastWordWidth() : firstWordWidth;
+                        openWordEnd = iB;
+                        pendingStartWidth = 0;
+                    }
                 }
 
                 if (textIndent > 0) {
@@ -1767,9 +1816,32 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
         if (lineWidth > childMaxWidth) {
             childMaxWidth = lineWidth;
         }
+        // No word follows the elements starting after the last word
+        if (openWordEnd != null && openWordWidth + pendingStartWidth > childMinWidth) {
+            childMinWidth = openWordWidth + pendingStartWidth;
+        }
 
         _minWidth += childMinWidth;
         _maxWidth += childMaxWidth;
+    }
+
+    /**
+     * Whether the text of {@code next} continues the last word of {@code previous}, that is, whether the line may not
+     * break between them. The boundary of an inline box is ignored in finding where a line may break
+     * (<a href="https://www.w3.org/TR/css-text-3/#text-encoding">CSS Text 3, § 1.5</a>): {@code aaa<span>bbb</span>} is
+     * the one word {@code aaabbb}, and so is {@code aaa&#160;<span>bbb</span>}, as a no-break space does not let the line
+     * break after it (#752).
+     */
+    private static boolean continuesWord(LayoutContext c, InlineBox previous, InlineBox next) {
+        String text = previous.lastWord() + next.firstWord();
+        int boundary = previous.lastWord().length();
+        BreakPointsProvider breakPoints = Breaker.getBreakPointsProvider(text, c, next.getElement(), next.getStyle());
+        for (BreakPoint bp = breakPoints.next(); bp.position() != BreakIterator.DONE; bp = breakPoints.next()) {
+            if (bp.position() >= boundary) {
+                return bp.position() != boundary;
+            }
+        }
+        return true;
     }
 
     public int getMaxWidth() {
