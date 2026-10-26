@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * A line breaks after U+200B ZERO WIDTH SPACE, see
  * <a href="https://github.com/flyingsaucerproject/flyingsaucer/issues/753">issue 753</a>: Unicode requires a break
- * there (UAX #14, LB8), and CSS Text 3 names it as a way to mark a place to wrap, as {@code <wbr>} does.
+ * there (UAX #14, LB8), and CSS Text 3 names it as a way to mark a place to wrap.
  */
 class ZeroWidthSpaceLineBreakTest {
 
@@ -33,17 +33,17 @@ class ZeroWidthSpaceLineBreakTest {
                 .containsExactly("aaa\u200B", "bbb");
     }
 
-    /** The narrowest cell is as wide as the wider part, as with {@code <wbr>}, not as the whole word. */
+    /** The narrowest cell is as wide as the wider part of the word, not as the whole word. */
     @Test
     void theNarrowestCellIsAsWideAsThePartOfTheWord() {
         Box root = layout("<table style='width: 1px'><tr>" +
-                "<td>aaabbb</td><td>aaa&#8203;bbb</td><td>aaa<wbr/>bbb</td></tr></table>");
+                "<td>aaabbb</td><td>aaa&#8203;bbb</td><td>aaa</td><td>bbb</td></tr></table>");
 
         List<BlockBox> cells = cells(root);
-        assertThat(cells).hasSize(3);
+        assertThat(cells).hasSize(4);
         assertThat(cells.get(1).getContentWidth())
                 .isLessThan(cells.get(0).getContentWidth())
-                .isEqualTo(cells.get(2).getContentWidth());
+                .isEqualTo(Math.max(cells.get(2).getContentWidth(), cells.get(3).getContentWidth()));
     }
 
     @Test
