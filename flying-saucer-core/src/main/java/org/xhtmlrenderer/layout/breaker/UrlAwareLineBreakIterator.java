@@ -8,16 +8,23 @@ import java.text.CharacterIterator;
 /**
  * BreakIterator implementation that improves line breaking for URLs. Break points are supported
  * before path fragments.
+ * <p>
+ * Also breaks after a zero width space and the spaces following it
+ * (<a href="https://www.unicode.org/reports/tr14/#LB8">UAX #14, LB8</a>), which the line instance of the JDK does not.
  */
 public class UrlAwareLineBreakIterator extends BreakIterator {
 
     private static final String BREAKING_CHARS = ".,:;!?- \n\r\t/";
+    private static final char ZERO_WIDTH_SPACE = '\u200B';
+    private static final int NONE = -2;
 
     private final BreakIterator delegate = BreakIterator.getLineInstance();
     @Nullable
     private String text;
     @Nullable
     private Range currentRange;
+    private int lastBoundary;
+    private int pendingBoundary = NONE;
 
     public UrlAwareLineBreakIterator(String text) {
         setText(text);
@@ -40,6 +47,38 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
 
     @Override
     public int next() {
+        int boundary = pendingBoundary != NONE ? pendingBoundary : nextUrlAware();
+        pendingBoundary = NONE;
+        if (boundary == BreakIterator.DONE) {
+            return boundary;
+        }
+
+        int afterZeroWidthSpace = breakAfterZeroWidthSpace(lastBoundary, boundary);
+        if (afterZeroWidthSpace < boundary) {
+            pendingBoundary = boundary;
+            boundary = afterZeroWidthSpace;
+        }
+        lastBoundary = boundary;
+        return boundary;
+    }
+
+    /**
+     * The position after the first zero width space in {@code [start, stop)} and the spaces following it, or
+     * {@code stop} if there is none or nothing else follows it before {@code stop}.
+     */
+    private int breakAfterZeroWidthSpace(int start, int stop) {
+        int zeroWidthSpace = text.indexOf(ZERO_WIDTH_SPACE, start);
+        if (zeroWidthSpace < 0 || zeroWidthSpace >= stop) {
+            return stop;
+        }
+        int position = zeroWidthSpace + 1;
+        while (position < stop && text.charAt(position) == ' ') {
+            position++;
+        }
+        return position;
+    }
+
+    private int nextUrlAware() {
         checkNotAheadOfDelegate();
 
         Range searchRange = currentRange; // the range in which we search for slashes
@@ -144,6 +183,8 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
         delegate.setText(newText);
         text = newText;
         currentRange = new Range(delegate.current(), delegate.current());
+        lastBoundary = delegate.current();
+        pendingBoundary = NONE;
     }
 
     private static final class Range {

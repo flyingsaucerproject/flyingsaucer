@@ -106,6 +106,35 @@ public class UrlAwareLineBreakIteratorTest {
                 new String[] {"http://"});
     }
 
+    @Test
+    public void breakAfterZeroWidthSpace() {
+        assertBreaksCorrectly("aaa\u200Bbbb",
+                new String[] {"aaa\u200B", "bbb"});
+    }
+
+    @Test
+    public void breakAfterZeroWidthSpaceAndSpacesFollowingIt() {
+        assertBreaksCorrectly("aaa\u200B  bbb",
+                new String[] {"aaa\u200B  ", "bbb"});
+    }
+
+    @Test
+    public void breakAfterEachZeroWidthSpace() {
+        assertBreaksCorrectly("xx aaa\u200Bbbb\u200Bccc",
+                new String[] {"xx ", "aaa\u200B", "bbb\u200B", "ccc"});
+    }
+
+    @Test
+    public void zeroWidthSpaceAtStartAndEnd() {
+        assertBreaksCorrectly("\u200Baaa bbb\u200B",
+                new String[] {"\u200B", "aaa ", "bbb\u200B"});
+    }
+
+    @Test
+    public void breakAfterZeroWidthSpaceInPath() {
+        assertBreaksCorrectly("/long\u200Bpath/name",
+                new String[] {"/long\u200B", "path", "/name"});
+    }
 
     private void assertBreaksCorrectly(String input, String[] segments) {
         BreakIterator iterator = new UrlAwareLineBreakIterator(input);
