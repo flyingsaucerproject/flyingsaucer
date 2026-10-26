@@ -98,7 +98,7 @@ public class BoxBuilder {
         "article", "aside", "audio", "canvas", "datalist", "dialog",
         "figcaption", "figure", "footer", "header", "main", "mark", "meter",
         "nav", "output", "picture", "progress", "section",
-        "template", "time", "track", "video", "wbr"
+        "template", "time", "track", "video"
     );
 
     public enum MarginDirection {

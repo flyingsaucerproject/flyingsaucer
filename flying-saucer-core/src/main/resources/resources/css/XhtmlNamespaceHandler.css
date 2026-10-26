@@ -47,6 +47,7 @@ ol ul, ul ol,
 ul ul, ol ol    { margin-top: 0; margin-bottom: 0 }
 u, ins          { text-decoration: underline }
 br:before       { content: "\A"; white-space: pre-line; }
+wbr:before      { content: "\200B" }
 /* :before, :after { white-space: pre-line } */
 center          { text-align: center }
 a:link          { cursor: pointer }
