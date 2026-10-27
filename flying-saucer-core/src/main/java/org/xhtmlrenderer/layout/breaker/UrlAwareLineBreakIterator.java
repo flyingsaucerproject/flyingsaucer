@@ -4,6 +4,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.text.BreakIterator;
 import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 
 /**
  * BreakIterator implementation that improves line breaking for URLs. Break points are supported
@@ -23,11 +24,19 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
     private Range currentRange;
     private int lastBreak;
     private int pendingBreak = NONE;
-    /** The next zero width space at or after {@code lastBreak}, or -1 for none: the text is searched once. */
-    private int nextZeroWidthSpace;
+    /** Where the search for the next zero width space goes on from: each part of the text is searched once. */
+    private int zeroWidthSpaceSearchStart;
 
     public UrlAwareLineBreakIterator(String text) {
         setText(text);
+    }
+
+    /**
+     * The break points of the text from {@code start} on, at offsets in the whole text: the break points of
+     * {@code text.substring(start)} plus {@code start}, found without copying the text.
+     */
+    public UrlAwareLineBreakIterator(String text, int start) {
+        setText(text, start);
     }
 
     @Override
@@ -60,30 +69,30 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
         }
         if (next != BreakIterator.DONE) {
             lastBreak = next;
-            if (nextZeroWidthSpace > -1 && nextZeroWidthSpace < lastBreak) {
-                nextZeroWidthSpace = indexOfZeroWidthSpace(lastBreak);
-            }
         }
         return next;
     }
 
-    /** The first break after a zero width space between the last break point and {@code limit}, or {@code NONE}. */
+    /**
+     * The first break after a zero width space between the last break point and {@code limit}, or {@code NONE}. The
+     * text is searched only up to {@code limit}, not to its end: an iterator made for each line of a long text would
+     * otherwise search all the rest of it each time.
+     */
     private int zeroWidthSpaceBreakBefore(int limit) {
-        while (nextZeroWidthSpace > -1 && nextZeroWidthSpace < limit) {
-            int end = nextZeroWidthSpace + 1;
+        int zeroWidthSpace;
+        while (zeroWidthSpaceSearchStart < limit
+                && (zeroWidthSpace = text.indexOf('\u200B', zeroWidthSpaceSearchStart, limit)) > -1) {
+            int end = zeroWidthSpace + 1;
             while (end < text.length() && text.charAt(end) == ' ') {
                 end++;
             }
+            zeroWidthSpaceSearchStart = end;
             if (end > lastBreak && end < limit && NO_BREAK_BEFORE.indexOf(text.charAt(end)) < 0) {
                 return end;
             }
-            nextZeroWidthSpace = indexOfZeroWidthSpace(end);
         }
+        zeroWidthSpaceSearchStart = Math.max(zeroWidthSpaceSearchStart, limit);
         return NONE;
-    }
-
-    private int indexOfZeroWidthSpace(int fromIndex) {
-        return text.indexOf('\u200B', fromIndex);
     }
 
     private int nextBreak() {
@@ -187,12 +196,16 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
 
     @Override
     public final void setText(String newText) {
-        delegate.setText(newText);
+        setText(newText, 0);
+    }
+
+    private void setText(String newText, int start) {
+        delegate.setText(new StringCharacterIterator(newText, start, newText.length(), start));
         text = newText;
         currentRange = new Range(delegate.current(), delegate.current());
-        lastBreak = 0;
+        lastBreak = start;
         pendingBreak = NONE;
-        nextZeroWidthSpace = indexOfZeroWidthSpace(0);
+        zeroWidthSpaceSearchStart = start;
     }
 
     private static final class Range {

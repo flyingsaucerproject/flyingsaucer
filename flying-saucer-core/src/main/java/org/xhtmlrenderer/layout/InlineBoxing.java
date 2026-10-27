@@ -196,7 +196,7 @@ public class InlineBoxing {
 
                     zeroWidthInlineBlock = false;
 
-                    if (lbContext.getStartSubstring().isEmpty()) {
+                    if (lbContext.getStart() == lbContext.getLast()) {
                         break;
                     }
 
@@ -927,7 +927,7 @@ public class InlineBoxing {
             LineBox line, CalculatedStyle style, LineBreakContext lbContext,
             boolean zeroWidthInlineBlock) {
         if ((!line.isContainsContent() || zeroWidthInlineBlock) &&
-                lbContext.getStartSubstring().startsWith(WhitespaceStripper.SPACE)) {
+                lbContext.getMaster().startsWith(WhitespaceStripper.SPACE, lbContext.getStart())) {
             IdentValue whitespace = style.getWhitespace();
             return whitespace == IdentValue.NORMAL
                     || whitespace == IdentValue.NOWRAP
@@ -941,12 +941,12 @@ public class InlineBoxing {
     }
 
     private static void trimLeadingSpace(LineBreakContext lbContext) {
-        String s = lbContext.getStartSubstring();
-        int i = 0;
-        while (i < s.length() && s.charAt(i) == ' ') {
-            i++;
+        String master = lbContext.getMaster();
+        int start = lbContext.getStart();
+        while (start < master.length() && master.charAt(start) == ' ') {
+            start++;
         }
-        lbContext.setStart(lbContext.getStart() + i);
+        lbContext.setStart(start);
     }
 
     private static LineBox newLine(LayoutContext c, @Nullable LineBox previousLine, Box box) {
