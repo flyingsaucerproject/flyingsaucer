@@ -27,7 +27,7 @@ import static java.util.Objects.requireNonNull;
  * with no text, does not. A text which may break between any two letters ({@code word-break: break-all}) is glued
  * to nothing.
  */
-public final class InlineBoundaryBreaks {
+final class InlineBoundaryBreaks {
     private final LayoutContext c;
     private final List<Styleable> content;
     private final int cbWidth;
@@ -44,7 +44,7 @@ public final class InlineBoundaryBreaks {
         private static final Lead NOT_GLUED = new Lead(false, 0, false);
     }
 
-    public InlineBoundaryBreaks(LayoutContext c, List<Styleable> content, int cbWidth) {
+    InlineBoundaryBreaks(LayoutContext c, List<Styleable> content, int cbWidth) {
         this.c = c;
         this.content = content;
         this.cbWidth = cbWidth;
@@ -53,13 +53,13 @@ public final class InlineBoundaryBreaks {
 
     /** No break point between the text of the box at {@code index} and the text before it. */
     @CheckReturnValue
-    public boolean startsGlued(int index) {
+    boolean startsGlued(int index) {
         return lead(index).glued();
     }
 
     /** The width of the text after the box at {@code index}, up to the next break point: the line may not end before it. */
     @CheckReturnValue
-    public int gluedWidthAfter(int index) {
+    int gluedWidthAfter(int index) {
         int width = 0;
         for (int i = index + 1; i < content.size(); i++) {
             Styleable child = content.get(i);

@@ -81,7 +81,7 @@ public class Breaker {
     /**
      * Breaks the text as {@link #breakText(LayoutContext, LineBreakContext, int, int, CalculatedStyle)} does, where the
      * text after it continues with no break point for {@code gluedWidthAfter} (the text of the next inline box, see
-     * {@link org.xhtmlrenderer.layout.InlineBoundaryBreaks}): the line ends with the text only if that fits as well.
+     * {@code org.xhtmlrenderer.layout.InlineBoundaryBreaks}): the line ends with the text only if that fits as well.
      */
     public static void breakText(LayoutContext c,
             LineBreakContext context, int avail, int fullLineWidth, CalculatedStyle style, int gluedWidthAfter) {
