@@ -199,7 +199,7 @@ public class Breaker {
         FSFont f = style.getFSFont(c);
         String currentString = context.getStartSubstring();
         if (tryToBreakAnywhere) {
-            breakAnywhere(c, context, avail, style, f, currentString, fullLineWidth);
+            breakAnywhere(c, context, avail, style, f, currentString, fullLineWidth, gluedWidthAfter);
             return;
         }
         BreakPointsProvider iterator = getBreakPointsProvider(currentString, c, context.getTextNode(), style);
@@ -252,7 +252,7 @@ public class Breaker {
 
         // No break point fits: the loop stopped at the first one, which ends the first word
         BreakPoint firstWordEnd = right < 0 && bp != null && bp.position() != BreakIterator.DONE ? bp : null;
-        wrap(c, context, avail, style, f, currentString, false, fullLineWidth, right, rightWidth, firstWordEnd);
+        wrap(c, context, avail, style, f, currentString, false, fullLineWidth, right, rightWidth, gluedWidthAfter, firstWordEnd);
     }
 
     /**
@@ -264,9 +264,12 @@ public class Breaker {
      * prefixes of 1, 2, 4, 8 code points and so on until one does not fit, then a binary search between the last two.
      * That is about two measurements per doubling of the line, each of at most twice its length, and the remaining text
      * is measured whole only when it fits.
+     * <p>
+     * A text which fits whole, but not with the text glued to it ({@code gluedWidthAfter}), is not broken: on a line
+     * with something before it, it moves with that text to the next line.
      */
     private static void breakAnywhere(LayoutContext c, LineBreakContext context, int avail, CalculatedStyle style, FSFont f,
-            String currentString, int fullLineWidth) {
+            String currentString, int fullLineWidth, int gluedWidthAfter) {
         int codePoints = currentString.codePointCount(0, currentString.length());
         int fitting = 0;
         int fittingWidth = 0;
@@ -296,14 +299,15 @@ public class Breaker {
                 notFitting = middle;
             }
         }
-        if (fitting == codePoints) {
+        boolean gluedFits = fittingWidth + gluedWidthAfter <= avail || avail >= fullLineWidth;
+        if (fitting == codePoints && gluedFits) {
             context.setWidth(codePoints == 0 ? TextUtil.textWidth(c, style, f, currentString) : fittingWidth);
             context.setEnd(context.getMaster().length());
             return;
         }
-        int right = fitting == 0 ? -1 : currentString.offsetByCodePoints(0, fitting);
+        int right = fitting == 0 || fitting == codePoints ? -1 : currentString.offsetByCodePoints(0, fitting);
         BreakPoint firstCodePoint = new BreakPoint(currentString.offsetByCodePoints(0, 1));
-        wrap(c, context, avail, style, f, currentString, true, fullLineWidth, right, fittingWidth, firstCodePoint);
+        wrap(c, context, avail, style, f, currentString, true, fullLineWidth, right, fittingWidth, gluedWidthAfter, firstCodePoint);
     }
 
     private static int prefixWidth(LayoutContext c, CalculatedStyle style, FSFont f, String text, int codePoints) {
@@ -318,11 +322,11 @@ public class Breaker {
      */
     private static void wrap(LayoutContext c, LineBreakContext context, int avail, CalculatedStyle style, FSFont f,
             String currentString, boolean tryToBreakAnywhere, int fullLineWidth, int right, int rightWidth,
-            @Nullable BreakPoint firstWordEnd) {
+            int gluedWidthAfter, @Nullable BreakPoint firstWordEnd) {
         context.setNeedsNewLine(true);
         if (right <= 0 && style.getWordWrap() == IdentValue.BREAK_WORD) {
             if (!tryToBreakAnywhere) {
-                doBreakText(c, context, avail, style, true, fullLineWidth, 0);
+                doBreakText(c, context, avail, style, true, fullLineWidth, gluedWidthAfter);
                 return;
             }
 

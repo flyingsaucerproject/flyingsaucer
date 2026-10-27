@@ -131,6 +131,13 @@ class InlineBoundaryLineBreakTest {
                 .containsExactly("xx ", "aaabbb");
     }
 
+    /** A box which fits whole after the text before it, but not with the text glued to it, moves to the next line too. */
+    @Test
+    void aBoxWithBreakWordWhichFitsWithoutTheWordItRunsOnIntoMovesToTheNextLine() {
+        assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx <span>aaa</span>bbb</div>")))
+                .containsExactly("xx ", "aaabbb");
+    }
+
     /** {@code word-break: break-all} may break between any two letters, so between two boxes too. */
     @Test
     void aWordWithBreakAllBreaksBetweenItsBoxes() {
