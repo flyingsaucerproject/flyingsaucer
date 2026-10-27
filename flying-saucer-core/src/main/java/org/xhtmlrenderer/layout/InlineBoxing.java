@@ -169,6 +169,8 @@ public class InlineBoxing {
                 String master = iB.isDynamicFunction() ?
                         iB.getContentFunction().getLayoutReplacementText() : iB.getText();
                 LineBreakContext lbContext = new LineBreakContext(master, iB.getTextNode());
+                // The rest of the word after a ::first-letter on the same line continues it
+                boolean afterFirstLetter = false;
 
                 int q = 0;
                 do {
@@ -210,11 +212,12 @@ public class InlineBoxing {
                         }
 
                         needFirstLetter = false;
+                        afterFirstLetter = true;
                     } else {
                         lbContext.saveEnd();
                         // The text glued to the text before it may not start a line (CSS Text 3, § 1.5),
                         // unless it may break anywhere where it does not fit
-                        boolean startsWord = !startsGlued || lbContext.getStart() > 0;
+                        boolean startsWord = (!startsGlued || lbContext.getStart() > 0) && !afterFirstLetter;
                         boolean mayStartLine = startsWord || style.getWordWrap() == IdentValue.BREAK_WORD;
                         InlineText inlineText = layoutText(
                                 c, iB.getStyle(), remainingWidth - fit, maxAvailableWidth, lbContext, false, gluedWidthAfter);
@@ -282,6 +285,7 @@ public class InlineBoxing {
                                 c, currentLine, openInlineBoxes, maxAvailableWidth, iBMap);
                         remainingWidth = maxAvailableWidth;
                         remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
+                        afterFirstLetter = false;
                     }
                 } while (!lbContext.isFinished());
 

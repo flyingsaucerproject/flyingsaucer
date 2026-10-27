@@ -169,6 +169,20 @@ class InlineBoundaryLineBreakTest {
                 .containsExactly("aaaaa", "aaa");
     }
 
+    /** The rest of a word after its {@code ::first-letter} continues the word: it breaks on the line of the first letter. */
+    @Test
+    void aWordWithBreakWordBreaksOnTheLineOfItsFirstLetter() {
+        assertThat(lines(layout("<div class='first-letter' style='width: 62px; word-wrap: break-word'>aaaaaaaaaa</div>")))
+                .containsExactly("aaaaa", "aaaaa");
+    }
+
+    /** A word which may not break stays whole with its {@code ::first-letter}, and the line overflows. */
+    @Test
+    void aWordWhichDoesNotFitStaysOnTheLineOfItsFirstLetter() {
+        assertThat(lines(layout("<div class='first-letter' style='width: 62px'>aaaaaaaaaa</div>")))
+                .containsExactly("aaaaaaaaaa");
+    }
+
     /** {@code word-break: break-all} may break between any two letters, so between two boxes too. */
     @Test
     void aWordWithBreakAllBreaksBetweenItsBoxes() {
@@ -190,6 +204,7 @@ class InlineBoundaryLineBreakTest {
     private static Box layout(String body) {
         String html = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>" +
                 "body { margin: 0; font: 16px monospace; } table { border-collapse: collapse; } td { padding: 0; }" +
+                ".first-letter::first-letter { font-size: 24px; }" +
                 "</style></head><body>" + body + "</body></html>";
         Document document = XMLResource.load(new StringReader(html)).getDocument();
         Graphics2DRenderer renderer = new Graphics2DRenderer(document, "file:/");
