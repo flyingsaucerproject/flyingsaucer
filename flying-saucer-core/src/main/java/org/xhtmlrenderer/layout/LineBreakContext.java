@@ -34,6 +34,7 @@ public class LineBreakContext {
     private String _savedMaster;
     private boolean _unbreakable;
     private boolean _needsNewLine;
+    private boolean _brokenInsideWord;
     private int _width;
     private boolean _endsOnNL;
     private final Text _textNode;
@@ -52,6 +53,7 @@ public class LineBreakContext {
         _width = 0;
         _unbreakable = false;
         _needsNewLine = false;
+        _brokenInsideWord = false;
     }
 
     public int getEnd() {
@@ -107,6 +109,15 @@ public class LineBreakContext {
 
     public void setNeedsNewLine(boolean needsLineBreak) {
         _needsNewLine = needsLineBreak;
+    }
+
+    /** The line ends inside a word ({@code word-wrap: break-word}), where the text has no break point that fits. */
+    public boolean isBrokenInsideWord() {
+        return _brokenInsideWord;
+    }
+
+    public void setBrokenInsideWord(boolean brokenInsideWord) {
+        _brokenInsideWord = brokenInsideWord;
     }
 
     public int getWidth() {

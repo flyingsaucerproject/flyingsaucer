@@ -138,6 +138,37 @@ class InlineBoundaryLineBreakTest {
                 .containsExactly("xx ", "aaabbb");
     }
 
+    /** {@code word-wrap: break-word} breaks a word only where the line has no other place to break: it moves to the next line first. */
+    @Test
+    void aWordWithBreakWordInABoxAfterOtherContentMovesToTheNextLineBeforeItBreaks() {
+        assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx <span>aaaaaaa</span></div>")))
+                .isEqualTo(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx aaaaaaa</div>")))
+                .containsExactly("xx ", "aaaaaa", "a");
+    }
+
+    @Test
+    void aWordWithBreakWordOfTwoBoxesAfterOtherContentMovesToTheNextLineBeforeItBreaks() {
+        assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx <span>aaaa</span>bbbbbbbb</div>")))
+                .isEqualTo(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx aaaabbbbbbbb</div>")))
+                .containsExactly("xx ", "aaaabb", "bbbbbb");
+    }
+
+    /** The part of a word in a box after the start of the word breaks where the line ends: the line has no other place to break. */
+    @Test
+    void aWordWithBreakWordBreaksInsideTheBoxWhichContinuesIt() {
+        assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx aaa<span>aaaaaaa</span></div>")))
+                .isEqualTo(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx aaaaaaaaaa</div>")))
+                .containsExactly("xx ", "aaaaaa", "aaaa");
+    }
+
+    /** A word which starts the line breaks on it, even where the line is shorter than the next one. */
+    @Test
+    void aWordWithBreakWordWhichStartsAnIndentedLineBreaksOnIt() {
+        assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word; text-indent: 10px'><span>aaaaaaaa</span></div>")))
+                .isEqualTo(lines(layout("<div style='width: 62px; word-wrap: break-word; text-indent: 10px'>aaaaaaaa</div>")))
+                .containsExactly("aaaaa", "aaa");
+    }
+
     /** {@code word-break: break-all} may break between any two letters, so between two boxes too. */
     @Test
     void aWordWithBreakAllBreaksBetweenItsBoxes() {

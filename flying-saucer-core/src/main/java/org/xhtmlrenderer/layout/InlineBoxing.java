@@ -214,8 +214,8 @@ public class InlineBoxing {
                         lbContext.saveEnd();
                         // The text glued to the text before it may not start a line (CSS Text 3, § 1.5),
                         // unless it may break anywhere where it does not fit
-                        boolean mayStartLine = !startsGlued || lbContext.getStart() > 0
-                                || style.getWordWrap() == IdentValue.BREAK_WORD;
+                        boolean startsWord = !startsGlued || lbContext.getStart() > 0;
+                        boolean mayStartLine = startsWord || style.getWordWrap() == IdentValue.BREAK_WORD;
                         InlineText inlineText = layoutText(
                                 c, iB.getStyle(), remainingWidth - fit, maxAvailableWidth, lbContext, false, gluedWidthAfter);
                         if (lbContext.isUnbreakable() && !currentLine.isContainsContent()) {
@@ -230,7 +230,10 @@ public class InlineBoxing {
                             }
                         }
 
-                        if (!lbContext.isUnbreakable() || !currentLine.isContainsContent() || !mayStartLine) {
+                        // A word breaks inside only where the line has no other place to break (CSS Text 3, § 5.5):
+                        // a word which starts after other content moves to the next line first
+                        boolean movesWord = lbContext.isBrokenInsideWord() && currentLine.isContainsContent() && startsWord;
+                        if ((!lbContext.isUnbreakable() || !currentLine.isContainsContent() || !mayStartLine) && !movesWord) {
                             if (iB.isDynamicFunction()) {
                                 inlineText.setFunctionData(new FunctionData(
                                         iB.getContentFunction(), iB.getFunction()));
