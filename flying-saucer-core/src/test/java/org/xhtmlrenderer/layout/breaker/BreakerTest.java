@@ -198,6 +198,37 @@ class BreakerTest {
     }
 
     /**
+     * A first word which does not fit is unbreakable, and the words after it go to the next line.
+     */
+    @Test
+    void aFirstWordWhichDoesNotFitEndsTheLine() {
+        LineBreakContext context = new LineBreakContext("abcdefg hi", null);
+        Breaker.breakText(c, context, 20, 20, style);
+
+        assertThat(context.getEnd()).isEqualTo(8);
+        assertThat(context.getWidth()).isEqualTo(47);
+        assertThat(context.isNeedsNewLine()).isTrue();
+        assertThat(context.isUnbreakable()).isTrue();
+    }
+
+    /**
+     * A first syllable which does not fit ends the line with its hyphen.
+     */
+    @Test
+    void aFirstSyllableWhichDoesNotFitEndsWithItsHyphen() {
+        when(sharedContext.getLineBreakingStrategy()).thenReturn((text, lang, s) -> breakPoints(
+                new BreakPoint(6, "-"), new BreakPoint(9)));
+
+        LineBreakContext context = new LineBreakContext("abcdefghi", null);
+        Breaker.breakText(c, context, 20, 20, style);
+
+        assertThat(context.getMaster()).isEqualTo("abcdef-ghi");
+        assertThat(context.getEnd()).isEqualTo(7);
+        assertThat(context.getWidth()).isEqualTo(41);
+        assertThat(context.isUnbreakable()).isTrue();
+    }
+
+    /**
      * A line broken between any two characters is as wide as its text rendered whole: its characters measured one by
      * one are what a break may fall between, not what the line is drawn as.
      */
@@ -227,6 +258,22 @@ class BreakerTest {
 
         assertThat(context.getEnd()).isEqualTo(5);
         assertThat(context.getWidth()).isEqualTo(29);
+        assertThat(context.isNeedsNewLine()).isTrue();
+    }
+
+    /**
+     * A line broken between any two characters holds one character where not even one fits, and the text after it goes
+     * to the next line.
+     */
+    @Test
+    void aLineBrokenAnywhereHoldsOneCharacterWhereNoneFits() {
+        when(style.getWordBreak()).thenReturn(IdentValue.BREAK_ALL);
+
+        LineBreakContext context = new LineBreakContext("abc", null);
+        Breaker.breakText(c, context, 3, 3, style);
+
+        assertThat(context.getEnd()).isEqualTo(1);
+        assertThat(context.getWidth()).isEqualTo(5);
         assertThat(context.isNeedsNewLine()).isTrue();
     }
 

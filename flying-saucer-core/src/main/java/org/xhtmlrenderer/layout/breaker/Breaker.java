@@ -75,6 +75,16 @@ public class Breaker {
 
     public static void breakText(LayoutContext c,
             LineBreakContext context, int avail, int fullLineWidth, CalculatedStyle style) {
+        breakText(c, context, avail, fullLineWidth, style, 0);
+    }
+
+    /**
+     * Breaks the text as {@link #breakText(LayoutContext, LineBreakContext, int, int, CalculatedStyle)} does, where the
+     * text after it continues with no break point for {@code gluedWidthAfter} (the text of the next inline box, see
+     * {@code org.xhtmlrenderer.layout.InlineBoundaryBreaks}): the line ends with the text only if that fits as well.
+     */
+    public static void breakText(LayoutContext c,
+            LineBreakContext context, int avail, int fullLineWidth, CalculatedStyle style, int gluedWidthAfter) {
         FSFont font = style.getFSFont(c);
         IdentValue whitespace = style.getWhitespace();
 
@@ -82,6 +92,7 @@ public class Breaker {
         if (whitespace == IdentValue.NOWRAP) {
             context.setEnd(context.getLast());
             context.setWidth(TextUtil.textWidth(c, style, font, context.getCalculatedSubstring()));
+            checkGluedWidthFits(context, avail, gluedWidthAfter);
             return;
         }
 
@@ -98,11 +109,12 @@ public class Breaker {
             } else if (whitespace == IdentValue.PRE) {
                 context.setEnd(context.getLast());
                 context.setWidth(TextUtil.textWidth(c, style, font, context.getCalculatedSubstring()));
+                checkGluedWidthFits(context, avail, gluedWidthAfter);
             } else {
                 // The last line: its box asks for its width measured whole (InlineBox.calcMaxWidthFromLineLength), which
                 // may be less than its parts added up, so it is measured whole here too before it is broken (#742)
                 int width = TextUtil.textWidth(c, style, font, context.getStartSubstring());
-                if (width <= avail) {
+                if (width + gluedWidthAfter <= avail) {
                     context.setEnd(context.getLast());
                     context.setWidth(width);
                     return;
@@ -121,7 +133,18 @@ public class Breaker {
 
         boolean tryToBreakAnywhere = style.getWordBreak() == IdentValue.BREAK_ALL;
 
-        doBreakText(c, context, avail, style, tryToBreakAnywhere, fullLineWidth);
+        doBreakText(c, context, avail, style, tryToBreakAnywhere, fullLineWidth, gluedWidthAfter);
+    }
+
+    /**
+     * A text which may not break ends where the text glued to it starts: if the two do not fit, the line does not take
+     * the text unless it is empty (see {@link org.xhtmlrenderer.layout.InlineBoxing}), and the text starts the next one.
+     */
+    private static void checkGluedWidthFits(LineBreakContext context, int avail, int gluedWidthAfter) {
+        if (gluedWidthAfter > 0 && context.getWidth() + gluedWidthAfter > avail) {
+            context.setNeedsNewLine(true);
+            context.setUnbreakable(true);
+        }
     }
 
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Element element, CalculatedStyle style) {
@@ -167,14 +190,16 @@ public class Breaker {
      * A line broken between any two characters ({@code word-break: break-all}, or a word {@code word-wrap: break-word}
      * breaks) is measured whole instead: its characters measured one by one, each rounded on its own, can add up to a
      * width far from the one the line is rendered with.
+     * <p>
+     * The end of the text is a break point only if the text glued to it ({@code gluedWidthAfter}) fits too.
      */
     private static void doBreakText(LayoutContext c,
             LineBreakContext context, int avail, CalculatedStyle style,
-            boolean tryToBreakAnywhere, int fullLineWidth) {
+            boolean tryToBreakAnywhere, int fullLineWidth, int gluedWidthAfter) {
         FSFont f = style.getFSFont(c);
         String currentString = context.getStartSubstring();
         if (tryToBreakAnywhere) {
-            breakAnywhere(c, context, avail, style, f, currentString, fullLineWidth);
+            breakAnywhere(c, context, avail, style, f, currentString, fullLineWidth, gluedWidthAfter);
             return;
         }
         BreakPointsProvider iterator = getBreakPointsProvider(currentString, c, context.getTextNode(), style);
@@ -193,7 +218,8 @@ public class Breaker {
             int widthWithHyphen = previousWidth + (printsHyphen ? TextUtil.textWidth(c, style, f, part + bp.hyphen()) : partWidth);
             previousWidth += partWidth;
             previousPosition = bp.position();
-            if (widthWithHyphen > avail) break;
+            int glued = previousPosition == currentString.length() ? gluedWidthAfter : 0;
+            if (widthWithHyphen + glued > avail) break;
             right = previousPosition;
             rightWidth = widthWithHyphen;
             lastBreakPoint = bp;
@@ -206,7 +232,7 @@ public class Breaker {
         if (bp != null && bp.position() == BreakIterator.DONE) {
             String tail = currentString.substring(previousPosition);
             fitsWidth = previousWidth + (tail.isEmpty() ? 0 : TextUtil.textWidth(c, style, f, tail));
-            fits = fitsWidth <= avail;
+            fits = fitsWidth + gluedWidthAfter <= avail;
         }
 
         // add hyphen if needed
@@ -224,7 +250,9 @@ public class Breaker {
             return;
         }
 
-        wrap(c, context, avail, style, f, currentString, false, fullLineWidth, right, rightWidth);
+        // No break point fits: the loop stopped at the first one, which ends the first word
+        BreakPoint firstWordEnd = right < 0 && bp != null && bp.position() != BreakIterator.DONE ? bp : null;
+        wrap(c, context, avail, style, f, currentString, false, fullLineWidth, right, rightWidth, gluedWidthAfter, firstWordEnd);
     }
 
     /**
@@ -236,9 +264,12 @@ public class Breaker {
      * prefixes of 1, 2, 4, 8 code points and so on until one does not fit, then a binary search between the last two.
      * That is about two measurements per doubling of the line, each of at most twice its length, and the remaining text
      * is measured whole only when it fits.
+     * <p>
+     * A text which fits whole, but not with the text glued to it ({@code gluedWidthAfter}), is not broken: on a line
+     * with something before it, it moves with that text to the next line.
      */
     private static void breakAnywhere(LayoutContext c, LineBreakContext context, int avail, CalculatedStyle style, FSFont f,
-            String currentString, int fullLineWidth) {
+            String currentString, int fullLineWidth, int gluedWidthAfter) {
         int codePoints = currentString.codePointCount(0, currentString.length());
         int fitting = 0;
         int fittingWidth = 0;
@@ -268,26 +299,34 @@ public class Breaker {
                 notFitting = middle;
             }
         }
-        if (fitting == codePoints) {
+        boolean gluedFits = fittingWidth + gluedWidthAfter <= avail || avail >= fullLineWidth;
+        if (fitting == codePoints && gluedFits) {
             context.setWidth(codePoints == 0 ? TextUtil.textWidth(c, style, f, currentString) : fittingWidth);
             context.setEnd(context.getMaster().length());
             return;
         }
-        int right = fitting == 0 ? -1 : currentString.offsetByCodePoints(0, fitting);
-        wrap(c, context, avail, style, f, currentString, true, fullLineWidth, right, fittingWidth);
+        int right = fitting == 0 || fitting == codePoints ? -1 : currentString.offsetByCodePoints(0, fitting);
+        BreakPoint firstCodePoint = new BreakPoint(currentString.offsetByCodePoints(0, 1));
+        wrap(c, context, avail, style, f, currentString, true, fullLineWidth, right, fittingWidth, gluedWidthAfter, firstCodePoint);
     }
 
     private static int prefixWidth(LayoutContext c, CalculatedStyle style, FSFont f, String text, int codePoints) {
         return TextUtil.textWidth(c, style, f, text.substring(0, text.offsetByCodePoints(0, codePoints)));
     }
 
-    /** Ends a line that does not fit whole: at {@code right}, the last break point that fits, or as the style asks. */
+    /**
+     * Ends a line that does not fit whole: at {@code right}, the last break point that fits, or as the style asks.
+     * <p>
+     * Where no break point fits, the line holds the text up to {@code firstWordEnd}, the first break point, even if it
+     * does not fit: the text after it goes to the next line. With no break point, the line holds all the text.
+     */
     private static void wrap(LayoutContext c, LineBreakContext context, int avail, CalculatedStyle style, FSFont f,
-            String currentString, boolean tryToBreakAnywhere, int fullLineWidth, int right, int rightWidth) {
+            String currentString, boolean tryToBreakAnywhere, int fullLineWidth, int right, int rightWidth,
+            int gluedWidthAfter, @Nullable BreakPoint firstWordEnd) {
         context.setNeedsNewLine(true);
         if (right <= 0 && style.getWordWrap() == IdentValue.BREAK_WORD) {
             if (!tryToBreakAnywhere) {
-                doBreakText(c, context, avail, style, true, fullLineWidth);
+                doBreakText(c, context, avail, style, true, fullLineWidth, gluedWidthAfter);
                 return;
             }
 
@@ -315,7 +354,16 @@ public class Breaker {
         }
 
         // unbreakable string
-        context.setEnd(context.getStart() + currentString.length());
+        if (firstWordEnd != null && firstWordEnd.position() > 0 && firstWordEnd.position() < currentString.length()) {
+            int end = firstWordEnd.position();
+            if (!firstWordEnd.hyphen().isEmpty()) {
+                context.setMaster(new StringBuilder(context.getMaster()).insert(context.getStart() + end, firstWordEnd.hyphen()).toString());
+                end += firstWordEnd.hyphen().length();
+            }
+            context.setEnd(context.getStart() + end);
+        } else {
+            context.setEnd(context.getStart() + currentString.length());
+        }
         context.setUnbreakable(true);
         context.setWidth(TextUtil.textWidth(c, style, f, context.getCalculatedSubstring()));
     }

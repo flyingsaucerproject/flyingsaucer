@@ -31,6 +31,7 @@ public class LineBreakContext {
     private int _start;
     private int _end;
     private int _savedEnd;
+    private String _savedMaster;
     private boolean _unbreakable;
     private boolean _needsNewLine;
     private int _width;
@@ -39,6 +40,7 @@ public class LineBreakContext {
 
     public LineBreakContext(String master, Text textNode) {
         this._master = master;
+        this._savedMaster = master;
         this._textNode = textNode;
     }
 
@@ -119,12 +121,15 @@ public class LineBreakContext {
         return _end == getMaster().length();
     }
 
+    /** Goes back to the end and the text saved by {@link #saveEnd()}: a line which is not taken leaves no hyphen. */
     public void resetEnd() {
         _end = _savedEnd;
+        _master = _savedMaster;
     }
 
     public void saveEnd() {
         _savedEnd = _end;
+        _savedMaster = _master;
     }
 
     public boolean isEndsOnNL() {
