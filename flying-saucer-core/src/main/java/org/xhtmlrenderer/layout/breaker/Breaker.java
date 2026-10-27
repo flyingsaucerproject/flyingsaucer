@@ -327,6 +327,7 @@ public class Breaker {
         if (right <= 0 && style.getWordWrap() == IdentValue.BREAK_WORD) {
             if (!tryToBreakAnywhere) {
                 doBreakText(c, context, avail, style, true, fullLineWidth, gluedWidthAfter);
+                context.setBrokenInsideWord(!context.isUnbreakable() && !context.isFinished());
                 return;
             }
 
