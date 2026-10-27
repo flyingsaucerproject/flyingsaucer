@@ -65,14 +65,16 @@ class InlineBoundaryLineBreakTest {
                 .containsExactly("aaa ", "bbb");
     }
 
-    /** The narrowest cell is as wide as the word, whatever boxes it is made of. */
+    /** The narrowest cell is as wide as the parts of the word together: each box measures its own part. */
     @Test
-    void theNarrowestCellIsAsWideAsTheWord() {
-        Box root = layout("<table style='width: 1px'><tr><td>aaabbb</td><td>aaa<span>bbb</span></td></tr></table>");
+    void theNarrowestCellIsAsWideAsThePartsOfTheWord() {
+        Box root = layout("<table style='width: 1px'><tr>" +
+                "<td>aaa<span>bbb</span></td><td>aaa</td><td>bbb</td></tr></table>");
 
         List<BlockBox> cells = cells(root);
-        assertThat(cells).hasSize(2);
-        assertThat(cells.get(1).getContentWidth()).isEqualTo(cells.get(0).getContentWidth());
+        assertThat(cells).hasSize(3);
+        assertThat(cells.get(0).getContentWidth())
+                .isEqualTo(cells.get(1).getContentWidth() + cells.get(2).getContentWidth());
     }
 
     /** A line that the word does not fit on ends before the word, not inside it. */
