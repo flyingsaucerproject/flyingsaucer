@@ -124,9 +124,15 @@ public class InlineBoxing {
         boolean zeroWidthInlineBlock = false;
         int lineOffset = 0;
 
-        for (Styleable node : box.getInlineContent()) {
+        List<Styleable> inlineContent = box.getInlineContent();
+        InlineBoundaryBreaks boundaryBreaks = new InlineBoundaryBreaks(c, inlineContent, maxAvailableWidth);
+
+        for (int index = 0; index < inlineContent.size(); index++) {
+            Styleable node = inlineContent.get(index);
             if (node.getStyle().isInline()) {
                 InlineBox iB = (InlineBox) node;
+                boolean startsGlued = boundaryBreaks.startsGlued(index);
+                int gluedWidthAfter = boundaryBreaks.gluedWidthAfter(index);
 
                 CalculatedStyle style = iB.getStyle();
                 if (iB.isStartsHere()) {
@@ -206,8 +212,12 @@ public class InlineBoxing {
                         needFirstLetter = false;
                     } else {
                         lbContext.saveEnd();
+                        // The text glued to the text before it may not start a line (CSS Text 3, § 1.5),
+                        // unless it may break anywhere where it does not fit
+                        boolean mayStartLine = !startsGlued || lbContext.getStart() > 0
+                                || style.getWordWrap() == IdentValue.BREAK_WORD;
                         InlineText inlineText = layoutText(
-                                c, iB.getStyle(), remainingWidth - fit, maxAvailableWidth, lbContext, false);
+                                c, iB.getStyle(), remainingWidth - fit, maxAvailableWidth, lbContext, false, gluedWidthAfter);
                         if (lbContext.isUnbreakable() && !currentLine.isContainsContent()) {
                             int delta = c.getBlockFormattingContext().getNextLineBoxDelta(c, currentLine, maxAvailableWidth);
                             if (delta > 0) {
@@ -220,8 +230,7 @@ public class InlineBoxing {
                             }
                         }
 
-                        if (!lbContext.isUnbreakable() ||
-                            lbContext.isUnbreakable() && !currentLine.isContainsContent()) {
+                        if (!lbContext.isUnbreakable() || !currentLine.isContainsContent() || !mayStartLine) {
                             if (iB.isDynamicFunction()) {
                                 inlineText.setFunctionData(new FunctionData(
                                         iB.getContentFunction(), iB.getFunction()));
@@ -245,7 +254,9 @@ public class InlineBoxing {
                         }
                     }
 
-                    if (lbContext.isNeedsNewLine()) {
+                    // A line may not end where the text glued to the next box ends: that box ends it
+                    boolean endsGlued = lbContext.isFinished() && !lbContext.isEndsOnNL() && gluedWidthAfter > 0;
+                    if (lbContext.isNeedsNewLine() && !endsGlued) {
                         if (iB.getStyle().isTextJustify()) {
                             currentLine.trimTrailingSpace(c);
                         }
@@ -393,7 +404,7 @@ public class InlineBoxing {
         currentIB.addInlineChild(c, iB);
         current.setContainsContent(true);
 
-        InlineText text = layoutText(c, iB.getStyle(), remainingWidth, maxAvailableWidth, lbContext, true);
+        InlineText text = layoutText(c, iB.getStyle(), remainingWidth, maxAvailableWidth, lbContext, true, 0);
         iB.addInlineChild(c, text);
         iB.setInlineWidth(text.getWidth());
 
@@ -865,14 +876,14 @@ public class InlineBoxing {
 
     private static InlineText layoutText(LayoutContext c, CalculatedStyle style,
                                          int remainingWidth, int maxAvailableWidth,
-                                         LineBreakContext lbContext, boolean needFirstLetter) {
+                                         LineBreakContext lbContext, boolean needFirstLetter, int gluedWidthAfter) {
         String masterText = lbContext.getMaster();
         if (needFirstLetter) {
             masterText = TextUtil.transformFirstLetterText(masterText, style);
             lbContext.setMaster(masterText);
             Breaker.breakFirstLetter(c, lbContext, remainingWidth, style);
         } else {
-            Breaker.breakText(c, lbContext, remainingWidth, maxAvailableWidth, style);
+            Breaker.breakText(c, lbContext, remainingWidth, maxAvailableWidth, style, gluedWidthAfter);
         }
 
         return new InlineText(lbContext.getMaster(), lbContext.getTextNode(),
