@@ -126,8 +126,7 @@ public class UrlAwareLineBreakIterator extends BreakIterator {
     }
 
     private int findSlashInRange(Range searchRange) {
-        int nextSlash = text.indexOf('/', searchRange.getStart());
-        return nextSlash < searchRange.getStop() ? nextSlash : -1;
+        return text.indexOf('/', searchRange.getStart(), searchRange.getStop());
     }
 
     private String substring(Range range) {
