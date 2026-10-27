@@ -71,13 +71,32 @@ public class UrlAwareLineBreakIteratorTest {
 
     /**
      * A long text without a zero width space is not searched for one again at every break: that would cost time
-     * quadratic in its length. Each word holds a slash, so the search for slashes finds one at once, and a Cyrillic
-     * letter, as a text of Latin-1 letters only finds no U+200B without searching.
+     * quadratic in its length. Each word holds a Cyrillic letter, as a text of Latin-1 letters only finds no U+200B
+     * without searching.
      */
     @Test
     @Timeout(5)
     public void longTextWithoutZeroWidthSpaceBreaksInLinearTime() {
-        String text = "\u044F/b ".repeat(250_000);
+        String text = "\u044Fb ".repeat(250_000);
+        BreakIterator iterator = new UrlAwareLineBreakIterator(text);
+
+        int last = 0;
+        int next;
+        while ((next = iterator.next()) != BreakIterator.DONE) {
+            last = next;
+        }
+
+        assertThat(last).isEqualTo(text.length());
+    }
+
+    /**
+     * A long text without a slash is not searched for one up to its end at every break: that would cost time quadratic
+     * in its length.
+     */
+    @Test
+    @Timeout(5)
+    public void longTextWithoutSlashBreaksInLinearTime() {
+        String text = "word ".repeat(500_000);
         BreakIterator iterator = new UrlAwareLineBreakIterator(text);
 
         int last = 0;
