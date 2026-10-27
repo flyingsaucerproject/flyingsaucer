@@ -80,8 +80,8 @@ class InlineBoundaryLineBreakTest {
     /** A line that the word does not fit on ends before the word, not inside it. */
     @Test
     void aWordWhichDoesNotFitMovesToTheNextLineWhole() {
-        String word = "<div style='width: 60px'>xx aaa<span>bbb</span></div>";
-        String plain = "<div style='width: 60px'>xx aaabbb</div>";
+        String word = "<div style='width: 62px'>xx aaa<span>bbb</span></div>";
+        String plain = "<div style='width: 62px'>xx aaabbb</div>";
 
         assertThat(lines(layout(plain))).containsExactly("xx ", "aaabbb");
         assertThat(lines(layout(word))).containsExactly("xx ", "aaabbb");
@@ -97,51 +97,51 @@ class InlineBoundaryLineBreakTest {
     /** A float between the parts of a word does not break it. */
     @Test
     void aFloatInsideAWordDoesNotBreakIt() {
-        assertThat(lines(layout("<div style='width: 60px'>xx aaa<span style='float: right'>F</span>bbb</div>")))
+        assertThat(lines(layout("<div style='width: 62px'>xx aaa<span style='float: right'>F</span>bbb</div>")))
                 .startsWith("xx ", "aaabbb");
     }
 
     /** An inline-block ends the word before it: the line may break before it. */
     @Test
     void anInlineBlockEndsTheWordBeforeIt() {
-        assertThat(lines(layout("<div style='width: 60px'>xx aaa<span style='display: inline-block'>IB</span>bbb</div>")))
+        assertThat(lines(layout("<div style='width: 62px'>xx aaa<span style='display: inline-block'>IB</span>bbb</div>")))
                 .containsExactly("xx aaa", "IBbbb");
     }
 
     /** A text which may not break continues the word before it, and the line overflows with both. */
     @Test
     void aWordRunsOnIntoATextWhichMayNotBreak() {
-        assertThat(lines(layout("<div style='width: 60px'>xx aaa<span style='white-space: nowrap'>bbb ccc</span></div>")))
+        assertThat(lines(layout("<div style='width: 62px'>xx aaa<span style='white-space: nowrap'>bbb ccc</span></div>")))
                 .containsExactly("xx ", "aaabbb ccc");
     }
 
     /** A text which may not break, glued to the text after it, moves to the next line with it where the two do not fit. */
     @Test
     void aTextWhichMayNotBreakMovesToTheNextLineWithTheWordItRunsOnInto() {
-        assertThat(lines(layout("<div style='width: 60px'>xx <span style='white-space: nowrap'>aaa</span>bbb</div>")))
+        assertThat(lines(layout("<div style='width: 62px'>xx <span style='white-space: nowrap'>aaa</span>bbb</div>")))
                 .containsExactly("xx ", "aaabbb");
-        assertThat(lines(layout("<div style='width: 60px'>xx <span style='white-space: pre'>aaa</span>bbb</div>")))
+        assertThat(lines(layout("<div style='width: 62px'>xx <span style='white-space: pre'>aaa</span>bbb</div>")))
                 .containsExactly("xx ", "aaabbb");
     }
 
     /** {@code word-wrap: break-word} breaks a word only where it does not fit, so a word which fits stays whole. */
     @Test
     void aWordWithBreakWordWhichFitsMovesToTheNextLineWhole() {
-        assertThat(lines(layout("<div style='width: 60px; word-wrap: break-word'>xx aaa<span>bbb</span></div>")))
+        assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx aaa<span>bbb</span></div>")))
                 .containsExactly("xx ", "aaabbb");
     }
 
     /** {@code word-break: break-all} may break between any two letters, so between two boxes too. */
     @Test
     void aWordWithBreakAllBreaksBetweenItsBoxes() {
-        assertThat(lines(layout("<div style='width: 60px; word-break: break-all'>xx aaa<span>bbb</span></div>")))
+        assertThat(lines(layout("<div style='width: 62px; word-break: break-all'>xx aaa<span>bbb</span></div>")))
                 .containsExactly("xx aaa", "bbb");
     }
 
     /** A new line in a text which keeps them ends the word before it. */
     @Test
     void aNewLineEndsTheWordBeforeIt() {
-        assertThat(lines(layout("<div style='width: 60px; white-space: pre-wrap'>xx aaa<span>\nbbb</span></div>")))
+        assertThat(lines(layout("<div style='width: 62px; white-space: pre-wrap'>xx aaa<span>\nbbb</span></div>")))
                 .containsExactly("xx aaa", "bbb");
     }
 
@@ -151,7 +151,7 @@ class InlineBoundaryLineBreakTest {
 
     private static Box layout(String body) {
         String html = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>" +
-                "body { margin: 0; font: 16px sans-serif; } table { border-collapse: collapse; } td { padding: 0; }" +
+                "body { margin: 0; font: 16px monospace; } table { border-collapse: collapse; } td { padding: 0; }" +
                 "</style></head><body>" + body + "</body></html>";
         Document document = XMLResource.load(new StringReader(html)).getDocument();
         Graphics2DRenderer renderer = new Graphics2DRenderer(document, "file:/");

@@ -49,7 +49,7 @@ class FirstWordLineBreakTest {
 
     private static Box layout(String body) {
         String html = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>" +
-                "body { margin: 0; font: 16px sans-serif; }" +
+                "body { margin: 0; font: 16px monospace; }" +
                 "</style></head><body>" + body + "</body></html>";
         Document document = XMLResource.load(new StringReader(html)).getDocument();
         Graphics2DRenderer renderer = new Graphics2DRenderer(document, "file:/");
