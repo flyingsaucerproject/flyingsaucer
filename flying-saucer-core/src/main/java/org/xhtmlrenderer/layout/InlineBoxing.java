@@ -260,9 +260,11 @@ public class InlineBoxing {
                         }
                     }
 
-                    // A line may not end where the text glued to the next box ends: that box ends it
-                    boolean endsGlued = lbContext.isFinished() && !lbContext.isEndsOnNL() && gluedWidthAfter > 0;
-                    if (lbContext.isNeedsNewLine() && !endsGlued) {
+                    // A line does not end where the text of a box ends: a break after the last character of a box is
+                    // after its margin edge (CSS Text 3, § 5.5), and the text glued to it may not start a line. The
+                    // content after it ends the line where that content does not fit.
+                    boolean endsWithText = lbContext.isFinished() && !lbContext.isEndsOnNL();
+                    if (lbContext.isNeedsNewLine() && !endsWithText) {
                         if (iB.getStyle().isTextJustify()) {
                             currentLine.trimTrailingSpace(c);
                         }
