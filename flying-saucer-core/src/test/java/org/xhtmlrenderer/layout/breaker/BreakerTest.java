@@ -317,6 +317,59 @@ class BreakerTest {
         assertThat(measured.stream().mapToInt(String::length).sum()).isLessThan(1_000);
     }
 
+    /**
+     * The last line of a text in {@code white-space: pre-wrap} is measured whole only where it fits: a long text without
+     * a newline would otherwise be measured to its end for each of its lines, and take time quadratic in its length,
+     * see <a href="https://github.com/flyingsaucerproject/flyingsaucer/issues/757">issue 757</a>.
+     */
+    @Test
+    void aLongPreWrapLineMeasuresFewPrefixes() {
+        when(style.getWhitespace()).thenReturn(IdentValue.PRE_WRAP);
+        String text = "word ".repeat(2_000);
+
+        LineBreakContext context = new LineBreakContext(text, null);
+        // "word " measures 29: ten of them fit by their parts (290), eleven do not (319)
+        Breaker.breakText(c, context, 300, 300, style);
+
+        assertThat(context.getEnd()).isEqualTo(50);
+        assertThat(context.getWidth()).isEqualTo(290);
+        assertThat(context.isNeedsNewLine()).isTrue();
+        List<String> measured = mockingDetails(textRenderer).getInvocations().stream()
+                .filter(invocation -> invocation.getMethod().getName().equals("getWidth"))
+                .map(invocation -> (String) invocation.getArgument(2))
+                .toList();
+        assertThat(measured.stream().mapToInt(String::length).sum()).isLessThan(1_000);
+    }
+
+    /** A line which starts in the middle of the text wraps at its break points as if the text started there. */
+    @Test
+    void aLineFromTheMiddleOfTheTextWrapsAtItsBreakPoints() {
+        // "A line of a " fits 68 by its words; "cell." does not fit after it
+        LineBreakContext context = new LineBreakContext("A cell. A line of a cell.", null);
+        context.setStart(8);
+
+        Breaker.breakText(c, context, 68, 68, style);
+
+        assertThat(context.getEnd()).isEqualTo(20);
+        assertThat(context.getWidth()).isEqualTo(68);
+        assertThat(context.isNeedsNewLine()).isTrue();
+    }
+
+    /** A line broken anywhere which starts in the middle of the text ends where its own text still fits. */
+    @Test
+    void aLineBrokenAnywhereFromTheMiddleOfTheTextEndsWhereItsTextStillFits() {
+        when(style.getWordBreak()).thenReturn(IdentValue.BREAK_ALL);
+        LineBreakContext context = new LineBreakContext("yy" + "x".repeat(100), null);
+        context.setStart(2);
+
+        // 50 characters render 299 and fit, 51 render 305
+        Breaker.breakText(c, context, 300, 300, style);
+
+        assertThat(context.getEnd()).isEqualTo(52);
+        assertThat(context.getWidth()).isEqualTo(299);
+        assertThat(context.isNeedsNewLine()).isTrue();
+    }
+
     /** An empty text broken anywhere fits, with the width of nothing. */
     @Test
     void anEmptyTextBrokenAnywhereFits() {

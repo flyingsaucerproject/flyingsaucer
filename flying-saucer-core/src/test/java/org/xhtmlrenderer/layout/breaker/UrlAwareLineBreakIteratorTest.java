@@ -108,6 +108,28 @@ public class UrlAwareLineBreakIteratorTest {
         assertThat(last).isEqualTo(text.length());
     }
 
+    /**
+     * A text broken into lines gets an iterator for each line, from the start of the line on: it does not copy the rest
+     * of the text, or search all of it for a zero width space or a slash. Each word holds a Cyrillic letter, as a text
+     * of Latin-1 letters only finds no U+200B without searching.
+     */
+    @Test
+    @Timeout(5)
+    public void iteratorForEachLineOfLongTextTakesLinearTime() {
+        String text = "\u044Fb ".repeat(500_000);
+
+        int breaks = 0;
+        for (int start = 0; start < text.length(); start += 30) {
+            BreakIterator iterator = new UrlAwareLineBreakIterator(text, start);
+            for (int i = 0; i < 10; i++) {
+                assertThat(iterator.next()).isEqualTo(start + 3 * (i + 1));
+                breaks++;
+            }
+        }
+
+        assertThat(breaks).isEqualTo(text.length() / 3);
+    }
+
     @Test
     public void breakAfterZeroWidthSpaceInUrl() {
         assertBreaksCorrectly("http://example.com/a\u200Bb",
@@ -195,10 +217,16 @@ public class UrlAwareLineBreakIteratorTest {
 
 
     private void assertBreaksCorrectly(String input, String[] segments) {
-        BreakIterator iterator = new UrlAwareLineBreakIterator(input);
+        assertBreaksCorrectly(input, 0, segments);
+        // The same text after another: its break points from where it starts, at offsets in the whole text
+        assertBreaksCorrectly("xx " + input, 3, segments);
+    }
+
+    private void assertBreaksCorrectly(String input, int start, String[] segments) {
+        BreakIterator iterator = new UrlAwareLineBreakIterator(input, start);
 
         int segmentIndex = 0;
-        int lastBreakPoint = 0;
+        int lastBreakPoint = start;
         int breakpoint;
         while ((breakpoint = iterator.next()) != BreakIterator.DONE) {
             if (segmentIndex < segments.length) {

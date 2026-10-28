@@ -80,6 +80,11 @@ public class LineBreakContext {
         _start = start;
     }
 
+    /**
+     * @deprecated copies all the rest of the text, which for each line of a long text takes time quadratic in its
+     * length (#757). Use {@link #getMaster()} from {@link #getStart()} instead.
+     */
+    @Deprecated(forRemoval = true)
     public String getStartSubstring() {
         return _master.substring(_start);
     }
