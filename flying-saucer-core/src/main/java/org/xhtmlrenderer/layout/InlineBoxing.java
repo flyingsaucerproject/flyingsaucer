@@ -334,6 +334,9 @@ public class InlineBoxing {
                     layoutInlineBlockContent(c, box, child, initialY);
 
                     if (child.getWidth() > remainingWidth && currentLine.isContainsContent()) {
+                        if (box.getStyle().isTextJustify()) {
+                            currentLine.trimTrailingSpace(c);
+                        }
                         saveLine(currentLine, c, box, minimumLineHeight,
                                 maxAvailableWidth, pendingFloats, hasFirstLinePEs,
                                 pendingInlineLayers, markerData, contentStart,

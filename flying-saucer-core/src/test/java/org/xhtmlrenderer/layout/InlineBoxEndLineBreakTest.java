@@ -70,6 +70,24 @@ class InlineBoxEndLineBreakTest {
                 .isEqualTo(lineBoxes(layout("x <span>aaaaaaa<b> bbbb</b></span>")).get(2).getWidth() + 10);
     }
 
+    /** A justified line which an inline-block ends loses the trailing space of its text. */
+    @Test
+    void aJustifiedLineWhichAnInlineBlockEndsLosesItsTrailingSpace() {
+        List<LineBox> lines = lineBoxes(layout("<div style='text-align: justify'><span>aaaaaaa </span>" +
+                "<span style='display: inline-block; width: 10px'>x</span></div>"));
+
+        assertThat(texts(lines).get(0)).isEqualTo("aaaaaaa");
+    }
+
+    /** The same for a line which an image ends. */
+    @Test
+    void aJustifiedLineWhichAnImageEndsLosesItsTrailingSpace() {
+        List<LineBox> lines = lineBoxes(layout("<div style='text-align: justify'><span>aaaaaaa </span>" +
+                "<img style='width: 10px; height: 10px' src='data:image/gif;base64,R0lGODlhAQABAAAAACw='/></div>"));
+
+        assertThat(texts(lines).get(0)).isEqualTo("aaaaaaa");
+    }
+
     private static Box layout(String content) {
         String html = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>" +
                 "body { margin: 0; font: 16px monospace; }" +
