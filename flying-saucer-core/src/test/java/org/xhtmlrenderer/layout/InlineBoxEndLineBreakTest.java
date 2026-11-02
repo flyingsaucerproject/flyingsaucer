@@ -88,6 +88,15 @@ class InlineBoxEndLineBreakTest {
         assertThat(texts(lines).get(0)).isEqualTo("aaaaaaa");
     }
 
+    /** An empty inline box between the text and the inline-block does not keep the trailing space. */
+    @Test
+    void aJustifiedLineLosesItsTrailingSpaceBeforeAnEmptyBox() {
+        List<LineBox> lines = lineBoxes(layout("<div style='text-align: justify'><span>aaaaaaa </span><span></span>" +
+                "<span style='display: inline-block; width: 10px'>x</span></div>"));
+
+        assertThat(texts(lines).get(0)).isEqualTo("aaaaaaa");
+    }
+
     private static Box layout(String content) {
         String html = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>" +
                 "body { margin: 0; font: 16px monospace; }" +

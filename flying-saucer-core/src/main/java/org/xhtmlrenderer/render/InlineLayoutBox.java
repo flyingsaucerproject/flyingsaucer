@@ -777,6 +777,9 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
                     return result;
                 }
                 case InlineLayoutBox inlineLayoutBox -> {
+                    if (inlineLayoutBox.isEmptyOfContent()) {
+                        continue;
+                    }
                     result = inlineLayoutBox.findTrailingText();
                     if (result != null && result.isEmpty()) {
                         continue;
@@ -790,6 +793,24 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
         }
 
         return result;
+    }
+
+    /**
+     * Whether the box holds no text and no other box with content, as an empty {@code <span>} does. The trailing
+     * text of a line can come before such a box.
+     */
+    boolean isEmptyOfContent() {
+        for (int offset = 0; offset < getInlineChildCount(); offset++) {
+            boolean empty = switch (getInlineChild(offset)) {
+                case InlineText inlineText -> inlineText.isEmpty();
+                case InlineLayoutBox inlineLayoutBox -> inlineLayoutBox.isEmptyOfContent();
+                default -> false;
+            };
+            if (!empty) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void calculateTextDecoration(LayoutContext c) {
