@@ -4,12 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.w3c.dom.Document;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.InlineText;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.resource.XMLResource;
 import org.xhtmlrenderer.simple.Graphics2DRenderer;
+import org.xhtmlrenderer.swing.ImageReplacedElement;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -29,6 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InlineBoxEndLineBreakTest {
 
     private static final String SPAN = "<span>aaaaaaa</span>";
+
+    /** A white GIF of 1 x 1 pixels. */
+    private static final String GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=";
 
     @ParameterizedTest
     @ValueSource(strings = {"padding-right: 10px", "margin-right: 10px", "border-right: 10px solid red"})
@@ -82,10 +87,11 @@ class InlineBoxEndLineBreakTest {
     /** The same for a line which an image ends. */
     @Test
     void aJustifiedLineWhichAnImageEndsLosesItsTrailingSpace() {
-        List<LineBox> lines = lineBoxes(layout("<div style='text-align: justify'><span>aaaaaaa </span>" +
-                "<img style='width: 10px; height: 10px' src='data:image/gif;base64,R0lGODlhAQABAAAAACw='/></div>"));
+        Box root = layout("<div style='text-align: justify'><span>aaaaaaa </span>" +
+                "<img style='width: 10px; height: 10px' src='" + GIF + "'/></div>");
 
-        assertThat(texts(lines).get(0)).isEqualTo("aaaaaaa");
+        assertThat(images(root)).hasSize(1);
+        assertThat(texts(lineBoxes(root)).get(0)).isEqualTo("aaaaaaa");
     }
 
     /** An empty inline box between the text and the inline-block does not keep the trailing space. */
@@ -126,6 +132,29 @@ class InlineBoxEndLineBreakTest {
         }
         for (Box child : box.getChildren()) {
             collectLines(child, lines);
+        }
+    }
+
+    /** The images in the box tree which replace their elements. */
+    private static List<ImageReplacedElement> images(Box root) {
+        List<ImageReplacedElement> images = new ArrayList<>();
+        collectImages(root, images);
+        return images;
+    }
+
+    private static void collectImages(Box box, List<ImageReplacedElement> images) {
+        if (box instanceof BlockBox block && block.getReplacedElement() instanceof ImageReplacedElement image) {
+            images.add(image);
+        }
+        if (box instanceof InlineLayoutBox inline) {
+            for (Object child : inline.getInlineChildren()) {
+                if (child instanceof Box childBox) {
+                    collectImages(childBox, images);
+                }
+            }
+        }
+        for (Box child : box.getChildren()) {
+            collectImages(child, images);
         }
     }
 
