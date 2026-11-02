@@ -988,8 +988,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
                 case Box b -> {
                     b.setX(b.getX() + Math.round(runningTotal));
 
-                    if (b instanceof InlineLayoutBox) {
-                        float adj = ((InlineLayoutBox) b).adjustHorizontalPosition(info, runningTotal, lineLastText);
+                    if (b instanceof InlineLayoutBox inlineLayoutBox) {
+                        float adj = inlineLayoutBox.adjustHorizontalPosition(info, runningTotal, lineLastText);
                         result += adj;
                         runningTotal += adj;
                     }
