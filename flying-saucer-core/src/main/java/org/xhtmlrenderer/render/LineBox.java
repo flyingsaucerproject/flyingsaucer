@@ -523,6 +523,9 @@ public class LineBox extends Box implements InlinePaintable {
         for (int offset = getChildCount() - 1; offset >= 0; offset--) {
             Box child = getChild(offset);
             if (child instanceof InlineLayoutBox inlineLayoutBox) {
+                if (inlineLayoutBox.isEmptyOfContent()) {
+                    continue;
+                }
                 InlineText result = inlineLayoutBox.findTrailingText();
                 if (result != null && result.isEmpty()) {
                     continue;
