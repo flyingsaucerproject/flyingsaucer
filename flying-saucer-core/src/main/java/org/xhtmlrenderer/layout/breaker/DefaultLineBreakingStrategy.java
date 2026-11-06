@@ -29,16 +29,21 @@ public class DefaultLineBreakingStrategy implements LineBreakingStrategy {
 
     @Override
     public BreakPointsProvider getBreakPointsProvider(String text, String lang, CalculatedStyle style) {
-        BreakIterator iterator = new UrlAwareLineBreakIterator(text);
-        return new DefaultBreakPointsProvider(iterator);
+        return getBreakPointsProvider(text, 0, lang, style);
     }
 
-    private record DefaultBreakPointsProvider(BreakIterator iterator) implements BreakPointsProvider {
+    @Override
+    public BreakPointsProvider getBreakPointsProvider(String text, int start, String lang, CalculatedStyle style) {
+        BreakIterator iterator = new UrlAwareLineBreakIterator(text, start);
+        return new DefaultBreakPointsProvider(iterator, start);
+    }
+
+    private record DefaultBreakPointsProvider(BreakIterator iterator, int start) implements BreakPointsProvider {
         @Override
             public BreakPoint next() {
                 int next = iterator.next();
                 if (next < 0) return BreakPoint.DONE;
-                return new BreakPoint(next);
+                return new BreakPoint(next - start);
             }
         }
 }
