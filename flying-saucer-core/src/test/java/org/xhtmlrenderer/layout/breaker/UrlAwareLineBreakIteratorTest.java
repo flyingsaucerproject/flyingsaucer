@@ -7,6 +7,7 @@ import java.text.BreakIterator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Timeout.ThreadMode.SEPARATE_THREAD;
 
 public class UrlAwareLineBreakIteratorTest {
 
@@ -114,7 +115,7 @@ public class UrlAwareLineBreakIteratorTest {
      * of Latin-1 letters only finds no U+200B without searching.
      */
     @Test
-    @Timeout(5)
+    @Timeout(value = 5, threadMode = SEPARATE_THREAD)
     public void iteratorForEachLineOfLongTextTakesLinearTime() {
         String text = "\u044Fb ".repeat(500_000);
 
