@@ -153,7 +153,7 @@ public class Breaker {
     }
 
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Text textNode, CalculatedStyle style) {
-        return c.getSharedContext().getLineBreakingStrategy().getBreakPointsProvider(text, getLanguage(c, textNode), style);
+        return getBreakPointsProvider(text, 0, c, textNode, style);
     }
 
     /** The break points of {@code text} from {@code start} on, at offsets from {@code start}. */
@@ -166,6 +166,9 @@ public class Breaker {
      * {@code avail}: prefixes of 64, 128, 256 characters and so on are measured until one is wider or is the whole text.
      * Breaking a long text into lines measures it from the start of each line, so measuring all the rest of it each time
      * would take time quadratic in its length (#757).
+     * <p>
+     * A prefix wider than {@code avail} is taken to mean that the whole text is wider too: a text is no narrower than
+     * its prefixes, as {@link #breakAnywhere} also assumes.
      */
     private static int widthUpTo(LayoutContext c, CalculatedStyle style, FSFont font, String text, int start, int avail) {
         int end = Math.min(text.length(), start + 64);
@@ -280,7 +283,8 @@ public class Breaker {
 
         // No break point fits: the loop stopped at the first one, which ends the first word
         BreakPoint firstWordEnd = right < 0 && bp != null && bp.position() != BreakIterator.DONE ? bp : null;
-        wrap(c, context, avail, style, f, master, start, false, fullLineWidth, right, rightWidth, gluedWidthAfter, firstWordEnd);
+        // The text again, as a hyphen may have been inserted into it above
+        wrap(c, context, avail, style, f, context.getMaster(), start, false, fullLineWidth, right, rightWidth, gluedWidthAfter, firstWordEnd);
     }
 
     /**
