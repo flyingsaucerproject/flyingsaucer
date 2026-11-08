@@ -11,8 +11,10 @@ import org.xhtmlrenderer.layout.LineBreakContext;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.render.FSFont;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,8 +99,10 @@ class BreakerTest {
         LineBreakContext wraps = new LineBreakContext("abcdefghi", null);
         Breaker.breakText(c, wraps, 45, 45, style);
         // "abc" + "def-" fits 40, "ghi" would take it to 51: the line ends at the hyphen after "def"
-        assertThat(wraps.getMaster()).isEqualTo("abcdef-ghi");
-        assertThat(wraps.getEnd()).isEqualTo(7);
+        assertThat(wraps.getMaster()).isEqualTo("abcdefghi");
+        assertThat(wraps.getEnd()).isEqualTo(6);
+        assertThat(wraps.hyphen()).isEqualTo("-");
+        assertThat(wraps.getCalculatedSubstring()).isEqualTo("abcdef-");
         assertThat(wraps.getWidth()).isEqualTo(17 + 23);
     }
 
@@ -133,6 +137,33 @@ class BreakerTest {
     }
 
     /**
+     * A line which ends at a hyphen prints it after its text, but does not insert it into the text: that would copy all
+     * the text for each hyphenated line, and take time quadratic in its length, see
+     * <a href="https://github.com/flyingsaucerproject/flyingsaucer/issues/757">issue 757</a>.
+     */
+    @Test
+    void hyphenatedLinesLeaveTheTextAsItIs() {
+        when(sharedContext.getLineBreakingStrategy()).thenReturn((text, lang, s) -> breakPoints(
+                IntStream.rangeClosed(1, text.length() / 3).mapToObj(i -> new BreakPoint(3 * i, "-")).toArray(BreakPoint[]::new)));
+        String text = "abcdef".repeat(300);
+        LineBreakContext context = new LineBreakContext(text, null);
+
+        List<String> lines = new ArrayList<>();
+        do {
+            context.reset();
+            // "abc" + "def-" fits 40, "ghi" would take it to 51: each line ends at the hyphen after "def"
+            Breaker.breakText(c, context, 45, 45, style);
+            lines.add(context.getCalculatedSubstring());
+            context.setStart(context.getEnd());
+        } while (!context.isFinished());
+
+        assertThat(context.getMaster()).isSameAs(text);
+        assertThat(lines).hasSize(300);
+        assertThat(lines.subList(0, 299)).containsOnly("abcdef-");
+        assertThat(lines.get(299)).isEqualTo("abcdef");
+    }
+
+    /**
      * A line which fits whole gets no hyphen, so the hyphen of its last break point does not count.
      */
     @Test
@@ -143,7 +174,7 @@ class BreakerTest {
         LineBreakContext context = new LineBreakContext("abcdefghi", null);
         Breaker.breakText(c, context, 100, 100, style);
 
-        assertThat(context.getMaster()).isEqualTo("abcdefghi");
+        assertThat(context.hyphen()).isEmpty();
         assertThat(context.getWidth()).isEqualTo(17 + 35);
     }
 
@@ -159,7 +190,7 @@ class BreakerTest {
         // "abc" + "defghi" is 52, with the hyphen after it 58
         Breaker.breakText(c, context, 52, 52, style);
 
-        assertThat(context.getMaster()).isEqualTo("abcdefghi");
+        assertThat(context.hyphen()).isEmpty();
         assertThat(context.getEnd()).isEqualTo(9);
         assertThat(context.getWidth()).isEqualTo(52);
         assertThat(context.isNeedsNewLine()).isFalse();
@@ -222,8 +253,10 @@ class BreakerTest {
         LineBreakContext context = new LineBreakContext("abcdefghi", null);
         Breaker.breakText(c, context, 20, 20, style);
 
-        assertThat(context.getMaster()).isEqualTo("abcdef-ghi");
-        assertThat(context.getEnd()).isEqualTo(7);
+        assertThat(context.getMaster()).isEqualTo("abcdefghi");
+        assertThat(context.getEnd()).isEqualTo(6);
+        assertThat(context.hyphen()).isEqualTo("-");
+        assertThat(context.getCalculatedSubstring()).isEqualTo("abcdef-");
         assertThat(context.getWidth()).isEqualTo(41);
         assertThat(context.isUnbreakable()).isTrue();
     }

@@ -46,6 +46,8 @@ public class InlineText implements InlineChild {
     private String _masterText;
     private int _start;
     private int _end;
+    /** Printed after the text from {@code _start} to {@code _end}: the hyphen where the line ends at a hyphenation point. */
+    private String _hyphen;
 
     private int _width;
 
@@ -64,7 +66,7 @@ public class InlineText implements InlineChild {
     private final Text _textNode;
 
     public void trimTrailingSpace(LayoutContext c) {
-        if (! isEmpty() && _masterText.charAt(_end-1) == ' ') {
+        if (! isEmpty() && _hyphen.isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
             setWidth(TextUtil.textWidth(c, getParent().getStyle(),
                     getParent().getStyle().getFSFont(c),
@@ -74,7 +76,7 @@ public class InlineText implements InlineChild {
     }
 
     public boolean isEmpty() {
-        return _start == _end && ! _containedLF;
+        return _start == _end && _hyphen.isEmpty() && ! _containedLF;
     }
 
     @CheckReturnValue
@@ -86,14 +88,20 @@ public class InlineText implements InlineChild {
             if (_end < _start) {
                 throw new RuntimeException("end is less than start (%s < %s) for element %s".formatted(_end, _start, this));
             }
-            return getMasterText().substring(_start, _end);
+            return getMasterText().substring(_start, _end) + _hyphen;
         } else {
             throw new RuntimeException("No master text set for element " + this);
         }
     }
 
     public InlineText(String masterText, Text textNode, int start, int end, int width) {
+        this(masterText, textNode, start, end, "", width);
+    }
+
+    /** The text of {@code masterText} from {@code start} to {@code end}, followed by {@code hyphen}. */
+    public InlineText(String masterText, Text textNode, int start, int end, String hyphen, int width) {
         _masterText = masterText;
+        _hyphen = hyphen;
         _textNode = textNode;
         _width = width;
 
@@ -166,6 +174,7 @@ public class InlineText implements InlineChild {
                 c, _functionData.getFunction(), this);
         _start = 0;
         _end = value.length();
+        _hyphen = "";
         _masterText = value;
         _width = TextUtil.textWidth(c, getParent().getStyle(),
                 getParent().getStyle().getFSFont(c), value);
