@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+    <title>CMYK colors</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            color: cmyk(0, 0, 0, 1);
+        }
+
+        .swatch {
+            padding: 8px;
+            margin: 8px 0;
+            border: 3px solid cmyk(0, 0, 0, 1);
+        }
+
+        .cyan {
+            color: cmyk(1, 0, 0, 0);
+        }
+
+        .magenta-background {
+            color: cmyk(0, 0, 0, 0);
+            background-color: cmyk(0, 1, 0, 0);
+        }
+
+        .yellow-border {
+            border-color: cmyk(0, 0, 1, 0);
+        }
+
+        .percentages {
+            color: cmyk(0%, 50%, 100%, 0%);
+            background-color: cmyk(10%, 0%, 0%, 5%);
+        }
+    </style>
+</head>
+<body>
+<div class="swatch cyan">Cyan text</div>
+<div class="swatch magenta-background">White text on magenta background</div>
+<div class="swatch yellow-border">Yellow border</div>
+<div class="swatch percentages">Orange text on light blue background</div>
+</body>
+</html>
