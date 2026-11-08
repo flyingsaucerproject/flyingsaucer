@@ -192,7 +192,7 @@ abstract class Condition {
         }
     }
 
-    private static class AttributeExistsCondition extends AttributeCompareCondition {
+    private static final class AttributeExistsCondition extends AttributeCompareCondition {
         private AttributeExistsCondition(String namespaceURI, String name) {
             super(namespaceURI, name, null);
         }
@@ -203,7 +203,7 @@ abstract class Condition {
         }
     }
 
-    private static class AttributeEqualsCondition extends AttributeCompareCondition {
+    private static final class AttributeEqualsCondition extends AttributeCompareCondition {
         private AttributeEqualsCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
@@ -214,7 +214,7 @@ abstract class Condition {
         }
     }
 
-    private static class AttributePrefixCondition extends AttributeCompareCondition {
+    private static final class AttributePrefixCondition extends AttributeCompareCondition {
         private AttributePrefixCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
@@ -225,7 +225,7 @@ abstract class Condition {
         }
     }
 
-    private static class AttributeSuffixCondition extends AttributeCompareCondition {
+    private static final class AttributeSuffixCondition extends AttributeCompareCondition {
         private AttributeSuffixCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
@@ -236,7 +236,7 @@ abstract class Condition {
         }
     }
 
-    private static class AttributeSubstringCondition extends AttributeCompareCondition {
+    private static final class AttributeSubstringCondition extends AttributeCompareCondition {
         private AttributeSubstringCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
@@ -247,7 +247,7 @@ abstract class Condition {
         }
     }
 
-    private static class AttributeMatchesListCondition extends AttributeCompareCondition {
+    private static final class AttributeMatchesListCondition extends AttributeCompareCondition {
         private AttributeMatchesListCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
@@ -266,7 +266,7 @@ abstract class Condition {
         }
     }
 
-    private static class AttributeMatchesFirstPartCondition extends AttributeCompareCondition {
+    private static final class AttributeMatchesFirstPartCondition extends AttributeCompareCondition {
         private AttributeMatchesFirstPartCondition(String namespaceURI, String name, String value) {
             super(namespaceURI, name, value);
         }
@@ -317,7 +317,7 @@ abstract class Condition {
         }
     }
 
-    private static class IDCondition extends Condition {
+    private static final class IDCondition extends Condition {
         private final String _id;
 
         private IDCondition(String id) {
@@ -333,7 +333,7 @@ abstract class Condition {
         }
     }
 
-    static class LangCondition extends Condition {
+    static final class LangCondition extends Condition {
         private final String _lang;
 
         private LangCondition(String lang) {
@@ -408,8 +408,8 @@ abstract class Condition {
             };
         }
 
-        static NthChildCondition fromString(String number) {
-            number = number.trim().toLowerCase(ROOT);
+        static NthChildCondition fromString(String numberAsString) {
+            final String number = numberAsString.trim().toLowerCase(ROOT);
 
             return switch (number) {
                 case "even" -> new NthChildCondition(2, 0);
@@ -475,7 +475,7 @@ abstract class Condition {
 
     }
 
-    private static class HasCondition extends Condition {
+    private static final class HasCondition extends Condition {
         private final List<Selector.HasRelativeSelector> relativeSelectors;
 
         private HasCondition(List<Selector.HasRelativeSelector> relativeSelectors) {

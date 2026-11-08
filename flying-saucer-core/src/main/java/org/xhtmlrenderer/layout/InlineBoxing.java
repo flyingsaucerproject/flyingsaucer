@@ -58,7 +58,7 @@ import static java.util.Collections.emptyList;
  * content which participates in an inline formatting context is also handled
  * here as well as floating and absolutely positioned content.
  */
-public class InlineBoxing {
+public final class InlineBoxing {
 
     private static final int MAX_ITERATION_COUNT = 100000;
 

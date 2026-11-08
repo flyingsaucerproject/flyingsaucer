@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
-class HTMLOutline {
+final class HTMLOutline {
 
     private static final Pattern HEADING = Pattern.compile("h(\\d+)", CASE_INSENSITIVE);
 

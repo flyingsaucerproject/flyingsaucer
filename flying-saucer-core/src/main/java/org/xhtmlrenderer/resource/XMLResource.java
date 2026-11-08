@@ -236,7 +236,7 @@ public final class XMLResource extends AbstractResource {
     }
 
 
-    private static class XMLReaderPool extends ObjectPool<XMLReader> {
+    private static final class XMLReaderPool extends ObjectPool<XMLReader> {
 
         private final boolean preserveElementContentWhitespace = Configuration
                 .isFalse("xr.load.ignore-element-content-whitespace", true);
@@ -345,7 +345,7 @@ public final class XMLResource extends AbstractResource {
     }
 
 
-    private static class WhitespacePreservingFilter
+    private static final class WhitespacePreservingFilter
             extends XMLFilterImpl implements EntityResolver2 {
 
         private WhitespacePreservingFilter(XMLReader parent) {

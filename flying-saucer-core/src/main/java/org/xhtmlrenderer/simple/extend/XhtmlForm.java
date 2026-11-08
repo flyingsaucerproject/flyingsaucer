@@ -165,7 +165,7 @@ public class XhtmlForm {
         return result.toString().trim();
     }
 
-    private static class ButtonGroupWrapper {
+    private static final class ButtonGroupWrapper {
         private final ButtonGroup _group = new ButtonGroup();
         private final AbstractButton _dummy = new JRadioButton();
 

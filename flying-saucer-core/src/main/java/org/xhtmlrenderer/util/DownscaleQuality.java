@@ -30,7 +30,7 @@ import java.util.Map;
  * for the quality
 */
 // made a separate class only to reduce size of ImageUtil
-public class DownscaleQuality {
+public final class DownscaleQuality {
     /** Internal map string type to DQ instance */
     private static final Map<String, DownscaleQuality> constList = new HashMap<>();
 
