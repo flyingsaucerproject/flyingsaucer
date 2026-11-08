@@ -87,6 +87,7 @@ public class Breaker {
             LineBreakContext context, int avail, int fullLineWidth, CalculatedStyle style, int gluedWidthAfter) {
         FSFont font = style.getFSFont(c);
         IdentValue whitespace = style.getWhitespace();
+        context.setHyphen("");
 
         // ====== handle nowrap
         if (whitespace == IdentValue.NOWRAP) {
@@ -270,8 +271,7 @@ public class Breaker {
         if (bp != null && !fits
                 && right >= 0 // some break point found
                 && !lastBreakPoint.hyphen().isEmpty()) {
-            context.setMaster(new StringBuilder(context.getMaster()).insert(context.getStart() + right, lastBreakPoint.hyphen()).toString());
-            right += lastBreakPoint.hyphen().length();
+            context.setHyphen(lastBreakPoint.hyphen());
         }
 
         if (fits) {
@@ -283,8 +283,7 @@ public class Breaker {
 
         // No break point fits: the loop stopped at the first one, which ends the first word
         BreakPoint firstWordEnd = right < 0 && bp != null && bp.position() != BreakIterator.DONE ? bp : null;
-        // The text again, as a hyphen may have been inserted into it above
-        wrap(c, context, avail, style, f, context.getMaster(), start, false, fullLineWidth, right, rightWidth, gluedWidthAfter, firstWordEnd);
+        wrap(c, context, avail, style, f, master, start, false, fullLineWidth, right, rightWidth, gluedWidthAfter, firstWordEnd);
     }
 
     /**
@@ -395,12 +394,8 @@ public class Breaker {
 
         // unbreakable string
         if (firstWordEnd != null && firstWordEnd.position() > 0 && start + firstWordEnd.position() < master.length()) {
-            int end = firstWordEnd.position();
-            if (!firstWordEnd.hyphen().isEmpty()) {
-                context.setMaster(new StringBuilder(context.getMaster()).insert(start + end, firstWordEnd.hyphen()).toString());
-                end += firstWordEnd.hyphen().length();
-            }
-            context.setEnd(start + end);
+            context.setHyphen(firstWordEnd.hyphen());
+            context.setEnd(start + firstWordEnd.position());
         } else {
             context.setEnd(master.length());
         }

@@ -894,7 +894,7 @@ public class InlineBoxing {
         }
 
         return new InlineText(lbContext.getMaster(), lbContext.getTextNode(),
-                lbContext.getStart(), lbContext.getEnd(),
+                lbContext.getStart(), lbContext.getEnd(), lbContext.hyphen(),
                 lbContext.getWidth());
     }
 
