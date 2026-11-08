@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 
-public class LazyEvaluated<T> {
+public final class LazyEvaluated<T> {
     @Nullable
     private volatile T value;
     private final Supplier<T> supplier;

@@ -1,6 +1,5 @@
 package org.xhtmlrenderer.simple.extend;
 
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -75,17 +74,17 @@ class XhtmlNamespaceHandlerTest {
         assertThat(handler.ancestor(html.find("td", 3), "tbody", 1000)).isEqualTo(html.find("tbody"));
     }
 
-    private static class Html {
+    private static final class Html {
         private final Document document;
 
         private Html(String html) throws ParserConfigurationException, IOException, SAXException {
             document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(InputSources.fromString(html));
         }
-        @NonNull
+
         private Node find(String tagName) {
             return find(tagName, 0);
         }
-        @NonNull
+
         private Node find(String tagName, int index) {
             return Objects.requireNonNull(document.getElementsByTagName(tagName).item(index));
         }

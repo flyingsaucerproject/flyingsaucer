@@ -909,7 +909,7 @@ public class TableBox extends BlockBox {
      * tables used to approximate the margin box layout algorithm from CSS3
      * GCPM.
      */
-    private static class MarginTableLayout extends AutoTableLayout {
+    private static final class MarginTableLayout extends AutoTableLayout {
         private MarginTableLayout(TableBox table) {
             super(table);
         }
@@ -948,7 +948,7 @@ public class TableBox extends BlockBox {
         }
     }
 
-    private static class FixedTableLayout implements TableLayout {
+    private static final class FixedTableLayout implements TableLayout {
         private final TableBox _table;
         @Nullable
         private List<Length> _widths;

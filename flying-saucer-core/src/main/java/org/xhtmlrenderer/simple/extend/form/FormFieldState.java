@@ -24,7 +24,7 @@ import org.xhtmlrenderer.util.ArrayUtil;
 
 import java.util.List;
 
-public class FormFieldState {
+public final class FormFieldState {
     private final String _value;
     private final boolean _checked;
     private final int @Nullable[] _selected;

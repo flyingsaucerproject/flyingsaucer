@@ -2043,7 +2043,7 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
         return context.line;
     }
 
-    private static class LastLineBoxContext {
+    private static final class LastLineBoxContext {
         private int current;
         @Nullable
         private LineBox line;

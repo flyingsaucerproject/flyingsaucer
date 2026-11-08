@@ -53,9 +53,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Patrick Wright
  */
-public class IdentValue implements FSDerivedValue {
+public final class IdentValue implements FSDerivedValue {
     private static final Map<String, IdentValue> ALL_IDENT_VALUES = new ConcurrentHashMap<>();
-    private static int maxAssigned;
+    private static int maxAssigned = 0;
 
     private final String ident;
     public final int FS_ID;

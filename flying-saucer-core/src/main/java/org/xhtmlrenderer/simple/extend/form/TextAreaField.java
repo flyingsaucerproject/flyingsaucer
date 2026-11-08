@@ -118,7 +118,7 @@ class TextAreaField extends FormField<JScrollPane> {
     }
 
 
-    private static class TextAreaFieldJTextArea extends JTextArea {
+    private static final class TextAreaFieldJTextArea extends JTextArea {
         private int columnWidth;
 
         private TextAreaFieldJTextArea(int rows, int columns) {

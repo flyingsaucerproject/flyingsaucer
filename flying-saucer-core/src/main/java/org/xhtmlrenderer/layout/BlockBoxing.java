@@ -45,7 +45,7 @@ import static java.util.Objects.requireNonNullElse;
  * of boxes will be laid out again.  If the rule still cannot be satisfied,
  * the rule will be dropped.
  */
-public class BlockBoxing {
+public final class BlockBoxing {
     private static final int NO_PAGE_TRIM = -1;
 
     private BlockBoxing() {
@@ -606,7 +606,7 @@ public class BlockBoxing {
         }
     }
 
-    private static class RelayoutDataList {
+    private static final class RelayoutDataList {
         private final List<RelayoutData> _hints;
 
         private RelayoutDataList(int size) {

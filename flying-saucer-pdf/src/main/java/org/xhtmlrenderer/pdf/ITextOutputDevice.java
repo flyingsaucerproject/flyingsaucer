@@ -1595,7 +1595,7 @@ public class ITextOutputDevice extends AbstractOutputDevice<FSImage, ITextFSFont
 
     // Class for storing metadata element name/content pairs from the head
     // section of xhtml document.
-    private static class Metadata {
+    private static final class Metadata {
         private final String _name;
         private String _content;
 

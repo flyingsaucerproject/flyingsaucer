@@ -25,9 +25,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MarginBoxName {
+public final class MarginBoxName {
     private static final Map<String, MarginBoxName> ALL = new HashMap<>();
-    private static int _maxAssigned;
+    private static int _maxAssigned = 0;
 
     public final int FS_ID;
 
