@@ -760,57 +760,35 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
     @Nullable
     @CheckReturnValue
     public InlineText findTrailingText() {
-        if (getInlineChildCount() == 0) {
-            return null;
-        }
-
-        InlineText result = null;
-
-        for (int offset = getInlineChildCount() - 1; offset >= 0; offset--) {
-            InlineChild child = getInlineChild(offset);
-            switch (child) {
-                case InlineText inlineText -> {
-                    result = inlineText;
-                    if (result.isEmpty()) {
-                        continue;
-                    }
-                    return result;
-                }
-                case InlineLayoutBox inlineLayoutBox -> {
-                    if (inlineLayoutBox.isEmptyOfContent()) {
-                        continue;
-                    }
-                    result = inlineLayoutBox.findTrailingText();
-                    if (result != null && result.isEmpty()) {
-                        continue;
-                    }
-                    return result;
-                }
-                default -> {
-                    return null;
-                }
-            }
-        }
-
-        return result;
+        return trailingText().text();
     }
 
     /**
-     * Whether the box holds no text and no other box with content, as an empty {@code <span>} does. The trailing
-     * text of a line can come before such a box.
+     * The end of a box: its last text which is not empty, other content such as an inline-block, or nothing.
+     *
+     * @param text  the last text of the box, or {@code null} where other content or nothing ends the box
+     * @param found the box holds text or other content. An empty box, such as an empty {@code <span>}, holds nothing,
+     *              and the trailing text of a line can come before it.
      */
-    boolean isEmptyOfContent() {
-        for (int offset = 0; offset < getInlineChildCount(); offset++) {
-            boolean empty = switch (getInlineChild(offset)) {
-                case InlineText inlineText -> inlineText.isEmpty();
-                case InlineLayoutBox inlineLayoutBox -> inlineLayoutBox.isEmptyOfContent();
-                default -> false;
+    record TrailingText(@Nullable InlineText text, boolean found) {
+        static final TrailingText NOTHING = new TrailingText(null, false);
+        static final TrailingText OTHER_CONTENT = new TrailingText(null, true);
+    }
+
+    @CheckReturnValue
+    TrailingText trailingText() {
+        for (int offset = getInlineChildCount() - 1; offset >= 0; offset--) {
+            TrailingText result = switch (getInlineChild(offset)) {
+                case InlineText inlineText ->
+                        inlineText.isEmpty() ? TrailingText.NOTHING : new TrailingText(inlineText, true);
+                case InlineLayoutBox inlineLayoutBox -> inlineLayoutBox.trailingText();
+                default -> TrailingText.OTHER_CONTENT;
             };
-            if (!empty) {
-                return false;
+            if (result.found()) {
+                return result;
             }
         }
-        return true;
+        return TrailingText.NOTHING;
     }
 
     public void calculateTextDecoration(LayoutContext c) {
