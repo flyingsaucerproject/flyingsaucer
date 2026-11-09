@@ -17,8 +17,8 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,7 +81,7 @@ class InlineBoxEndLineBreakTest {
         List<LineBox> lines = lineBoxes(layout("<div style='text-align: justify'><span>aaaaaaa </span>" +
                 "<span style='display: inline-block; width: 10px'>x</span></div>"));
 
-        assertThat(texts(lines).get(0)).isEqualTo("aaaaaaa");
+        assertThat(texts(lines)).first().isEqualTo("aaaaaaa");
     }
 
     /** The same for a line which an image ends. */
@@ -91,7 +91,7 @@ class InlineBoxEndLineBreakTest {
                 "<img style='width: 10px; height: 10px' src='" + GIF + "'/></div>");
 
         assertThat(images(root)).hasSize(1);
-        assertThat(texts(lineBoxes(root)).get(0)).isEqualTo("aaaaaaa");
+        assertThat(texts(lineBoxes(root))).first().isEqualTo("aaaaaaa");
     }
 
     /** An empty inline box between the text and the inline-block does not keep the trailing space. */
@@ -100,7 +100,7 @@ class InlineBoxEndLineBreakTest {
         List<LineBox> lines = lineBoxes(layout("<div style='text-align: justify'><span>aaaaaaa </span><span></span>" +
                 "<span style='display: inline-block; width: 10px'>x</span></div>"));
 
-        assertThat(texts(lines).get(0)).isEqualTo("aaaaaaa");
+        assertThat(texts(lines)).first().isEqualTo("aaaaaaa");
     }
 
     private static Box layout(String content) {
@@ -120,42 +120,30 @@ class InlineBoxEndLineBreakTest {
 
     /** All line boxes in the box tree, in document order, also the ones with no text. */
     private static List<LineBox> lineBoxes(Box root) {
-        List<LineBox> lines = new ArrayList<>();
-        collectLines(root, lines);
-        return lines;
+        return lines(root).toList();
     }
 
-    private static void collectLines(Box box, List<LineBox> lines) {
-        if (box instanceof LineBox line) {
-            lines.add(line);
-            return;
-        }
-        for (Box child : box.getChildren()) {
-            collectLines(child, lines);
-        }
+    private static Stream<LineBox> lines(Box box) {
+        return box instanceof LineBox line ?
+                Stream.of(line) : box.getChildren().stream().flatMap(InlineBoxEndLineBreakTest::lines);
     }
 
     /** The images in the box tree which replace their elements. */
     private static List<ImageReplacedElement> images(Box root) {
-        List<ImageReplacedElement> images = new ArrayList<>();
-        collectImages(root, images);
-        return images;
+        return boxes(root)
+                .filter(BlockBox.class::isInstance)
+                .map(box -> ((BlockBox) box).getReplacedElement())
+                .filter(ImageReplacedElement.class::isInstance)
+                .map(ImageReplacedElement.class::cast)
+                .toList();
     }
 
-    private static void collectImages(Box box, List<ImageReplacedElement> images) {
-        if (box instanceof BlockBox block && block.getReplacedElement() instanceof ImageReplacedElement image) {
-            images.add(image);
-        }
-        if (box instanceof InlineLayoutBox inline) {
-            for (Object child : inline.getInlineChildren()) {
-                if (child instanceof Box childBox) {
-                    collectImages(childBox, images);
-                }
-            }
-        }
-        for (Box child : box.getChildren()) {
-            collectImages(child, images);
-        }
+    /** The box and all boxes in it, also the ones which are inline children of inline boxes. */
+    private static Stream<Box> boxes(Box box) {
+        Stream<Box> inlineChildren = box instanceof InlineLayoutBox inline ?
+                inline.getInlineChildren().stream().filter(Box.class::isInstance).map(Box.class::cast) : Stream.empty();
+        return Stream.concat(Stream.of(box),
+                Stream.concat(inlineChildren, box.getChildren().stream()).flatMap(InlineBoxEndLineBreakTest::boxes));
     }
 
     private static List<String> texts(List<LineBox> lines) {
