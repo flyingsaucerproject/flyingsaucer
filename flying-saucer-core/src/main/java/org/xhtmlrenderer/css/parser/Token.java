@@ -77,7 +77,7 @@ import static org.xhtmlrenderer.css.parser.Token.Type.VERTICAL_BAR;
 import static org.xhtmlrenderer.css.parser.Token.Type.VIRGULE;
 
 @SuppressWarnings("SpellCheckingInspection")
-public class Token {
+public final class Token {
     public enum Type {
         S,
         CDO,

@@ -31,7 +31,7 @@ public class LineBreakContext {
     private int _start;
     private int _end;
     private int _savedEnd;
-    private String _savedMaster;
+    private String _hyphen = "";
     private boolean _unbreakable;
     private boolean _needsNewLine;
     private boolean _brokenInsideWord;
@@ -41,7 +41,6 @@ public class LineBreakContext {
 
     public LineBreakContext(String master, Text textNode) {
         this._master = master;
-        this._savedMaster = master;
         this._textNode = textNode;
     }
 
@@ -54,6 +53,7 @@ public class LineBreakContext {
         _unbreakable = false;
         _needsNewLine = false;
         _brokenInsideWord = false;
+        _hyphen = "";
     }
 
     public int getEnd() {
@@ -80,8 +80,26 @@ public class LineBreakContext {
         _start = start;
     }
 
+    /**
+     * @deprecated copies all the rest of the text, which for each line of a long text takes time quadratic in its
+     * length (#757). Use {@link #getMaster()} from {@link #getStart()} instead.
+     */
+    @Deprecated(forRemoval = true)
     public String getStartSubstring() {
         return _master.substring(_start);
+    }
+
+    /**
+     * The hyphen printed at the end of the line, after the text up to {@link #getEnd()}, where the line ends at a
+     * hyphenation point; empty otherwise. It is not inserted into the master text: that would copy all the text for
+     * each hyphenated line, and shift the offsets of the lines after it in the text (#757).
+     */
+    public String hyphen() {
+        return _hyphen;
+    }
+
+    public void setHyphen(String hyphen) {
+        _hyphen = hyphen;
     }
 
     public String getCalculatedSubstring() {
@@ -92,7 +110,7 @@ public class LineBreakContext {
         if (_end > 0 && _master.charAt(_end-1) == WhitespaceStripper.EOLC) {
             return _master.substring(_start, _end-1);
         }
-        return _master.substring(_start, _end);
+        return _master.substring(_start, _end) + _hyphen;
     }
 
     public boolean isUnbreakable() {
@@ -132,15 +150,14 @@ public class LineBreakContext {
         return _end == getMaster().length();
     }
 
-    /** Goes back to the end and the text saved by {@link #saveEnd()}: a line which is not taken leaves no hyphen. */
+    /** Goes back to the end saved by {@link #saveEnd()}: a line which is not taken leaves no hyphen. */
     public void resetEnd() {
         _end = _savedEnd;
-        _master = _savedMaster;
+        _hyphen = "";
     }
 
     public void saveEnd() {
         _savedEnd = _end;
-        _savedMaster = _master;
     }
 
     public boolean isEndsOnNL() {

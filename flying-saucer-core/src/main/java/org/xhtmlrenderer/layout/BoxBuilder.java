@@ -1290,7 +1290,7 @@ public class BoxBuilder {
         }
     }
 
-    private static class ChildBoxInfo {
+    private static final class ChildBoxInfo {
         private boolean _containsBlockLevelContent;
         private boolean _containsTableContent;
         private final boolean _layoutRunningBlocks;

@@ -59,7 +59,7 @@ import static java.util.Objects.requireNonNull;
  * content which participates in an inline formatting context is also handled
  * here as well as floating and absolutely positioned content.
  */
-public class InlineBoxing {
+public final class InlineBoxing {
 
     private static final int MAX_ITERATION_COUNT = 100000;
 
@@ -195,7 +195,7 @@ public class InlineBoxing {
 
                     zeroWidthInlineBlock = false;
 
-                    if (lbContext.getStartSubstring().isEmpty()) {
+                    if (lbContext.getStart() == lbContext.getLast()) {
                         break;
                     }
 
@@ -943,7 +943,7 @@ public class InlineBoxing {
         }
 
         return new InlineText(lbContext.getMaster(), lbContext.getTextNode(),
-                lbContext.getStart(), lbContext.getEnd(),
+                lbContext.getStart(), lbContext.getEnd(), lbContext.hyphen(),
                 lbContext.getWidth());
     }
 
@@ -976,7 +976,7 @@ public class InlineBoxing {
             LineBox line, CalculatedStyle style, LineBreakContext lbContext,
             boolean zeroWidthInlineBlock) {
         if ((!line.isContainsContent() || zeroWidthInlineBlock) &&
-                lbContext.getStartSubstring().startsWith(WhitespaceStripper.SPACE)) {
+                lbContext.getMaster().startsWith(WhitespaceStripper.SPACE, lbContext.getStart())) {
             IdentValue whitespace = style.getWhitespace();
             return whitespace == IdentValue.NORMAL
                     || whitespace == IdentValue.NOWRAP
@@ -990,12 +990,12 @@ public class InlineBoxing {
     }
 
     private static void trimLeadingSpace(LineBreakContext lbContext) {
-        String s = lbContext.getStartSubstring();
-        int i = 0;
-        while (i < s.length() && s.charAt(i) == ' ') {
-            i++;
+        String master = lbContext.getMaster();
+        int start = lbContext.getStart();
+        while (start < master.length() && master.charAt(start) == ' ') {
+            start++;
         }
-        lbContext.setStart(lbContext.getStart() + i);
+        lbContext.setStart(start);
     }
 
     private static LineBox newLine(LayoutContext c, @Nullable LineBox previousLine, Box box) {

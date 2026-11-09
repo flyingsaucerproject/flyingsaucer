@@ -1,9 +1,9 @@
 package org.xhtmlrenderer.pdf;
 
 import com.codeborne.pdftest.PDF;
-import org.openpdf.text.DocumentException;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openpdf.text.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -62,7 +62,7 @@ public class PDFRenderTest {
         return new PDF(output);
     }
 
-    private static class ResourceLoaderUserAgent extends ITextUserAgent {
+    private static final class ResourceLoaderUserAgent extends ITextUserAgent {
         private ResourceLoaderUserAgent(ITextOutputDevice outputDevice, int dotsPerPixel) {
             super(outputDevice, dotsPerPixel);
         }
