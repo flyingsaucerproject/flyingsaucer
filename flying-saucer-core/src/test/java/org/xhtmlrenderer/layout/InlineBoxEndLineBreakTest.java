@@ -103,6 +103,123 @@ class InlineBoxEndLineBreakTest {
         assertThat(texts(lines)).first().isEqualTo("aaaaaaa");
     }
 
+    /** An empty box with a border does not keep the trailing space either, as in Chromium. */
+    @Test
+    void aJustifiedLineLosesItsTrailingSpaceBeforeAnEmptyBoxWithABorder() {
+        List<LineBox> lines = lineBoxes(layout("<div style='text-align: justify'><span>aaaaaaa </span>" +
+                "<span style='border-left: 5px solid; padding: 0 10px'></span>" +
+                "<span style='display: inline-block; width: 10px'>x</span></div>"));
+
+        assertThat(texts(lines)).first().isEqualTo("aaaaaaa");
+    }
+
+    /**
+     * An image after a text which overflows the line goes to the next line, also where the overflow comes from the
+     * right padding of the box around both. The text (67px) fits the block (80px), but not with the padding (30px).
+     */
+    @Test
+    void anImageAfterAnOverflowingTextGoesToTheNextLine() {
+        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
+                "<img style='width: 5px; height: 5px' src='" + GIF + "'/></span>")));
+
+        assertThat(texts(lines)).containsExactly("aaaaaaa", "");
+        assertThat(images(lines.get(1))).hasSize(1);
+    }
+
+    /** The same for an inline-block. */
+    @Test
+    void anInlineBlockAfterAnOverflowingTextGoesToTheNextLine() {
+        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
+                "<span style='display: inline-block; width: 5px'>x</span></span>")));
+
+        assertThat(texts(lines)).containsExactly("aaaaaaa", "x");
+    }
+
+    /** A float after a text which overflows the line goes below the line. */
+    @Test
+    void aFloatAfterAnOverflowingTextGoesBelowTheLine() {
+        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
+                "<img style='float: left; width: 5px; height: 5px' src='" + GIF + "'/></span> y")));
+
+        assertThat(texts(lines)).containsExactly("aaaaaaa", "y");
+        assertThat(floats(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(1).getY());
+    }
+
+    /** An image which fits the line, but not with the right padding of the box it ends, goes to the next line. */
+    @Test
+    void anImageWhichEndsABoxFitsTheLineWithTheEndOfTheBox() {
+        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaa" +
+                "<img style='width: 40px; height: 5px' src='" + GIF + "'/></span>")));
+
+        assertThat(texts(lines)).containsExactly("aaa", "");
+        assertThat(images(lines.get(1))).hasSize(1);
+    }
+
+    /**
+     * An image with more text of the box after it does not need the room for the end of the box. Chromium keeps it
+     * on the line too, and breaks before the next text.
+     */
+    @Test
+    void anImageBeforeMoreTextOfTheBoxStaysOnTheLine() {
+        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaa" +
+                "<img style='width: 40px; height: 5px' src='" + GIF + "'/>bbb ccc</span>")));
+
+        assertThat(lines).hasSize(3);
+        assertThat(images(lines.get(0))).hasSize(1);
+    }
+
+    /**
+     * The text (67px) with the right padding of its box (30px) overflows the block (80px), but the padding comes
+     * after the rest of the box. An image which fits after the text stays on its line, as in Chromium.
+     */
+    @Test
+    void anImageWhichFitsAfterTheTextStaysOnItsLine() {
+        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
+                "<img style='width: 5px; height: 5px' src='" + GIF + "'/>bbb</span>")));
+
+        assertThat(texts(lines)).containsExactly("aaaaaaa", "bbb");
+        assertThat(images(lines.get(0))).hasSize(1);
+    }
+
+    /** The same for an inline-block. */
+    @Test
+    void anInlineBlockWhichFitsAfterTheTextStaysOnItsLine() {
+        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
+                "<span style='display: inline-block; width: 5px'>x</span>bbb</span>")));
+
+        assertThat(texts(lines)).containsExactly("aaaaaaax", "bbb");
+    }
+
+    /** The same for a float. The text after it is glued to the text before it, and stays on the line too. */
+    @Test
+    void aFloatWhichFitsAfterTheTextStaysOnItsLine() {
+        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
+                "<img style='float: left; width: 5px; height: 5px' src='" + GIF + "'/>bbb</span>")));
+
+        assertThat(texts(lines)).containsExactly("aaaaaaabbb");
+        assertThat(floats(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(0).getY());
+    }
+
+    /** A float after a box which overflows the line goes below the line. */
+    @Test
+    void aFloatAfterAnOverflowingBoxGoesBelowTheLine() {
+        List<LineBox> lines = lineBoxes(layout("x " + SPAN +
+                "<img style='float: left; width: 10px; height: 10px' src='" + GIF + "'/> y"));
+
+        assertThat(texts(lines)).containsExactly("x ", "aaaaaaa", "y");
+        assertThat(floats(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(2).getY());
+    }
+
+    /** The content in a block of 80px. */
+    private static String wide(String content) {
+        return "<div style='width: 80px'>" + content + "</div>";
+    }
+
+    /** The floats which the lines hold. */
+    private static List<Box> floats(List<LineBox> lines) {
+        return lines.stream().flatMap(line -> line.getNonFlowContent().stream()).toList();
+    }
+
     private static Box layout(String content) {
         String html = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>" +
                 "body { margin: 0; font: 16px monospace; }" +
