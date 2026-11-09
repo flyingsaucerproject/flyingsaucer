@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
 
 /**
  * This class is responsible for flowing inline content into lines.  Block
@@ -96,7 +97,6 @@ public class InlineBoxing {
         remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
 
         CalculatedStyle parentStyle = box.getStyle();
-        int minimumLineHeight = (int) parentStyle.getLineHeight(c);
         int indent = (int) parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, maxAvailableWidth, c);
         remainingWidth -= indent;
         contentStart += indent;
@@ -108,21 +108,20 @@ public class InlineBoxing {
         }
         c.setCurrentMarkerData(null);
 
-        List<FloatLayoutResult> pendingFloats = new ArrayList<>();
         int pendingLeftMBP = 0;
         int pendingRightMBP = 0;
 
         boolean hasFirstLinePEs = false;
-        List<Layer> pendingInlineLayers = new ArrayList<>();
 
         if (c.getFirstLinesTracker().hasStyles()) {
             box.styleText(c, c.getFirstLinesTracker().deriveAll(box.getStyle()));
             hasFirstLinePEs = true;
         }
 
+        LineSaver lines = new LineSaver(c, box, breakAtLine, hasFirstLinePEs, markerData, contentStart);
+
         boolean needFirstLetter = c.getFirstLettersTracker().hasStyles();
         boolean zeroWidthInlineBlock = false;
-        int lineOffset = 0;
 
         List<Styleable> inlineContent = box.getInlineContent();
         InlineBoundaryBreaks boundaryBreaks = new InlineBoundaryBreaks(c, inlineContent, maxAvailableWidth);
@@ -265,28 +264,17 @@ public class InlineBoxing {
                     // content after it ends the line where that content does not fit.
                     boolean endsWithText = lbContext.isFinished() && !lbContext.isEndsOnNL();
                     if (lbContext.isNeedsNewLine() && !endsWithText) {
-                        if (iB.getStyle().isTextJustify()) {
-                            currentLine.trimTrailingSpace(c);
-                        }
-                        saveLine(currentLine, c, box, minimumLineHeight,
-                                maxAvailableWidth, pendingFloats,
-                                hasFirstLinePEs, pendingInlineLayers, markerData,
-                                contentStart, isAlwaysBreak(c, box, breakAtLine, lineOffset));
-                        lineOffset++;
-                        markerData = null;
-                        contentStart = 0;
-                        if (currentLine.isFirstLine() && hasFirstLinePEs) {
+                        LineBox previousLine = currentLine;
+                        currentLine = lines.breakLine(previousLine);
+                        if (previousLine.isFirstLine() && hasFirstLinePEs) {
                             lbContext.setMaster(TextUtil.transformText(iB.getText(), iB.getStyle()));
                         }
                         if (lbContext.isEndsOnNL()) {
-                            currentLine.setEndsOnNL(true);
+                            previousLine.setEndsOnNL(true);
                         }
-                        LineBox previousLine = currentLine;
-                        currentLine = newLine(c, previousLine, box);
                         currentIB = addOpenInlineBoxes(
                                 c, currentLine, openInlineBoxes, maxAvailableWidth, iBMap);
-                        remainingWidth = maxAvailableWidth;
-                        remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
+                        remainingWidth = availableWidth(c, currentLine, maxAvailableWidth);
                         afterFirstLetter = false;
                     }
                 } while (!lbContext.isFinished());
@@ -317,7 +305,7 @@ public class InlineBoxing {
                         if (!currentIB.isPending()) {
                             c.getLayer().setEnd(currentIB);
                             c.popLayer();
-                            pendingInlineLayers.add(currentIB.getContainingLayer());
+                            lines.pendingInlineLayers().add(currentIB.getContainingLayer());
                         }
                     }
 
@@ -329,27 +317,15 @@ public class InlineBoxing {
 
                 if (child.getStyle().isNonFlowContent()) {
                     remainingWidth -= processOutOfFlowContent(
-                            c, currentLine, child, remainingWidth, pendingFloats);
+                            c, currentLine, child, remainingWidth, lines.pendingFloats());
                 } else if (child.getStyle().isInlineBlock() || child.getStyle().isInlineTable()) {
                     layoutInlineBlockContent(c, box, child, initialY);
 
                     if (child.getWidth() > remainingWidth && currentLine.isContainsContent()) {
-                        if (box.getStyle().isTextJustify()) {
-                            currentLine.trimTrailingSpace(c);
-                        }
-                        saveLine(currentLine, c, box, minimumLineHeight,
-                                maxAvailableWidth, pendingFloats, hasFirstLinePEs,
-                                pendingInlineLayers, markerData, contentStart,
-                                isAlwaysBreak(c, box, breakAtLine, lineOffset));
-                        lineOffset++;
-                        markerData = null;
-                        contentStart = 0;
-                        LineBox previousLine = currentLine;
-                        currentLine = newLine(c, previousLine, box);
+                        currentLine = lines.breakLine(currentLine);
                         currentIB = addOpenInlineBoxes(
                                 c, currentLine, openInlineBoxes, maxAvailableWidth, iBMap);
-                        remainingWidth = maxAvailableWidth;
-                        remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
+                        remainingWidth = availableWidth(c, currentLine, maxAvailableWidth);
 
                         child.reset(c);
                         layoutInlineBlockContent(c, box, child, initialY);
@@ -381,12 +357,10 @@ public class InlineBoxing {
         }
 
         currentLine.trimTrailingSpace(c);
-        saveLine(currentLine, c, box, minimumLineHeight,
-                maxAvailableWidth, pendingFloats, hasFirstLinePEs,
-                pendingInlineLayers, markerData, contentStart,
-                isAlwaysBreak(c, box, breakAtLine, lineOffset));
-        if (currentLine.isFirstLine() && currentLine.getHeight() == 0 && markerData != null) {
-            c.setCurrentMarkerData(markerData);
+        lines.save(currentLine);
+        MarkerData unplacedMarker = lines.markerData();
+        if (currentLine.isFirstLine() && currentLine.getHeight() == 0 && unplacedMarker != null) {
+            c.setCurrentMarkerData(unplacedMarker);
         }
 
         box.setContentWidth(maxAvailableWidth);
@@ -792,6 +766,76 @@ public class InlineBoxing {
         } else { // any other Box class
             positionInlineBlockVertically(c, vaTarget, (BlockBox)child);
         }
+    }
+
+    /**
+     * Saves the lines of a block. It counts the lines and holds what the first line needs and what waits for the end
+     * of the line.
+     */
+    private static final class LineSaver {
+        private final LayoutContext c;
+        private final BlockBox box;
+        private final CalculatedStyle style;
+        private final int breakAtLine;
+        private final boolean hasFirstLinePEs;
+        private final int minimumLineHeight;
+        private final int maxAvailableWidth;
+        private final List<FloatLayoutResult> pendingFloats = new ArrayList<>();
+        private final List<Layer> pendingInlineLayers = new ArrayList<>();
+        private @Nullable MarkerData markerData;
+        private int contentStart;
+        private int lineOffset;
+
+        private LineSaver(LayoutContext c, BlockBox box, int breakAtLine, boolean hasFirstLinePEs,
+                          @Nullable MarkerData markerData, int contentStart) {
+            this.c = c;
+            this.box = box;
+            this.style = requireNonNull(box.getStyle());
+            this.breakAtLine = breakAtLine;
+            this.hasFirstLinePEs = hasFirstLinePEs;
+            this.minimumLineHeight = (int) style.getLineHeight(c);
+            this.maxAvailableWidth = box.getContentWidth();
+            this.markerData = markerData;
+            this.contentStart = contentStart;
+        }
+
+        /** The floats which wait for the end of the line, because they do not fit on it. */
+        private List<FloatLayoutResult> pendingFloats() {
+            return pendingFloats;
+        }
+
+        /** The layers of the inline boxes which wait for the end of the line. */
+        private List<Layer> pendingInlineLayers() {
+            return pendingInlineLayers;
+        }
+
+        /** The list marker, until a line takes it. */
+        private @Nullable MarkerData markerData() {
+            return markerData;
+        }
+
+        /** Saves the line. */
+        private void save(LineBox line) {
+            saveLine(line, c, box, minimumLineHeight, maxAvailableWidth, pendingFloats, hasFirstLinePEs,
+                    pendingInlineLayers, markerData, contentStart, isAlwaysBreak(c, box, breakAtLine, lineOffset));
+        }
+
+        /** Ends the line where the content after it does not fit, and starts the next line. */
+        private LineBox breakLine(LineBox line) {
+            if (style.isTextJustify()) {
+                line.trimTrailingSpace(c);
+            }
+            save(line);
+            lineOffset++;
+            markerData = null;
+            contentStart = 0;
+            return newLine(c, line, box);
+        }
+    }
+
+    /** The width of the line, less the floats beside it. */
+    private static int availableWidth(LayoutContext c, LineBox line, int maxAvailableWidth) {
+        return maxAvailableWidth - c.getBlockFormattingContext().getFloatDistance(c, line, maxAvailableWidth);
     }
 
     private static void saveLine(LineBox current, LayoutContext c,
