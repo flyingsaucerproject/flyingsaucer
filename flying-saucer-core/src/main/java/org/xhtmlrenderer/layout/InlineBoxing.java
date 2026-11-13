@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
-import static java.util.Objects.requireNonNull;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * This class is responsible for flowing inline content into lines.  Block
@@ -68,7 +68,6 @@ public final class InlineBoxing {
 
     public static void layoutContent(LayoutContext c, BlockBox box, int initialY, int breakAtLine) {
         int maxAvailableWidth = box.getContentWidth();
-        int remainingWidth = maxAvailableWidth;
 
         LineBox currentLine = newLine(c, initialY, box);
 
@@ -94,7 +93,7 @@ public final class InlineBoxing {
             openInlineBoxes = new ArrayList<>();
         }
 
-        remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, remainingWidth);
+        int remainingWidth = availableWidth(c, currentLine, maxAvailableWidth);
 
         CalculatedStyle parentStyle = box.getStyle();
         int indent = (int) parentStyle.getFloatPropertyProportionalWidth(CSSName.TEXT_INDENT, maxAvailableWidth, c);
@@ -118,7 +117,8 @@ public final class InlineBoxing {
             hasFirstLinePEs = true;
         }
 
-        LineSaver lines = new LineSaver(c, box, breakAtLine, hasFirstLinePEs, markerData, contentStart);
+        LineSaver lines = new LineSaver(
+                c, box, parentStyle, maxAvailableWidth, breakAtLine, hasFirstLinePEs, markerData, contentStart);
 
         boolean needFirstLetter = c.getFirstLettersTracker().hasStyles();
         boolean zeroWidthInlineBlock = false;
@@ -225,8 +225,7 @@ public final class InlineBoxing {
                             if (delta > 0) {
                                 currentLine.setY(currentLine.getY() + delta);
                                 currentLine.calcCanvasLocation();
-                                remainingWidth = maxAvailableWidth;
-                                remainingWidth -= c.getBlockFormattingContext().getFloatDistance(c, currentLine, maxAvailableWidth);
+                                remainingWidth = availableWidth(c, currentLine, maxAvailableWidth);
                                 lbContext.resetEnd();
                                 continue;
                             }
@@ -305,7 +304,7 @@ public final class InlineBoxing {
                         if (!currentIB.isPending()) {
                             c.getLayer().setEnd(currentIB);
                             c.popLayer();
-                            lines.pendingInlineLayers().add(currentIB.getContainingLayer());
+                            lines.addPendingLayer(currentIB.getContainingLayer());
                         }
                     }
 
@@ -325,7 +324,7 @@ public final class InlineBoxing {
                         remainingWidth = availableWidth(c, currentLine, maxAvailableWidth);
                     }
                     remainingWidth -= processOutOfFlowContent(
-                            c, currentLine, child, remainingWidth, lines.pendingFloats());
+                            c, currentLine, child, remainingWidth, lines);
                 } else if (child.getStyle().isInlineBlock() || child.getStyle().isInlineTable()) {
                     layoutInlineBlockContent(c, box, child, initialY);
 
@@ -794,27 +793,32 @@ public final class InlineBoxing {
         private int contentStart;
         private int lineOffset;
 
-        private LineSaver(LayoutContext c, BlockBox box, int breakAtLine, boolean hasFirstLinePEs,
-                          @Nullable MarkerData markerData, int contentStart) {
+        private LineSaver(LayoutContext c, BlockBox box, CalculatedStyle style, int maxAvailableWidth, int breakAtLine,
+                          boolean hasFirstLinePEs, @Nullable MarkerData markerData, int contentStart) {
             this.c = c;
             this.box = box;
-            this.style = requireNonNull(box.getStyle());
+            this.style = style;
             this.breakAtLine = breakAtLine;
             this.hasFirstLinePEs = hasFirstLinePEs;
             this.minimumLineHeight = (int) style.getLineHeight(c);
-            this.maxAvailableWidth = box.getContentWidth();
+            this.maxAvailableWidth = maxAvailableWidth;
             this.markerData = markerData;
             this.contentStart = contentStart;
         }
 
         /** The floats which wait for the end of the line, because they do not fit on it. */
         private List<FloatLayoutResult> pendingFloats() {
-            return pendingFloats;
+            return unmodifiableList(pendingFloats);
         }
 
-        /** The layers of the inline boxes which wait for the end of the line. */
-        private List<Layer> pendingInlineLayers() {
-            return pendingInlineLayers;
+        /** Makes the float wait for the end of the line. */
+        private void addPendingFloat(FloatLayoutResult pendingFloat) {
+            pendingFloats.add(pendingFloat);
+        }
+
+        /** Makes the layer of an inline box wait for the end of the line. */
+        private void addPendingLayer(Layer layer) {
+            pendingInlineLayers.add(layer);
         }
 
         /** The list marker, until a line takes it. */
@@ -957,7 +961,7 @@ public final class InlineBoxing {
 
     private static int processOutOfFlowContent(
             LayoutContext c, LineBox current, BlockBox block,
-            int available, List<FloatLayoutResult> pendingFloats) {
+            int available, LineSaver lines) {
         int result = 0;
         CalculatedStyle style = block.getStyle();
         if (style.isAbsolute() || style.isFixed()) {
@@ -965,9 +969,9 @@ public final class InlineBoxing {
             current.addNonFlowContent(block);
         } else if (style.isFloated()) {
             FloatLayoutResult layoutResult = LayoutUtil.layoutFloated(
-                    c, current, block, available, pendingFloats);
+                    c, current, block, available, lines.pendingFloats());
             if (layoutResult.isPending()) {
-                pendingFloats.add(layoutResult);
+                lines.addPendingFloat(layoutResult);
             } else {
                 result = layoutResult.getBlock().getWidth();
                 current.addNonFlowContent(layoutResult.getBlock());
