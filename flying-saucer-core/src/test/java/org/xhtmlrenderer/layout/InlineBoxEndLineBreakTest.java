@@ -142,7 +142,7 @@ class InlineBoxEndLineBreakTest {
                 "<img style='float: left; width: 5px; height: 5px' src='" + GIF + "'/></span> y")));
 
         assertThat(texts(lines)).containsExactly("aaaaaaa", "y");
-        assertThat(floats(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(1).getY());
+        assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(1).getY());
     }
 
     /** An image which fits the line, but not with the right padding of the box it ends, goes to the next line. */
@@ -197,7 +197,7 @@ class InlineBoxEndLineBreakTest {
                 "<img style='float: left; width: 5px; height: 5px' src='" + GIF + "'/>bbb</span>")));
 
         assertThat(texts(lines)).containsExactly("aaaaaaabbb");
-        assertThat(floats(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(0).getY());
+        assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(0).getY());
     }
 
     /** A float after a box which overflows the line goes below the line. */
@@ -207,7 +207,29 @@ class InlineBoxEndLineBreakTest {
                 "<img style='float: left; width: 10px; height: 10px' src='" + GIF + "'/> y"));
 
         assertThat(texts(lines)).containsExactly("x ", "aaaaaaa", "y");
-        assertThat(floats(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(2).getY());
+        assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(2).getY());
+    }
+
+    /**
+     * An absolutely positioned box after content which overflows the line takes its static position at the start of
+     * the next line, as in Chromium.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {SPAN, "<span style='display: inline-block; width: 50px'>i</span>"})
+    void anAbsoluteBoxAfterOverflowingContentStartsTheNextLine(String overflowing) {
+        List<LineBox> lines = lineBoxes(layout("x " + overflowing + "<span style='position: absolute'>Z</span> y"));
+
+        assertThat(texts(lines)).last().isEqualTo("y");
+        assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getAbsY).isEqualTo(lines.getLast().getAbsY());
+    }
+
+    /** An absolutely positioned box after content which fits stays on its line. */
+    @Test
+    void anAbsoluteBoxAfterContentWhichFitsStaysOnItsLine() {
+        List<LineBox> lines = lineBoxes(layout("x<span style='position: absolute'>Z</span> y"));
+
+        assertThat(texts(lines)).containsExactly("x y");
+        assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getAbsY).isEqualTo(lines.getFirst().getAbsY());
     }
 
     /** The content in a block of 80px. */
@@ -215,8 +237,8 @@ class InlineBoxEndLineBreakTest {
         return "<div style='width: 80px'>" + content + "</div>";
     }
 
-    /** The floats which the lines hold. */
-    private static List<Box> floats(List<LineBox> lines) {
+    /** The floats and the absolutely positioned boxes which the lines hold. */
+    private static List<Box> nonFlowContent(List<LineBox> lines) {
         return lines.stream().flatMap(line -> line.getNonFlowContent().stream()).toList();
     }
 

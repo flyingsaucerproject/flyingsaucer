@@ -316,6 +316,14 @@ public final class InlineBoxing {
                 BlockBox child = (BlockBox) node;
 
                 if (child.getStyle().isNonFlowContent()) {
+                    // The static position of an absolute box is on the next line where the line already overflows
+                    if ((child.getStyle().isAbsolute() || child.getStyle().isFixed())
+                            && remainingWidth < 0 && currentLine.isContainsContent()) {
+                        currentLine = lines.breakLine(currentLine);
+                        currentIB = addOpenInlineBoxes(
+                                c, currentLine, openInlineBoxes, maxAvailableWidth, iBMap);
+                        remainingWidth = availableWidth(c, currentLine, maxAvailableWidth);
+                    }
                     remainingWidth -= processOutOfFlowContent(
                             c, currentLine, child, remainingWidth, lines.pendingFloats());
                 } else if (child.getStyle().isInlineBlock() || child.getStyle().isInlineTable()) {
