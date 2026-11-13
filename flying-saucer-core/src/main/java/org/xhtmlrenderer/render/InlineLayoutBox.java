@@ -757,6 +757,13 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
         }
     }
 
+    /**
+     * The last text of the box which is not empty. The search skips empty texts and empty boxes, such as an empty
+     * {@code <span>}.
+     *
+     * @return the text, or {@code null} where other content, such as an inline-block, ends the box, or where the box
+     * holds no text
+     */
     @Nullable
     @CheckReturnValue
     public InlineText findTrailingText() {
