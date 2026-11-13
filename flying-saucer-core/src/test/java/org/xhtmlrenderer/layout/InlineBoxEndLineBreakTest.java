@@ -119,8 +119,8 @@ class InlineBoxEndLineBreakTest {
      */
     @Test
     void anImageAfterAnOverflowingTextGoesToTheNextLine() {
-        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
-                "<img style='width: 5px; height: 5px' src='" + GIF + "'/></span>")));
+        List<LineBox> lines = lineBoxes(layout(80, "<span style='padding-right: 30px'>aaaaaaa" +
+                "<img style='width: 5px; height: 5px' src='" + GIF + "'/></span>"));
 
         assertThat(texts(lines)).containsExactly("aaaaaaa", "");
         assertThat(images(lines.get(1))).hasSize(1);
@@ -129,8 +129,8 @@ class InlineBoxEndLineBreakTest {
     /** The same for an inline-block. */
     @Test
     void anInlineBlockAfterAnOverflowingTextGoesToTheNextLine() {
-        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
-                "<span style='display: inline-block; width: 5px'>x</span></span>")));
+        List<LineBox> lines = lineBoxes(layout(80, "<span style='padding-right: 30px'>aaaaaaa" +
+                "<span style='display: inline-block; width: 5px'>x</span></span>"));
 
         assertThat(texts(lines)).containsExactly("aaaaaaa", "x");
     }
@@ -138,8 +138,8 @@ class InlineBoxEndLineBreakTest {
     /** A float after a text which overflows the line goes below the line. */
     @Test
     void aFloatAfterAnOverflowingTextGoesBelowTheLine() {
-        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
-                "<img style='float: left; width: 5px; height: 5px' src='" + GIF + "'/></span> y")));
+        List<LineBox> lines = lineBoxes(layout(80, "<span style='padding-right: 30px'>aaaaaaa" +
+                "<img style='float: left; width: 5px; height: 5px' src='" + GIF + "'/></span> y"));
 
         assertThat(texts(lines)).containsExactly("aaaaaaa", "y");
         assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(1).getY());
@@ -148,8 +148,8 @@ class InlineBoxEndLineBreakTest {
     /** An image which fits the line, but not with the right padding of the box it ends, goes to the next line. */
     @Test
     void anImageWhichEndsABoxFitsTheLineWithTheEndOfTheBox() {
-        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaa" +
-                "<img style='width: 40px; height: 5px' src='" + GIF + "'/></span>")));
+        List<LineBox> lines = lineBoxes(layout(80, "<span style='padding-right: 30px'>aaa" +
+                "<img style='width: 40px; height: 5px' src='" + GIF + "'/></span>"));
 
         assertThat(texts(lines)).containsExactly("aaa", "");
         assertThat(images(lines.get(1))).hasSize(1);
@@ -161,10 +161,10 @@ class InlineBoxEndLineBreakTest {
      */
     @Test
     void anImageBeforeMoreTextOfTheBoxStaysOnTheLine() {
-        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaa" +
-                "<img style='width: 40px; height: 5px' src='" + GIF + "'/>bbb ccc</span>")));
+        List<LineBox> lines = lineBoxes(layout(80, "<span style='padding-right: 30px'>aaa" +
+                "<img style='width: 40px; height: 5px' src='" + GIF + "'/>bbb ccc</span>"));
 
-        assertThat(lines).hasSize(3);
+        assertThat(texts(lines)).containsExactly("aaa", "bbb ", "ccc");
         assertThat(images(lines.get(0))).hasSize(1);
     }
 
@@ -174,8 +174,8 @@ class InlineBoxEndLineBreakTest {
      */
     @Test
     void anImageWhichFitsAfterTheTextStaysOnItsLine() {
-        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
-                "<img style='width: 5px; height: 5px' src='" + GIF + "'/>bbb</span>")));
+        List<LineBox> lines = lineBoxes(layout(80, "<span style='padding-right: 30px'>aaaaaaa" +
+                "<img style='width: 5px; height: 5px' src='" + GIF + "'/>bbb</span>"));
 
         assertThat(texts(lines)).containsExactly("aaaaaaa", "bbb");
         assertThat(images(lines.get(0))).hasSize(1);
@@ -184,8 +184,8 @@ class InlineBoxEndLineBreakTest {
     /** The same for an inline-block. */
     @Test
     void anInlineBlockWhichFitsAfterTheTextStaysOnItsLine() {
-        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
-                "<span style='display: inline-block; width: 5px'>x</span>bbb</span>")));
+        List<LineBox> lines = lineBoxes(layout(80, "<span style='padding-right: 30px'>aaaaaaa" +
+                "<span style='display: inline-block; width: 5px'>x</span>bbb</span>"));
 
         assertThat(texts(lines)).containsExactly("aaaaaaax", "bbb");
     }
@@ -193,8 +193,8 @@ class InlineBoxEndLineBreakTest {
     /** The same for a float. The text after it is glued to the text before it, and stays on the line too. */
     @Test
     void aFloatWhichFitsAfterTheTextStaysOnItsLine() {
-        List<LineBox> lines = lineBoxes(layout(wide("<span style='padding-right: 30px'>aaaaaaa" +
-                "<img style='float: left; width: 5px; height: 5px' src='" + GIF + "'/>bbb</span>")));
+        List<LineBox> lines = lineBoxes(layout(80, "<span style='padding-right: 30px'>aaaaaaa" +
+                "<img style='float: left; width: 5px; height: 5px' src='" + GIF + "'/>bbb</span>"));
 
         assertThat(texts(lines)).containsExactly("aaaaaaabbb");
         assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(0).getY());
@@ -223,6 +223,19 @@ class InlineBoxEndLineBreakTest {
         assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getAbsY).isEqualTo(lines.getLast().getAbsY());
     }
 
+    /**
+     * The {@code ::first-line} style ends with the first line also where an image ends it: the text after the image
+     * takes the style of the block.
+     */
+    @Test
+    void theFirstLineStyleEndsWhereAnImageEndsTheLine() {
+        List<LineBox> lines = lineBoxes(layout("div::first-line { text-transform: uppercase; }", 40,
+                "aaaaaaa<img style='width: 10px; height: 10px' src='" + GIF + "'/> bbb"));
+
+        assertThat(texts(lines)).containsExactly("AAAAAAA", " ", "bbb");
+        assertThat(images(lines.get(1))).hasSize(1);
+    }
+
     /** An absolutely positioned box after content which fits stays on its line. */
     @Test
     void anAbsoluteBoxAfterContentWhichFitsStaysOnItsLine() {
@@ -232,20 +245,26 @@ class InlineBoxEndLineBreakTest {
         assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getAbsY).isEqualTo(lines.getFirst().getAbsY());
     }
 
-    /** The content in a block of 80px. */
-    private static String wide(String content) {
-        return "<div style='width: 80px'>" + content + "</div>";
-    }
-
     /** The floats and the absolutely positioned boxes which the lines hold. */
     private static List<Box> nonFlowContent(List<LineBox> lines) {
         return lines.stream().flatMap(line -> line.getNonFlowContent().stream()).toList();
     }
 
+    /** The content in a block of 40px. */
     private static Box layout(String content) {
+        return layout(40, content);
+    }
+
+    /** The content in a block of the width in pixels. */
+    private static Box layout(int width, String content) {
+        return layout("", width, content);
+    }
+
+    /** The content in a block of the width in pixels, with the style sheet. */
+    private static Box layout(String css, int width, String content) {
         String html = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>" +
-                "body { margin: 0; font: 16px monospace; }" +
-                "</style></head><body><div style='width: 40px'>" + content + "</div></body></html>";
+                "body { margin: 0; font: 16px monospace; }" + css +
+                "</style></head><body><div style='width: " + width + "px'>" + content + "</div></body></html>";
         Document document = XMLResource.load(new StringReader(html)).getDocument();
         Graphics2DRenderer renderer = new Graphics2DRenderer(document, "file:/");
         Graphics2D graphics = new BufferedImage(500, 500, TYPE_INT_ARGB).createGraphics();
