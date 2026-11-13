@@ -757,39 +757,45 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
         }
     }
 
+    /**
+     * The last text of the box which is not empty. The search skips empty texts and empty boxes, such as an empty
+     * {@code <span>}.
+     *
+     * @return the text, or {@code null} where other content, such as an inline-block, ends the box, or where the box
+     * holds no text
+     */
     @Nullable
     @CheckReturnValue
     public InlineText findTrailingText() {
-        if (getInlineChildCount() == 0) {
-            return null;
-        }
+        return trailingText().text();
+    }
 
-        InlineText result = null;
+    /**
+     * The end of a box: its last text which is not empty, other content such as an inline-block, or nothing.
+     *
+     * @param text  the last text of the box, or {@code null} where other content or nothing ends the box
+     * @param found the box holds text or other content. An empty box, such as an empty {@code <span>}, holds nothing,
+     *              and the trailing text of a line can come before it.
+     */
+    record TrailingText(@Nullable InlineText text, boolean found) {
+        static final TrailingText NOTHING = new TrailingText(null, false);
+        static final TrailingText OTHER_CONTENT = new TrailingText(null, true);
+    }
 
+    @CheckReturnValue
+    TrailingText trailingText() {
         for (int offset = getInlineChildCount() - 1; offset >= 0; offset--) {
-            InlineChild child = getInlineChild(offset);
-            switch (child) {
-                case InlineText inlineText -> {
-                    result = inlineText;
-                    if (result.isEmpty()) {
-                        continue;
-                    }
-                    return result;
-                }
-                case InlineLayoutBox inlineLayoutBox -> {
-                    result = inlineLayoutBox.findTrailingText();
-                    if (result != null && result.isEmpty()) {
-                        continue;
-                    }
-                    return result;
-                }
-                default -> {
-                    return null;
-                }
+            TrailingText result = switch (getInlineChild(offset)) {
+                case InlineText inlineText ->
+                        inlineText.isEmpty() ? TrailingText.NOTHING : new TrailingText(inlineText, true);
+                case InlineLayoutBox inlineLayoutBox -> inlineLayoutBox.trailingText();
+                default -> TrailingText.OTHER_CONTENT;
+            };
+            if (result.found()) {
+                return result;
             }
         }
-
-        return result;
+        return TrailingText.NOTHING;
     }
 
     public void calculateTextDecoration(LayoutContext c) {
@@ -967,8 +973,8 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
                 case Box b -> {
                     b.setX(b.getX() + Math.round(runningTotal));
 
-                    if (b instanceof InlineLayoutBox) {
-                        float adj = ((InlineLayoutBox) b).adjustHorizontalPosition(info, runningTotal, lineLastText);
+                    if (b instanceof InlineLayoutBox inlineLayoutBox) {
+                        float adj = inlineLayoutBox.adjustHorizontalPosition(info, runningTotal, lineLastText);
                         result += adj;
                         runningTotal += adj;
                     }
