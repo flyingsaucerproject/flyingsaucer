@@ -413,6 +413,16 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
         return Math.round(_justificationAdjust);
     }
 
+    /** Forgets the justification of this box and its descendants, before the line is justified again. */
+    void clearJustificationAdjust() {
+        _justificationAdjust = 0;
+        for (InlineChild child : getInlineChildren()) {
+            if (child instanceof InlineLayoutBox inlineLayoutBox) {
+                inlineLayoutBox.clearJustificationAdjust();
+            }
+        }
+    }
+
     /**
      * The text run holding the final character of this box's content, or {@code null} if the
      * content has no characters. Boxes that follow that character are skipped.
