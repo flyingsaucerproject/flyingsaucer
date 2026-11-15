@@ -32,6 +32,9 @@ class InlineBoxEndLineBreakTest {
 
     private static final String SPAN = "<span>aaaaaaa</span>";
 
+    /** An absolutely positioned box. */
+    private static final String ABS = "<span style='position: absolute'>Z</span>";
+
     /** A white GIF of 1 x 1 pixels. */
     private static final String GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=";
 
@@ -221,6 +224,35 @@ class InlineBoxEndLineBreakTest {
 
         assertThat(texts(lines)).last().isEqualTo("y");
         assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getAbsY).isEqualTo(lines.getLast().getAbsY());
+    }
+
+    /**
+     * An absolutely positioned box inside content which may not break there stays on the overflowing line: the line
+     * breaks only where a break follows the box, as in Chromium.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "<span style='white-space: nowrap'>aaaaaaa" + ABS + "bbb</span>",
+            "<span style='white-space: nowrap'>aaaaaaa" + ABS + " bbb</span>",
+            "<span style='white-space: pre'>aaaaaaa" + ABS + "bbb</span>",
+            "aaaaaaa" + ABS + "bbb"})
+    void anAbsoluteBoxWhereTheLineMayNotBreakStaysOnItsLine(String content) {
+        List<LineBox> lines = lineBoxes(layout(content));
+
+        assertThat(texts(lines)).singleElement().asString().startsWith("aaaaaaa").endsWith("bbb");
+        assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getAbsY).isEqualTo(lines.getFirst().getAbsY());
+    }
+
+    /** An absolutely positioned box at the end of an overflowing line takes its static position below the line. */
+    @Test
+    void anAbsoluteBoxAtTheEndOfAnOverflowingLineGoesBelowIt() {
+        Box root = layout("x aaaaaaa" + ABS);
+        List<LineBox> lines = lineBoxes(root);
+
+        assertThat(texts(lines)).containsExactly("x ", "aaaaaaa", "");
+        assertThat(lines.getLast().getHeight()).isZero();
+        assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getAbsY)
+                .isEqualTo(lines.get(1).getAbsY() + lines.get(1).getHeight());
     }
 
     /**

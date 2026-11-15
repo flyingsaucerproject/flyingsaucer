@@ -316,8 +316,10 @@ public final class InlineBoxing {
 
                 if (child.getStyle().isNonFlowContent()) {
                     // The static position of an absolute box is on the next line where the line already overflows
+                    // and may break after the box
                     if ((child.getStyle().isAbsolute() || child.getStyle().isFixed())
-                            && remainingWidth < 0 && currentLine.isContainsContent()) {
+                            && remainingWidth < 0 && currentLine.isContainsContent()
+                            && mayWrap(child.getStyle()) && boundaryBreaks.gluedWidthAfter(index) == 0) {
                         currentLine = lines.breakLine(currentLine);
                         currentIB = addOpenInlineBoxes(
                                 c, currentLine, openInlineBoxes, maxAvailableWidth, iBMap);
@@ -982,6 +984,12 @@ public final class InlineBoxing {
         }
 
         return result;
+    }
+
+    /** The text may wrap at its soft wrap opportunities: {@code white-space} is neither {@code nowrap} nor {@code pre}. */
+    private static boolean mayWrap(CalculatedStyle style) {
+        IdentValue whitespace = style.getWhitespace();
+        return whitespace != IdentValue.NOWRAP && whitespace != IdentValue.PRE;
     }
 
     private static boolean hasTrimmableLeadingSpace(
