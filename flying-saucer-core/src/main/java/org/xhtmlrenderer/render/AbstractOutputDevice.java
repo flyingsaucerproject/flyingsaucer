@@ -133,16 +133,11 @@ public abstract class AbstractOutputDevice<T extends FSImage, FontType extends F
             RenderingContext c, InlineLayoutBox iB, TextDecoration decoration) {
         setColor(iB.getStyle().getColor());
 
+        // the content area already includes the justification the box's own content received
         Rectangle edge = iB.getContentAreaEdge(iB.getAbsX(), iB.getAbsY(), c);
 
-        // Justification is handed to the text renderers rather than baked into the box widths,
-        // so a justified box has to grow by the adjustment its own content received or the
-        // decoration stops short of the text it underlines.
-        int width = edge.width +
-                (iB.getLineBox().getJustificationInfo() != null ? iB.getJustificationAdjust() : 0);
-
         fillRect(edge.x, iB.getAbsY() + decoration.getOffset(),
-                    width, decoration.getThickness());
+                    edge.width, decoration.getThickness());
     }
 
     @Override

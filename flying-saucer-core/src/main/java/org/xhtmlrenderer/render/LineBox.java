@@ -225,6 +225,10 @@ public class LineBox extends Box implements InlinePaintable {
     }
 
     public void justify() {
+        // a line with dynamic content is justified again each time it is painted, and may no
+        // longer be justifiable, so nothing may be left over from an earlier pass
+        clearJustification();
+
         if (! isLastLineWithContent()) {
             int leftFloatDistance = getFloatDistances().leftFloatDistance();
             int rightFloatDistance = getFloatDistances().rightFloatDistance();
@@ -255,6 +259,16 @@ public class LineBox extends Box implements InlinePaintable {
                 adjustChildren(info, lastText);
                 setJustificationInfo(info);
                 _justifiedContentWidth = available;
+            }
+        }
+    }
+
+    private void clearJustification() {
+        _justificationInfo = null;
+        _justifiedContentWidth = 0;
+        for (Box b : getChildren()) {
+            if (b instanceof InlineLayoutBox inlineLayoutBox) {
+                inlineLayoutBox.clearJustificationAdjust();
             }
         }
     }

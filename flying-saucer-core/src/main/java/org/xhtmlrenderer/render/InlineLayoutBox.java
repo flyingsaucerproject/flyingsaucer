@@ -293,6 +293,13 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * On a justified line the box is wider than its layout width by the justification its own
+     * content received (see {@link #getJustificationAdjust()}), so that its background and
+     * borders cover the text they belong to.
+     */
     @Override
     public Rectangle getBorderEdge(int left, int top, CssContext cssCtx) {
         // x, y pins the content area of the box so subtract off top border and padding
@@ -306,7 +313,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
         return new Rectangle(
                 (int)(left + margin.left),
                 (int)(top - border.top() - padding.top()),
-                (int)(getInlineWidth(cssCtx) - margin.left - margin.right),
+                (int)(getInlineWidth(cssCtx) - margin.left - margin.right) + getJustificationAdjust(),
                 getHeight());
     }
 
@@ -374,7 +381,7 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
                 (int)(left + marginLeft + borderLeft + paddingLeft),
                 (int)(top - border.top() - padding.top()),
                 (int)(getInlineWidth(cssCtx) - marginLeft - borderLeft - paddingLeft
-                    - paddingRight - borderRight - marginRight),
+                    - paddingRight - borderRight - marginRight) + getJustificationAdjust(),
                 getHeight());
     }
 
@@ -404,6 +411,16 @@ public final class InlineLayoutBox extends Box implements InlinePaintable, Inlin
 
     public int getJustificationAdjust() {
         return Math.round(_justificationAdjust);
+    }
+
+    /** Forgets the justification of this box and its descendants, before the line is justified again. */
+    void clearJustificationAdjust() {
+        _justificationAdjust = 0;
+        for (InlineChild child : getInlineChildren()) {
+            if (child instanceof InlineLayoutBox inlineLayoutBox) {
+                inlineLayoutBox.clearJustificationAdjust();
+            }
+        }
     }
 
     /**
