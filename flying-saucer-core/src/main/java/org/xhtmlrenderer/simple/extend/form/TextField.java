@@ -52,7 +52,8 @@ class TextField extends InputField<JTextField> {
     protected void applyComponentStyle(JComponent component) {
         super.applyComponentStyle(component);
 
-        JTextField field = component();
+        // called from create(), before the component is set
+        JTextField field = (JTextField) component;
         CalculatedStyle style = getBox().getStyle();
         RectPropertySet padding = style.getCachedPadding();
         Insets margin = style.padding().withDefaults(new Insets(2, 3, 2, 3));
