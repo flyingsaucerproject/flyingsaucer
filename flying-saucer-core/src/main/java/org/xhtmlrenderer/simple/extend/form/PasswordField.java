@@ -25,8 +25,10 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicPasswordFieldUI;
+import javax.swing.plaf.basic.BasicTextUI;
 
-class PasswordField extends InputField<JPasswordField> {
+class PasswordField extends AbstractTextField<JPasswordField> {
     PasswordField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
@@ -35,7 +37,13 @@ class PasswordField extends InputField<JPasswordField> {
     public JPasswordField create() {
         JPasswordField password = new JPasswordField();
         prepareTextField(password);
+        applyComponentStyle(password);
         return password;
+    }
+
+    @Override
+    protected BasicTextUI createBasicUI() {
+        return new BasicPasswordFieldUI();
     }
 
     @Override
