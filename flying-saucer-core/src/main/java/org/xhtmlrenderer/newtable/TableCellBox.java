@@ -990,7 +990,7 @@ public class TableCellBox extends BlockBox {
     // justification in the spec for this, but everybody does it
     // (in standards mode) so I guess we will too
     @Override
-    protected int getCSSHeight(CssContext c) {
+    public int getCSSHeight(CssContext c) {
         if (getStyle().isAutoHeight()) {
             return -1;
         } else {

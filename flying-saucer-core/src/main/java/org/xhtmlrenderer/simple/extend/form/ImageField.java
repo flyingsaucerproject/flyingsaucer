@@ -76,9 +76,9 @@ class ImageField extends InputField<JButton> {
             intrinsicWidth = getBox().getContentWidth();
         }
 
-        FSDerivedValue heightValue = style.valueByName(CSSName.HEIGHT);
-        if (heightValue instanceof LengthValue) {
-            intrinsicHeight = getBox().getHeight();
+        Integer cssHeight = cssContentHeight();
+        if (cssHeight != null) {
+            intrinsicHeight = cssHeight;
         }
 
         button.addActionListener(event -> {

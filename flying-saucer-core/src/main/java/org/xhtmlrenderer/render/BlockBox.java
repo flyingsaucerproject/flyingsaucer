@@ -1380,7 +1380,7 @@ public class BlockBox extends Box implements InlinePaintable, InlineChild {
         return -1;
     }
 
-    protected int getCSSHeight(CssContext c) {
+    public int getCSSHeight(CssContext c) {
         if (! isAnonymous()) {
             if (! isAutoHeight()) {
                 if (getStyle().hasAbsoluteUnit(CSSName.HEIGHT)) {
