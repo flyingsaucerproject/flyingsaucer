@@ -82,6 +82,17 @@ class NowrapLineBreakTest {
                 .containsExactly("xx ", "yyyyy", "z");
     }
 
+    /** The line before the preformatted text does not end on its new line: a justified line stays justified. */
+    @Test
+    void theLineBeforeAPreformattedTextWhichMovesDoesNotEndOnANewLine() {
+        List<LineBox> lines = lineBoxes(layout("<div style='width: 80px; text-align: justify'>aa bb " +
+                "<span style='white-space: pre'>yyyyy\nz</span></div>"));
+
+        assertThat(lines).extracting(NowrapLineBreakTest::text).containsExactly("aa bb", "yyyyy", "z");
+        assertThat(lines.get(0).isEndsOnNL()).isFalse();
+        assertThat(lines.get(1).isEndsOnNL()).isTrue();
+    }
+
     /** {@code word-wrap: break-word} does not let a line break where {@code white-space} does not. */
     @Test
     void breakWordDoesNotBreakATextWhichMayNotWrap() {

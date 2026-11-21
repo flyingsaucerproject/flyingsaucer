@@ -254,7 +254,9 @@ public final class InlineBoxing {
                                 remainingWidth -= marginBorderPadding;
                             }
                         } else {
+                            // The text is not taken, nor the new line it ends on: the line ends where the text starts
                             lbContext.resetEnd();
+                            lbContext.setEndsOnNL(false);
                         }
                     }
 
