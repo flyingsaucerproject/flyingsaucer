@@ -141,9 +141,10 @@ public class Breaker {
     /**
      * A text which may not break ends where the text glued to it starts: if the two do not fit, the line does not take
      * the text unless it is empty (see {@link org.xhtmlrenderer.layout.InlineBoxing}), and the text starts the next one.
+     * The same holds for a text with nothing glued to it which does not fit by itself (#772).
      */
     private static void checkGluedWidthFits(LineBreakContext context, int avail, int gluedWidthAfter) {
-        if (gluedWidthAfter > 0 && context.getWidth() + gluedWidthAfter > avail) {
+        if (context.getWidth() + gluedWidthAfter > avail) {
             context.setNeedsNewLine(true);
             context.setUnbreakable(true);
         }

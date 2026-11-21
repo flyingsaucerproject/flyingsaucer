@@ -106,7 +106,10 @@ final class InlineBoundaryBreaks {
             bp = iterator.next();
         }
         if (bp.position() == before.length()) {
-            return Lead.NOT_GLUED;
+            if (mayBreakBetween(previous.getStyle(), style, before)) {
+                return Lead.NOT_GLUED;
+            }
+            bp = iterator.next();
         }
 
         int end = bp.position() == BreakIterator.DONE || isUnbreakable(style) ? text.length() : bp.position() - before.length();
@@ -159,6 +162,18 @@ final class InlineBoundaryBreaks {
 
     private static String text(InlineBox box) {
         return box.getContentFunction() instanceof ContentFunction function ? function.getLayoutReplacementText() : box.getText();
+    }
+
+    /**
+     * The break point between two boxes is a place to break only where the boxes may wrap
+     * (<a href="https://www.w3.org/TR/css-text-3/#line-break-details">CSS Text 3, § 5.5</a>): the box which holds a
+     * space before it decides alone, otherwise both boxes decide, as neither may wrap inside a {@code nowrap} block.
+     */
+    private static boolean mayBreakBetween(CalculatedStyle previous, CalculatedStyle style, String before) {
+        if (isUnbreakable(previous)) {
+            return false;
+        }
+        return Character.isWhitespace(before.charAt(before.length() - 1)) || !isUnbreakable(style);
     }
 
     private static boolean isUnbreakable(CalculatedStyle style) {
