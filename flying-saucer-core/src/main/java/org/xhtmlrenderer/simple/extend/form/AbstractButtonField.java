@@ -45,7 +45,7 @@ abstract class AbstractButtonField<T extends JButton> extends InputField<JButton
                 button.setBorder(BasicBorders.getButtonBorder());
         }
 
-        button.setMargin(style.padding().withDefaults(new Insets(2, 12, 2, 12)));
+        button.setMargin(cssPadding().withDefaults(new Insets(2, 12, 2, 12)));
 
         Integer cssHeight = cssContentHeight();
         if (cssHeight != null)

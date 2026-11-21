@@ -734,14 +734,22 @@ public class CalculatedStyle {
     }
 
     /**
-     * Padding in pixels, with relative units ({@code em}, {@code %} etc.) resolved by layout.
-     * A side is {@code null} if its padding is not a length.
+     * Padding in pixels, with relative units ({@code em}, {@code %} etc.) resolved like layout does.
      * <p>
-     * Must be called before the {@link #getCachedPadding() cached padding} is reset.
+     * Resolved anew on each call: unlike {@link #getCachedPadding()}, it is not shared
+     * with other elements of the same style, and not affected by resetting the cached padding.
      */
     @CheckReturnValue
-    public NullableInsets padding() {
-        RectPropertySet resolved = getCachedPadding();
+    public RectPropertySet resolvePadding(float cbWidth, CssContext ctx) {
+        return RectPropertySet.newInstance(this, PADDING_SIDE_PROPERTIES, cbWidth, ctx).resetNegativeValues();
+    }
+
+    /**
+     * Same as {@link #resolvePadding(float, CssContext)}, but a side is {@code null} if its padding is not a length.
+     */
+    @CheckReturnValue
+    public NullableInsets padding(float cbWidth, CssContext ctx) {
+        RectPropertySet resolved = resolvePadding(cbWidth, ctx);
         return new NullableInsets(
                 resolvedLength(CSSName.PADDING_TOP, resolved.top()),
                 resolvedLength(CSSName.PADDING_LEFT, resolved.left()),
