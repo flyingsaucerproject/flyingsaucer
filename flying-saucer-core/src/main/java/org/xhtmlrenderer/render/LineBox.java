@@ -554,7 +554,7 @@ public class LineBox extends Box implements InlinePaintable {
         if (text != null) {
             InlineLayoutBox iB = text.getParent();
             IdentValue whitespace = iB.getStyle().getWhitespace();
-            if (whitespace == NORMAL || whitespace == IdentValue.NOWRAP) {
+            if (whitespace == NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE_LINE) {
                 text.trimTrailingSpace(c);
             }
         }
