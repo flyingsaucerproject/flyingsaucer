@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.layout;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.render.BlockBox;
@@ -14,10 +15,11 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -56,6 +58,17 @@ class TrailingSpaceLineBreakTest {
         assertThat(lineBoxes(block)).extracting(TrailingSpaceLineBreakTest::text).containsExactly("aaaa", "bbbb");
     }
 
+    /** {@code pre-line} collapses spaces as {@code normal} does: the trailing space is removed too. */
+    @Test
+    void aPreLineLineEndsAtTheRightEdge() {
+        BlockBox block = layout("<div style='width: 50px; text-align: right; white-space: pre-line'>" + SPAN + "</div>");
+
+        List<LineBox> lines = lineBoxes(block);
+        assertThat(lines).extracting(TrailingSpaceLineBreakTest::text).containsExactly("aaaa", "bbbb");
+        assertThat(lines).allSatisfy(line ->
+                assertThat(line.getX() + line.getWidth()).isEqualTo(block.getContentWidth()));
+    }
+
     /** A preserved space hangs at the end of the line: it stays. */
     @Test
     void aPreservedSpaceStaysAtTheEndOfTheLine() {
@@ -77,9 +90,10 @@ class TrailingSpaceLineBreakTest {
         } finally {
             graphics.dispose();
         }
-        return firstDiv(renderer.getPanel().getRootBox());
+        return requireNonNull(firstDiv(renderer.getPanel().getRootBox()));
     }
 
+    @Nullable
     private static BlockBox firstDiv(Box box) {
         if (box instanceof BlockBox block && box.getElement() != null && "div".equals(box.getElement().getNodeName())) {
             return block;
@@ -94,21 +108,11 @@ class TrailingSpaceLineBreakTest {
     }
 
     private static List<LineBox> lineBoxes(Box root) {
-        List<LineBox> lines = new ArrayList<>();
-        collectLines(root, lines);
-        return lines;
+        return lines(root).filter(line -> !text(line).isEmpty()).toList();
     }
 
-    private static void collectLines(Box box, List<LineBox> lines) {
-        if (box instanceof LineBox line) {
-            if (!text(line).isEmpty()) {
-                lines.add(line);
-            }
-            return;
-        }
-        for (Box child : box.getChildren()) {
-            collectLines(child, lines);
-        }
+    private static Stream<LineBox> lines(Box box) {
+        return box instanceof LineBox line ? Stream.of(line) : box.getChildren().stream().flatMap(TrailingSpaceLineBreakTest::lines);
     }
 
     private static String text(Box box) {
