@@ -729,22 +729,24 @@ public class CalculatedStyle {
 
     @Nullable
     @CheckReturnValue
-    private Integer getLengthValue(CSSName cssName) {
-        FSDerivedValue widthValue = valueByName(cssName);
-        if (widthValue instanceof LengthValue length) {
-            return (int) length.asFloat();
-        }
-
-        return null;
+    private Integer resolvedLength(CSSName cssName, float resolvedValue) {
+        return isLength(cssName) ? Math.round(resolvedValue) : null;
     }
 
+    /**
+     * Padding in pixels, with relative units ({@code em}, {@code %} etc.) resolved by layout.
+     * A side is {@code null} if its padding is not a length.
+     * <p>
+     * Must be called before the {@link #getCachedPadding() cached padding} is reset.
+     */
     @CheckReturnValue
     public NullableInsets padding() {
-        Integer paddingTop = getLengthValue(CSSName.PADDING_TOP);
-        Integer paddingLeft = getLengthValue(CSSName.PADDING_LEFT);
-        Integer paddingBottom = getLengthValue(CSSName.PADDING_BOTTOM);
-        Integer paddingRight = getLengthValue(CSSName.PADDING_RIGHT);
-        return new NullableInsets(paddingTop, paddingLeft, paddingBottom, paddingRight);
+        RectPropertySet resolved = getCachedPadding();
+        return new NullableInsets(
+                resolvedLength(CSSName.PADDING_TOP, resolved.top()),
+                resolvedLength(CSSName.PADDING_LEFT, resolved.left()),
+                resolvedLength(CSSName.PADDING_BOTTOM, resolved.bottom()),
+                resolvedLength(CSSName.PADDING_RIGHT, resolved.right()));
     }
 
     public IdentValue getWhitespace() {

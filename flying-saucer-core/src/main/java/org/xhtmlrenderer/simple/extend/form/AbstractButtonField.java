@@ -47,15 +47,15 @@ abstract class AbstractButtonField<T extends JButton> extends InputField<JButton
 
         button.setMargin(style.padding().withDefaults(new Insets(2, 12, 2, 12)));
 
+        Integer cssHeight = cssContentHeight();
+        if (cssHeight != null)
+            intrinsicHeight = cssHeight;
+
         RectPropertySet padding = style.getCachedPadding();
         padding.reset();
 
         FSDerivedValue widthValue = style.valueByName(CSSName.WIDTH);
         if (widthValue instanceof LengthValue)
             intrinsicWidth = getBox().getContentWidth();
-
-        FSDerivedValue heightValue = style.valueByName(CSSName.HEIGHT);
-        if (heightValue instanceof LengthValue)
-            intrinsicHeight = getBox().getHeight();
     }
 }

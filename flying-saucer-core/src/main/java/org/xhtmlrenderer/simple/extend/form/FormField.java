@@ -194,6 +194,25 @@ public abstract class FormField<T extends JComponent> {
         return box;
     }
 
+    /**
+     * Content height given by CSS {@code height}, or {@code null} if the height is {@code auto}.
+     * <p>
+     * Resolved from the style instead of read from the box: the box height is not known yet
+     * when the field is created while measuring a shrink-to-fit box (inline-block, float).
+     * Must be called before the box padding is reset.
+     */
+    @Nullable
+    protected Integer cssContentHeight() {
+        int cssHeight = box.getCSSHeight(context);
+        if (cssHeight == -1) {
+            return null;
+        }
+        if (box.getStyle().isBorderBox()) {
+            cssHeight -= (int) box.getPadding(context).height() + (int) box.getBorder(context).height();
+        }
+        return cssHeight;
+    }
+
     public LayoutContext getContext() {
         return context;
     }
