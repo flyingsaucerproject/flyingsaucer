@@ -110,6 +110,21 @@ class NowrapLineBreakTest {
                 .containsExactly("Pseudo-element");
     }
 
+    /** Two boxes with the same style are still two boxes: the block they are in decides. */
+    @Test
+    void aLineBreaksAfterAHyphenBetweenTwoTextsWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 80px'><span style='white-space: nowrap'>Pseudo-</span>" +
+                "<span style='white-space: nowrap'><span style='white-space: normal'>element</span></span></div>")))
+                .containsExactly("Pseudo-", "element");
+    }
+
+    /** A space which stays at the break, such as an em space, is decided as a hyphen is. */
+    @Test
+    void aLineBreaksAfterAnEmSpaceAtTheEndOfATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 40px'><span style='white-space: nowrap'>xx&#x2003;</span>yyyyy</div>")))
+                .containsExactly("xx\u2003", "yyyyy");
+    }
+
     /** A text which does not fit next to a float moves below it, as a word which may not break does. */
     @Test
     void aTextWhichMayNotBreakMovesBelowAFloat() {

@@ -2,6 +2,9 @@ package org.xhtmlrenderer.layout;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 import org.xhtmlrenderer.css.extend.ContentFunction;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
@@ -106,7 +109,7 @@ final class InlineBoundaryBreaks {
             bp = iterator.next();
         }
         if (bp.position() == before.length()) {
-            if (mayBreakBetween(previous.getStyle(), style, before)) {
+            if (mayBreakBetween(previous, box, before)) {
                 return Lead.NOT_GLUED;
             }
             bp = iterator.next();
@@ -167,24 +170,41 @@ final class InlineBoundaryBreaks {
     /**
      * The break point between two boxes is a place to break only where the boxes may wrap
      * (<a href="https://www.w3.org/TR/css-text-3/#line-break-details">CSS Text 3, § 5.5</a>). The box which holds a
-     * space before it decides alone. After any other character, such as a hyphen, the nearest common ancestor of
-     * the two boxes decides.
+     * space that disappears at the break decides alone. After any other character, such as a hyphen or an em space,
+     * the nearest common ancestor of the two boxes decides.
      */
-    private static boolean mayBreakBetween(CalculatedStyle previous, CalculatedStyle style, String before) {
-        if (Character.isWhitespace(before.charAt(before.length() - 1))) {
-            return !isUnbreakable(previous);
+    private boolean mayBreakBetween(InlineBox previous, InlineBox box, String before) {
+        char last = before.charAt(before.length() - 1);
+        if (last == ' ' || last == '\t') {
+            return !isUnbreakable(previous.getStyle());
         }
-        CalculatedStyle ancestor = commonAncestor(previous, style);
-        return ancestor == null ? !isUnbreakable(previous) && !isUnbreakable(style) : !isUnbreakable(ancestor);
+        Element ancestor = commonAncestor(owner(previous), owner(box));
+        if (ancestor == null) {
+            return !isUnbreakable(previous.getStyle()) && !isUnbreakable(box.getStyle());
+        }
+        return !isUnbreakable(c.getSharedContext().getStyle(ancestor));
     }
 
-    /** The nearest style that is one of the two styles or that both inherit from, or {@code null} if none. */
+    /**
+     * The element whose content the box is: the parent of its text, or the element of its pseudo-element. Styles are
+     * shared between elements, so the elements, not the styles, tell where a box is.
+     */
     @Nullable
-    private static CalculatedStyle commonAncestor(CalculatedStyle first, CalculatedStyle second) {
-        for (CalculatedStyle a = first; a != null; a = a.getParent()) {
-            for (CalculatedStyle b = second; b != null; b = b.getParent()) {
+    private static Element owner(InlineBox box) {
+        Text text = box.getTextNode();
+        if (text != null) {
+            return text.getParentNode() instanceof Element parent ? parent : null;
+        }
+        return box.getElement();
+    }
+
+    /** The nearest element which is or holds both elements, or {@code null} if none. */
+    @Nullable
+    private static Element commonAncestor(@Nullable Element first, @Nullable Element second) {
+        for (Node a = first; a instanceof Element; a = a.getParentNode()) {
+            for (Node b = second; b instanceof Element; b = b.getParentNode()) {
                 if (a == b) {
-                    return a;
+                    return (Element) a;
                 }
             }
         }
