@@ -20,22 +20,14 @@
 package org.xhtmlrenderer.simple.extend.form;
 
 import org.w3c.dom.Element;
-import org.xhtmlrenderer.css.constants.CSSName;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
-import org.xhtmlrenderer.css.style.FSDerivedValue;
-import org.xhtmlrenderer.css.style.derived.LengthValue;
-import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.XhtmlForm;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.plaf.basic.BasicTextFieldUI;
-import javax.swing.plaf.basic.BasicTextUI;
 import java.awt.*;
 
-class TextField extends InputField<JTextField> {
+class TextField extends AbstractTextField<JTextField> {
     TextField(Element e, XhtmlForm form, LayoutContext context, BlockBox box) {
         super(e, form, context, box);
     }
@@ -47,43 +39,6 @@ class TextField extends InputField<JTextField> {
         applyComponentStyle(textField);
         return textField;
     }
-
-    @Override
-    protected void applyComponentStyle(JComponent component) {
-        super.applyComponentStyle(component);
-
-        // called from create(), before the component is set
-        JTextField field = (JTextField) component;
-        CalculatedStyle style = getBox().getStyle();
-        RectPropertySet padding = style.getCachedPadding();
-        Insets margin = style.padding().withDefaults(new Insets(2, 3, 2, 3));
-
-        //if a border is set or a background color is set, then use a special JButton with the BasicButtonUI.
-        if (style.disableOSBorder()) {
-            //when background color is set, need to use the BasicButtonUI, certainly when using XP l&f
-            BasicTextUI ui = new BasicTextFieldUI();
-            field.setUI(ui);
-            Border fieldBorder = BorderFactory.createEmptyBorder(margin.top, margin.left, margin.bottom, margin.right);
-            field.setBorder(fieldBorder);
-        }
-        else {
-            field.setMargin(margin);
-        }
-
-        padding.reset();
-
-        FSDerivedValue widthValue = style.valueByName(CSSName.WIDTH);
-        if (widthValue instanceof LengthValue) {
-            intrinsicWidth = getBox().getContentWidth() + margin.left + margin.right;
-        }
-
-        FSDerivedValue heightValue = style.valueByName(CSSName.HEIGHT);
-        if (heightValue instanceof LengthValue) {
-            intrinsicHeight = getBox().getHeight() + margin.top + margin.bottom;
-        }
-    }
-
-
 
     @Override
     protected void applyOriginalState() {
