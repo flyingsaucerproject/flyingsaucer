@@ -33,7 +33,7 @@ abstract class AbstractTextField<T extends JTextField> extends InputField<T> {
         JTextField field = (JTextField) component;
         CalculatedStyle style = getBox().getStyle();
         RectPropertySet padding = style.getCachedPadding();
-        Insets margin = style.padding().withDefaults(new Insets(2, 3, 2, 3));
+        Insets margin = cssPadding().withDefaults(new Insets(2, 3, 2, 3));
 
         //if a border is set or a background color is set, then use a special JButton with the BasicButtonUI.
         if (style.disableOSBorder()) {

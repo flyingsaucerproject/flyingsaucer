@@ -25,6 +25,8 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.NullableInsets;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
@@ -195,11 +197,18 @@ public abstract class FormField<T extends JComponent> {
     }
 
     /**
+     * CSS padding of the field, resolved anew instead of read from the box: the box padding is cached per style
+     * (shared by all fields with the same style) and reset by the fields that move it into the Swing component.
+     */
+    protected NullableInsets cssPadding() {
+        return box.getStyle().padding(containingBlockWidth(), context);
+    }
+
+    /**
      * Content height given by CSS {@code height}, or {@code null} if the height is {@code auto}.
      * <p>
      * Resolved from the style instead of read from the box: the box height is not known yet
      * when the field is created while measuring a shrink-to-fit box (inline-block, float).
-     * Must be called before the box padding is reset.
      */
     @Nullable
     protected Integer cssContentHeight() {
@@ -208,9 +217,14 @@ public abstract class FormField<T extends JComponent> {
             return null;
         }
         if (box.getStyle().isBorderBox()) {
-            cssHeight -= (int) box.getPadding(context).height() + (int) box.getBorder(context).height();
+            RectPropertySet padding = box.getStyle().resolvePadding(containingBlockWidth(), context);
+            cssHeight -= (int) padding.height() + (int) box.getBorder(context).height();
         }
         return cssHeight;
+    }
+
+    private int containingBlockWidth() {
+        return box.getContainingBlock().getContentWidth();
     }
 
     public LayoutContext getContext() {

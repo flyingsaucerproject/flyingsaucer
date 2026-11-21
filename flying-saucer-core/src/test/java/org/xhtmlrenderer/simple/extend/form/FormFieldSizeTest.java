@@ -7,7 +7,6 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import java.awt.Component;
@@ -15,6 +14,7 @@ import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
@@ -43,10 +43,11 @@ class FormFieldSizeTest {
         XHTMLPanel panel = render(wrapper.formatted(FIELDS));
 
         // text fields add their default 2px top/bottom padding (moved into the Swing component) to the CSS height
-        assertThat(component(panel, JTextField.class, false).getHeight()).isEqualTo(30 + 2 + 2);
-        assertThat(component(panel, JPasswordField.class, true).getHeight()).isEqualTo(30 + 2 + 2);
-        assertThat(component(panel, JScrollPane.class, false).getHeight()).isEqualTo(30 + 2 + 2);
-        assertThat(component(panel, JButton.class, false).getHeight()).isEqualTo(30);
+        assertThat(textField(panel, "t").getHeight()).isEqualTo(30 + 2 + 2);
+        assertThat(textField(panel, "p").getHeight()).isEqualTo(30 + 2 + 2);
+        assertThat(component(panel, JScrollPane.class).getHeight()).isEqualTo(30 + 2 + 2);
+        // look up by text: the textarea scrollbars may contain arrow buttons (e.g. in Metal look and feel)
+        assertThat(component(panel, JButton.class, button -> button.getText().equals("s")).getHeight()).isEqualTo(30);
     }
 
     @ParameterizedTest
@@ -56,8 +57,7 @@ class FormFieldSizeTest {
                 <input type="%s" value="x" style="font-size: 20px; padding: 1em 0.5em; border: 1px solid black"/>
                 """.formatted(type));
 
-        JTextField field = component(panel, JTextField.class, type.equals("password"));
-        assertThat(field.getInsets()).isEqualTo(new Insets(20, 10, 20, 10));
+        assertThat(textField(panel, "x").getInsets()).isEqualTo(new Insets(20, 10, 20, 10));
     }
 
     @ParameterizedTest
@@ -67,8 +67,25 @@ class FormFieldSizeTest {
                 <input type="%s" value="x" style="padding: 7px 8px; border: 1px solid black"/>
                 """.formatted(type));
 
-        JTextField field = component(panel, JTextField.class, type.equals("password"));
-        assertThat(field.getInsets()).isEqualTo(new Insets(7, 8, 7, 8));
+        assertThat(textField(panel, "x").getInsets()).isEqualTo(new Insets(7, 8, 7, 8));
+    }
+
+    /**
+     * Fields with the same style share one {@code CalculatedStyle}, including its cached padding,
+     * which the first field resets after moving the padding into its Swing component.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"text", "password"})
+    void fieldsWithSameStyle(String type) {
+        String field = """
+                <input type="%s" value="%s" style="padding: 16px; height: 30px; border: 1px solid black"/>""";
+        XHTMLPanel panel = render(field.formatted(type, "first") + field.formatted(type, "second"));
+
+        for (String value : new String[]{"first", "second"}) {
+            JTextField textField = textField(panel, value);
+            assertThat(textField.getInsets()).as(value).isEqualTo(new Insets(16, 16, 16, 16));
+            assertThat(textField.getHeight()).as(value).isEqualTo(30 + 16 + 16);
+        }
     }
 
     private static XHTMLPanel render(String body) {
@@ -85,13 +102,21 @@ class FormFieldSizeTest {
         return panel;
     }
 
-    private static <T extends JComponent> T component(Container panel, Class<T> type, boolean password) {
+    private static JTextField textField(Container panel, String value) {
+        return component(panel, JTextField.class, field -> field.getText().equals(value));
+    }
+
+    private static <T extends JComponent> T component(Container panel, Class<T> type) {
+        return component(panel, type, component -> true);
+    }
+
+    private static <T extends JComponent> T component(Container panel, Class<T> type, Predicate<T> condition) {
         return components(panel)
                 .filter(type::isInstance)
-                .filter(c -> c instanceof JPasswordField == password)
                 .map(type::cast)
+                .filter(condition)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("No " + type.getSimpleName() + " in " + panel));
+                .orElseThrow(() -> new AssertionError("No matching " + type.getSimpleName() + " in " + panel));
     }
 
     private static Stream<Component> components(Container container) {
