@@ -89,6 +89,13 @@ class NowrapLineBreakTest {
                 .containsExactly("xxyyyyy");
     }
 
+    /** {@code word-break: break-all} does not let a line break where {@code white-space} does not. */
+    @Test
+    void breakAllDoesNotBreakATextWhichMayNotWrap() {
+        assertThat(lines(layout("<div style='width: 40px; white-space: nowrap; word-break: break-all'>xx<span>yyyyy</span></div>")))
+                .containsExactly("xxyyyyy");
+    }
+
     /** After a hyphen, the nearest common ancestor of the two boxes decides if the line may break (CSS Text 3, § 5.5). */
     @Test
     void aLineBreaksAfterAHyphenAtTheEndOfATextWhichMayNotBreak() {

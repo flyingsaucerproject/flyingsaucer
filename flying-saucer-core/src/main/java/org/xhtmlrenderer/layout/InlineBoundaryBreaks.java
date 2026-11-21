@@ -25,7 +25,7 @@ import static java.util.Objects.requireNonNull;
  * <p>
  * An inline-block or an inline-table ends the text on either side of it. A box out of the flow, or an inline box
  * with no text, does not. A text which may break between any two letters ({@code word-break: break-all}) is glued
- * to nothing.
+ * to nothing, unless {@code white-space} does not let it wrap.
  */
 final class InlineBoundaryBreaks {
     private final LayoutContext c;
@@ -196,8 +196,9 @@ final class InlineBoundaryBreaks {
         return whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE;
     }
 
+    /** {@code word-break: break-all} adds places to break only where {@code white-space} lets the text wrap. */
     private static boolean breaksAnywhere(CalculatedStyle style) {
-        return style.getWordBreak() == IdentValue.BREAK_ALL;
+        return style.getWordBreak() == IdentValue.BREAK_ALL && !isUnbreakable(style);
     }
 
     private static String stripTrailingSpace(String text) {
