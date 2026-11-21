@@ -218,7 +218,8 @@ public abstract class FormField<T extends JComponent> {
         }
         if (box.getStyle().isBorderBox()) {
             RectPropertySet padding = box.getStyle().resolvePadding(containingBlockWidth(), context);
-            cssHeight -= (int) padding.height() + (int) box.getBorder(context).height();
+            // content height can't be negative, even if padding and border exceed the border-box height
+            cssHeight = Math.max(0, cssHeight - (int) padding.height() - (int) box.getBorder(context).height());
         }
         return cssHeight;
     }

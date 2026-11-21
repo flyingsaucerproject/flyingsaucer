@@ -70,6 +70,20 @@ class FormFieldSizeTest {
         assertThat(textField(panel, "x").getInsets()).isEqualTo(new Insets(7, 8, 7, 8));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"text", "password"})
+    void borderBoxHeight(String type) {
+        XHTMLPanel panel = render("""
+                <input type="%1$s" value="fits" style="box-sizing: border-box; height: 50px; padding: 16px; border: 1px solid black"/>
+                <input type="%1$s" value="too small" style="box-sizing: border-box; height: 10px; padding: 16px; border: 1px solid black"/>
+                """.formatted(type));
+
+        // content height + padding (the border is not part of the Swing component)
+        assertThat(textField(panel, "fits").getHeight()).isEqualTo(50 - 1 - 1);
+        // content height can't be negative
+        assertThat(textField(panel, "too small").getHeight()).isEqualTo(0 + 16 + 16);
+    }
+
     /**
      * Fields with the same style share one {@code CalculatedStyle}, including its cached padding,
      * which the first field resets after moving the padding into its Swing component.
