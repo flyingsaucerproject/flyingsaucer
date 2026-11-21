@@ -166,14 +166,29 @@ final class InlineBoundaryBreaks {
 
     /**
      * The break point between two boxes is a place to break only where the boxes may wrap
-     * (<a href="https://www.w3.org/TR/css-text-3/#line-break-details">CSS Text 3, § 5.5</a>): the box which holds a
-     * space before it decides alone, otherwise both boxes decide, as neither may wrap inside a {@code nowrap} block.
+     * (<a href="https://www.w3.org/TR/css-text-3/#line-break-details">CSS Text 3, § 5.5</a>). The box which holds a
+     * space before it decides alone. After any other character, such as a hyphen, the nearest common ancestor of
+     * the two boxes decides.
      */
     private static boolean mayBreakBetween(CalculatedStyle previous, CalculatedStyle style, String before) {
-        if (isUnbreakable(previous)) {
-            return false;
+        if (Character.isWhitespace(before.charAt(before.length() - 1))) {
+            return !isUnbreakable(previous);
         }
-        return Character.isWhitespace(before.charAt(before.length() - 1)) || !isUnbreakable(style);
+        CalculatedStyle ancestor = commonAncestor(previous, style);
+        return ancestor == null ? !isUnbreakable(previous) && !isUnbreakable(style) : !isUnbreakable(ancestor);
+    }
+
+    /** The nearest style that is one of the two styles or that both inherit from, or {@code null} if none. */
+    @Nullable
+    private static CalculatedStyle commonAncestor(CalculatedStyle first, CalculatedStyle second) {
+        for (CalculatedStyle a = first; a != null; a = a.getParent()) {
+            for (CalculatedStyle b = second; b != null; b = b.getParent()) {
+                if (a == b) {
+                    return a;
+                }
+            }
+        }
+        return null;
     }
 
     private static boolean isUnbreakable(CalculatedStyle style) {

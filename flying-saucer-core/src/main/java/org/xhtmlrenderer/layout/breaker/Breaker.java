@@ -108,6 +108,10 @@ public class Breaker {
                 context.setWidth(TextUtil.textWidth(c, style, font, master.substring(context.getStart(), eol)));
                 context.setNeedsNewLine(true);
                 context.setEndsOnNL(true);
+                if (whitespace == IdentValue.PRE && eol > context.getStart()) {
+                    // The text before the new line may not break: it moves whole to the next line if it does not fit
+                    checkGluedWidthFits(context, avail, 0);
+                }
             } else if (whitespace == IdentValue.PRE) {
                 context.setEnd(context.getLast());
                 context.setWidth(TextUtil.textWidth(c, style, font, context.getCalculatedSubstring()));

@@ -215,9 +215,9 @@ public final class InlineBoxing {
                     } else {
                         lbContext.saveEnd();
                         // The text glued to the text before it may not start a line (CSS Text 3, § 1.5),
-                        // unless it may break anywhere where it does not fit
+                        // unless it may break anywhere where it does not fit, and white-space lets it wrap
                         boolean startsWord = (!startsGlued || lbContext.getStart() > 0) && !afterFirstLetter;
-                        boolean mayStartLine = startsWord || style.getWordWrap() == IdentValue.BREAK_WORD;
+                        boolean mayStartLine = startsWord || style.getWordWrap() == IdentValue.BREAK_WORD && mayWrap(style);
                         InlineText inlineText = layoutText(
                                 c, iB.getStyle(), remainingWidth - fit, maxAvailableWidth, lbContext, false, gluedWidthAfter);
                         if (lbContext.isUnbreakable() && !currentLine.isContainsContent()) {

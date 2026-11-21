@@ -75,6 +75,34 @@ class NowrapLineBreakTest {
                 .containsExactly("xx yyyyy");
     }
 
+    /** A preformatted text which does not fit before its first new line moves to the next line as well. */
+    @Test
+    void aPreformattedTextWithANewLineMovesToTheNextLineAfterASpace() {
+        assertThat(lines(layout("<div style='width: 40px'>xx <span style='white-space: pre'>yyyyy\nz</span></div>")))
+                .containsExactly("xx ", "yyyyy", "z");
+    }
+
+    /** {@code word-wrap: break-word} does not let a line break where {@code white-space} does not. */
+    @Test
+    void breakWordDoesNotBreakATextWhichMayNotWrap() {
+        assertThat(lines(layout("<div style='width: 40px; white-space: nowrap; word-wrap: break-word'>xx<span>yyyyy</span></div>")))
+                .containsExactly("xxyyyyy");
+    }
+
+    /** After a hyphen, the nearest common ancestor of the two boxes decides if the line may break (CSS Text 3, § 5.5). */
+    @Test
+    void aLineBreaksAfterAHyphenAtTheEndOfATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 80px'><span style='white-space: nowrap'>Pseudo-</span>element</div>")))
+                .containsExactly("Pseudo-", "element");
+    }
+
+    /** Inside a text which may not break, a hyphen does not break the line either. */
+    @Test
+    void aLineDoesNotBreakAfterAHyphenInsideATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 80px'><span style='white-space: nowrap'>Pseudo-<b>element</b></span></div>")))
+                .containsExactly("Pseudo-element");
+    }
+
     /** A text which does not fit next to a float moves below it, as a word which may not break does. */
     @Test
     void aTextWhichMayNotBreakMovesBelowAFloat() {
