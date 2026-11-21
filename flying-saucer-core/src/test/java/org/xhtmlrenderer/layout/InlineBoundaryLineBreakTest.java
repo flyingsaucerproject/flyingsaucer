@@ -54,7 +54,7 @@ class InlineBoundaryLineBreakTest {
 
     @Test
     void aSpaceBeforeASpanStillBreaksInTheNarrowestCell() {
-        assertThat(lines(layout(narrowestCell("aaa <span>bbb</span>")))).containsExactly("aaa ", "bbb");
+        assertThat(lines(layout(narrowestCell("aaa <span>bbb</span>")))).containsExactly("aaa", "bbb");
     }
 
     /** The space breaks the line as it does without the span. */
@@ -62,7 +62,7 @@ class InlineBoundaryLineBreakTest {
     void aSpaceAtTheStartOfASpanStillBreaksInTheNarrowestCell() {
         assertThat(lines(layout(narrowestCell("aaa<span> bbb</span>"))))
                 .isEqualTo(lines(layout(narrowestCell("aaa bbb"))))
-                .containsExactly("aaa ", "bbb");
+                .containsExactly("aaa", "bbb");
     }
 
     /** The narrowest cell is as wide as the parts of the word together: each box measures its own part. */
@@ -83,22 +83,22 @@ class InlineBoundaryLineBreakTest {
         String word = "<div style='width: 62px'>xx aaa<span>bbb</span></div>";
         String plain = "<div style='width: 62px'>xx aaabbb</div>";
 
-        assertThat(lines(layout(plain))).containsExactly("xx ", "aaabbb");
-        assertThat(lines(layout(word))).containsExactly("xx ", "aaabbb");
+        assertThat(lines(layout(plain))).containsExactly("xx", "aaabbb");
+        assertThat(lines(layout(word))).containsExactly("xx", "aaabbb");
     }
 
     /** A word wider than the line overflows it, and the line ends after the word, not inside it. */
     @Test
     void aWordWiderThanTheLineOverflowsItWhole() {
         assertThat(lines(layout("<div style='width: 20px'>aaaaaaa<span>bb cc</span></div>")))
-                .containsExactly("aaaaaaabb ", "cc");
+                .containsExactly("aaaaaaabb", "cc");
     }
 
     /** A float between the parts of a word does not break it. */
     @Test
     void aFloatInsideAWordDoesNotBreakIt() {
         assertThat(lines(layout("<div style='width: 62px'>xx aaa<span style='float: right'>F</span>bbb</div>")))
-                .startsWith("xx ", "aaabbb");
+                .startsWith("xx", "aaabbb");
     }
 
     /** An inline-block ends the word before it: the line may break before it. */
@@ -112,30 +112,30 @@ class InlineBoundaryLineBreakTest {
     @Test
     void aWordRunsOnIntoATextWhichMayNotBreak() {
         assertThat(lines(layout("<div style='width: 62px'>xx aaa<span style='white-space: nowrap'>bbb ccc</span></div>")))
-                .containsExactly("xx ", "aaabbb ccc");
+                .containsExactly("xx", "aaabbb ccc");
     }
 
     /** A text which may not break, glued to the text after it, moves to the next line with it where the two do not fit. */
     @Test
     void aTextWhichMayNotBreakMovesToTheNextLineWithTheWordItRunsOnInto() {
         assertThat(lines(layout("<div style='width: 62px'>xx <span style='white-space: nowrap'>aaa</span>bbb</div>")))
-                .containsExactly("xx ", "aaabbb");
+                .containsExactly("xx", "aaabbb");
         assertThat(lines(layout("<div style='width: 62px'>xx <span style='white-space: pre'>aaa</span>bbb</div>")))
-                .containsExactly("xx ", "aaabbb");
+                .containsExactly("xx", "aaabbb");
     }
 
     /** {@code word-wrap: break-word} breaks a word only where it does not fit, so a word which fits stays whole. */
     @Test
     void aWordWithBreakWordWhichFitsMovesToTheNextLineWhole() {
         assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx aaa<span>bbb</span></div>")))
-                .containsExactly("xx ", "aaabbb");
+                .containsExactly("xx", "aaabbb");
     }
 
     /** A box which fits whole after the text before it, but not with the text glued to it, moves to the next line too. */
     @Test
     void aBoxWithBreakWordWhichFitsWithoutTheWordItRunsOnIntoMovesToTheNextLine() {
         assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx <span>aaa</span>bbb</div>")))
-                .containsExactly("xx ", "aaabbb");
+                .containsExactly("xx", "aaabbb");
     }
 
     /** {@code word-wrap: break-word} breaks a word only where the line has no other place to break: it moves to the next line first. */
@@ -143,14 +143,14 @@ class InlineBoundaryLineBreakTest {
     void aWordWithBreakWordInABoxAfterOtherContentMovesToTheNextLineBeforeItBreaks() {
         assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx <span>aaaaaaa</span></div>")))
                 .isEqualTo(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx aaaaaaa</div>")))
-                .containsExactly("xx ", "aaaaaa", "a");
+                .containsExactly("xx", "aaaaaa", "a");
     }
 
     @Test
     void aWordWithBreakWordOfTwoBoxesAfterOtherContentMovesToTheNextLineBeforeItBreaks() {
         assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx <span>aaaa</span>bbbbbbbb</div>")))
                 .isEqualTo(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx aaaabbbbbbbb</div>")))
-                .containsExactly("xx ", "aaaabb", "bbbbbb");
+                .containsExactly("xx", "aaaabb", "bbbbbb");
     }
 
     /** The part of a word in a box after the start of the word breaks where the line ends: the line has no other place to break. */
@@ -158,7 +158,7 @@ class InlineBoundaryLineBreakTest {
     void aWordWithBreakWordBreaksInsideTheBoxWhichContinuesIt() {
         assertThat(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx aaa<span>aaaaaaa</span></div>")))
                 .isEqualTo(lines(layout("<div style='width: 62px; word-wrap: break-word'>xx aaaaaaaaaa</div>")))
-                .containsExactly("xx ", "aaaaaa", "aaaa");
+                .containsExactly("xx", "aaaaaa", "aaaa");
     }
 
     /** A word which starts the line breaks on it, even where the line is shorter than the next one. */

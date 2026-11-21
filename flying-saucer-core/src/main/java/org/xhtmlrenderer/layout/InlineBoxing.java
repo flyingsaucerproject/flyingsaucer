@@ -834,11 +834,12 @@ public final class InlineBoxing {
                     pendingInlineLayers, markerData, contentStart, isAlwaysBreak(c, box, breakAtLine, lineOffset));
         }
 
-        /** Ends the line where the content after it does not fit, and starts the next line. */
+        /**
+         * Ends the line where the content after it does not fit, and starts the next line. A collapsible space at the
+         * end of the line is removed whatever the alignment (CSS Text 3, § 4.1.3).
+         */
         private LineBox breakLine(LineBox line) {
-            if (style.isTextJustify()) {
-                line.trimTrailingSpace(c);
-            }
+            line.trimTrailingSpace(c);
             save(line);
             lineOffset++;
             markerData = null;
