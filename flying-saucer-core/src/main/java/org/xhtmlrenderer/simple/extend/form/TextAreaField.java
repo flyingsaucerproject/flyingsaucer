@@ -83,16 +83,16 @@ class TextAreaField extends FormField<JScrollPane> {
 
         textArea.setMargin(margin);
 
+        Integer cssHeight = cssContentHeight();
+        if (cssHeight != null) {
+            intrinsicHeight = cssHeight + margin.top + margin.bottom;
+        }
+
         padding.reset();
 
         FSDerivedValue widthValue = style.valueByName(CSSName.WIDTH);
         if (widthValue instanceof LengthValue) {
             intrinsicWidth = getBox().getContentWidth() + margin.left + margin.right;
-        }
-
-        FSDerivedValue heightValue = style.valueByName(CSSName.HEIGHT);
-        if (heightValue instanceof LengthValue) {
-            intrinsicHeight = getBox().getHeight() + margin.top + margin.bottom;
         }
     }
 
