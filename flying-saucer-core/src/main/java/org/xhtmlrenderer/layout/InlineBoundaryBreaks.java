@@ -146,7 +146,8 @@ final class InlineBoundaryBreaks {
         if (newLine >= 0 && newLine < end) {
             end = newLine;
         }
-        String lead = stripTrailingSpace(text.substring(0, end));
+        // A space before a break point disappears or hangs at the end of a line, but a preserved space in pre stays
+        String lead = style.getWhitespace() == IdentValue.PRE ? text.substring(0, end) : stripTrailingSpace(text.substring(0, end));
         if (lead.isEmpty()) {
             return Lead.NOT_GLUED;
         }

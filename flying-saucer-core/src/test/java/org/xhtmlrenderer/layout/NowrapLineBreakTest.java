@@ -186,6 +186,14 @@ class NowrapLineBreakTest {
                 .containsExactly("xyyyyyyy");
     }
 
+    /** Preserved spaces do not disappear: they stay glued to the inline-block before them, as the text after them. */
+    @Test
+    void preservedSpacesStayAfterAnInlineBlockWhereTheBlockMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 40px; white-space: nowrap'>" +
+                "<span style='display: inline-block; width: 30px'>x</span><span style='white-space: pre'>  </span>y</div>")))
+                .containsExactly("x  y");
+    }
+
     @Test
     void aTextWhichMayNotBreakMovesAfterAnInlineBlockWhereTheBlockMayBreak() {
         assertThat(lines(layout("<div style='width: 40px'><span style='display: inline-block'>x</span>" +
