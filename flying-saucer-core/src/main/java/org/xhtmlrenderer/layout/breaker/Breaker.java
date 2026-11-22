@@ -92,8 +92,12 @@ public class Breaker {
         // ====== handle nowrap
         if (whitespace == IdentValue.NOWRAP) {
             context.setEnd(context.getLast());
-            context.setWidth(TextUtil.textWidth(c, style, font, context.getCalculatedSubstring()));
-            checkGluedWidthFits(context, avail, gluedWidthAfter);
+            String text = context.getCalculatedSubstring();
+            context.setWidth(TextUtil.textWidth(c, style, font, text));
+            // A space at the end of the line disappears (CSS Text 3, § 4.1.3): it counts only where text is glued after it
+            String visible = gluedWidthAfter == 0 ? stripTrailingSpaces(text) : text;
+            int width = visible.length() == text.length() ? context.getWidth() : TextUtil.textWidth(c, style, font, visible);
+            checkGluedWidthFits(context, width, avail, gluedWidthAfter);
             return;
         }
 
@@ -110,12 +114,12 @@ public class Breaker {
                 context.setEndsOnNL(true);
                 if (whitespace == IdentValue.PRE && eol > context.getStart()) {
                     // The text before the new line may not break: it moves whole to the next line if it does not fit
-                    checkGluedWidthFits(context, avail, 0);
+                    checkGluedWidthFits(context, context.getWidth(), avail, 0);
                 }
             } else if (whitespace == IdentValue.PRE) {
                 context.setEnd(context.getLast());
                 context.setWidth(TextUtil.textWidth(c, style, font, context.getCalculatedSubstring()));
-                checkGluedWidthFits(context, avail, gluedWidthAfter);
+                checkGluedWidthFits(context, context.getWidth(), avail, gluedWidthAfter);
             } else {
                 // The last line: its box asks for its width measured whole (InlineBox.calcMaxWidthFromLineLength), which
                 // may be less than its parts added up, so it is measured whole here too before it is broken (#742)
@@ -147,11 +151,20 @@ public class Breaker {
      * the text unless it is empty (see {@link org.xhtmlrenderer.layout.InlineBoxing}), and the text starts the next one.
      * The same holds for a text with nothing glued to it which does not fit by itself (#772).
      */
-    private static void checkGluedWidthFits(LineBreakContext context, int avail, int gluedWidthAfter) {
-        if (context.getWidth() + gluedWidthAfter > avail) {
+    private static void checkGluedWidthFits(LineBreakContext context, int width, int avail, int gluedWidthAfter) {
+        if (width + gluedWidthAfter > avail) {
             context.setNeedsNewLine(true);
             context.setUnbreakable(true);
         }
+    }
+
+    /** The text without the spaces and tabs at its end. */
+    private static String stripTrailingSpaces(String text) {
+        int end = text.length();
+        while (end > 0 && (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '\t')) {
+            end--;
+        }
+        return text.substring(0, end);
     }
 
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Element element, CalculatedStyle style) {
