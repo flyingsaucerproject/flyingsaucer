@@ -148,6 +148,22 @@ class NowrapLineBreakTest {
         assertThat(lines.get(0).getY()).isGreaterThanOrEqualTo(10);
     }
 
+    /** The block which holds an inline-block and the text after it decides if the line may break between them. */
+    @ParameterizedTest
+    @ValueSource(strings = {"nowrap", "pre"})
+    void aTextStaysAfterAnInlineBlockWhereTheBlockMayNotBreak(String whiteSpace) {
+        assertThat(lines(layout("<div style='width: 40px; white-space: " + whiteSpace + "'>" +
+                "<span style='display: inline-block'>x</span>yyyyyyy</div>")))
+                .containsExactly("xyyyyyyy");
+    }
+
+    @Test
+    void aTextWhichMayNotBreakMovesAfterAnInlineBlockWhereTheBlockMayBreak() {
+        assertThat(lines(layout("<div style='width: 40px'><span style='display: inline-block'>x</span>" +
+                "<span style='white-space: nowrap'>yyyyyyy</span></div>")))
+                .containsExactly("x", "yyyyyyy");
+    }
+
     private static Box layout(String body) {
         String html = "<html xmlns='http://www.w3.org/1999/xhtml'><head><style>" +
                 "body { margin: 0; font: 16px monospace; }" +

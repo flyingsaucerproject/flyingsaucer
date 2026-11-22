@@ -11,6 +11,7 @@ import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.css.style.CalculatedStyle.Edge;
 import org.xhtmlrenderer.layout.breaker.BreakPoint;
 import org.xhtmlrenderer.layout.breaker.Breaker;
+import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.InlineBox;
 
 import java.text.BreakIterator;
@@ -26,8 +27,9 @@ import static java.util.Objects.requireNonNull;
  * breaks as the one word {@code aaabbb}, and {@code aaa&#160;<span>bbb</span>} as {@code aaa&#160;bbb}. The text of
  * a box is glued to the text before it if the line breaking strategy finds no break point between the two.
  * <p>
- * An inline-block or an inline-table ends the text on either side of it. A box out of the flow, or an inline box
- * with no text, does not. A text which may break between any two letters ({@code word-break: break-all}) is glued
+ * An inline-block or an inline-table ends the text before it. The text after it is glued to it only where their
+ * nearest common ancestor does not let the line wrap. A box out of the flow, or an inline box with no text, is
+ * skipped. A text which may break between any two letters ({@code word-break: break-all}) is glued
  * to nothing, unless {@code white-space} does not let it wrap.
  */
 final class InlineBoundaryBreaks {
@@ -94,8 +96,11 @@ final class InlineBoundaryBreaks {
         if (!(content.get(index) instanceof InlineBox box) || text(box).isEmpty() || breaksAnywhere(box.getStyle())) {
             return Lead.NOT_GLUED;
         }
-        InlineBox previous = previousText(index);
-        if (previous == null || breaksAnywhere(previous.getStyle())) {
+        Styleable previousContent = previousContent(index);
+        if (previousContent instanceof BlockBox atomic) {
+            return mayBreakAfter(atomic, box) ? Lead.NOT_GLUED : lead(box, firstBreakPoint(box));
+        }
+        if (!(previousContent instanceof InlineBox previous) || breaksAnywhere(previous.getStyle())) {
             return Lead.NOT_GLUED;
         }
 
@@ -115,7 +120,25 @@ final class InlineBoundaryBreaks {
             bp = iterator.next();
         }
 
-        int end = bp.position() == BreakIterator.DONE || isUnbreakable(style) ? text.length() : bp.position() - before.length();
+        return lead(box, bp.position() == BreakIterator.DONE ? text.length() : bp.position() - before.length());
+    }
+
+    /** The first break point in the text of the box, after its first character. */
+    private int firstBreakPoint(InlineBox box) {
+        String text = text(box);
+        var iterator = Breaker.getBreakPointsProvider(text, c, box.getElement(), box.getStyle());
+        BreakPoint bp = iterator.next();
+        while (bp.position() == 0) {
+            bp = iterator.next();
+        }
+        return bp.position() == BreakIterator.DONE ? text.length() : bp.position();
+    }
+
+    /** The text of the box up to {@code breakPoint}, glued to the content before it. */
+    private Lead lead(InlineBox box, int breakPoint) {
+        CalculatedStyle style = box.getStyle();
+        String text = text(box);
+        int end = isUnbreakable(style) ? text.length() : breakPoint;
         int newLine = text.indexOf(WhitespaceStripper.EOLC);
         if (newLine >= 0 && newLine < end) {
             end = newLine;
@@ -136,19 +159,28 @@ final class InlineBoundaryBreaks {
         return new Lead(true, width, whole);
     }
 
-    /** The nearest box before the one at {@code index} that has text, unless something else ends the text before. */
+    /** The nearest content before the box at {@code index}: a box with text, an inline-block or an inline-table. */
     @Nullable
-    private InlineBox previousText(int index) {
+    private Styleable previousContent(int index) {
         for (int i = index - 1; i >= 0; i--) {
             Styleable child = content.get(i);
-            if (child instanceof InlineBox box && !text(box).isEmpty()) {
-                return box;
-            }
             if (!isTransparent(child)) {
-                return null;
+                return child;
             }
         }
         return null;
+    }
+
+    /**
+     * The nearest common ancestor of an inline-block or an inline-table and the text after it decides if the line may
+     * break between them (<a href="https://www.w3.org/TR/css-text-3/#line-break-details">CSS Text 3, § 5.5</a>).
+     */
+    private boolean mayBreakAfter(BlockBox atomic, InlineBox box) {
+        Element ancestor = commonAncestor(atomic.getElement(), owner(box));
+        if (ancestor == null) {
+            return !isUnbreakable(box.getStyle());
+        }
+        return !isUnbreakable(c.getSharedContext().getStyle(ancestor));
     }
 
     /** A box which is not a place to break and has no text: out of the flow, or an inline box with no text. */
