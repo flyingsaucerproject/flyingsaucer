@@ -105,11 +105,33 @@ class BarcodeTest {
         assertThat(pageContent(pdf)).contains("75 0 0 75 ");
     }
 
-    @Test
-    void invalidCode_rendersNoImage() throws IOException {
-        byte[] pdf = renderHtml("barcode-invalid-code.pdf", "<img data-barcode=\"ean13\" src=\"not-a-number\"/>");
+    @ParameterizedTest(name = "{0}: {1}")
+    @CsvSource({
+        "ean13-letters, ean13, not-a-number",
+        "ean13-too-long, ean13, 40063813339310",
+        "ean13-too-short, ean13, 400638133393",
+        "ean8-too-long, ean8, 963850745",
+        "upca-too-long, upca, 0360002914520",
+        "upce-too-short, upce, 0425261",
+        "inter25-letters, inter25, AB1234",
+        "datamatrix-non-latin1, datamatrix, 订单42",
+        "pdf417-non-latin1, pdf417, 订单42",
+    })
+    void invalidCode_rendersNoImage(String fileName, String type, String code) throws IOException {
+        byte[] pdf = renderHtml("barcode-invalid-%s.pdf".formatted(fileName), "<img data-barcode=\"%s\" src=\"%s\"/>".formatted(type, code));
 
         assertThat(images(pdf)).isEmpty();
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "datamatrix, Grüße",
+        "pdf417, Grüße",
+    })
+    void twoDimensionalBarcode_supportsLatin1(String type, String code) throws IOException {
+        byte[] pdf = renderHtml("barcode-latin1-%s.pdf".formatted(type), "<img data-barcode=\"%s\" src=\"%s\"/>".formatted(type, code));
+
+        assertThat(images(pdf)).hasSize(1);
     }
 
     @Test
