@@ -106,6 +106,9 @@ final class InlineBoundaryBreaks {
 
         CalculatedStyle style = box.getStyle();
         String before = text(previous);
+        if (before.charAt(before.length() - 1) == WhitespaceStripper.EOLC) {
+            return Lead.NOT_GLUED; // a forced line break ends the text before
+        }
         String text = text(box);
         String joined = before + text;
         var iterator = Breaker.getBreakPointsProvider(joined, c, box.getElement(), style);
