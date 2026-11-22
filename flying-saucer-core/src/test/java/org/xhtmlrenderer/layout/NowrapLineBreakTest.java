@@ -32,13 +32,13 @@ class NowrapLineBreakTest {
     @ValueSource(strings = {"nowrap", "pre"})
     void aTextWhichMayNotBreakMovesToTheNextLineAfterASpace(String whiteSpace) {
         assertThat(lines(layout("<div style='width: 40px'>xx <span style='white-space: " + whiteSpace + "'>yyyyy</span></div>")))
-                .containsExactly("xx ", "yyyyy");
+                .containsExactly("xx", "yyyyy");
     }
 
     @Test
     void aTextWithASpaceWhichMayNotBreakMovesToTheNextLineWhole() {
         assertThat(lines(layout("<div style='width: 80px'>xx yy <span style='white-space: nowrap'>zzz zz</span></div>")))
-                .containsExactly("xx yy ", "zzz zz");
+                .containsExactly("xx yy", "zzz zz");
     }
 
     @Test
@@ -79,7 +79,7 @@ class NowrapLineBreakTest {
     @Test
     void aPreformattedTextWithANewLineMovesToTheNextLineAfterASpace() {
         assertThat(lines(layout("<div style='width: 40px'>xx <span style='white-space: pre'>yyyyy\nz</span></div>")))
-                .containsExactly("xx ", "yyyyy", "z");
+                .containsExactly("xx", "yyyyy", "z");
     }
 
     /** The line before the preformatted text does not end on its new line: a justified line stays justified. */
