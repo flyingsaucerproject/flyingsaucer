@@ -85,6 +85,16 @@ public class Breaker {
      */
     public static void breakText(LayoutContext c,
             LineBreakContext context, int avail, int fullLineWidth, CalculatedStyle style, int gluedWidthAfter) {
+        breakText(c, context, avail, fullLineWidth, style, gluedWidthAfter, 0);
+    }
+
+    /**
+     * Breaks the text as {@link #breakText(LayoutContext, LineBreakContext, int, int, CalculatedStyle, int)} does, where
+     * {@code avail} keeps {@code endEdges} for the right margin, border and padding of the inline boxes which end with
+     * the text. A preformatted text before a new line does not end those boxes, so it may take that width.
+     */
+    public static void breakText(LayoutContext c, LineBreakContext context, int avail, int fullLineWidth,
+                                 CalculatedStyle style, int gluedWidthAfter, int endEdges) {
         FSFont font = style.getFSFont(c);
         IdentValue whitespace = style.getWhitespace();
         context.setHyphen("");
@@ -92,8 +102,12 @@ public class Breaker {
         // ====== handle nowrap
         if (whitespace == IdentValue.NOWRAP) {
             context.setEnd(context.getLast());
-            context.setWidth(TextUtil.textWidth(c, style, font, context.getCalculatedSubstring()));
-            checkGluedWidthFits(context, avail, gluedWidthAfter);
+            String text = context.getCalculatedSubstring();
+            context.setWidth(TextUtil.textWidth(c, style, font, text));
+            // A space at the end of the line disappears or hangs (CSS Text 3, § 4.1.3): it counts only where text is glued after it
+            String visible = gluedWidthAfter == 0 ? stripTrailingSpaces(text) : text;
+            int width = visible.length() == text.length() ? context.getWidth() : TextUtil.textWidth(c, style, font, visible);
+            checkGluedWidthFits(context, width, avail, gluedWidthAfter);
             return;
         }
 
@@ -108,10 +122,14 @@ public class Breaker {
                 context.setWidth(TextUtil.textWidth(c, style, font, master.substring(context.getStart(), eol)));
                 context.setNeedsNewLine(true);
                 context.setEndsOnNL(true);
+                if (whitespace == IdentValue.PRE && eol > context.getStart()) {
+                    // The text before the new line may not break: it moves whole to the next line if it does not fit
+                    checkGluedWidthFits(context, context.getWidth(), avail + endEdges, 0);
+                }
             } else if (whitespace == IdentValue.PRE) {
                 context.setEnd(context.getLast());
                 context.setWidth(TextUtil.textWidth(c, style, font, context.getCalculatedSubstring()));
-                checkGluedWidthFits(context, avail, gluedWidthAfter);
+                checkGluedWidthFits(context, context.getWidth(), avail, gluedWidthAfter);
             } else {
                 // The last line: its box asks for its width measured whole (InlineBox.calcMaxWidthFromLineLength), which
                 // may be less than its parts added up, so it is measured whole here too before it is broken (#742)
@@ -141,12 +159,27 @@ public class Breaker {
     /**
      * A text which may not break ends where the text glued to it starts: if the two do not fit, the line does not take
      * the text unless it is empty (see {@link org.xhtmlrenderer.layout.InlineBoxing}), and the text starts the next one.
+     * The same holds for a text with nothing glued to it which does not fit by itself (#772).
      */
-    private static void checkGluedWidthFits(LineBreakContext context, int avail, int gluedWidthAfter) {
-        if (gluedWidthAfter > 0 && context.getWidth() + gluedWidthAfter > avail) {
+    private static void checkGluedWidthFits(LineBreakContext context, int width, int avail, int gluedWidthAfter) {
+        if (width + gluedWidthAfter > avail) {
             context.setNeedsNewLine(true);
             context.setUnbreakable(true);
         }
+    }
+
+    /** The text without the spaces, tabs and other space separators at its end, which hang at the end of a line. */
+    private static String stripTrailingSpaces(String text) {
+        int end = text.length();
+        while (end > 0 && isHangingSpace(text.charAt(end - 1))) {
+            end--;
+        }
+        return text.substring(0, end);
+    }
+
+    /** A space which collapses or hangs at the end of a line: any space separator but U+00A0 (CSS Text 3, § 4.1.3). */
+    private static boolean isHangingSpace(char ch) {
+        return ch == '\t' || Character.getType(ch) == Character.SPACE_SEPARATOR && ch != '\u00A0';
     }
 
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Element element, CalculatedStyle style) {

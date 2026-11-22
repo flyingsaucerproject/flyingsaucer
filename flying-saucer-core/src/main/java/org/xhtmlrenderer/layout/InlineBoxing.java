@@ -180,8 +180,10 @@ public final class InlineBoxing {
                     lbContext.reset();
 
                     int fit = 0;
+                    int endEdges = 0;
                     if (lbContext.getStart() == 0) {
                         fit += pendingLeftMBP + pendingRightMBP;
+                        endEdges = pendingRightMBP;
                     }
 
                     boolean trimmedLeadingSpace = false;
@@ -215,11 +217,11 @@ public final class InlineBoxing {
                     } else {
                         lbContext.saveEnd();
                         // The text glued to the text before it may not start a line (CSS Text 3, § 1.5),
-                        // unless it may break anywhere where it does not fit
+                        // unless it may break anywhere where it does not fit, and white-space lets it wrap
                         boolean startsWord = (!startsGlued || lbContext.getStart() > 0) && !afterFirstLetter;
-                        boolean mayStartLine = startsWord || style.getWordWrap() == IdentValue.BREAK_WORD;
+                        boolean mayStartLine = startsWord || style.getWordWrap() == IdentValue.BREAK_WORD && mayWrap(style);
                         InlineText inlineText = layoutText(
-                                c, iB.getStyle(), remainingWidth - fit, maxAvailableWidth, lbContext, false, gluedWidthAfter);
+                                c, iB.getStyle(), remainingWidth - fit, maxAvailableWidth, lbContext, false, gluedWidthAfter, endEdges);
                         if (lbContext.isUnbreakable() && !currentLine.isContainsContent()) {
                             int delta = c.getBlockFormattingContext().getNextLineBoxDelta(c, currentLine, maxAvailableWidth);
                             if (delta > 0) {
@@ -254,7 +256,9 @@ public final class InlineBoxing {
                                 remainingWidth -= marginBorderPadding;
                             }
                         } else {
+                            // The text is not taken, nor the new line it ends on: the line ends where the text starts
                             lbContext.resetEnd();
+                            lbContext.setEndsOnNL(false);
                         }
                     }
 
@@ -399,7 +403,7 @@ public final class InlineBoxing {
         currentIB.addInlineChild(c, iB);
         current.setContainsContent(true);
 
-        InlineText text = layoutText(c, iB.getStyle(), remainingWidth, maxAvailableWidth, lbContext, true, 0);
+        InlineText text = layoutText(c, iB.getStyle(), remainingWidth, maxAvailableWidth, lbContext, true, 0, 0);
         iB.addInlineChild(c, text);
         iB.setInlineWidth(text.getWidth());
 
@@ -947,14 +951,15 @@ public final class InlineBoxing {
 
     private static InlineText layoutText(LayoutContext c, CalculatedStyle style,
                                          int remainingWidth, int maxAvailableWidth,
-                                         LineBreakContext lbContext, boolean needFirstLetter, int gluedWidthAfter) {
+                                         LineBreakContext lbContext, boolean needFirstLetter, int gluedWidthAfter,
+                                         int endEdges) {
         String masterText = lbContext.getMaster();
         if (needFirstLetter) {
             masterText = TextUtil.transformFirstLetterText(masterText, style);
             lbContext.setMaster(masterText);
             Breaker.breakFirstLetter(c, lbContext, remainingWidth, style);
         } else {
-            Breaker.breakText(c, lbContext, remainingWidth, maxAvailableWidth, style, gluedWidthAfter);
+            Breaker.breakText(c, lbContext, remainingWidth, maxAvailableWidth, style, gluedWidthAfter, endEdges);
         }
 
         return new InlineText(lbContext.getMaster(), lbContext.getTextNode(),
