@@ -106,6 +106,7 @@ public class Breaker {
             context.setWidth(TextUtil.textWidth(c, style, font, text));
             // A space at the end of the line disappears or hangs (CSS Text 3, § 4.1.3): it counts only where text is glued
             // after it. A right border or padding after it keeps a space separator from hanging (CSS Text 3, § 8.2).
+            // Only nowrap lets a space separator hang so far: the other values count it, as if an edge followed it.
             String visible = gluedWidthAfter == 0 ? stripTrailingSpaces(text, context.edgeAfterText()) : text;
             int width = visible.length() == text.length() ? context.getWidth() : TextUtil.textWidth(c, style, font, visible);
             checkGluedWidthFits(context, width, avail, gluedWidthAfter);

@@ -84,6 +84,31 @@ final class InlineBoundaryBreaks {
         return width;
     }
 
+    /**
+     * A right border or padding follows the text of the box at {@code index} before any other content: a space separator
+     * at the end of the text does not hang there (CSS Text 3, § 8.2). Lines run left to right, so the right edge ends
+     * them. A margin does not count, nor an empty box or a space which disappears at the end of the line.
+     */
+    @CheckReturnValue
+    boolean edgeAfterText(int index) {
+        for (int i = index; i < content.size(); i++) {
+            if (!(content.get(i) instanceof InlineBox box) || i > index && !disappears(box)) {
+                return false;
+            }
+            CalculatedStyle style = box.getStyle();
+            if (box.isEndsHere() && (style.getBorder(c).right() > 0 || style.getPaddingRect(cbWidth, c).right() > 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** The box has no text, or only spaces which disappear at the end of a line. */
+    private static boolean disappears(InlineBox box) {
+        String text = text(box);
+        return text.isEmpty() || collapsesSpaces(box.getStyle()) && text.chars().allMatch(ch -> ch == ' ');
+    }
+
     private Lead lead(int index) {
         Lead lead = leads[index];
         if (lead == null) {
@@ -99,7 +124,7 @@ final class InlineBoundaryBreaks {
         }
         Styleable previousContent = previousContent(index);
         if (previousContent instanceof BlockBox atomic) {
-            return mayBreakAfter(atomic, box) ? Lead.NOT_GLUED : lead(box, firstBreakPoint(box));
+            return mayBreakAfter(atomic, box) ? Lead.NOT_GLUED : lead(index, box, firstBreakPoint(box));
         }
         if (!(previousContent instanceof InlineBox previous)) {
             return Lead.NOT_GLUED;
@@ -112,7 +137,7 @@ final class InlineBoundaryBreaks {
         }
         if (breaksAnywhere(previous.getStyle())) {
             // The text before may break after its last letter, where white-space lets the line wrap there
-            return mayBreakBetween(previous, box, before) ? Lead.NOT_GLUED : lead(box, firstBreakPoint(box));
+            return mayBreakBetween(previous, box, before) ? Lead.NOT_GLUED : lead(index, box, firstBreakPoint(box));
         }
         String text = text(box);
         String joined = before + text;
@@ -128,7 +153,7 @@ final class InlineBoundaryBreaks {
             bp = iterator.next();
         }
 
-        return lead(box, bp.position() == BreakIterator.DONE ? text.length() : bp.position() - before.length());
+        return lead(index, box, bp.position() == BreakIterator.DONE ? text.length() : bp.position() - before.length());
     }
 
     /** The first break point in the text of the box, after its first character. */
@@ -142,8 +167,8 @@ final class InlineBoundaryBreaks {
         return bp.position() == BreakIterator.DONE ? text.length() : bp.position();
     }
 
-    /** The text of the box up to {@code breakPoint}, glued to the content before it. */
-    private Lead lead(InlineBox box, int breakPoint) {
+    /** The text of the box at {@code index} up to {@code breakPoint}, glued to the content before it. */
+    private Lead lead(int index, InlineBox box, int breakPoint) {
         CalculatedStyle style = box.getStyle();
         String text = text(box);
         int end = isUnbreakable(style) ? text.length() : breakPoint;
@@ -151,8 +176,10 @@ final class InlineBoundaryBreaks {
         if (newLine >= 0 && newLine < end) {
             end = newLine;
         }
-        // A space before a break point disappears or hangs at the end of a line, but a preserved space in pre stays
-        String lead = style.getWhitespace() == IdentValue.PRE ? text.substring(0, end) : stripTrailingSpace(text.substring(0, end));
+        // A space before a break point disappears or hangs at the end of a line, but a preserved space in pre stays, and
+        // a space separator before a right border or padding does not hang
+        boolean edgeAfter = end == text.length() && edgeAfterText(index);
+        String lead = style.getWhitespace() == IdentValue.PRE ? text.substring(0, end) : stripTrailingSpace(text.substring(0, end), edgeAfter);
         if (lead.isEmpty()) {
             return Lead.NOT_GLUED;
         }
@@ -282,11 +309,18 @@ final class InlineBoundaryBreaks {
         return style.getWordBreak() == IdentValue.BREAK_ALL && !isUnbreakable(style);
     }
 
-    private static String stripTrailingSpace(String text) {
+    /** The text without its trailing white space, except for the space separators which stay where {@code keepSeparators}. */
+    private static String stripTrailingSpace(String text, boolean keepSeparators) {
         int end = text.length();
-        while (end > 0 && Character.isWhitespace(text.charAt(end - 1))) {
+        while (end > 0 && Character.isWhitespace(text.charAt(end - 1))
+                && !(keepSeparators && isSpaceSeparator(text.charAt(end - 1)))) {
             end--;
         }
         return text.substring(0, end);
+    }
+
+    /** A space separator which does not collapse: any but U+0020 (CSS Text 3, § 4.1.3). */
+    private static boolean isSpaceSeparator(char ch) {
+        return ch != ' ' && Character.getType(ch) == Character.SPACE_SEPARATOR;
     }
 }

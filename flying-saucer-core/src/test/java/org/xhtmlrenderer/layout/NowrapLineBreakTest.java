@@ -167,6 +167,36 @@ class NowrapLineBreakTest {
                 .containsExactly("xx", "yyyyy\u2003");
     }
 
+    /** An empty inline box after the space leaves the right padding of the box between the space and the end of the line. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeAnEmptyBoxAndARightPaddingMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy&#x2003;<i></i></span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** A collapsible space between the boxes disappears at the end of the line: the outer padding still follows the space. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeASpaceAndTheRightPaddingOfAnOuterBoxMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='padding-right: 20px'>" +
+                "<span style='white-space: nowrap'>yyyyy&#x2003;</span> </span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** A space separator in a padded box of its own is glued to the text which may not break: the two move together. */
+    @Test
+    void aTrailingSpaceSeparatorInAPaddedInnerBoxMovesTheTextWhichMayNotBreakWhole() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap'>yyyyy" +
+                "<span style='padding-right: 20px'>&#x2003;</span></span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** The rule holds where the text may wrap too: the space before the right padding counts. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeARightPaddingMovesAWordWhichMayWrap() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='padding-right: 20px'>yyyyy&#x2003;</span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
     /** A margin is not between the space and the end of the line: the space still hangs. */
     @Test
     void aTrailingSpaceSeparatorBeforeARightMarginDoesNotMoveATextWhichMayNotBreak() {
