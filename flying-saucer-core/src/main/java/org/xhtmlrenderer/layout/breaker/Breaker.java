@@ -104,8 +104,9 @@ public class Breaker {
             context.setEnd(context.getLast());
             String text = context.getCalculatedSubstring();
             context.setWidth(TextUtil.textWidth(c, style, font, text));
-            // A space at the end of the line disappears or hangs (CSS Text 3, § 4.1.3): it counts only where text is glued after it
-            String visible = gluedWidthAfter == 0 ? stripTrailingSpaces(text) : text;
+            // A space at the end of the line disappears or hangs (CSS Text 3, § 4.1.3): it counts only where text is glued
+            // after it. A right border or padding after it keeps a space separator from hanging (CSS Text 3, § 8.2).
+            String visible = gluedWidthAfter == 0 ? stripTrailingSpaces(text, context.edgeAfterText()) : text;
             int width = visible.length() == text.length() ? context.getWidth() : TextUtil.textWidth(c, style, font, visible);
             checkGluedWidthFits(context, width, avail, gluedWidthAfter);
             return;
@@ -168,13 +169,25 @@ public class Breaker {
         }
     }
 
-    /** The text without the spaces, tabs and other space separators at its end, which hang at the end of a line. */
-    private static String stripTrailingSpaces(String text) {
+    /**
+     * The text without the spaces at its end which do not count at the end of a line: spaces and tabs, which disappear,
+     * and other space separators, which hang unless a right border or padding follows them.
+     */
+    private static String stripTrailingSpaces(String text, boolean edgeAfterText) {
         int end = text.length();
-        while (end > 0 && isHangingSpace(text.charAt(end - 1))) {
+        while (end > 0 && isCollapsibleSpace(text.charAt(end - 1))) {
             end--;
         }
+        if (!edgeAfterText) {
+            while (end > 0 && isHangingSpace(text.charAt(end - 1))) {
+                end--;
+            }
+        }
         return text.substring(0, end);
+    }
+
+    private static boolean isCollapsibleSpace(char ch) {
+        return ch == ' ' || ch == '\t';
     }
 
     /** A space which collapses or hangs at the end of a line: any space separator but U+00A0 (CSS Text 3, § 4.1.3). */

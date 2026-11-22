@@ -151,6 +151,36 @@ class NowrapLineBreakTest {
                 .containsExactly("xx yyyyy" + space);
     }
 
+    /** A right padding or border after a space separator keeps it from hanging (CSS Text 3, § 8.2): the space counts (#790). */
+    @ParameterizedTest
+    @ValueSource(strings = {"padding-right: 20px", "border-right: 20px solid"})
+    void aTrailingSpaceSeparatorBeforeARightEdgeMovesATextWhichMayNotBreak(String edge) {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; " + edge + "'>yyyyy&#x2003;</span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** The right padding of a box which ends with the text keeps the space from hanging too. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeTheRightPaddingOfAnOuterBoxMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='padding-right: 20px'>" +
+                "<span style='white-space: nowrap'>yyyyy&#x2003;</span></span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** A margin is not between the space and the end of the line: the space still hangs. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeARightMarginDoesNotMoveATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; margin-right: 20px'>yyyyy&#x2003;</span></div>")))
+                .containsExactly("xx yyyyy\u2003");
+    }
+
+    /** A collapsible space at the end of the line disappears, even before a right padding. */
+    @Test
+    void aTrailingSpaceBeforeARightPaddingDoesNotMoveATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy </span></div>")))
+                .containsExactly("xx yyyyy");
+    }
+
     /** The block which may not wrap decides the boundary after a text which breaks anywhere. */
     @Test
     void aTextStaysAfterATextWhichBreaksAnywhereWhereTheBlockMayNotBreak() {

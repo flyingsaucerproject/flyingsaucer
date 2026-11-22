@@ -167,7 +167,8 @@ public final class InlineBoxing {
 
                 String master = iB.isDynamicFunction() ?
                         iB.getContentFunction().getLayoutReplacementText() : iB.getText();
-                LineBreakContext lbContext = new LineBreakContext(master, iB.getTextNode());
+                LineBreakContext lbContext = new LineBreakContext(master, iB.getTextNode(),
+                        hasEdgeAfterText(c, inlineContent, index, maxAvailableWidth));
                 // The rest of the word after a ::first-letter on the same line continues it
                 boolean afterFirstLetter = false;
 
@@ -947,6 +948,24 @@ public final class InlineBoxing {
         for (Layer l : layers) {
             l.positionChildren(c);
         }
+    }
+
+    /**
+     * Whether a right border or padding follows the text of the inline box at {@code index}: one of the inline boxes
+     * which end with the text has one. A margin does not count (CSS Text 3, § 8.2).
+     */
+    private static boolean hasEdgeAfterText(LayoutContext c, List<Styleable> content, int index, int cbWidth) {
+        for (int i = index; i < content.size(); i++) {
+            if (!(content.get(i) instanceof InlineBox box) || !box.isEndsHere()
+                    || i > index && (box.isStartsHere() || !box.getText().isEmpty())) {
+                return false;
+            }
+            CalculatedStyle style = box.getStyle();
+            if (style != null && (style.getBorder(c).right() > 0 || style.getPaddingRect(cbWidth, c).right() > 0)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static InlineText layoutText(LayoutContext c, CalculatedStyle style,

@@ -38,10 +38,25 @@ public class LineBreakContext {
     private int _width;
     private boolean _endsOnNL;
     private final Text _textNode;
+    private final boolean _edgeAfterText;
 
     public LineBreakContext(String master, Text textNode) {
+        this(master, textNode, false);
+    }
+
+    /**
+     * @param edgeAfterText a right border or padding of the inline boxes which end with the text follows it: a space
+     *                      separator at the end of the text does not hang (CSS Text 3, § 8.2)
+     */
+    public LineBreakContext(String master, Text textNode, boolean edgeAfterText) {
         this._master = master;
         this._textNode = textNode;
+        this._edgeAfterText = edgeAfterText;
+    }
+
+    /** A right border or padding of the inline boxes which end with the text follows it. */
+    public boolean edgeAfterText() {
+        return _edgeAfterText;
     }
 
     public int getLast() {
