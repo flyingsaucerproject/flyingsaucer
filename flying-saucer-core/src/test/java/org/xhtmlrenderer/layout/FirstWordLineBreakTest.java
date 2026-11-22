@@ -44,7 +44,7 @@ class FirstWordLineBreakTest {
     @Test
     void aWordWhichMovesToTheNextLineWholeGetsNoHyphen() {
         assertThat(lines(layout("<div style='width: 100px'>xxxxxxx <span>aaabbbbbb</span></div>")))
-                .containsExactly("xxxxxxx ", "aaabbbbbb");
+                .containsExactly("xxxxxxx", "aaabbbbbb");
     }
 
     private static Box layout(String body) {

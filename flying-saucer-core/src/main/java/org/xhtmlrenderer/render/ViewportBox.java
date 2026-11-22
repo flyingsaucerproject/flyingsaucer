@@ -76,7 +76,7 @@ public class ViewportBox extends BlockBox {
     }
 
     @Override
-    protected int getCSSHeight(CssContext c) {
+    public int getCSSHeight(CssContext c) {
         return _viewport.height;
     }
 

@@ -45,7 +45,7 @@ class InlineBoxEndLineBreakTest {
 
         List<LineBox> lines = lineBoxes(layout("x " + span + " y"));
 
-        assertThat(texts(lines)).containsExactly("x ", "aaaaaaa", "y");
+        assertThat(texts(lines)).containsExactly("x", "aaaaaaa", "y");
         List<LineBox> plain = lineBoxes(layout("x " + SPAN + " y"));
         assertThat(lines.get(1).getWidth()).isEqualTo(plain.get(1).getWidth() + 10);
         assertThat(lines.get(2).getWidth()).isEqualTo(plain.get(2).getWidth());
@@ -56,7 +56,7 @@ class InlineBoxEndLineBreakTest {
     void theEndOfTheLastBoxMakesNoLineOfItsOwn() {
         List<LineBox> lines = lineBoxes(layout("x <span style='padding-right: 10px'>aaaaaaa</span>"));
 
-        assertThat(texts(lines)).containsExactly("x ", "aaaaaaa");
+        assertThat(texts(lines)).containsExactly("x", "aaaaaaa");
         assertThat(lines.get(1).getWidth()).isEqualTo(lineBoxes(layout("x " + SPAN)).get(1).getWidth() + 10);
     }
 
@@ -65,7 +65,7 @@ class InlineBoxEndLineBreakTest {
     void theEndOfABoxBeforeALineBreakMakesNoLineOfItsOwn() {
         List<LineBox> lines = lineBoxes(layout("x <span style='padding-right: 10px'>aaaaaaa</span><br/>y"));
 
-        assertThat(texts(lines)).containsExactly("x ", "aaaaaaa", "y");
+        assertThat(texts(lines)).containsExactly("x", "aaaaaaa", "y");
     }
 
     /** The end of a box which holds another one comes after the overflowing text of the inner box. */
@@ -73,7 +73,7 @@ class InlineBoxEndLineBreakTest {
     void theEndOfAnOuterBoxComesAfterTheTextOfTheInnerBox() {
         List<LineBox> lines = lineBoxes(layout("x <span style='padding-right: 10px'>aaaaaaa<b> bbbb</b></span>"));
 
-        assertThat(texts(lines)).containsExactly("x ", "aaaaaaa", "bbbb");
+        assertThat(texts(lines)).containsExactly("x", "aaaaaaa", "bbbb");
         assertThat(lines.get(2).getWidth())
                 .isEqualTo(lineBoxes(layout("x <span>aaaaaaa<b> bbbb</b></span>")).get(2).getWidth() + 10);
     }
@@ -167,7 +167,7 @@ class InlineBoxEndLineBreakTest {
         List<LineBox> lines = lineBoxes(layout(80, "<span style='padding-right: 30px'>aaa" +
                 "<img style='width: 40px; height: 5px' src='" + GIF + "'/>bbb ccc</span>"));
 
-        assertThat(texts(lines)).containsExactly("aaa", "bbb ", "ccc");
+        assertThat(texts(lines)).containsExactly("aaa", "bbb", "ccc");
         assertThat(images(lines.get(0))).hasSize(1);
     }
 
@@ -209,7 +209,7 @@ class InlineBoxEndLineBreakTest {
         List<LineBox> lines = lineBoxes(layout("x " + SPAN +
                 "<img style='float: left; width: 10px; height: 10px' src='" + GIF + "'/> y"));
 
-        assertThat(texts(lines)).containsExactly("x ", "aaaaaaa", "y");
+        assertThat(texts(lines)).containsExactly("x", "aaaaaaa", "y");
         assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getY).isEqualTo(lines.get(2).getY());
     }
 
@@ -249,7 +249,7 @@ class InlineBoxEndLineBreakTest {
         Box root = layout("x aaaaaaa" + ABS);
         List<LineBox> lines = lineBoxes(root);
 
-        assertThat(texts(lines)).containsExactly("x ", "aaaaaaa", "");
+        assertThat(texts(lines)).containsExactly("x", "aaaaaaa", "");
         assertThat(lines.getLast().getHeight()).isZero();
         assertThat(nonFlowContent(lines)).singleElement().extracting(Box::getAbsY)
                 .isEqualTo(lines.get(1).getAbsY() + lines.get(1).getHeight());
@@ -264,7 +264,7 @@ class InlineBoxEndLineBreakTest {
         List<LineBox> lines = lineBoxes(layout("div::first-line { text-transform: uppercase; }", 40,
                 "aaaaaaa<img style='width: 10px; height: 10px' src='" + GIF + "'/> bbb"));
 
-        assertThat(texts(lines)).containsExactly("AAAAAAA", " ", "bbb");
+        assertThat(texts(lines)).containsExactly("AAAAAAA", "", "bbb");
         assertThat(images(lines.get(1))).hasSize(1);
     }
 

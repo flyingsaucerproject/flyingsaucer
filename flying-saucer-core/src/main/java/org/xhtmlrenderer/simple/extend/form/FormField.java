@@ -25,6 +25,8 @@ import org.w3c.dom.Element;
 import org.xhtmlrenderer.css.parser.FSColor;
 import org.xhtmlrenderer.css.parser.FSRGBColor;
 import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.derived.NullableInsets;
+import org.xhtmlrenderer.css.style.derived.RectPropertySet;
 import org.xhtmlrenderer.extend.UserAgentCallback;
 import org.xhtmlrenderer.layout.LayoutContext;
 import org.xhtmlrenderer.render.BlockBox;
@@ -192,6 +194,38 @@ public abstract class FormField<T extends JComponent> {
 
     public BlockBox getBox() {
         return box;
+    }
+
+    /**
+     * CSS padding of the field, resolved anew instead of read from the box: the box padding is cached per style
+     * (shared by all fields with the same style) and reset by the fields that move it into the Swing component.
+     */
+    protected NullableInsets cssPadding() {
+        return box.getStyle().padding(containingBlockWidth(), context);
+    }
+
+    /**
+     * Content height given by CSS {@code height}, or {@code null} if the height is {@code auto}.
+     * <p>
+     * Resolved from the style instead of read from the box: the box height is not known yet
+     * when the field is created while measuring a shrink-to-fit box (inline-block, float).
+     */
+    @Nullable
+    protected Integer cssContentHeight() {
+        int cssHeight = box.getCSSHeight(context);
+        if (cssHeight == -1) {
+            return null;
+        }
+        if (box.getStyle().isBorderBox()) {
+            RectPropertySet padding = box.getStyle().resolvePadding(containingBlockWidth(), context);
+            // content height can't be negative, even if padding and border exceed the border-box height
+            cssHeight = Math.max(0, cssHeight - (int) padding.height() - (int) box.getBorder(context).height());
+        }
+        return cssHeight;
+    }
+
+    private int containingBlockWidth() {
+        return box.getContainingBlock().getContentWidth();
     }
 
     public LayoutContext getContext() {

@@ -66,7 +66,7 @@ public class InlineText implements InlineChild {
     private final Text _textNode;
 
     public void trimTrailingSpace(LayoutContext c) {
-        if (! isEmpty() && _hyphen.isEmpty() && _masterText.charAt(_end-1) == ' ') {
+        if (_end > _start && _hyphen.isEmpty() && _masterText.charAt(_end-1) == ' ') {
             _end--;
             setWidth(TextUtil.textWidth(c, getParent().getStyle(),
                     getParent().getStyle().getFSFont(c),
