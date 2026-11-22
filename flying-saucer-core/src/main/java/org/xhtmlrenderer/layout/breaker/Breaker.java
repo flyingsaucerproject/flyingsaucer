@@ -171,8 +171,8 @@ public class Breaker {
     }
 
     /**
-     * The text without the spaces at its end which do not count at the end of a line: spaces and tabs, which disappear,
-     * and other space separators, which hang unless a right border or padding follows them.
+     * The text without the spaces at its end which do not count at the end of a line: spaces, tabs and U+1680, which
+     * disappear, and other space separators, which hang unless a border or padding follows them.
      */
     private static String stripTrailingSpaces(String text, boolean edgeAfterText) {
         int end = text.length();
@@ -187,8 +187,9 @@ public class Breaker {
         return text.substring(0, end);
     }
 
+    /** A space which is removed at the end of a line of nowrap text: U+0020, a tab, or U+1680 (CSS Text 3, § 4.1.2). */
     private static boolean isCollapsibleSpace(char ch) {
-        return ch == ' ' || ch == '\t';
+        return ch == ' ' || ch == '\t' || ch == '\u1680';
     }
 
     /** A space which collapses or hangs at the end of a line: any space separator but U+00A0 (CSS Text 3, § 4.1.3). */

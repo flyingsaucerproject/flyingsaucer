@@ -197,6 +197,20 @@ class NowrapLineBreakTest {
                 .containsExactly("xx", "yyyyy\u2003");
     }
 
+    /** The left padding of an empty box after the space is between the space and the end of the line too. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeAnEmptyBoxWithALeftPaddingMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 85px'>xx <span style='white-space: nowrap'>yyyyy&#x2003;<i style='padding-left: 20px'></i></span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** A trailing ogham space mark is removed at the end of the line (CSS Text 3, § 4.1.2), even before a right padding. */
+    @Test
+    void aTrailingOghamSpaceMarkBeforeARightPaddingDoesNotMoveATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy&#x1680;</span></div>")))
+                .containsExactly("xx yyyyy\u1680");
+    }
+
     /** A margin is not between the space and the end of the line: the space still hangs. */
     @Test
     void aTrailingSpaceSeparatorBeforeARightMarginDoesNotMoveATextWhichMayNotBreak() {
