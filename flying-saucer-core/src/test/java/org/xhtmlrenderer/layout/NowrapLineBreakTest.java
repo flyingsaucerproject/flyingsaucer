@@ -143,6 +143,13 @@ class NowrapLineBreakTest {
                 .containsExactly("xx yyyyy");
     }
 
+    /** Other space separators at the end of a text which may not break hang at the end of the line (CSS Text 3, § 4.1.3). */
+    @Test
+    void aTrailingEmSpaceOfATextWhichMayNotBreakDoesNotMoveIt() {
+        assertThat(lines(layout("<div style='width: 80px'>xx <span style='white-space: nowrap'>yyyyy&#x2003;</span></div>")))
+                .containsExactly("xx yyyyy\u2003");
+    }
+
     /** Inside a text which may not break, a hyphen does not break the line either. */
     @Test
     void aLineDoesNotBreakAfterAHyphenInsideATextWhichMayNotBreak() {

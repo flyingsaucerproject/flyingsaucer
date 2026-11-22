@@ -104,7 +104,7 @@ public class Breaker {
             context.setEnd(context.getLast());
             String text = context.getCalculatedSubstring();
             context.setWidth(TextUtil.textWidth(c, style, font, text));
-            // A space at the end of the line disappears (CSS Text 3, § 4.1.3): it counts only where text is glued after it
+            // A space at the end of the line disappears or hangs (CSS Text 3, § 4.1.3): it counts only where text is glued after it
             String visible = gluedWidthAfter == 0 ? stripTrailingSpaces(text) : text;
             int width = visible.length() == text.length() ? context.getWidth() : TextUtil.textWidth(c, style, font, visible);
             checkGluedWidthFits(context, width, avail, gluedWidthAfter);
@@ -168,13 +168,19 @@ public class Breaker {
         }
     }
 
-    /** The text without the spaces and tabs at its end. */
+    /** The text without the spaces, tabs and other space separators at its end, which hang at the end of a line. */
     private static String stripTrailingSpaces(String text) {
         int end = text.length();
-        while (end > 0 && (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '\t')) {
+        while (end > 0 && isHangingSpace(text.charAt(end - 1))) {
             end--;
         }
         return text.substring(0, end);
+    }
+
+    /** A space which collapses or hangs at the end of a line: not a no-break space (CSS Text 3, § 4.1.3). */
+    private static boolean isHangingSpace(char ch) {
+        return ch == '\t' || Character.getType(ch) == Character.SPACE_SEPARATOR
+                && ch != '\u00A0' && ch != '\u2007' && ch != '\u202F';
     }
 
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Element element, CalculatedStyle style) {
