@@ -202,12 +202,12 @@ final class InlineBoundaryBreaks {
     /**
      * The break point between two boxes is a place to break only where the boxes may wrap
      * (<a href="https://www.w3.org/TR/css-text-3/#line-break-details">CSS Text 3, § 5.5</a>). The box which holds a
-     * space that disappears at the break decides alone. After any other character, such as a hyphen or an em space,
-     * the nearest common ancestor of the two boxes decides.
+     * space that disappears at the break decides alone. After any other character, such as a hyphen, an em space or a
+     * preserved space, the nearest common ancestor of the two boxes decides.
      */
     private boolean mayBreakBetween(InlineBox previous, InlineBox box, String before) {
         char last = before.charAt(before.length() - 1);
-        if (last == ' ' || last == '\t') {
+        if ((last == ' ' || last == '\t') && collapsesSpaces(previous.getStyle())) {
             return !isUnbreakable(previous.getStyle());
         }
         Element ancestor = commonAncestor(owner(previous), owner(box));
@@ -246,6 +246,12 @@ final class InlineBoundaryBreaks {
     private static boolean isUnbreakable(CalculatedStyle style) {
         IdentValue whitespace = style.getWhitespace();
         return whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE;
+    }
+
+    /** The spaces of the box collapse, so a space at the end of a line disappears. */
+    private static boolean collapsesSpaces(CalculatedStyle style) {
+        IdentValue whitespace = style.getWhitespace();
+        return whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE_LINE;
     }
 
     /** {@code word-break: break-all} adds places to break only where {@code white-space} lets the text wrap. */

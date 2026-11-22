@@ -75,6 +75,13 @@ class NowrapLineBreakTest {
                 .containsExactly("xx yyyyy");
     }
 
+    /** A preserved space does not disappear at the break: the block which holds both texts decides. */
+    @Test
+    void aLineBreaksAfterAPreservedSpaceAtTheEndOfAPreformattedText() {
+        assertThat(lines(layout("<div style='width: 40px'><span style='white-space: pre'>xx </span>yyyyy</div>")))
+                .containsExactly("xx ", "yyyyy");
+    }
+
     /** A preformatted text which does not fit before its first new line moves to the next line as well. */
     @Test
     void aPreformattedTextWithANewLineMovesToTheNextLineAfterASpace() {
