@@ -67,6 +67,10 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         switch (nodeName) {
             case "img":
                 String srcAttr = e.getAttribute("src");
+                BarcodeImage.Type barcodeType = BarcodeImage.Type.of(barcodeAttribute(e));
+                if (barcodeType != null) {
+                    return createBarcode(c, barcodeType, srcAttr, cssWidth, cssHeight);
+                }
                 if (!srcAttr.isEmpty()) {
                     FSImage fsImage = uac.getImageResource(srcAttr).getImage();
                     if (fsImage != null) {
@@ -116,6 +120,31 @@ public class ITextReplacedElementFactory implements ReplacedElementFactory {
         }
 
         return null;
+    }
+
+    /**
+     * {@code data-barcode} is the documented attribute.
+     * {@code type} is supported for backward compatibility with custom factories, see issue #444.
+     */
+    private static String barcodeAttribute(Element e) {
+        return e.hasAttribute("data-barcode") ? e.getAttribute("data-barcode") : e.getAttribute("type");
+    }
+
+    @Nullable
+    private static ReplacedElement createBarcode(LayoutContext c, BarcodeImage.Type type, String code, int cssWidth, int cssHeight) {
+        if (code.isEmpty()) {
+            return null;
+        }
+        FSImage barcode = BarcodeImage.create(type, code, c.getDotsPerPixel());
+        if (barcode == null) {
+            return null;
+        }
+        if (cssWidth != -1 || cssHeight != -1) {
+            barcode = type.linear() ?
+                barcode.scale(cssWidth == -1 ? barcode.getWidth() : cssWidth, cssHeight == -1 ? barcode.getHeight() : cssHeight) :
+                barcode.scale(cssWidth, cssHeight);
+        }
+        return new ITextImageElement(barcode);
     }
 
     private static byte[] serializeToXml(Element e) {
