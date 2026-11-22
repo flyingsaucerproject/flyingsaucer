@@ -115,10 +115,10 @@ final class InlineBoundaryBreaks {
                 : style.getBorder(c).right() > 0 || style.getPaddingRect(cbWidth, c).right() > 0;
     }
 
-    /** The box has no text, or only spaces which disappear at the end of a line. */
+    /** The box has no text, or only spaces which disappear at the end of a line: U+0020 and U+1680 (CSS Text 3, § 4.1.2). */
     private static boolean disappears(InlineBox box) {
         String text = text(box);
-        return text.isEmpty() || collapsesSpaces(box.getStyle()) && text.chars().allMatch(ch -> ch == ' ');
+        return text.isEmpty() || collapsesSpaces(box.getStyle()) && text.chars().allMatch(ch -> ch == ' ' || ch == OGHAM_SPACE_MARK);
     }
 
     private Lead lead(int index) {
