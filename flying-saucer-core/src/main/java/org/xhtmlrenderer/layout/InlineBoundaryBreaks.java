@@ -30,7 +30,8 @@ import static java.util.Objects.requireNonNull;
  * An inline-block or an inline-table ends the text before it. The text after it is glued to it only where their
  * nearest common ancestor does not let the line wrap. A box out of the flow, or an inline box with no text, is
  * skipped. A text which may break between any two letters ({@code word-break: break-all}) is glued
- * to nothing, unless {@code white-space} does not let it wrap.
+ * to nothing, unless {@code white-space} does not let it wrap. The text after it is glued to it only where the
+ * boundary between them may not break.
  */
 final class InlineBoundaryBreaks {
     private final LayoutContext c;
@@ -100,7 +101,7 @@ final class InlineBoundaryBreaks {
         if (previousContent instanceof BlockBox atomic) {
             return mayBreakAfter(atomic, box) ? Lead.NOT_GLUED : lead(box, firstBreakPoint(box));
         }
-        if (!(previousContent instanceof InlineBox previous) || breaksAnywhere(previous.getStyle())) {
+        if (!(previousContent instanceof InlineBox previous)) {
             return Lead.NOT_GLUED;
         }
 
@@ -108,6 +109,10 @@ final class InlineBoundaryBreaks {
         String before = text(previous);
         if (before.charAt(before.length() - 1) == WhitespaceStripper.EOLC) {
             return Lead.NOT_GLUED; // a forced line break ends the text before
+        }
+        if (breaksAnywhere(previous.getStyle())) {
+            // The text before may break after its last letter, where white-space lets the line wrap there
+            return mayBreakBetween(previous, box, before) ? Lead.NOT_GLUED : lead(box, firstBreakPoint(box));
         }
         String text = text(box);
         String joined = before + text;

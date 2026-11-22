@@ -150,6 +150,14 @@ class NowrapLineBreakTest {
                 .containsExactly("xx yyyyy\u2003");
     }
 
+    /** The block which may not wrap decides the boundary after a text which breaks anywhere. */
+    @Test
+    void aTextStaysAfterATextWhichBreaksAnywhereWhereTheBlockMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 40px; white-space: nowrap'>" +
+                "<span style='white-space: normal; word-break: break-all'>x</span><span>yyyyy</span></div>")))
+                .containsExactly("xyyyyy");
+    }
+
     /** Inside a text which may not break, a hyphen does not break the line either. */
     @Test
     void aLineDoesNotBreakAfterAHyphenInsideATextWhichMayNotBreak() {
