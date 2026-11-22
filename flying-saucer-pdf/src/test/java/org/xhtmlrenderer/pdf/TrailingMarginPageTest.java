@@ -77,6 +77,13 @@ class TrailingMarginPageTest {
                 "html { min-height: 900pt; } body { margin-bottom: 1000pt; }")).isEqualTo(2);
     }
 
+    /** A float in an inline-block overflows the line: the pages it reaches stay. */
+    @Test
+    void aFloatInAnInlineBlockKeepsItsPages() {
+        assertThat(pages("<p style='margin: 0'><span style='display: inline-block; height: 10pt'>" +
+                "<span style='float: left; width: 40pt; height: 1000pt; background: #ccc'></span></span></p>")).isEqualTo(2);
+    }
+
     private static int pages(String body) {
         return pages(body, "");
     }

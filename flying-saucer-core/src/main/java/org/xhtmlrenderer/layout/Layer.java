@@ -35,6 +35,7 @@ import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.render.BlockBox.Position;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxDimensions;
+import org.xhtmlrenderer.render.InlineChild;
 import org.xhtmlrenderer.render.InlineLayoutBox;
 import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.PageBox;
@@ -345,9 +346,27 @@ public final class Layer {
     private static int contentBottom(CssContext c, Box box) {
         if (box instanceof LineBox line) {
             Rectangle bounds = line.calcPaintingInfo(c, true).getAggregateBounds();
-            return bounds.y + bounds.height;
+            int bottom = bounds.y + bounds.height;
+            for (Box child : line.getChildren()) {
+                bottom = Math.max(bottom, inlineContentBottom(c, child));
+            }
+            return bottom;
         }
         return Math.max(borderBottom(c, box), childrenBottom(c, box));
+    }
+
+    /** The bottom of the boxes in a line. An inline-block holds its own floats, which may overflow the line. */
+    private static int inlineContentBottom(CssContext c, Box box) {
+        if (!(box instanceof InlineLayoutBox inline)) {
+            return contentBottom(c, box);
+        }
+        int bottom = 0;
+        for (InlineChild child : inline.getInlineChildren()) {
+            if (child instanceof Box childBox) {
+                bottom = Math.max(bottom, inlineContentBottom(c, childBox));
+            }
+        }
+        return bottom;
     }
 
     /** The bottom of the children and floats of the box, where they may overflow it. */
