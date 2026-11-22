@@ -89,12 +89,16 @@ final class InlineBoundaryBreaks {
     /**
      * A border or padding follows the text of the box at {@code index} before any other content: a space separator at
      * the end of the text does not hang there (CSS Text 3, § 8.2). It is the right edge of a box which ends, or the left
-     * edge of an empty box after the text. Lines run left to right. A margin does not count.
+     * edge of an empty box after the text. Lines run left to right. A margin does not count, nor a box out of the flow.
      */
     @CheckReturnValue
     boolean edgeAfterText(int index) {
         for (int i = index; i < content.size(); i++) {
-            if (!(content.get(i) instanceof InlineBox box) || i > index && !disappears(box)) {
+            Styleable child = content.get(i);
+            if (!(child instanceof InlineBox) && isTransparent(child)) {
+                continue; // out of the flow
+            }
+            if (!(child instanceof InlineBox box) || i > index && !disappears(box)) {
                 return false;
             }
             CalculatedStyle style = box.getStyle();

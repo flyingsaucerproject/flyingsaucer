@@ -211,6 +211,14 @@ class NowrapLineBreakTest {
                 .containsExactly("xx yyyyy\u1680");
     }
 
+    /** An absolute box after the space is out of the flow: the right padding of the outer box still follows the space. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeAnAbsoluteBoxAndARightPaddingMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='padding-right: 20px'>" +
+                "<span style='white-space: nowrap'>yyyyy&#x2003;</span><b style='position: absolute'></b></span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
     /** A margin is not between the space and the end of the line: the space still hangs. */
     @Test
     void aTrailingSpaceSeparatorBeforeARightMarginDoesNotMoveATextWhichMayNotBreak() {
