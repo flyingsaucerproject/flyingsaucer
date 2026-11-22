@@ -213,6 +213,9 @@ final class InlineBoundaryBreaks {
         if ((last == ' ' || last == '\t') && collapsesSpaces(previous.getStyle())) {
             return !isUnbreakable(previous.getStyle());
         }
+        if (inSamePseudoElement(previous, box)) {
+            return !isUnbreakable(previous.getStyle());
+        }
         Element ancestor = commonAncestor(owner(previous), owner(box));
         if (ancestor == null) {
             return !isUnbreakable(previous.getStyle()) && !isUnbreakable(box.getStyle());
@@ -231,6 +234,17 @@ final class InlineBoundaryBreaks {
             return text.getParentNode() instanceof Element parent ? parent : null;
         }
         return box.getElement();
+    }
+
+    /**
+     * Both boxes are parts of the content of one pseudo-element, such as {@code content: "a" attr(title)}. The
+     * pseudo-element holds both, so its style decides, not the style of its element.
+     */
+    private static boolean inSamePseudoElement(InlineBox previous, InlineBox box) {
+        String pseudo = box.getPseudoElementOrClass();
+        return pseudo != null && pseudo.equals(previous.getPseudoElementOrClass())
+                && previous.getTextNode() == null && box.getTextNode() == null
+                && previous.getElement() == box.getElement();
     }
 
     /** The nearest element which is or holds both elements, or {@code null} if none. */

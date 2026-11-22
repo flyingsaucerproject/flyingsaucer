@@ -121,6 +121,14 @@ class NowrapLineBreakTest {
                 .containsExactly("Pseudo-", "element");
     }
 
+    /** Both parts of the content of a pseudo-element are in the pseudo-element: its style decides, not the style of its element. */
+    @Test
+    void aLineBreaksAfterAHyphenInsideAPseudoElementWhichMayBreak() {
+        String css = "div::before { white-space: normal; content: 'Pseudo-' attr(title); }";
+        assertThat(lines(layout(css, "<div title='element' style='width: 80px; white-space: nowrap'></div>")))
+                .containsExactly("Pseudo-", "element");
+    }
+
     /** The space at the end of a text which may not break disappears at the end of the line: it does not count. */
     @Test
     void aTrailingSpaceOfATextWhichMayNotBreakDoesNotMoveIt() {
