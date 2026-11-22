@@ -89,6 +89,13 @@ class NowrapLineBreakTest {
                 .containsExactly("xx", "yyyyy", "z");
     }
 
+    /** The right padding of a preformatted text is on its last line: the text before its first new line fits without it. */
+    @Test
+    void aPreformattedTextFitsBeforeItsNewLineWithoutItsRightPadding() {
+        assertThat(lines(layout("<div style='width: 40px'>xx <span style='white-space: pre; padding-right: 20px'>y\nz</span></div>")))
+                .containsExactly("xx y", "z");
+    }
+
     /** The line before the preformatted text does not end on its new line: a justified line stays justified. */
     @Test
     void theLineBeforeAPreformattedTextWhichMovesDoesNotEndOnANewLine() {

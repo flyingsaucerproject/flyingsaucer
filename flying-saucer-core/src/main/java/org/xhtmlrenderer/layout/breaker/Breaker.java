@@ -85,6 +85,16 @@ public class Breaker {
      */
     public static void breakText(LayoutContext c,
             LineBreakContext context, int avail, int fullLineWidth, CalculatedStyle style, int gluedWidthAfter) {
+        breakText(c, context, avail, fullLineWidth, style, gluedWidthAfter, 0);
+    }
+
+    /**
+     * Breaks the text as {@link #breakText(LayoutContext, LineBreakContext, int, int, CalculatedStyle, int)} does, where
+     * {@code avail} keeps {@code endEdges} for the right margin, border and padding of the inline boxes which end with
+     * the text. A preformatted text before a new line does not end those boxes, so it may take that width.
+     */
+    public static void breakText(LayoutContext c, LineBreakContext context, int avail, int fullLineWidth,
+                                 CalculatedStyle style, int gluedWidthAfter, int endEdges) {
         FSFont font = style.getFSFont(c);
         IdentValue whitespace = style.getWhitespace();
         context.setHyphen("");
@@ -114,7 +124,7 @@ public class Breaker {
                 context.setEndsOnNL(true);
                 if (whitespace == IdentValue.PRE && eol > context.getStart()) {
                     // The text before the new line may not break: it moves whole to the next line if it does not fit
-                    checkGluedWidthFits(context, context.getWidth(), avail, 0);
+                    checkGluedWidthFits(context, context.getWidth(), avail + endEdges, 0);
                 }
             } else if (whitespace == IdentValue.PRE) {
                 context.setEnd(context.getLast());
