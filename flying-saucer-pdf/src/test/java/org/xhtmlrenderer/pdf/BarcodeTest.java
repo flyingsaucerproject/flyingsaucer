@@ -113,6 +113,7 @@ class BarcodeTest {
         "ean8-too-long, ean8, 963850745",
         "upca-too-long, upca, 0360002914520",
         "upce-too-short, upce, 0425261",
+        "upce-number-system, upce, 24252611",
         "inter25-letters, inter25, AB1234",
         "datamatrix-non-latin1, datamatrix, 订单42",
         "pdf417-non-latin1, pdf417, 订单42",
@@ -121,6 +122,13 @@ class BarcodeTest {
         byte[] pdf = renderHtml("barcode-invalid-%s.pdf".formatted(fileName), "<img data-barcode=\"%s\" src=\"%s\"/>".formatted(type, code));
 
         assertThat(images(pdf)).isEmpty();
+    }
+
+    @Test
+    void upce_supportsNumberSystem1() throws IOException {
+        byte[] pdf = renderHtml("barcode-upce-number-system-1.pdf", "<img data-barcode=\"upce\" src=\"14252611\"/>");
+
+        assertThat(images(pdf)).hasSize(1);
     }
 
     @ParameterizedTest
