@@ -1,7 +1,23 @@
 # Changelog
 
-## 10.7.1 (xx.10.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/55?closed=1
+## 10.8.0 (22.11.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/55?closed=1
+* #449 generate barcodes on the fly for `<img data-barcode="...">` (#789)
+* #763 Break a line at `<wbr>` (#764)
+* #753 fix: break a line after a zero width space / by Sergey Grigoriev (#758)
 * #752 fix: A line breaks where an inline element starts or ends inside a word (#754)
+* #755 #767 No line break at an inline box inside a word / by Sergey Grigoriev (#768)
+* #755 #767 Move a word to the next line before break-word breaks it (#770)
+* #756 Keep the end of an inline box on the line of its overflowing text / by Sergey Grigoriev (#771)
+* #772 fix: move a nowrap text that does not fit to the next line / by Sergey Grigoriev (#786)
+* #779 fix: trim the trailing space of every wrapped line (also with `white-space: pre-line`) / by Sergey Grigoriev (#787)
+* #778 fix: cover justified text with inline backgrounds and borders (#780)
+* #757 speed up hyphenation of long texts; do not insert a hyphen into the text for each hyphenated line (#766) (#769)
+* #757 perf: search for a slash only up to the next break / by Sergey Grigoriev (#766)
+* #782 fix: NullPointerException for `<input type="text">` in XHTMLPanel / by 0z5a (#783)
+* fix: apply CSS styles (height, padding) to form fields, including `<input type="password">`, in XHTMLPanel (#784)
+* Bump FOP from 2.11 to 2.12
+* Bump Batik from 1.19 to 1.20
+
 
 ## 10.7.0 (24.10.2026) - see https://github.com/flyingsaucerproject/flyingsaucer/milestone/54?closed=1
 * #500 Expand/collapse <details> on click on <summary> in XHTMLPanel (#744)
