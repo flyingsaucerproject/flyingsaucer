@@ -55,7 +55,7 @@ public final class BarcodeImage {
         EAN13(true, code -> linear(new BarcodeEAN(), Barcode.EAN13, digits(code, 13))),
         EAN8(true, code -> linear(new BarcodeEAN(), Barcode.EAN8, digits(code, 8))),
         UPCA(true, code -> linear(new BarcodeEAN(), Barcode.UPCA, digits(code, 12))),
-        UPCE(true, code -> linear(new BarcodeEAN(), Barcode.UPCE, digits(code, 8))),
+        UPCE(true, code -> linear(new BarcodeEAN(), Barcode.UPCE, upce(code))),
         INTER25(true, code -> linear(new BarcodeInter25(), digits(code))),
         POSTNET(true, code -> linear(new BarcodePostnet(), code)),
         PLANET(true, code -> linear(new BarcodePostnet(), Barcode.PLANET, code)),
@@ -128,6 +128,17 @@ public final class BarcodeImage {
                 throw new IllegalArgumentException("Expected %s digits, but got %s characters".formatted(length, code.length()));
             }
             return digits(code);
+        }
+
+        /**
+         * UPC-E number system is either 0 or 1. OpenPDF treats any other first digit as 1.
+         */
+        private static String upce(String code) {
+            String digits = digits(code, 8);
+            if (digits.charAt(0) != '0' && digits.charAt(0) != '1') {
+                throw new IllegalArgumentException("UPC-E number system must be 0 or 1");
+            }
+            return digits;
         }
 
         private static String digits(String code) {
