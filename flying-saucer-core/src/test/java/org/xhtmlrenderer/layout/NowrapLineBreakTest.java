@@ -144,10 +144,11 @@ class NowrapLineBreakTest {
     }
 
     /** Other space separators at the end of a text which may not break hang at the end of the line (CSS Text 3, § 4.1.3). */
-    @Test
-    void aTrailingEmSpaceOfATextWhichMayNotBreakDoesNotMoveIt() {
-        assertThat(lines(layout("<div style='width: 80px'>xx <span style='white-space: nowrap'>yyyyy&#x2003;</span></div>")))
-                .containsExactly("xx yyyyy\u2003");
+    @ParameterizedTest
+    @ValueSource(strings = {"\u2003", "\u2007", "\u202F"})
+    void aTrailingSpaceSeparatorOfATextWhichMayNotBreakDoesNotMoveIt(String space) {
+        assertThat(lines(layout("<div style='width: 80px'>xx <span style='white-space: nowrap'>yyyyy" + space + "</span></div>")))
+                .containsExactly("xx yyyyy" + space);
     }
 
     /** The block which may not wrap decides the boundary after a text which breaks anywhere. */

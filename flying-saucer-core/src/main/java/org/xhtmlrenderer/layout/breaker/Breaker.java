@@ -177,10 +177,9 @@ public class Breaker {
         return text.substring(0, end);
     }
 
-    /** A space which collapses or hangs at the end of a line: not a no-break space (CSS Text 3, § 4.1.3). */
+    /** A space which collapses or hangs at the end of a line: any space separator but U+00A0 (CSS Text 3, § 4.1.3). */
     private static boolean isHangingSpace(char ch) {
-        return ch == '\t' || Character.getType(ch) == Character.SPACE_SEPARATOR
-                && ch != '\u00A0' && ch != '\u2007' && ch != '\u202F';
+        return ch == '\t' || Character.getType(ch) == Character.SPACE_SEPARATOR && ch != '\u00A0';
     }
 
     public static BreakPointsProvider getBreakPointsProvider(String text, LayoutContext c, Element element, CalculatedStyle style) {
