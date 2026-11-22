@@ -334,7 +334,7 @@ public class ITextRenderer {
         root.layout(c);
         c.getSharedContext().logUnsupportedFeatures();
         _dim = root.getLayer().getPaintingDimension(c);
-        root.getLayer().trimEmptyPages(_dim.height);
+        root.getLayer().trimEmptyPages(root.getLayer().getContentBottom(c));
         root.getLayer().layoutPages(c);
         _root = root;
     }

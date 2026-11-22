@@ -36,6 +36,7 @@ import org.xhtmlrenderer.render.BlockBox.Position;
 import org.xhtmlrenderer.render.Box;
 import org.xhtmlrenderer.render.BoxDimensions;
 import org.xhtmlrenderer.render.InlineLayoutBox;
+import org.xhtmlrenderer.render.LineBox;
 import org.xhtmlrenderer.render.PageBox;
 import org.xhtmlrenderer.render.RenderingContext;
 import org.xhtmlrenderer.render.ViewportBox;
@@ -309,6 +310,69 @@ public final class Layer {
     @CheckReturnValue
     public Dimension getPaintingDimension(LayoutContext c) {
         return calcPaintingDimension(c).getOuterMarginCorner();
+    }
+
+    /**
+     * The bottom of the boxes of the layer without their margins. A margin is not painted, and a margin at the end of
+     * the document truncates at the end of the last page
+     * (<a href="https://www.w3.org/TR/css-break-3/#break-margins">CSS Fragmentation 3, § 5.2</a>): it adds no page.
+     */
+    @CheckReturnValue
+    public int getContentBottom(CssContext c) {
+        Box master = getMaster();
+        int bottom;
+        if (isRootLayer()) {
+            // The border box of the root holds the margins of its children. It counts only where it ends with more than
+            // them, where it has a height or a minimum height of its own, or where it clips its children.
+            CalculatedStyle style = master.getStyle();
+            boolean ownExtent = !style.isAutoHeight() || style.asFloat(CSSName.MIN_HEIGHT) > 0
+                    || style.isOverflowApplies() && !style.isOverflowVisible()
+                    || master.getBorder(c).bottom() > 0 || master.getPadding(c).bottom() > 0;
+            bottom = ownExtent ? borderBottom(c, master) : 0;
+            bottom = Math.max(bottom, childrenBottom(c, master));
+        } else {
+            bottom = contentBottom(c, master);
+        }
+        for (Layer child : getChildren()) {
+            CalculatedStyle style = child.getMaster().getStyle();
+            if (style != null && !style.isFixed() && style.isAbsolute()) {
+                bottom = Math.max(bottom, child.getContentBottom(c));
+            }
+        }
+        return bottom;
+    }
+
+    private static int contentBottom(CssContext c, Box box) {
+        if (box instanceof LineBox line) {
+            Rectangle bounds = line.calcPaintingInfo(c, true).getAggregateBounds();
+            return bounds.y + bounds.height;
+        }
+        return Math.max(borderBottom(c, box), childrenBottom(c, box));
+    }
+
+    /** The bottom of the children and floats of the box, where they may overflow it. */
+    private static int childrenBottom(CssContext c, Box box) {
+        CalculatedStyle style = box.getStyle();
+        if (style != null && style.isOverflowApplies() && !style.isOverflowVisible()) {
+            return 0;
+        }
+        int bottom = 0;
+        for (Box child : box.getChildren()) {
+            bottom = Math.max(bottom, contentBottom(c, child));
+        }
+        PersistentBFC bfc = box instanceof BlockBox block ? block.getPersistentBFC() : null;
+        if (bfc != null) {
+            int[] floatsBottom = {bottom};
+            bfc.getFloatManager().performFloatOperation(
+                    floater -> floatsBottom[0] = Math.max(floatsBottom[0], contentBottom(c, floater)));
+            bottom = floatsBottom[0];
+        }
+        return bottom;
+    }
+
+    private static int borderBottom(CssContext c, Box box) {
+        Rectangle border = box.getBorderEdge(box.getAbsX(), box.getAbsY(), c);
+        return border.y + border.height;
     }
 
     public void paint(RenderingContext c) {
