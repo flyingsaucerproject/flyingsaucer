@@ -66,8 +66,11 @@ public class InlineText implements InlineChild {
     private final Text _textNode;
 
     public void trimTrailingSpace(LayoutContext c) {
-        if (_end > _start && _hyphen.isEmpty() && _masterText.charAt(_end-1) == ' ') {
-            _end--;
+        // A trailing U+1680 is removed with the spaces where they collapse (CSS Text 3, § 4.1.2)
+        if (_end > _start && _hyphen.isEmpty() && (_masterText.charAt(_end - 1) == ' ' || _masterText.charAt(_end - 1) == '\u1680')) {
+            while (_end > _start && (_masterText.charAt(_end - 1) == ' ' || _masterText.charAt(_end - 1) == '\u1680')) {
+                _end--;
+            }
             setWidth(TextUtil.textWidth(c, getParent().getStyle(),
                     getParent().getStyle().getFSFont(c),
                     getSubstring()));

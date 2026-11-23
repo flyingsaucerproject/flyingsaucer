@@ -106,10 +106,10 @@ public class Breaker {
             context.setWidth(TextUtil.textWidth(c, style, font, text));
             // A space at the end of the line disappears or hangs (CSS Text 3, § 4.1.3): it counts only where text is glued
             // after it. A right border or padding after it keeps a space separator from hanging (CSS Text 3, § 8.2).
-            // Only nowrap lets a space separator hang so far: the other values count it, as if an edge followed it.
-            String visible = gluedWidthAfter == 0 ? stripTrailingSpaces(text, context.edgeAfterText()) : text;
-            int width = visible.length() == text.length() ? context.getWidth() : TextUtil.textWidth(c, style, font, visible);
-            checkGluedWidthFits(context, width, avail, gluedWidthAfter);
+            int hanging = gluedWidthAfter == 0
+                    ? hangingWidth(c, style, font, context.getMaster(), context.getStart(), context.getEnd(), context.edgeAfterText())
+                    : 0;
+            checkGluedWidthFits(context, context.getWidth() - hanging, avail, gluedWidthAfter);
             return;
         }
 
@@ -171,23 +171,32 @@ public class Breaker {
     }
 
     /**
-     * The text without the spaces at its end which do not count at the end of a line: spaces, tabs and U+1680, which
-     * disappear, and other space separators, which hang unless a border or padding follows them.
+     * The width of the spaces at the end of {@code master[start, end)} which do not count where the line ends there. Where
+     * the spaces collapse, spaces, tabs and U+1680 disappear (CSS Text 3, § 4.1.2). Other spaces hang (§ 4.1.3), unless
+     * a border or padding follows them ({@code edgeAfter}, § 8.2).
      */
-    private static String stripTrailingSpaces(String text, boolean edgeAfterText) {
-        int end = text.length();
-        while (end > 0 && isCollapsibleSpace(text.charAt(end - 1))) {
-            end--;
-        }
-        if (!edgeAfterText) {
-            while (end > 0 && isHangingSpace(text.charAt(end - 1))) {
-                end--;
+    private static int hangingWidth(LayoutContext c, CalculatedStyle style, FSFont font, String master, int start, int end,
+                                    boolean edgeAfter) {
+        int visibleEnd = end;
+        if (collapsesSpaces(style)) {
+            while (visibleEnd > start && isCollapsibleSpace(master.charAt(visibleEnd - 1))) {
+                visibleEnd--;
             }
         }
-        return text.substring(0, end);
+        if (!edgeAfter) {
+            while (visibleEnd > start && isHangingSpace(master.charAt(visibleEnd - 1))) {
+                visibleEnd--;
+            }
+        }
+        return visibleEnd == end ? 0 : TextUtil.textWidth(c, style, font, master.substring(visibleEnd, end));
     }
 
-    /** A space which is removed at the end of a line of nowrap text: U+0020, a tab, or U+1680 (CSS Text 3, § 4.1.2). */
+    private static boolean collapsesSpaces(CalculatedStyle style) {
+        IdentValue whitespace = style.getWhitespace();
+        return whitespace == IdentValue.NORMAL || whitespace == IdentValue.NOWRAP || whitespace == IdentValue.PRE_LINE;
+    }
+
+    /** A space which is removed at the end of a line where the spaces collapse: U+0020, a tab, or U+1680 (CSS Text 3, § 4.1.2). */
     private static boolean isCollapsibleSpace(char ch) {
         return ch == ' ' || ch == '\t' || ch == '\u1680';
     }
@@ -298,8 +307,13 @@ public class Breaker {
             int widthWithHyphen = previousWidth + (printsHyphen ? TextUtil.textWidth(c, style, f, part + bp.hyphen()) : partWidth);
             previousWidth += partWidth;
             previousPosition = bp.position();
-            int glued = start + previousPosition == master.length() ? gluedWidthAfter : 0;
-            if (widthWithHyphen + glued > avail) break;
+            boolean atEnd = start + previousPosition == master.length();
+            int glued = atEnd ? gluedWidthAfter : 0;
+            // The spaces before the break disappear or hang where the line ends there
+            int hanging = glued == 0 && !printsHyphen
+                    ? hangingWidth(c, style, f, master, start, start + previousPosition, atEnd && context.edgeAfterText())
+                    : 0;
+            if (widthWithHyphen - hanging + glued > avail) break;
             right = previousPosition;
             rightWidth = widthWithHyphen;
             lastBreakPoint = bp;
@@ -312,7 +326,10 @@ public class Breaker {
         if (bp != null && bp.position() == BreakIterator.DONE) {
             String tail = master.substring(start + previousPosition);
             fitsWidth = previousWidth + (tail.isEmpty() ? 0 : TextUtil.textWidth(c, style, f, tail));
-            fits = fitsWidth + gluedWidthAfter <= avail;
+            int hanging = gluedWidthAfter == 0
+                    ? hangingWidth(c, style, f, master, start, master.length(), context.edgeAfterText())
+                    : 0;
+            fits = fitsWidth - hanging + gluedWidthAfter <= avail;
         }
 
         // add hyphen if needed

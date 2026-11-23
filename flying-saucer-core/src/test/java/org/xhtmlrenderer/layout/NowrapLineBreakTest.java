@@ -208,7 +208,7 @@ class NowrapLineBreakTest {
     @Test
     void aTrailingOghamSpaceMarkBeforeARightPaddingDoesNotMoveATextWhichMayNotBreak() {
         assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy&#x1680;</span></div>")))
-                .containsExactly("xx yyyyy\u1680");
+                .containsExactly("xx yyyyy");
     }
 
     /** An absolute box after the space is out of the flow: the right padding of the outer box still follows the space. */
@@ -224,7 +224,37 @@ class NowrapLineBreakTest {
     void aTrailingSpaceSeparatorBeforeAnOghamSpaceMarkAndARightPaddingMovesATextWhichMayNotBreak() {
         assertThat(lines(layout("<div style='width: 100px'>xx <span style='padding-right: 20px'>" +
                 "<span style='white-space: nowrap'>yyyyy&#x2003;</span>&#x1680;</span></div>")))
-                .containsExactly("xx", "yyyyy\u2003\u1680");
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** A space at the end of a line disappears where the text may wrap too: it does not count (CSS Text 3, § 4.1.2). */
+    @ParameterizedTest
+    @ValueSource(strings = {"normal", "pre-line"})
+    void aSpaceAtABreakDoesNotCountWhereTheTextMayWrap(String whiteSpace) {
+        assertThat(lines(layout("<div style='width: 70px; white-space: " + whiteSpace + "'>xx aaaa bbbb</div>")))
+                .containsExactly("xx aaaa", "bbbb");
+    }
+
+    /** A preserved space at the end of a line hangs (CSS Text 3, § 4.1.3): it does not count either. */
+    @Test
+    void aPreservedSpaceAtABreakDoesNotCount() {
+        assertThat(lines(layout("<div style='width: 70px; white-space: pre-wrap'>xx aaaa bbbb</div>")))
+                .containsExactly("xx aaaa ", "bbbb");
+    }
+
+    /** Other space separators at the end of a line hang where the text may wrap too (CSS Text 3, § 4.1.3). */
+    @ParameterizedTest
+    @ValueSource(strings = {"normal", "pre-wrap", "pre-line"})
+    void aSpaceSeparatorAtABreakDoesNotCountWhereTheTextMayWrap(String whiteSpace) {
+        assertThat(lines(layout("<div style='width: 70px; white-space: " + whiteSpace + "'>xx aaaa&#x2003;bbbb</div>")))
+                .containsExactly("xx aaaa\u2003", "bbbb");
+    }
+
+    /** A space separator at the end of a text which may wrap hangs unless a right padding follows it. */
+    @Test
+    void aTrailingSpaceSeparatorWithoutAnEdgeDoesNotMoveAWordWhichMayWrap() {
+        assertThat(lines(layout("<div style='width: 80px'>xx <span>yyyyy&#x2003;</span></div>")))
+                .containsExactly("xx yyyyy\u2003");
     }
 
     /** A margin is not between the space and the end of the line: the space still hangs. */
