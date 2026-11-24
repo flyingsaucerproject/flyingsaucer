@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.layout;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -207,8 +209,23 @@ class NowrapLineBreakTest {
     /** A trailing ogham space mark is removed at the end of the line (CSS Text 3, § 4.1.2), even before a right padding. */
     @Test
     void aTrailingOghamSpaceMarkBeforeARightPaddingDoesNotMoveATextWhichMayNotBreak() {
-        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy&#x1680;</span></div>")))
-                .containsExactly("xx yyyyy");
+        Box root = layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy&#x1680;</span></div>");
+        Box withoutMark = layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy</span></div>");
+
+        assertThat(lines(root)).containsExactly("xx yyyyy");
+        assertThat(rightEdgeOfSpan(root)).isEqualTo(rightEdgeOfSpan(withoutMark));
+    }
+
+    /** The text before a hanging space is measured whole: each measured text rounds its width up. */
+    @ParameterizedTest
+    @ValueSource(strings = {"normal", "0.5px"})
+    void aTextWhichMayNotBreakFitsBeforeAHangingSpaceAsItFitsWithoutIt(String letterSpacing) {
+        for (int width = 40; width <= 120; width++) {
+            String div = "<div style='width: " + width + "px'>xx <span style='white-space: nowrap; letter-spacing: " + letterSpacing + "'>yyyy";
+            assertThat(lines(layout(div + "&#x2003;</span></div>")))
+                    .as("width %s", width)
+                    .hasSameSizeAs(lines(layout(div + "</span></div>")));
+        }
     }
 
     /** An absolute box after the space is out of the flow: the right padding of the outer box still follows the space. */
@@ -354,6 +371,31 @@ class NowrapLineBreakTest {
             graphics.dispose();
         }
         return renderer.getPanel().getRootBox();
+    }
+
+    /** The right edge of the first {@code span} box in the box tree, with its right padding. */
+    private static int rightEdgeOfSpan(Box root) {
+        InlineLayoutBox span = requireNonNull(findSpan(root));
+        return span.getAbsX() + span.getInlineWidth();
+    }
+
+    private static @Nullable InlineLayoutBox findSpan(Box box) {
+        if (box instanceof InlineLayoutBox inline && inline.getElement() != null && "span".equals(inline.getElement().getLocalName())) {
+            return inline;
+        }
+        List<Object> children = new ArrayList<>(box.getChildren());
+        if (box instanceof InlineLayoutBox inline) {
+            children.addAll(inline.getInlineChildren());
+        }
+        for (Object child : children) {
+            if (child instanceof Box childBox) {
+                InlineLayoutBox span = findSpan(childBox);
+                if (span != null) {
+                    return span;
+                }
+            }
+        }
+        return null;
     }
 
     /** The text of each line with text in the box tree, in document order. */

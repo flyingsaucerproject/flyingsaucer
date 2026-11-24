@@ -106,10 +106,14 @@ public class Breaker {
             context.setWidth(TextUtil.textWidth(c, style, font, text));
             // A space at the end of the line disappears or hangs (CSS Text 3, § 4.1.3): it counts only where text is glued
             // after it. A right border or padding after it keeps a space separator from hanging (CSS Text 3, § 8.2).
-            int hanging = gluedWidthAfter == 0
-                    ? hangingWidth(c, style, font, context.getMaster(), context.getStart(), context.getEnd(), context.edgeAfterText())
-                    : 0;
-            checkGluedWidthFits(context, context.getWidth() - hanging, avail, gluedWidthAfter);
+            // The text before such spaces is measured whole, as each measured text rounds its width up.
+            int visibleEnd = gluedWidthAfter == 0
+                    ? visibleEnd(style, context.getMaster(), context.getStart(), context.getEnd(), context.edgeAfterText())
+                    : context.getEnd();
+            int visibleWidth = visibleEnd == context.getEnd()
+                    ? context.getWidth()
+                    : TextUtil.textWidth(c, style, font, context.getMaster().substring(context.getStart(), visibleEnd));
+            checkGluedWidthFits(context, visibleWidth, avail, gluedWidthAfter);
             return;
         }
 
@@ -177,6 +181,15 @@ public class Breaker {
      */
     private static int hangingWidth(LayoutContext c, CalculatedStyle style, FSFont font, String master, int start, int end,
                                     boolean edgeAfter) {
+        int visibleEnd = visibleEnd(style, master, start, end, edgeAfter);
+        return visibleEnd == end ? 0 : TextUtil.textWidth(c, style, font, master.substring(visibleEnd, end));
+    }
+
+    /**
+     * The end of {@code master[start, end)} without the spaces which do not count where the line ends there, see
+     * {@link #hangingWidth(LayoutContext, CalculatedStyle, FSFont, String, int, int, boolean)}.
+     */
+    private static int visibleEnd(CalculatedStyle style, String master, int start, int end, boolean edgeAfter) {
         int visibleEnd = end;
         if (collapsesSpaces(style)) {
             while (visibleEnd > start && isCollapsibleSpace(master.charAt(visibleEnd - 1))) {
@@ -188,7 +201,7 @@ public class Breaker {
                 visibleEnd--;
             }
         }
-        return visibleEnd == end ? 0 : TextUtil.textWidth(c, style, font, master.substring(visibleEnd, end));
+        return visibleEnd;
     }
 
     private static boolean collapsesSpaces(CalculatedStyle style) {
