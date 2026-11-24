@@ -106,11 +106,12 @@ public class Breaker {
             context.setWidth(TextUtil.textWidth(c, style, font, text));
             // A space at the end of the line disappears or hangs (CSS Text 3, § 4.1.3): it counts only where text is glued
             // after it. A right border or padding after it keeps a space separator from hanging (CSS Text 3, § 8.2).
-            int fitWidth = gluedWidthAfter == 0
-                    ? visibleWidth(c, style, font, context.getMaster(), context.getStart(), context.getStart(), context.getEnd(),
+            Visible visible = gluedWidthAfter == 0
+                    ? visible(c, style, font, context.getMaster(), context.getStart(), context.getStart(), context.getEnd(),
                             0, context.getWidth(), context.edgeAfterText())
-                    : context.getWidth();
-            checkGluedWidthFits(context, fitWidth, avail, gluedWidthAfter);
+                    : new Visible(context.getWidth(), 0);
+            context.setHangingWidth(visible.hanging());
+            checkGluedWidthFits(context, visible.width(), avail, gluedWidthAfter);
             return;
         }
 
@@ -172,40 +173,53 @@ public class Breaker {
     }
 
     /**
-     * The width of a line which ends at {@code end}, without the spaces at its end which do not count there, see
-     * {@link #visibleEnd(CalculatedStyle, String, int, int, boolean)}. The line is {@code width} wide with them. Its last
-     * part starts at {@code partStart}, and the parts before it are {@code widthBefore} wide. The last part is measured
-     * without the spaces, as each measured text rounds its width up: its width less theirs may be too small.
+     * The width of a line which ends at {@code end}, without the spaces at its end which do not count there. Where the
+     * spaces collapse, spaces, tabs and U+1680 disappear (CSS Text 3, § 4.1.2). Other spaces hang (§ 4.1.3), unless a
+     * border or padding follows them ({@code edgeAfter}, § 8.2).
+     * <p>
+     * The line is {@code width} wide with the spaces. Its last part starts at {@code partStart}, and the parts before it
+     * are {@code widthBefore} wide. The last part is measured without the spaces, as each measured text rounds its width
+     * up: its width less theirs may be too small.
      */
-    private static int visibleWidth(LayoutContext c, CalculatedStyle style, FSFont font, String master, int start,
-                                    int partStart, int end, int widthBefore, int width, boolean edgeAfter) {
-        int visibleEnd = visibleEnd(style, master, start, end, edgeAfter);
+    private static Visible visible(LayoutContext c, CalculatedStyle style, FSFont font, String master, int start,
+                                   int partStart, int end, int widthBefore, int width, boolean edgeAfter) {
+        int collapsedEnd = collapsesSpaces(style) ? collapsedEnd(master, start, end) : end;
+        int visibleEnd = edgeAfter ? collapsedEnd : hangingEnd(master, start, collapsedEnd);
         if (visibleEnd == end) {
-            return width;
+            return new Visible(width, 0);
         }
-        return visibleEnd >= partStart
+        int visibleWidth = visibleEnd >= partStart
                 ? widthBefore + TextUtil.textWidth(c, style, font, master.substring(partStart, visibleEnd))
                 : TextUtil.textWidth(c, style, font, master.substring(start, visibleEnd));
+        if (visibleEnd == collapsedEnd) {
+            return new Visible(visibleWidth, 0);
+        }
+        // The collapsible spaces are removed from the line, and its text measured again whole (InlineText.trimTrailingSpace)
+        int widthWithHanging = collapsedEnd == end ? width : TextUtil.textWidth(c, style, font, master.substring(start, collapsedEnd));
+        return new Visible(visibleWidth, Math.max(0, widthWithHanging - visibleWidth));
     }
 
     /**
-     * The end of {@code master[start, end)} without the spaces which do not count where the line ends there. Where the
-     * spaces collapse, spaces, tabs and U+1680 disappear (CSS Text 3, § 4.1.2). Other spaces hang (§ 4.1.3), unless a
-     * border or padding follows them ({@code edgeAfter}, § 8.2).
+     * The width of a line without the spaces at its end which do not count, and the width of the space separators among
+     * them which hang: these stay on the line, but do not count for its alignment either.
      */
-    private static int visibleEnd(CalculatedStyle style, String master, int start, int end, boolean edgeAfter) {
-        int visibleEnd = end;
-        if (collapsesSpaces(style)) {
-            while (visibleEnd > start && isCollapsibleSpace(master.charAt(visibleEnd - 1))) {
-                visibleEnd--;
-            }
+    private record Visible(int width, int hanging) {
+    }
+
+    private static int collapsedEnd(String master, int start, int end) {
+        int collapsedEnd = end;
+        while (collapsedEnd > start && isCollapsibleSpace(master.charAt(collapsedEnd - 1))) {
+            collapsedEnd--;
         }
-        if (!edgeAfter) {
-            while (visibleEnd > start && isHangingSpace(master.charAt(visibleEnd - 1))) {
-                visibleEnd--;
-            }
+        return collapsedEnd;
+    }
+
+    private static int hangingEnd(String master, int start, int end) {
+        int hangingEnd = end;
+        while (hangingEnd > start && isHangingSpace(master.charAt(hangingEnd - 1))) {
+            hangingEnd--;
         }
-        return visibleEnd;
+        return hangingEnd;
     }
 
     private static boolean collapsesSpaces(CalculatedStyle style) {
@@ -313,11 +327,17 @@ public class Breaker {
         BreakPoint lastBreakPoint = null;
         int right = -1;
         int rightWidth = 0;
+        int rightHanging = 0;
         int previousWidth = 0;
         int previousPosition = 0;
+        // The last part measured, and the width of the parts before it
+        int lastPartStart = start;
+        int lastWidthBefore = 0;
         while (bp != null && bp.position() != BreakIterator.DONE) {
             int partStart = start + previousPosition;
             int widthBefore = previousWidth;
+            lastPartStart = partStart;
+            lastWidthBefore = widthBefore;
             String part = master.substring(partStart, start + bp.position());
             int partWidth = TextUtil.textWidth(c, style, f, part);
             // A hyphen is printed only where the line wraps, so neither the text after this break point nor a line
@@ -329,13 +349,14 @@ public class Breaker {
             boolean atEnd = start + previousPosition == master.length();
             int glued = atEnd ? gluedWidthAfter : 0;
             // The spaces before the break disappear or hang where the line ends there
-            int fitWidth = glued == 0 && !printsHyphen
-                    ? visibleWidth(c, style, f, master, start, partStart, start + previousPosition, widthBefore, widthWithHyphen,
+            Visible visible = glued == 0 && !printsHyphen
+                    ? visible(c, style, f, master, start, partStart, start + previousPosition, widthBefore, widthWithHyphen,
                             atEnd && context.edgeAfterText())
-                    : widthWithHyphen;
-            if (fitWidth + glued > avail) break;
+                    : new Visible(widthWithHyphen, 0);
+            if (visible.width() + glued > avail) break;
             right = previousPosition;
             rightWidth = widthWithHyphen;
+            rightHanging = visible.hanging();
             lastBreakPoint = bp;
             bp = iterator.next();
         }
@@ -343,14 +364,20 @@ public class Breaker {
         // Every break point fits: so does the line, if the text after the last one does
         boolean fits = false;
         int fitsWidth = 0;
+        int fitsHanging = 0;
         if (bp != null && bp.position() == BreakIterator.DONE) {
             String tail = master.substring(start + previousPosition);
             fitsWidth = previousWidth + (tail.isEmpty() ? 0 : TextUtil.textWidth(c, style, f, tail));
-            int fitWidth = gluedWidthAfter == 0
-                    ? visibleWidth(c, style, f, master, start, start + previousPosition, master.length(), previousWidth, fitsWidth,
+            if (!tail.isEmpty()) {
+                lastPartStart = start + previousPosition;
+                lastWidthBefore = previousWidth;
+            }
+            Visible visible = gluedWidthAfter == 0
+                    ? visible(c, style, f, master, start, lastPartStart, master.length(), lastWidthBefore, fitsWidth,
                             context.edgeAfterText())
-                    : fitsWidth;
-            fits = fitWidth + gluedWidthAfter <= avail;
+                    : new Visible(fitsWidth, 0);
+            fits = visible.width() + gluedWidthAfter <= avail;
+            fitsHanging = visible.hanging();
         }
 
         // add hyphen if needed
@@ -362,6 +389,7 @@ public class Breaker {
 
         if (fits) {
             context.setWidth(fitsWidth);
+            context.setHangingWidth(fitsHanging);
             context.setEnd(context.getMaster().length());
             //It fits!
             return;
@@ -369,6 +397,10 @@ public class Breaker {
 
         // No break point fits: the loop stopped at the first one, which ends the first word
         BreakPoint firstWordEnd = right < 0 && bp != null && bp.position() != BreakIterator.DONE ? bp : null;
+        if (right > 0) {
+            // wrap ends the line at the last break point which fits
+            context.setHangingWidth(rightHanging);
+        }
         wrap(c, context, avail, style, f, master, start, false, fullLineWidth, right, rightWidth, gluedWidthAfter, firstWordEnd);
     }
 

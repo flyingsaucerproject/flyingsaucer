@@ -92,6 +92,9 @@ public class LineBox extends Box implements InlinePaintable {
      */
     private int _justifiedContentWidth;
 
+    /** The width of the spaces which hang at the end of the line: they do not count for its alignment. */
+    private int _hangingWidth;
+
     public LineBox(@Nullable Box parent, @Nullable CalculatedStyle style) {
         super(parent, style);
     }
@@ -211,10 +214,10 @@ public class LineBox extends Box implements InlinePaintable {
             int midpoint = leftFloatDistance +
                 (getParent().getContentWidth() - leftFloatDistance - rightFloatDistance) / 2;
 
-            calcX = midpoint - (getContentWidth() + getContentStart()) / 2;
+            calcX = midpoint - (getContentWidth() - _hangingWidth + getContentStart()) / 2;
         } else if (align == IdentValue.RIGHT) {
             int floatDistance = getFloatDistances().rightFloatDistance();
-            calcX = getParent().getContentWidth() - floatDistance - getContentWidth();
+            calcX = getParent().getContentWidth() - floatDistance - getContentWidth() + _hangingWidth;
         }
 
         if (calcX != getX()) {
@@ -546,6 +549,12 @@ public class LineBox extends Box implements InlinePaintable {
         }
 
         return null;
+    }
+
+    /** Finds the width of the spaces which hang at the end of the line, see {@link InlineText#hangingWidth()}. */
+    public void findHangingWidth() {
+        InlineText text = findTrailingText();
+        _hangingWidth = text == null ? 0 : text.hangingWidth();
     }
 
     public void trimTrailingSpace(LayoutContext c) {

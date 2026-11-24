@@ -240,6 +240,27 @@ class NowrapLineBreakTest {
         }
     }
 
+    /** A hanging space does not count for the alignment of the line (CSS Text 3, § 4.1.3). */
+    @ParameterizedTest
+    @ValueSource(strings = {"right", "center"})
+    void aHangingSpaceDoesNotMoveAnAlignedLine(String align) {
+        String div = "<div style='width: 100px; text-align: " + align + "'>xx yyyy";
+
+        LineBox line = lineBoxes(layout(div + "&#x2003;</div>")).get(0);
+
+        assertThat(line.getX()).isEqualTo(lineBoxes(layout(div + "</div>")).get(0).getX());
+    }
+
+    /** A space before a right padding does not hang: it counts for the alignment of the line. */
+    @Test
+    void aSpaceBeforeARightPaddingMovesAnAlignedLine() {
+        String div = "<div style='width: 100px; text-align: right'>xx <span style='padding-right: 10px'>yyyy";
+
+        LineBox line = lineBoxes(layout(div + "&#x2003;</span></div>")).get(0);
+
+        assertThat(line.getX()).isLessThan(lineBoxes(layout(div + "</span></div>")).get(0).getX());
+    }
+
     /** An absolute box after the space is out of the flow: the right padding of the outer box still follows the space. */
     @Test
     void aTrailingSpaceSeparatorBeforeAnAbsoluteBoxAndARightPaddingMovesATextWhichMayNotBreak() {

@@ -243,6 +243,7 @@ public final class InlineBoxing {
                                         iB.getContentFunction(), iB.getFunction()));
                             }
                             inlineText.setTrimmedLeadingSpace(trimmedLeadingSpace);
+                            inlineText.setHangingWidth(lbContext.hangingWidth());
                             currentLine.setContainsDynamicFunction(inlineText.isDynamicFunction());
                             currentIB.addInlineChild(c, inlineText);
                             currentLine.setContainsContent(true);
@@ -868,6 +869,7 @@ public final class InlineBoxing {
 
         int totalLineWidth = positionHorizontally(c, current, 0);
         current.setContentWidth(totalLineWidth);
+        current.findHangingWidth();
 
         positionVertically(c, block, current, markerData);
 

@@ -39,6 +39,7 @@ public class LineBreakContext {
     private boolean _endsOnNL;
     private final Text _textNode;
     private final boolean _edgeAfterText;
+    private int _hangingWidth;
 
     public LineBreakContext(String master, Text textNode) {
         this(master, textNode, false);
@@ -69,6 +70,16 @@ public class LineBreakContext {
         _needsNewLine = false;
         _brokenInsideWord = false;
         _hyphen = "";
+        _hangingWidth = 0;
+    }
+
+    /** The width of the space separators which hang at the end of the text where it ends the line (CSS Text 3, § 4.1.3). */
+    public int hangingWidth() {
+        return _hangingWidth;
+    }
+
+    public void setHangingWidth(int hangingWidth) {
+        _hangingWidth = hangingWidth;
     }
 
     public int getEnd() {
