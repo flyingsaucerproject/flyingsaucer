@@ -228,6 +228,18 @@ class NowrapLineBreakTest {
         }
     }
 
+    /** The text before a hanging space at a break is measured whole too, where the text may wrap. */
+    @ParameterizedTest
+    @ValueSource(strings = {"normal", "0.5px"})
+    void aTextWhichMayWrapFitsBeforeAHangingSpaceAsItFitsWithoutIt(String letterSpacing) {
+        for (int width = 40; width <= 120; width++) {
+            String div = "<div style='width: " + width + "px; letter-spacing: " + letterSpacing + "'>xx yyyy";
+            assertThat(lines(layout(div + "&#x2003;</div>")))
+                    .as("width %s", width)
+                    .hasSameSizeAs(lines(layout(div + "</div>")));
+        }
+    }
+
     /** An absolute box after the space is out of the flow: the right padding of the outer box still follows the space. */
     @Test
     void aTrailingSpaceSeparatorBeforeAnAbsoluteBoxAndARightPaddingMovesATextWhichMayNotBreak() {
