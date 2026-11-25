@@ -1,5 +1,6 @@
 package org.xhtmlrenderer.layout;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -151,6 +153,174 @@ class NowrapLineBreakTest {
                 .containsExactly("xx yyyyy" + space);
     }
 
+    /** A right padding or border after a space separator keeps it from hanging (CSS Text 3, § 8.2): the space counts (#790). */
+    @ParameterizedTest
+    @ValueSource(strings = {"padding-right: 20px", "border-right: 20px solid"})
+    void aTrailingSpaceSeparatorBeforeARightEdgeMovesATextWhichMayNotBreak(String edge) {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; " + edge + "'>yyyyy&#x2003;</span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** The right padding of a box which ends with the text keeps the space from hanging too. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeTheRightPaddingOfAnOuterBoxMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='padding-right: 20px'>" +
+                "<span style='white-space: nowrap'>yyyyy&#x2003;</span></span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** An empty inline box after the space leaves the right padding of the box between the space and the end of the line. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeAnEmptyBoxAndARightPaddingMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy&#x2003;<i></i></span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** A collapsible space between the boxes disappears at the end of the line: the outer padding still follows the space. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeASpaceAndTheRightPaddingOfAnOuterBoxMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='padding-right: 20px'>" +
+                "<span style='white-space: nowrap'>yyyyy&#x2003;</span> </span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** A space separator in a padded box of its own is glued to the text which may not break: the two move together. */
+    @Test
+    void aTrailingSpaceSeparatorInAPaddedInnerBoxMovesTheTextWhichMayNotBreakWhole() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap'>yyyyy" +
+                "<span style='padding-right: 20px'>&#x2003;</span></span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** The rule holds where the text may wrap too: the space before the right padding counts. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeARightPaddingMovesAWordWhichMayWrap() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='padding-right: 20px'>yyyyy&#x2003;</span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** The left padding of an empty box after the space is between the space and the end of the line too. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeAnEmptyBoxWithALeftPaddingMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 85px'>xx <span style='white-space: nowrap'>yyyyy&#x2003;<i style='padding-left: 20px'></i></span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** A trailing ogham space mark is removed at the end of the line (CSS Text 3, § 4.1.2), even before a right padding. */
+    @Test
+    void aTrailingOghamSpaceMarkBeforeARightPaddingDoesNotMoveATextWhichMayNotBreak() {
+        Box root = layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy&#x1680;</span></div>");
+        Box withoutMark = layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy</span></div>");
+
+        assertThat(lines(root)).containsExactly("xx yyyyy");
+        assertThat(rightEdgeOfSpan(root)).isEqualTo(rightEdgeOfSpan(withoutMark));
+    }
+
+    /** The text before a hanging space is measured whole: each measured text rounds its width up. */
+    @ParameterizedTest
+    @ValueSource(strings = {"normal", "0.5px"})
+    void aTextWhichMayNotBreakFitsBeforeAHangingSpaceAsItFitsWithoutIt(String letterSpacing) {
+        for (int width = 40; width <= 120; width++) {
+            String div = "<div style='width: " + width + "px'>xx <span style='white-space: nowrap; letter-spacing: " + letterSpacing + "'>yyyy";
+            assertThat(lines(layout(div + "&#x2003;</span></div>")))
+                    .as("width %s", width)
+                    .hasSameSizeAs(lines(layout(div + "</span></div>")));
+        }
+    }
+
+    /** The text before a hanging space at a break is measured whole too, where the text may wrap. */
+    @ParameterizedTest
+    @ValueSource(strings = {"normal", "0.5px"})
+    void aTextWhichMayWrapFitsBeforeAHangingSpaceAsItFitsWithoutIt(String letterSpacing) {
+        for (int width = 40; width <= 120; width++) {
+            String div = "<div style='width: " + width + "px; letter-spacing: " + letterSpacing + "'>xx yyyy";
+            assertThat(lines(layout(div + "&#x2003;</div>")))
+                    .as("width %s", width)
+                    .hasSameSizeAs(lines(layout(div + "</div>")));
+        }
+    }
+
+    /** A hanging space does not count for the alignment of the line (CSS Text 3, § 4.1.3). */
+    @ParameterizedTest
+    @ValueSource(strings = {"right", "center"})
+    void aHangingSpaceDoesNotMoveAnAlignedLine(String align) {
+        String div = "<div style='width: 100px; text-align: " + align + "'>xx yyyy";
+
+        LineBox line = lineBoxes(layout(div + "&#x2003;</div>")).get(0);
+
+        assertThat(line.getX()).isEqualTo(lineBoxes(layout(div + "</div>")).get(0).getX());
+    }
+
+    /** A space before a right padding does not hang: it counts for the alignment of the line. */
+    @Test
+    void aSpaceBeforeARightPaddingMovesAnAlignedLine() {
+        String div = "<div style='width: 100px; text-align: right'>xx <span style='padding-right: 10px'>yyyy";
+
+        LineBox line = lineBoxes(layout(div + "&#x2003;</span></div>")).get(0);
+
+        assertThat(line.getX()).isLessThan(lineBoxes(layout(div + "</span></div>")).get(0).getX());
+    }
+
+    /** An absolute box after the space is out of the flow: the right padding of the outer box still follows the space. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeAnAbsoluteBoxAndARightPaddingMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='padding-right: 20px'>" +
+                "<span style='white-space: nowrap'>yyyyy&#x2003;</span><b style='position: absolute'></b></span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** A trailing ogham space mark disappears at the end of the line: the right padding of the outer box still follows the space. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeAnOghamSpaceMarkAndARightPaddingMovesATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='padding-right: 20px'>" +
+                "<span style='white-space: nowrap'>yyyyy&#x2003;</span>&#x1680;</span></div>")))
+                .containsExactly("xx", "yyyyy\u2003");
+    }
+
+    /** A space at the end of a line disappears where the text may wrap too: it does not count (CSS Text 3, § 4.1.2). */
+    @ParameterizedTest
+    @ValueSource(strings = {"normal", "pre-line"})
+    void aSpaceAtABreakDoesNotCountWhereTheTextMayWrap(String whiteSpace) {
+        assertThat(lines(layout("<div style='width: 70px; white-space: " + whiteSpace + "'>xx aaaa bbbb</div>")))
+                .containsExactly("xx aaaa", "bbbb");
+    }
+
+    /** A preserved space at the end of a line hangs (CSS Text 3, § 4.1.3): it does not count either. */
+    @Test
+    void aPreservedSpaceAtABreakDoesNotCount() {
+        assertThat(lines(layout("<div style='width: 70px; white-space: pre-wrap'>xx aaaa bbbb</div>")))
+                .containsExactly("xx aaaa ", "bbbb");
+    }
+
+    /** Other space separators at the end of a line hang where the text may wrap too (CSS Text 3, § 4.1.3). */
+    @ParameterizedTest
+    @ValueSource(strings = {"normal", "pre-wrap", "pre-line"})
+    void aSpaceSeparatorAtABreakDoesNotCountWhereTheTextMayWrap(String whiteSpace) {
+        assertThat(lines(layout("<div style='width: 70px; white-space: " + whiteSpace + "'>xx aaaa&#x2003;bbbb</div>")))
+                .containsExactly("xx aaaa\u2003", "bbbb");
+    }
+
+    /** A space separator at the end of a text which may wrap hangs unless a right padding follows it. */
+    @Test
+    void aTrailingSpaceSeparatorWithoutAnEdgeDoesNotMoveAWordWhichMayWrap() {
+        assertThat(lines(layout("<div style='width: 80px'>xx <span>yyyyy&#x2003;</span></div>")))
+                .containsExactly("xx yyyyy\u2003");
+    }
+
+    /** A margin is not between the space and the end of the line: the space still hangs. */
+    @Test
+    void aTrailingSpaceSeparatorBeforeARightMarginDoesNotMoveATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; margin-right: 20px'>yyyyy&#x2003;</span></div>")))
+                .containsExactly("xx yyyyy\u2003");
+    }
+
+    /** A collapsible space at the end of the line disappears, even before a right padding. */
+    @Test
+    void aTrailingSpaceBeforeARightPaddingDoesNotMoveATextWhichMayNotBreak() {
+        assertThat(lines(layout("<div style='width: 100px'>xx <span style='white-space: nowrap; padding-right: 20px'>yyyyy </span></div>")))
+                .containsExactly("xx yyyyy");
+    }
+
     /** The block which may not wrap decides the boundary after a text which breaks anywhere. */
     @Test
     void aTextStaysAfterATextWhichBreaksAnywhereWhereTheBlockMayNotBreak() {
@@ -234,6 +404,31 @@ class NowrapLineBreakTest {
             graphics.dispose();
         }
         return renderer.getPanel().getRootBox();
+    }
+
+    /** The right edge of the first {@code span} box in the box tree, with its right padding. */
+    private static int rightEdgeOfSpan(Box root) {
+        InlineLayoutBox span = requireNonNull(findSpan(root));
+        return span.getAbsX() + span.getInlineWidth();
+    }
+
+    private static @Nullable InlineLayoutBox findSpan(Box box) {
+        if (box instanceof InlineLayoutBox inline && inline.getElement() != null && "span".equals(inline.getElement().getLocalName())) {
+            return inline;
+        }
+        List<Object> children = new ArrayList<>(box.getChildren());
+        if (box instanceof InlineLayoutBox inline) {
+            children.addAll(inline.getInlineChildren());
+        }
+        for (Object child : children) {
+            if (child instanceof Box childBox) {
+                InlineLayoutBox span = findSpan(childBox);
+                if (span != null) {
+                    return span;
+                }
+            }
+        }
+        return null;
     }
 
     /** The text of each line with text in the box tree, in document order. */

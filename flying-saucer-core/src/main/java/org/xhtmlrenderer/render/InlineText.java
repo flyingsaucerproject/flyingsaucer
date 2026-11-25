@@ -63,16 +63,32 @@ public class InlineText implements InlineChild {
 
     private boolean _trimmedLeadingSpace;
     private boolean _trimmedTrailingSpace;
+    private int _hangingWidth;
     private final Text _textNode;
 
     public void trimTrailingSpace(LayoutContext c) {
-        if (_end > _start && _hyphen.isEmpty() && _masterText.charAt(_end-1) == ' ') {
-            _end--;
+        // A trailing U+1680 is removed with the spaces where they collapse (CSS Text 3, § 4.1.2)
+        if (_end > _start && _hyphen.isEmpty() && (_masterText.charAt(_end - 1) == ' ' || _masterText.charAt(_end - 1) == '\u1680')) {
+            while (_end > _start && (_masterText.charAt(_end - 1) == ' ' || _masterText.charAt(_end - 1) == '\u1680')) {
+                _end--;
+            }
             setWidth(TextUtil.textWidth(c, getParent().getStyle(),
                     getParent().getStyle().getFSFont(c),
                     getSubstring()));
             setTrimmedTrailingSpace();
         }
+    }
+
+    /**
+     * The width of the space separators which hang at the end of the text where it ends the line (CSS Text 3, § 4.1.3):
+     * they do not count for the alignment of the line.
+     */
+    public int hangingWidth() {
+        return _hangingWidth;
+    }
+
+    public void setHangingWidth(int hangingWidth) {
+        _hangingWidth = hangingWidth;
     }
 
     public boolean isEmpty() {

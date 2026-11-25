@@ -167,7 +167,8 @@ public final class InlineBoxing {
 
                 String master = iB.isDynamicFunction() ?
                         iB.getContentFunction().getLayoutReplacementText() : iB.getText();
-                LineBreakContext lbContext = new LineBreakContext(master, iB.getTextNode());
+                LineBreakContext lbContext = new LineBreakContext(master, iB.getTextNode(),
+                        boundaryBreaks.edgeAfterText(index));
                 // The rest of the word after a ::first-letter on the same line continues it
                 boolean afterFirstLetter = false;
 
@@ -242,6 +243,7 @@ public final class InlineBoxing {
                                         iB.getContentFunction(), iB.getFunction()));
                             }
                             inlineText.setTrimmedLeadingSpace(trimmedLeadingSpace);
+                            inlineText.setHangingWidth(lbContext.hangingWidth());
                             currentLine.setContainsDynamicFunction(inlineText.isDynamicFunction());
                             currentIB.addInlineChild(c, inlineText);
                             currentLine.setContainsContent(true);
@@ -867,6 +869,7 @@ public final class InlineBoxing {
 
         int totalLineWidth = positionHorizontally(c, current, 0);
         current.setContentWidth(totalLineWidth);
+        current.findHangingWidth();
 
         positionVertically(c, block, current, markerData);
 
