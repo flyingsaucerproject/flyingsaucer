@@ -1127,17 +1127,20 @@ public final class Layer {
         }
     }
 
-    @Nullable
+    /**
+     * @param sequences non-empty list of page sequence starts, sorted by {@code absY}
+     * @return the page sequence containing {@code absY}: the one whose successor starts after {@code absY},
+     * or the last one if there is no such successor
+     */
     @CheckReturnValue
     private BlockBox findPageSequence(List<BlockBox> sequences, int absY) {
-        for (int i = 0; i < sequences.size(); i++) {
-            BlockBox result = sequences.get(i);
-            if (i < sequences.size() - 1 && sequences.get(i + 1).getAbsY() > absY) {
-                return result;
+        for (int i = 0; i < sequences.size() - 1; i++) {
+            if (sequences.get(i + 1).getAbsY() > absY) {
+                return sequences.get(i);
             }
         }
 
-        return null;
+        return sequences.get(sequences.size() - 1);
     }
 
     @CheckReturnValue
